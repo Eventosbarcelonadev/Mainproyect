@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpaceX Event Barcelona — Eventos Barcelona Proposal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #e8712a;
+      --accent-dark: #c55e1f;
+      --dark: #0d0d0d;
+      --card-bg: #161616;
+      --gray: #888;
+      --light: #ccc;
+      --white: #fff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--dark);
+      color: var(--white);
+      line-height: 1.6;
+    }
+
+    /* === HERO === */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 24px;
+      background: linear-gradient(180deg, #0a0a2e 0%, #0d0d0d 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(100, 100, 255, 0.08) 0%, transparent 70%);
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-logo {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto 12px;
+      font-weight: 300;
+    }
+
+    .hero-detail {
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    /* === CONCEPT === */
+    .concept {
+      padding: 48px 24px;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .concept h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    .concept p {
+      font-size: 16px;
+      color: var(--light);
+      line-height: 1.7;
+    }
+
+    /* === SHOWS === */
+    .shows {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 24px 48px;
+    }
+
+    .shows-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .show-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 16px;
+      border: 1px solid #222;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .show-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .show-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .show-subtitle {
+      font-size: 11px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    .show-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .show-card p {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .show-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .show-meta a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .show-meta a:hover { text-decoration: underline; }
+
+    .show-price {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .show-price .amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .show-price .detail {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    /* === SUMMARY === */
+    .summary {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .summary-card {
+      background: var(--card-bg);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #222;
+      font-size: 14px;
+      color: var(--light);
+    }
+
+    .summary-row:last-of-type {
+      border-bottom: none;
+      padding-top: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .summary-row span:last-child { font-weight: 600; color: var(--white); }
+    .summary-row:last-of-type span:last-child { color: var(--accent); }
+
+    .summary-note {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    /* === UPSELL === */
+    .upsell {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .upsell-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 28px;
+      border: 1px solid #222;
+    }
+
+    .upsell-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .upsell-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .upsell-card p {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 12px;
+    }
+
+    .upsell-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .upsell-item {
+      font-size: 13px;
+      color: var(--light);
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+    }
+
+    /* === CONDITIONS === */
+    .conditions {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .conditions-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #222;
+    }
+
+    .conditions-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 12px;
+    }
+
+    .conditions-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .conditions-card li {
+      font-size: 13px;
+      color: var(--gray);
+      padding: 4px 0 4px 16px;
+      position: relative;
+    }
+
+    .conditions-card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gray);
+    }
+
+    /* === CTA === */
+    .cta {
+      text-align: center;
+      padding: 48px 24px;
+      border-top: 1px solid #222;
+    }
+
+    .cta h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .cta p {
+      font-size: 15px;
+      color: var(--gray);
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 40px;
+      background: var(--accent);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover { background: var(--accent-dark); }
+
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    .demo-banner {
+      background: var(--accent);
+      color: var(--white);
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    @media (max-width: 768px) {
+      .show-card { grid-template-columns: 1fr; }
+      .show-price { text-align: left; }
+      .upsell-items { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-banner">
+    EJEMPLO DE PROPUESTA — Esto es lo que recibiria tu cliente
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-logo">eB Eventos Barcelona</div>
+      <h1><span>SpaceX</span> Event<br>Barcelona</h1>
+      <p class="hero-sub">An immersive event inspired by stars and galaxies, where performances, music and audiovisual design transform the venue into a living universe.</p>
+      <p class="hero-detail">MARCH 2TH &middot; CABARET EDITION</p>
+    </div>
+  </div>
+
+  <!-- CONCEPT -->
+  <div class="concept">
+    <h2>Among the Stars</h2>
+    <p>A curated selection of performances designed to transport your guests into a galactic universe. Each show reinforces the cosmic concept through light, movement and live music.</p>
+  </div>
+
+  <!-- SHOWS -->
+  <div class="shows">
+    <div class="shows-label">Proposed Shows</div>
+
+    <div class="show-card">
+      <div>
+        <div class="show-header">
+          <div class="show-number">1</div>
+          <div class="show-subtitle">Welcome from the Stars</div>
+        </div>
+        <h3>LED Dancers</h3>
+        <p>A LED welcome show designed to introduce guests into a universe inspired by stars and galaxies. The performers move throughout the venue, interacting with guests and creating an immersive visual atmosphere from the very first moment.</p>
+        <div class="show-meta">
+          <a href="https://www.youtube.com/watch?v=_W0yM3U21so" target="_blank">Watch video</a>
+        </div>
+      </div>
+      <div class="show-price">
+        <div class="amount">3.000&euro;</div>
+        <div class="detail">4 dancers</div>
+      </div>
+    </div>
+
+    <div class="show-card">
+      <div>
+        <div class="show-header">
+          <div class="show-number">2</div>
+          <div class="show-subtitle">A Journey to the Stars</div>
+        </div>
+        <h3>LED Juggling Show</h3>
+        <p>A dynamic LED juggling show with fully customized props featuring the company logo and graphic elements such as stars and planets. Several short sets throughout the event create recurring moments of visual impact.</p>
+        <div class="show-meta">
+          <a href="https://www.youtube.com/watch?v=SYUHsAIp8v8" target="_blank">Watch video</a>
+        </div>
+      </div>
+      <div class="show-price">
+        <div class="amount">2.750&euro;</div>
+        <div class="detail">2 jugglers + customization</div>
+      </div>
+    </div>
+
+    <div class="show-card">
+      <div>
+        <div class="show-header">
+          <div class="show-number">3</div>
+          <div class="show-subtitle">A Close Encounter with the Visitors</div>
+        </div>
+        <h3>Alien Businessmen</h3>
+        <p>Pairs of alien characters arrive from distant galaxies to explore planet Earth. They interact with guests throughout the space, dancing with them and posing for photos. Three 30-minute acts of playful, visual roaming performance.</p>
+        <div class="show-meta">
+          <a href="https://www.youtube.com/watch?v=fTaQ_nAsG1g&t=27s" target="_blank">Watch video</a>
+        </div>
+      </div>
+      <div class="show-price">
+        <div class="amount">3.750&euro;</div>
+        <div class="detail">4 artists</div>
+      </div>
+    </div>
+
+    <div class="show-card">
+      <div>
+        <div class="show-header">
+          <div class="show-number">4</div>
+          <div class="show-subtitle">Music from the Stars</div>
+        </div>
+        <h3>Electric Violin Show</h3>
+        <p>A live performance blending cutting-edge electronic music with the expressive sound of an electric violin. Enhanced with customized audiovisual projections inspired by stars and galaxies. 80 minutes across multiple sets.</p>
+        <div class="show-meta">
+          <a href="https://www.youtube.com/watch?v=ETNfpbqzwRA" target="_blank">Watch video</a>
+        </div>
+      </div>
+      <div class="show-price">
+        <div class="amount">1.500&euro;</div>
+        <div class="detail">AV not included</div>
+      </div>
+    </div>
+
+    <div class="show-card">
+      <div>
+        <div class="show-header">
+          <div class="show-number">5</div>
+          <div class="show-subtitle">Visuals from Another Universe</div>
+        </div>
+        <h3>DJ &amp; VJ</h3>
+        <p>A live VJ audiovisual performance with custom-made visual content inspired by stars, galaxies and cosmic environments. Can be fully personalized with promotional content and company logo.</p>
+      </div>
+      <div class="show-price">
+        <div class="amount">1.800&euro;</div>
+        <div class="detail">AV not included</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPSELL -->
+  <div class="upsell">
+    <div class="upsell-card">
+      <div class="upsell-label">Technical Production</div>
+      <h3>Immersive Lighting &amp; Projection Design</h3>
+      <p>Transform the entire venue into an immersive universe. Laser projectors and moving head fixtures project dynamic audiovisual content across walls, ceilings and architectural elements.</p>
+      <div class="upsell-items">
+        <div class="upsell-item">Sound system</div>
+        <div class="upsell-item">Stage lighting</div>
+        <div class="upsell-item">Laser projectors</div>
+        <div class="upsell-item">LED screens</div>
+      </div>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--accent);">Price based on venue requirements — ask us for a quote</p>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="summary-card">
+      <div class="summary-label">Budget Summary</div>
+      <div class="summary-row"><span>LED Dancers (4 artists)</span> <span>3.000&euro;</span></div>
+      <div class="summary-row"><span>LED Juggling Show (2 jugglers + customization)</span> <span>2.750&euro;</span></div>
+      <div class="summary-row"><span>Alien Businessmen (4 artists)</span> <span>3.750&euro;</span></div>
+      <div class="summary-row"><span>Electric Violin Show</span> <span>1.500&euro;</span></div>
+      <div class="summary-row"><span>DJ &amp; VJ</span> <span>1.800&euro;</span></div>
+      <div class="summary-row"><span>Total</span> <span>12.800&euro;</span></div>
+      <div class="summary-note">
+        * 21% VAT not included where applicable. Technical equipment (sound, lighting, AV) quoted separately. Includes costumes, make-up and transportation within Barcelona.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDITIONS -->
+  <div class="conditions">
+    <div class="conditions-card">
+      <div class="conditions-label">General Terms &amp; Conditions</div>
+      <ul>
+        <li>Pre-booking held for 5 days, after which the reservation may be released</li>
+        <li>Not included: sound &amp; lighting equipment, AV systems, branding elements, graphic design</li>
+        <li>Client must provide meals and water for all artistic, technical and coordination team</li>
+        <li>Eventos Barcelona is not responsible for suspensions due to power supply failures, weather or force majeure</li>
+        <li>21% VAT not included where applicable</li>
+        <li>Cancellation: 50% charge within 1 week of event, 100% within 48 hours</li>
+        <li>Payment: 100% upon acceptance unless prior agreement with Eventos Barcelona</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Ready to launch?</h2>
+    <p>Accept this proposal to confirm your event</p>
+    <a href="#" class="btn" onclick="return false;">Accept Proposal</a>
+  </div>
+
+  <div class="footer">
+    <p>Proposal prepared exclusively for SpaceX by <a href="https://www.eventosbarcelona.com">Eventos Barcelona</a></p>
+    <p style="margin-top: 4px;">xavi@eventosbarcelona.com &middot; 653.97.93.29</p>
+  </div>
+
+</body>
+</html>
