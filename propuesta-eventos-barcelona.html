@@ -223,20 +223,26 @@
 
     /* === FLOW === */
     .flow {
-      margin-top: 48px;
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
     }
 
     .flow-step {
       display: flex;
-      gap: 24px;
-      margin-bottom: 32px;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .flow-number {
       flex-shrink: 0;
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: var(--primary);
       color: var(--white);
@@ -244,27 +250,31 @@
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 18px;
+      font-size: 15px;
     }
 
     .flow-content h3 {
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: var(--white);
+      line-height: 1.3;
     }
 
     .flow-content p {
-      font-size: 15px;
+      font-size: 13px;
       color: #999;
       margin: 0;
+      line-height: 1.5;
     }
 
     .flow-time {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--primary);
-      font-weight: 500;
-      margin-bottom: 4px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     /* === PHASES === */
@@ -565,6 +575,7 @@
     /* === RESPONSIVE === */
     @media (max-width: 768px) {
       .problem-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
       .section, .section-dark, .section-accent { padding: 60px 24px; }
       .phase { padding: 24px; }
       .price-card { padding: 32px 24px; }
@@ -629,39 +640,39 @@
     <div class="section-inner">
       <div class="section-label">Cómo funciona</div>
       <h2>El flujo automatizado</h2>
-      <p>Esto es lo que ocurre desde que un cliente potencial rellena el formulario de vuestra web hasta que acepta la propuesta.</p>
+      <p>Desde que un cliente rellena el formulario hasta que acepta la propuesta.</p>
 
       <div class="flow">
         <div class="flow-step">
           <div class="flow-number">1</div>
           <div class="flow-content">
             <div class="flow-time">Segundo 0</div>
-            <h3>El cliente rellena el formulario inteligente</h3>
-            <p>Un formulario en vuestra web recoge toda la información clave: tipo de evento, tipo de espectáculo, fecha, asistentes, presupuesto. El lead entra al CRM clasificado automáticamente.</p>
+            <h3>Lead entra clasificado</h3>
+            <p>El formulario de la web recoge tipo de evento, espectáculo, fecha, asistentes y presupuesto. El lead se clasifica solo en el CRM.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-number">2</div>
           <div class="flow-content">
             <div class="flow-time">Minuto 1</div>
-            <h3>El sistema genera la propuesta</h3>
-            <p>Según el tipo de proyecto, el sistema prepara la propuesta adecuada: una página web personalizada con fotos, vídeos y precios para proyectos premium, o una propuesta en formato documento para solicitudes estándar. En castellano o inglés según el cliente.</p>
+            <h3>Propuesta generada</h3>
+            <p>El sistema prepara la propuesta adecuada: web personalizada para proyectos premium o documento para solicitudes estándar. En ES o EN.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-number">3</div>
           <div class="flow-content">
             <div class="flow-time">Minuto 2</div>
-            <h3>Recibes la notificación para revisar</h3>
-            <p>Te llega una alerta con el resumen completo del lead y la propuesta generada: "Cena de gala, 200 pax, Hotel W, 5-10K€, noviembre". Revisas la propuesta, ajustas el precio si quieres, y confirmas el envío con un clic.</p>
+            <h3>Tú revisas y confirmas</h3>
+            <p>Recibes notificación con resumen del lead + propuesta. Ajustas el precio si quieres y confirmas el envío con un clic.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-number">4</div>
           <div class="flow-content">
-            <div class="flow-time">Cuando confirmas</div>
-            <h3>El cliente recibe la propuesta</h3>
-            <p>Un email profesional con la propuesta personalizada. El cliente ve fotos, vídeos, opciones de show + upselling de producción técnica (sonido, iluminación, AV). El pipeline avanza a "Enviada Propuesta".</p>
+            <div class="flow-time">Al confirmar</div>
+            <h3>Cliente recibe propuesta</h3>
+            <p>Email profesional con propuesta, fotos, vídeos, opciones de show y upselling de producción técnica.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -669,15 +680,15 @@
           <div class="flow-content">
             <div class="flow-time">Día 2–5</div>
             <h3>Seguimiento automático</h3>
-            <p>Si el cliente no responde, se envían recordatorios automáticos espaciados. Tú no tienes que hacer nada ni recordar nada.</p>
+            <p>Recordatorios escalonados si no responde. No tienes que hacer nada ni recordar nada.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-number">6</div>
           <div class="flow-content">
-            <div class="flow-time">Cuando acepta</div>
-            <h3>Cierre y facturación</h3>
-            <p>El cliente acepta la propuesta. Se crea automáticamente el registro en Holded para facturar. El pipeline pasa a "Won" y se cierra la oportunidad.</p>
+            <div class="flow-time">Cierre</div>
+            <h3>Acepta y se factura</h3>
+            <p>El cliente acepta, se crea el registro en Holded y el pipeline pasa a Won.</p>
           </div>
         </div>
       </div>
