@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unete al talento — Eventos Barcelona</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #E87461;
+      --accent-light: #fdf0ee;
+      --dark: #1a1a1a;
+      --text: #333;
+      --gray: #666;
+      --light-gray: #f9f9f9;
+      --border: #e0e0e0;
+      --white: #fff;
+      --green: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--light-gray);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-weight: 400;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 80px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo img { height: 40px; width: auto; }
+
+    .demo-banner {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .form-container {
+      max-width: 720px;
+      margin: 48px auto;
+      padding: 0 24px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .form-header h1 {
+      font-size: 36px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .form-header p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .progress-dot.completed {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .progress-line {
+      width: 48px;
+      height: 2px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    .progress-line.active {
+      background: var(--accent);
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-title {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .step-subtitle {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    /* FORM INPUTS */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.2s;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* OPTION CARDS */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .option-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .option-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card .option-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .option-card .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .option-card .option-desc {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    /* FILE UPLOAD */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .upload-area.has-files {
+      border-color: var(--green);
+      background: #f0fdf4;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .upload-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .upload-desc {
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-list {
+      margin-top: 12px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--light-gray);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .file-item .file-icon { color: var(--green); }
+
+    /* PRICE RANGE */
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .price-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .price-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .price-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .price-amount {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .price-desc {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* CHECKBOX */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 20px;
+      background: var(--light-gray);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-label {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .checkbox-label a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* BUTTONS */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+    }
+
+    .btn-next {
+      padding: 14px 36px;
+      background: var(--dark);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-next:hover { background: #333; }
+
+    .btn-back {
+      padding: 14px 24px;
+      background: none;
+      color: var(--gray);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover { color: var(--text); }
+
+    .btn-submit {
+      padding: 16px 48px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover { background: #d4604f; }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .success-screen.active { display: block; }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+
+    .success-screen h2 {
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 440px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav { padding: 16px 24px; }
+      .form-card { padding: 32px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .option-grid { grid-template-columns: repeat(2, 1fr); }
+      .price-grid { grid-template-columns: 1fr; }
+      .form-header h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-banner">
+    PROTOTIPO &mdash; Formulario de registro para artistas y colaboradores
+  </div>
+
+  <div class="nav">
+    <div class="nav-logo">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/01/eventos-barcelona-logo-new.svg" alt="Eventos Barcelona">
+    </div>
+  </div>
+
+  <div class="form-container">
+
+    <div class="form-header">
+      <h1>Unete a nuestro talento</h1>
+      <p>Buscamos artistas y companias para eventos corporativos en Barcelona. Completa el formulario y nuestro equipo revisara tu perfil.</p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar">
+      <div class="progress-step">
+        <div class="progress-dot active" id="dot-1">1</div>
+      </div>
+      <div class="progress-line" id="line-1"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-2">2</div>
+      </div>
+      <div class="progress-line" id="line-2"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-3">3</div>
+      </div>
+      <div class="progress-line" id="line-3"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-4">4</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+
+      <!-- PASO 1: Datos del artista -->
+      <div class="step active" id="step-1">
+        <h2 class="step-title">Tus datos de contacto</h2>
+        <p class="step-subtitle">Informacion basica para que podamos contactarte.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre completo / Nombre artistico</label>
+            <input type="text" placeholder="Ej: Maria Lopez / Flamenko Fusion">
+          </div>
+          <div class="form-group">
+            <label>Nombre de la compania (si aplica)</label>
+            <input type="text" placeholder="Ej: Circo Brillante SL">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Correo electronico</label>
+            <input type="email" placeholder="tu@email.com">
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input type="tel" placeholder="+34 600 000 000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ciudad / Zona</label>
+          <input type="text" placeholder="Ej: Barcelona, Madrid, disponibilidad nacional">
+        </div>
+
+        <div class="form-actions">
+          <div></div>
+          <button class="btn-next" onclick="goToStep(2)">Siguiente</button>
+        </div>
+      </div>
+
+      <!-- PASO 2: Disciplina y espectaculo -->
+      <div class="step" id="step-2">
+        <h2 class="step-title">Tu disciplina artistica</h2>
+        <p class="step-subtitle">Selecciona la categoria principal de tu espectaculo. Puedes marcar varias.</p>
+
+        <div class="option-grid">
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128131;</span>
+            <span class="option-label">Danza</span>
+            <span class="option-desc">Flamenco, salsa, ballet, hip-hop, cabaret, LED...</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127928;</span>
+            <span class="option-label">Musica</span>
+            <span class="option-desc">Live band, DJ, percusion, violin, canto...</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127914;</span>
+            <span class="option-label">Circo</span>
+            <span class="option-desc">Acrobacias, malabares, zancos, aerial...</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#10024;</span>
+            <span class="option-label">Shows especiales</span>
+            <span class="option-desc">Mapping, laser, hologramas, sand art...</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127908;</span>
+            <span class="option-label">Animacion</span>
+            <span class="option-desc">Caricaturista, mago, humorista, MC...</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127917;</span>
+            <span class="option-label">Otro</span>
+            <span class="option-desc">Cualquier otra disciplina artistica</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Describe brevemente tu espectaculo (max. 100 palabras)</label>
+          <textarea placeholder="Ej: Show de percusion con tambores LED de 30 minutos para 3 artistas. Incluye coreografia sincronizada con musica electronica. Ideal para escenario o ambient."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(1)">Atras</button>
+          <button class="btn-next" onclick="goToStep(3)">Siguiente</button>
+        </div>
+      </div>
+
+      <!-- PASO 3: Material y portfolio -->
+      <div class="step" id="step-3">
+        <h2 class="step-title">Tu portfolio</h2>
+        <p class="step-subtitle">Sube fotos en alta calidad y comparte links de video. Las fotos deben ser sin marca de agua ni logotipos.</p>
+
+        <div class="upload-area" id="photo-upload">
+          <span class="upload-icon">&#128247;</span>
+          <div class="upload-title">Sube tus fotos</div>
+          <div class="upload-desc">Minimo 2 fotos en alta calidad, sin marca de agua. JPG o PNG, max. 10MB por foto.</div>
+          <input type="file" multiple accept="image/*" onchange="handleUpload(this, 'photo-upload', 'photo-list')">
+        </div>
+        <div class="file-list" id="photo-list"></div>
+
+        <div class="form-group">
+          <label>Link de video (YouTube, Vimeo)</label>
+          <input type="url" placeholder="https://youtube.com/watch?v=...">
+        </div>
+
+        <div class="form-group">
+          <label>Link de video adicional (opcional)</label>
+          <input type="url" placeholder="https://youtube.com/watch?v=...">
+        </div>
+
+        <div class="form-group">
+          <label>Web o redes sociales (opcional)</label>
+          <input type="url" placeholder="https://instagram.com/tuartista">
+        </div>
+
+        <div class="form-group">
+          <label>Rider tecnico (opcional)</label>
+          <textarea placeholder="Ej: 4 microfonos inalambricos, mesa de mezclas, espacio minimo 4x4m, toma de corriente 220V..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(2)">Atras</button>
+          <button class="btn-next" onclick="goToStep(4)">Siguiente</button>
+        </div>
+      </div>
+
+      <!-- PASO 4: Precios y condiciones -->
+      <div class="step" id="step-4">
+        <h2 class="step-title">Precios y disponibilidad</h2>
+        <p class="step-subtitle">Indicanos tu rango de precios orientativo. Lo revisaremos juntos si hay interes.</p>
+
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Rango de cache por actuacion</label>
+        <div class="price-grid">
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&lt; 500&euro;</div>
+            <div class="price-desc">Artista individual / show corto</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">500 - 1.500&euro;</div>
+            <div class="price-desc">Show estandar</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">1.500 - 3.000&euro;</div>
+            <div class="price-desc">Show con varios artistas</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&gt; 3.000&euro;</div>
+            <div class="price-desc">Gran produccion / compania</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Numero de artistas en el show</label>
+            <input type="number" placeholder="Ej: 3">
+          </div>
+          <div class="form-group">
+            <label>Duracion del show</label>
+            <select>
+              <option value="" disabled selected>Selecciona</option>
+              <option>15-20 minutos</option>
+              <option>30 minutos</option>
+              <option>45 minutos</option>
+              <option>1 hora</option>
+              <option>Mas de 1 hora</option>
+              <option>Flexible / a convenir</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Comentarios adicionales (opcional)</label>
+          <textarea placeholder="Ej: Disponibilidad solo fines de semana, posibilidad de adaptar el show a tematicas, idiomas disponibles..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="privacy-check">
+            <span class="checkbox-label">Acepto la <a href="#">politica de privacidad</a> y autorizo a Eventos Barcelona a utilizar mis fotos y videos sin marca de agua en sus propuestas comerciales a clientes.</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(3)">Atras</button>
+          <button class="btn-submit" onclick="submitForm()">Enviar mi perfil</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success">
+        <div class="success-icon">&#10004;&#65039;</div>
+        <h2>Perfil recibido</h2>
+        <p>Nuestro equipo revisara tu perfil y se pondra en contacto contigo si hay oportunidades que encajen. Gracias por querer formar parte de Eventos Barcelona.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const totalSteps = 4;
+
+    function goToStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        const line = document.getElementById('line-' + (i - 1));
+        dot.classList.remove('active', 'completed');
+        if (i < n) {
+          dot.classList.add('completed');
+          dot.innerHTML = '&#10003;';
+        } else if (i === n) {
+          dot.classList.add('active');
+          dot.innerHTML = i;
+        } else {
+          dot.innerHTML = i;
+        }
+        if (line) {
+          line.classList.toggle('active', i < n);
+        }
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectOption(el, group) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.option-card, .price-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleOption(el) {
+      el.classList.toggle('selected');
+    }
+
+    function handleUpload(input, areaId, listId) {
+      const area = document.getElementById(areaId);
+      const list = document.getElementById(listId);
+      const files = input.files;
+
+      if (files.length > 0) {
+        area.classList.add('has-files');
+        list.innerHTML = '';
+        for (let f of files) {
+          list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${f.name}</div>`;
+        }
+      }
+    }
+
+    function submitForm() {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('success').classList.add('active');
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.remove('active');
+        dot.classList.add('completed');
+        dot.innerHTML = '&#10003;';
+        const line = document.getElementById('line-' + i);
+        if (line) line.classList.add('active');
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -535,6 +535,10 @@
             <span class="option-label">Cena de gala</span>
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127863;</span>
+            <span class="option-label">Cocktail / Welcome drink</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#127775;</span>
             <span class="option-label">Lanzamiento de producto</span>
           </div>
@@ -555,14 +559,6 @@
             <span class="option-label">Fiesta tematica</span>
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#9986;</span>
-            <span class="option-label">Inauguracion</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#9917;</span>
-            <span class="option-label">Evento deportivo</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#10067;</span>
             <span class="option-label">Otro</span>
           </div>
@@ -574,19 +570,34 @@
         </div>
       </div>
 
-      <!-- PASO 3: Tipo de espectaculo -->
+      <!-- PASO 3: Tipo de show -->
       <div class="step" id="step-3">
-        <h2 class="step-title">¿Que tipo de espectaculo te interesa?</h2>
-        <p class="step-subtitle">Puedes seleccionar varios. Si no estas seguro, selecciona la ultima opcion.</p>
+        <h2 class="step-title">¿Que tipo de entretenimiento buscas?</h2>
+        <p class="step-subtitle">Selecciona el formato y la categoria que te interese. Puedes marcar varios.</p>
 
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Formato del espectaculo</label>
+        <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 28px;">
+          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+            <span class="option-icon">&#127917;</span>
+            <span class="option-label">Show de escenario</span>
+            <div class="show-card-desc" style="margin-top: 6px;">Actuaciones principales en escenario con iluminacion y sonido</div>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+            <span class="option-icon">&#127865;</span>
+            <span class="option-label">Ambient / entre mesas</span>
+            <div class="show-card-desc" style="margin-top: 6px;">Artistas que interactuan con los invitados durante la cena o cocktail</div>
+          </div>
+        </div>
+
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Categoria artistica</label>
         <div class="show-grid">
           <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=400&q=80');">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=80');">
               <div class="show-card-check">&#10003;</div>
             </div>
             <div class="show-card-body">
-              <div class="show-card-title">Shows visuales y Mapping</div>
-              <div class="show-card-desc">Hologramas, video mapping, danza con proyecciones</div>
+              <div class="show-card-title">Danza</div>
+              <div class="show-card-desc">Flamenco, salsa, cabaret, ballet, hip-hop, bollywood, LED dancers</div>
             </div>
           </div>
 
@@ -595,28 +606,8 @@
               <div class="show-card-check">&#10003;</div>
             </div>
             <div class="show-card-body">
-              <div class="show-card-title">Percusion y Musical</div>
-              <div class="show-card-desc">Water Drummers, percusion LED, violin laser, arpa laser</div>
-            </div>
-          </div>
-
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">Danza</div>
-              <div class="show-card-desc">Flamenco, salsa, cabaret, ballet, hip-hop, bollywood</div>
-            </div>
-          </div>
-
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">Luz y Laser</div>
-              <div class="show-card-desc">Laser shows, light painting, hula hoop LED</div>
+              <div class="show-card-title">Musica</div>
+              <div class="show-card-desc">Live bands, DJ, percusion, violin electrico, arpa laser</div>
             </div>
           </div>
 
@@ -625,18 +616,18 @@
               <div class="show-card-check">&#10003;</div>
             </div>
             <div class="show-card-body">
-              <div class="show-card-title">Acrobacias y Malabares</div>
-              <div class="show-card-desc">Malabares LED, danza aerea, acrobacias</div>
+              <div class="show-card-title">Circo</div>
+              <div class="show-card-desc">Acrobacias, malabares, zancos, danza aerea, hula hoop</div>
             </div>
           </div>
 
           <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=400&q=80');">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=400&q=80');">
               <div class="show-card-check">&#10003;</div>
             </div>
             <div class="show-card-body">
-              <div class="show-card-title">Produccion tecnica</div>
-              <div class="show-card-desc">Iluminacion, sonido, pantallas LED, escenarios</div>
+              <div class="show-card-title">Shows especiales</div>
+              <div class="show-card-desc">Video mapping, hologramas, laser, light painting, sand art</div>
             </div>
           </div>
         </div>
