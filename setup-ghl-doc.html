@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup GoHighLevel — Eventos Barcelona</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      background: #fff;
+    }
+
+    /* COVER */
+    .cover {
+      text-align: center;
+      padding: 80px 0;
+      border-bottom: 3px solid #E87461;
+      margin-bottom: 48px;
+    }
+
+    .cover img {
+      height: 50px;
+      margin-bottom: 32px;
+    }
+
+    .cover h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+
+    .cover .subtitle {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    .cover .meta {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .cover .meta strong {
+      color: #666;
+    }
+
+    /* TOC */
+    .toc {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 48px;
+    }
+
+    .toc h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #E87461;
+    }
+
+    .toc ol {
+      padding-left: 24px;
+    }
+
+    .toc li {
+      font-size: 14px;
+      padding: 4px 0;
+      color: #333;
+    }
+
+    /* SECTIONS */
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #E87461;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #fdf0ee;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-top: 28px;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 15px;
+      color: #444;
+      margin-bottom: 12px;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    thead th {
+      background: #1a1a1a;
+      color: #fff;
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    thead th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      color: #333;
+    }
+
+    tbody tr:hover {
+      background: #fdf0ee;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+    }
+
+    /* CODE BLOCKS */
+    .code-block {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .code-block .comment { color: #666; }
+    .code-block .highlight { color: #E87461; font-weight: 600; }
+    .code-block .value { color: #8bc34a; }
+
+    /* FLOW DIAGRAMS */
+    .flow {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 16px 0 24px;
+      border-left: 4px solid #E87461;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .flow-arrow {
+      color: #E87461;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* TAGS */
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 24px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .tag-event { background: #e3f2fd; color: #1565c0; }
+    .tag-cat { background: #fdf0ee; color: #c62828; }
+    .tag-format { background: #f3e5f5; color: #6a1b9a; }
+    .tag-budget { background: #e8f5e9; color: #2e7d32; }
+    .tag-origin { background: #fff3e0; color: #e65100; }
+    .tag-status { background: #fce4ec; color: #880e4f; }
+    .tag-lang { background: #e0f7fa; color: #00695c; }
+    .tag-tipo { background: #f5f5f5; color: #424242; }
+    .tag-priority { background: #fff9c4; color: #f57f17; }
+
+    /* CHECKLIST */
+    .checklist {
+      margin: 16px 0 24px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 14px;
+      color: #333;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .check-box.done {
+      background: #2ecc71;
+      border-color: #2ecc71;
+      position: relative;
+    }
+
+    .check-box.done::after {
+      content: '✓';
+      color: #fff;
+      font-size: 12px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* STATUS BADGES */
+    .status {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-done { background: #e8f5e9; color: #2e7d32; }
+    .status-pending { background: #fff3e0; color: #e65100; }
+
+    /* NOTES */
+    .note {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0 24px;
+      font-size: 14px;
+      color: #5d4037;
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .note-info {
+      background: #e3f2fd;
+      border-left-color: #2196f3;
+      color: #1a237e;
+    }
+
+    /* PAGE BREAK */
+    .page-break {
+      page-break-before: always;
+      margin-top: 48px;
+    }
+
+    /* PRINT */
+    @media print {
+      body { padding: 40px 30px; }
+      .cover { padding: 40px 0; }
+      h2 { page-break-after: avoid; }
+      table { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="cover">
+    <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/01/eventos-barcelona-logo-new.svg" alt="Eventos Barcelona">
+    <h1>Configuracion de GoHighLevel</h1>
+    <p class="subtitle">Guia completa de setup del CRM, pipelines, automatizaciones y formularios</p>
+    <p class="meta">Preparado por <strong>Growth4U</strong> — Marzo 2026</p>
+    <p class="meta">Para: <strong>Ramiro Perez Rodero</strong></p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Indice</h2>
+    <ol>
+      <li>Crear cuenta GHL</li>
+      <li>Pipelines (Clientes + Artistas)</li>
+      <li>Custom Fields — Leads / Clientes</li>
+      <li>Custom Fields — Artistas</li>
+      <li>Taxonomia de Tags</li>
+      <li>Custom Values — Catalogo de Shows y Precios</li>
+      <li>Configuracion de Email (Mailgun + SMTP)</li>
+      <li>Workflows y Automatizaciones</li>
+      <li>Formularios en GHL</li>
+      <li>Plan de Ejecucion (3 semanas)</li>
+      <li>Estado de Accesos</li>
+    </ol>
+  </div>
+
+  <!-- 1. CREAR CUENTA -->
+  <h2>1. Crear cuenta GHL</h2>
+
+  <table>
+    <thead>
+      <tr><th>Parametro</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Plan</td><td>Starter ($97/mes)</td></tr>
+      <tr><td>Email de la cuenta</td><td>dev@eventosbarcelona.com</td></tr>
+      <tr><td>Nombre del negocio</td><td>Eventos Barcelona</td></tr>
+      <tr><td>Timezone</td><td>Europe/Madrid</td></tr>
+      <tr><td>Moneda</td><td>EUR (€)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 2. PIPELINES -->
+  <h2>2. Pipelines</h2>
+
+  <h3>Pipeline 1: Clientes (ventas)</h3>
+  <p>Pipeline principal para gestionar el ciclo de vida comercial de cada lead, desde la entrada hasta el cierre del evento.</p>
+
+  <table>
+    <thead>
+      <tr><th>Etapa</th><th>Descripcion</th><th>Color</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>New Lead</td><td>Lead entra por formulario o email. Aun no se ha generado propuesta.</td><td>🔵 Azul</td></tr>
+      <tr><td>Propuesta Enviada</td><td>Propuesta generada, revisada por Xavi y enviada al cliente.</td><td>🟡 Amarillo</td></tr>
+      <tr><td>Negociacion</td><td>Cliente respondio. Ajustes de precio, shows o condiciones en curso.</td><td>🟠 Naranja</td></tr>
+      <tr><td>Won</td><td>Evento confirmado. Presupuesto aceptado.</td><td>🟢 Verde</td></tr>
+      <tr><td>Lost</td><td>Oportunidad no convertida.</td><td>🔴 Rojo</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pipeline 2: Artistas</h3>
+  <p>Pipeline para gestionar el alta de nuevos artistas y companias que quieren colaborar con Eventos Barcelona.</p>
+
+  <table>
+    <thead>
+      <tr><th>Etapa</th><th>Descripcion</th><th>Color</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Solicitud Recibida</td><td>Artista envio formulario o contacto inicial.</td><td>🔵 Azul</td></tr>
+      <tr><td>Portfolio Revisado</td><td>Xavi reviso fotos, videos y perfil del artista.</td><td>🟡 Amarillo</td></tr>
+      <tr><td>Artista Aprobado</td><td>Artista validado, listo para incluir en propuestas.</td><td>🟢 Verde</td></tr>
+      <tr><td>En Catalogo Activo</td><td>Artista activo, aparece en propuestas comerciales.</td><td>🟢 Verde oscuro</td></tr>
+      <tr><td>No Apto</td><td>Artista descartado o no encaja con el perfil.</td><td>⚪ Gris</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 3. CUSTOM FIELDS CLIENTES -->
+  <h2>3. Custom Fields — Leads / Clientes</h2>
+  <p>Crear estos campos personalizados en la seccion de contactos del CRM. Son los datos que se rellenan automaticamente desde el formulario inteligente y que se usan para generar propuestas.</p>
+
+  <h4>Datos del evento</h4>
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Tipo</th><th>Opciones / Notas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tipo de evento</td><td>Dropdown</td><td>Cena de gala · Cocktail / Welcome drink · Lanzamiento de producto · Convencion / Congreso · Entrega de premios · Family Day corporativo · Fiesta tematica · Otro</td></tr>
+      <tr><td>Formato de show</td><td>Dropdown</td><td>Show de escenario · Ambient / entre mesas · Ambos</td></tr>
+      <tr><td>Categorias artisticas</td><td>Multi-select</td><td>Danza · Musica · Circo · Shows especiales</td></tr>
+      <tr><td>Fecha del evento</td><td>Date</td><td>—</td></tr>
+      <tr><td>Numero de asistentes</td><td>Number</td><td>—</td></tr>
+      <tr><td>Ubicacion / Hotel</td><td>Text</td><td>Ej: Hotel W, Barcelona</td></tr>
+      <tr><td>Ciudad</td><td>Text</td><td>—</td></tr>
+      <tr><td>Presupuesto aproximado</td><td>Dropdown</td><td>&lt; 3.000€ · 3.000 - 6.000€ · 6.000 - 12.000€ · &gt; 12.000€</td></tr>
+      <tr><td>Idioma del cliente</td><td>Dropdown</td><td>Espanol · Ingles</td></tr>
+      <tr><td>Como nos conocio</td><td>Dropdown</td><td>Busqueda en Google · Recomendacion · Redes sociales · Evento anterior · Otro</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Datos de la propuesta</h4>
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Tipo</th><th>Notas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>URL de la propuesta</td><td>Text (URL)</td><td>Link a propuestas.eventosbarcelona.com/...</td></tr>
+      <tr><td>Estado de la propuesta</td><td>Dropdown</td><td>Pendiente de revision · Aprobada · Enviada · Modificada</td></tr>
+      <tr><td>Fecha de envio</td><td>Date</td><td>—</td></tr>
+      <tr><td>Margen aplicado (%)</td><td>Number</td><td>Ej: 15, 20, 30</td></tr>
+      <tr><td>Notas internas</td><td>Text (long)</td><td>Notas de Xavi sobre el lead</td></tr>
+      <tr><td>Comentarios del cliente</td><td>Text (long)</td><td>Lo que escribio en el formulario</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 4. CUSTOM FIELDS ARTISTAS -->
+  <h2>4. Custom Fields — Artistas</h2>
+  <p>Los artistas se gestionan como contactos con el tag <span class="tag tag-tipo">tipo:artista</span> y estos campos adicionales:</p>
+
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Tipo</th><th>Opciones / Notas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tipo de contacto</td><td>Dropdown</td><td>Cliente · Artista</td></tr>
+      <tr><td>Disciplina artistica</td><td>Multi-select</td><td>Danza · Musica · Circo · Shows especiales · Animacion · Otro</td></tr>
+      <tr><td>Nombre artistico</td><td>Text</td><td>—</td></tr>
+      <tr><td>Nombre de compania</td><td>Text</td><td>Si aplica</td></tr>
+      <tr><td>Bio del show</td><td>Text (long)</td><td>Descripcion breve, max 100 palabras</td></tr>
+      <tr><td>Link video 1</td><td>Text (URL)</td><td>YouTube / Vimeo</td></tr>
+      <tr><td>Link video 2</td><td>Text (URL)</td><td>Opcional</td></tr>
+      <tr><td>Link web / RRSS</td><td>Text (URL)</td><td>Instagram, web personal, etc.</td></tr>
+      <tr><td>Rider tecnico</td><td>Text (long)</td><td>Necesidades tecnicas del show</td></tr>
+      <tr><td>Rango de cache</td><td>Dropdown</td><td>&lt; 500€ · 500 - 1.500€ · 1.500 - 3.000€ · &gt; 3.000€</td></tr>
+      <tr><td>Num. artistas en show</td><td>Number</td><td>—</td></tr>
+      <tr><td>Duracion del show</td><td>Dropdown</td><td>15-20 min · 30 min · 45 min · 1 hora · +1 hora · Flexible</td></tr>
+      <tr><td>Fotos (URLs)</td><td>Text (long)</td><td>Links a Cloudinary o Google Drive</td></tr>
+      <tr><td>Acepto politica de imagen</td><td>Checkbox</td><td>Autorizacion de uso sin marca de agua</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 5. TAGS -->
+  <h2>5. Taxonomia de Tags</h2>
+  <p>Sistema de etiquetas para clasificar, filtrar y segmentar contactos automaticamente. Los tags se asignan via workflow cuando el lead entra por formulario.</p>
+
+  <h4>Tipo de evento</h4>
+  <div class="tag-grid">
+    <span class="tag tag-event">evento:gala</span>
+    <span class="tag tag-event">evento:cocktail</span>
+    <span class="tag tag-event">evento:lanzamiento</span>
+    <span class="tag tag-event">evento:convencion</span>
+    <span class="tag tag-event">evento:premios</span>
+    <span class="tag tag-event">evento:familyday</span>
+    <span class="tag tag-event">evento:fiesta</span>
+    <span class="tag tag-event">evento:otro</span>
+  </div>
+
+  <h4>Categoria artistica</h4>
+  <div class="tag-grid">
+    <span class="tag tag-cat">cat:danza</span>
+    <span class="tag tag-cat">cat:musica</span>
+    <span class="tag tag-cat">cat:circo</span>
+    <span class="tag tag-cat">cat:shows-especiales</span>
+  </div>
+
+  <h4>Formato de show</h4>
+  <div class="tag-grid">
+    <span class="tag tag-format">formato:escenario</span>
+    <span class="tag tag-format">formato:ambient</span>
+  </div>
+
+  <h4>Presupuesto</h4>
+  <div class="tag-grid">
+    <span class="tag tag-budget">budget:bajo</span>
+    <span class="tag tag-budget">budget:medio</span>
+    <span class="tag tag-budget">budget:alto</span>
+    <span class="tag tag-budget">budget:premium</span>
+  </div>
+
+  <h4>Origen del lead</h4>
+  <div class="tag-grid">
+    <span class="tag tag-origin">origen:web-formulario</span>
+    <span class="tag tag-origin">origen:email-directo</span>
+    <span class="tag tag-origin">origen:telefono</span>
+    <span class="tag tag-origin">origen:whatsapp</span>
+    <span class="tag tag-origin">origen:recomendacion</span>
+  </div>
+
+  <h4>Tipo de contacto</h4>
+  <div class="tag-grid">
+    <span class="tag tag-tipo">tipo:cliente</span>
+    <span class="tag tag-tipo">tipo:artista</span>
+  </div>
+
+  <h4>Idioma</h4>
+  <div class="tag-grid">
+    <span class="tag tag-lang">idioma:es</span>
+    <span class="tag tag-lang">idioma:en</span>
+  </div>
+
+  <h4>Prioridad</h4>
+  <div class="tag-grid">
+    <span class="tag tag-priority">prioridad:alta</span>
+    <span class="tag tag-priority">prioridad:media</span>
+    <span class="tag tag-priority">prioridad:baja</span>
+  </div>
+
+  <!-- 6. CUSTOM VALUES -->
+  <h2>6. Custom Values — Catalogo de Shows y Precios</h2>
+  <p>Los Custom Values son la base de datos de precios que alimenta las propuestas automaticas. Xavi puede editarlos directamente desde GHL sin tocar codigo.</p>
+
+  <h4>Estructura por show</h4>
+  <div class="code-block">
+    <span class="comment">// Convencion de nombres para cada show:</span><br>
+    <span class="highlight">show_[categoria]_[nombre]_precio_base</span> → <span class="value">1500</span><br>
+    <span class="highlight">show_[categoria]_[nombre]_descripcion</span> → <span class="value">"Show de flamenco con 3 bailaoras..."</span><br>
+    <span class="highlight">show_[categoria]_[nombre]_duracion</span> → <span class="value">"30 min"</span><br>
+    <span class="highlight">show_[categoria]_[nombre]_num_artistas</span> → <span class="value">4</span><br>
+  </div>
+
+  <h4>Ejemplo (rellenar cuando Xavi pase precios)</h4>
+  <table>
+    <thead>
+      <tr><th>Custom Value</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>show_danza_flamenco_precio_base</td><td>1.500€</td></tr>
+      <tr><td>show_danza_flamenco_descripcion</td><td>Show de flamenco con 3 bailaoras y guitarra en directo</td></tr>
+      <tr><td>show_danza_flamenco_duracion</td><td>30 min</td></tr>
+      <tr><td>show_danza_flamenco_num_artistas</td><td>4</td></tr>
+      <tr><td>show_musica_violin_electrico_precio_base</td><td>1.800€</td></tr>
+      <tr><td>show_circo_malabares_led_precio_base</td><td>1.200€</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Margenes por defecto</h4>
+  <table>
+    <thead>
+      <tr><th>Custom Value</th><th>Valor</th><th>Nota</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>margen_default</td><td>20%</td><td>Margen por defecto para todos los eventos</td></tr>
+      <tr><td>margen_gala</td><td>25%</td><td>Gala = mayor presupuesto = mayor margen</td></tr>
+      <tr><td>margen_cocktail</td><td>20%</td><td>—</td></tr>
+      <tr><td>margen_convencion</td><td>15%</td><td>Convenciones suelen ser mas sensibles al precio</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>⏳ Pendiente de Xavi:</strong>
+    Lista completa de shows con precios base. Sin esto no podemos cargar el catalogo en GHL. Es el dato mas urgente para avanzar con las propuestas automaticas.
+  </div>
+
+  <!-- 7. EMAIL -->
+  <h2>7. Configuracion de Email (Mailgun + SMTP)</h2>
+
+  <h3>Paso 1: Crear cuenta en Mailgun</h3>
+  <table>
+    <thead>
+      <tr><th>Parametro</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Plan</td><td>Foundation ($35/mes)</td></tr>
+      <tr><td>Dominio</td><td>eventosbarcelona.com</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Paso 2: Configurar DNS en CDmon</h3>
+  <p>Agregar estos registros DNS para garantizar que los emails no caigan en spam:</p>
+  <table>
+    <thead>
+      <tr><th>Tipo</th><th>Nombre</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>TXT (SPF)</td><td>@</td><td>v=spf1 include:mailgun.org ~all</td></tr>
+      <tr><td>TXT (DKIM)</td><td>(proporcionado por Mailgun)</td><td>(proporcionado por Mailgun)</td></tr>
+      <tr><td>TXT (DMARC)</td><td>_dmarc</td><td>v=DMARC1; p=none; rua=mailto:dev@eventosbarcelona.com</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Paso 3: Conectar en GHL</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">→</span> Ir a Settings &gt; Email Services</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Agregar Mailgun como proveedor SMTP</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Pegar API key y dominio de Mailgun</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Enviar email de prueba para verificar</div>
+  </div>
+
+  <!-- 8. WORKFLOWS -->
+  <h2>8. Workflows y Automatizaciones</h2>
+
+  <h3>Workflow 1: Nuevo lead desde formulario de clientes</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⚡</span> <strong>Trigger:</strong> Form submitted (formulario clientes)</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Crear/actualizar contacto con datos del formulario</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Asignar tags automaticos (tipo evento, categoria, budget, origen:web-formulario)</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Mover a pipeline Clientes → etapa "New Lead"</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Enviar notificacion a Xavi (email + app GHL)</div>
+    <div class="flow-step"><span class="flow-arrow"></span> <em>Asunto: "Nuevo lead: {nombre} — {tipo_evento} — {num_asistentes} personas"</em></div>
+  </div>
+
+  <h3>Workflow 2: Nuevo lead desde email</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⚡</span> <strong>Trigger:</strong> Email recibido en info@eventosbarcelona.com</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Crear contacto con tag origen:email-directo</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Mover a pipeline Clientes → etapa "New Lead"</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Enviar respuesta automatica al lead:</div>
+    <div class="flow-step"><span class="flow-arrow"></span> <em>"Gracias por contactarnos. Para prepararte una propuesta personalizada, rellena este breve formulario: [link]"</em></div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Notificar a Xavi</div>
+  </div>
+
+  <h3>Workflow 3: Seguimiento automatico</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⏰</span> <strong>Trigger:</strong> Contacto en "Propuesta Enviada" sin respuesta</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> <strong>48 horas:</strong> Email de seguimiento 1 — "¿Has tenido oportunidad de revisar nuestra propuesta?"</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> <strong>5 dias:</strong> Email de seguimiento 2 — Recordatorio con valor adicional</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> <strong>10 dias:</strong> Email de seguimiento 3 — Ultimo contacto + oferta opcional</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Notificar a Xavi: "Lead {nombre} sin respuesta tras 10 dias"</div>
+  </div>
+
+  <h3>Workflow 4: Evento confirmado (Won)</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⚡</span> <strong>Trigger:</strong> Contacto movido a etapa "Won"</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Custom code: crear contacto + factura en Holded via API</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Enviar email de confirmacion al cliente</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Asignar tag estado:won</div>
+  </div>
+
+  <h3>Workflow 5: Nuevo artista desde formulario</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⚡</span> <strong>Trigger:</strong> Form submitted (formulario artistas)</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Crear contacto con tag tipo:artista + tags de disciplina</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Mover a pipeline Artistas → etapa "Solicitud Recibida"</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Notificar a Xavi: "Nuevo artista: {nombre} — {disciplina}"</div>
+  </div>
+
+  <h3>Workflow 6: Post-evento</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="flow-arrow">⚡</span> <strong>Trigger:</strong> 3 dias despues de la fecha del evento (contacto en "Won")</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Enviar email de agradecimiento al cliente</div>
+    <div class="flow-step"><span class="flow-arrow">→</span> Solicitar resena / feedback</div>
+  </div>
+
+  <!-- 9. FORMULARIOS -->
+  <h2>9. Formularios en GHL</h2>
+  <p>Replicar estos dos prototipos funcionales que ya estan aprobados por Xavi:</p>
+
+  <h3>Formulario de clientes — "Solicita un presupuesto"</h3>
+  <p><strong>Prototipo:</strong> propuestas.eventosbarcelona.com/formulario-inteligente.html</p>
+  <table>
+    <thead>
+      <tr><th>Paso</th><th>Campos</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1. Datos de contacto</td><td>Nombre, empresa, email, telefono</td></tr>
+      <tr><td>2. Tipo de evento</td><td>Selector visual: gala, cocktail, lanzamiento, convencion, premios, family day, fiesta, otro</td></tr>
+      <tr><td>3. Tipo de show</td><td>Formato (escenario vs ambient) + categorias (danza, musica, circo, shows especiales) + opcion "no estoy seguro"</td></tr>
+      <tr><td>4. Detalles</td><td>Fecha, num. asistentes, ubicacion, presupuesto aproximado</td></tr>
+      <tr><td>5. Comentarios</td><td>Texto libre + como nos conocio</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Formulario de artistas — "Unete al talento"</h3>
+  <p><strong>Prototipo:</strong> propuestas.eventosbarcelona.com/formulario-artistas.html</p>
+  <table>
+    <thead>
+      <tr><th>Paso</th><th>Campos</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1. Datos de contacto</td><td>Nombre / nombre artistico, compania, email, telefono, ciudad</td></tr>
+      <tr><td>2. Disciplina</td><td>Categorias (multi-select) + bio del show (100 palabras)</td></tr>
+      <tr><td>3. Portfolio</td><td>Fotos (upload, sin marca de agua), links video, web/RRSS, rider tecnico</td></tr>
+      <tr><td>4. Precios</td><td>Rango de cache, num. artistas, duracion, comentarios + aceptacion politica privacidad/imagen</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note note-info">
+    <strong>💡 Implementacion en la web:</strong>
+    Los formularios se enlazan desde eventosbarcelona.com con un boton CTA (no se embeben). La agencia SEO (iSocialWeb / Javier Delci) se encarga de colocar los CTAs en la web. Nosotros les pasamos los links.
+  </div>
+
+  <!-- 10. PLAN DE EJECUCION -->
+  <h2>10. Plan de Ejecucion</h2>
+
+  <h3>Semana 1 — Fundamentos</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div>Crear cuenta GHL (Starter $97/mes)</div>
+    <div class="check-item"><div class="check-box"></div>Crear Pipeline de Clientes (5 etapas)</div>
+    <div class="check-item"><div class="check-box"></div>Crear Pipeline de Artistas (5 etapas)</div>
+    <div class="check-item"><div class="check-box"></div>Crear todos los Custom Fields (clientes + artistas)</div>
+    <div class="check-item"><div class="check-box"></div>Crear todos los Tags (25+ tags)</div>
+    <div class="check-item"><div class="check-box"></div>Configurar Mailgun + SMTP en GHL</div>
+    <div class="check-item"><div class="check-box"></div>Crear formulario de clientes en GHL</div>
+    <div class="check-item"><div class="check-box"></div>Crear formulario de artistas en GHL</div>
+  </div>
+
+  <h3>Semana 2 — Automatizaciones</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 1 (nuevo lead desde formulario)</div>
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 2 (nuevo lead desde email)</div>
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 5 (nuevo artista)</div>
+    <div class="check-item"><div class="check-box"></div>Migrar contactos de Mailchimp a GHL</div>
+    <div class="check-item"><div class="check-box"></div>Coordinar con agencia SEO para CTAs en la web</div>
+  </div>
+
+  <h3>Semana 3 — Integraciones y testing</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 3 (seguimiento automatico)</div>
+    <div class="check-item"><div class="check-box"></div>Cargar catalogo de shows en Custom Values</div>
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 4 (Won → Holded)</div>
+    <div class="check-item"><div class="check-box"></div>Configurar Workflow 6 (post-evento)</div>
+    <div class="check-item"><div class="check-box"></div>Testing end-to-end: formulario → lead → pipeline → notificacion → seguimiento</div>
+  </div>
+
+  <!-- 11. ACCESOS -->
+  <h2>11. Estado de Accesos</h2>
+
+  <table>
+    <thead>
+      <tr><th>Recurso</th><th>Estado</th><th>Notas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Email dev@eventosbarcelona.com</td><td><span class="status status-done">✅ Listo</span></td><td>Google Workspace</td></tr>
+      <tr><td>WordPress</td><td><span class="status status-done">✅ Listo</span></td><td>User: dev@eventosbarcelona.com</td></tr>
+      <tr><td>Mailchimp</td><td><span class="status status-done">✅ Listo</span></td><td>Para migrar contactos</td></tr>
+      <tr><td>Holded</td><td><span class="status status-done">✅ Listo</span></td><td>Acceso CRM, invitacion enviada a dev@</td></tr>
+      <tr><td>DNS (CDmon)</td><td><span class="status status-done">✅ Listo</span></td><td>Subdominio propuestas.eventosbarcelona.com configurado</td></tr>
+      <tr><td>Vercel</td><td><span class="status status-done">✅ Listo</span></td><td>Proyecto desplegado con dominio del cliente</td></tr>
+      <tr><td>GitHub (repo cliente)</td><td><span class="status status-done">✅ Listo</span></td><td>Eventosbarcelonadev/CRMpresentation</td></tr>
+      <tr><td>GoHighLevel</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Ramiro crea la cuenta</td></tr>
+      <tr><td>Mailgun</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Crear cuenta + DNS records</td></tr>
+      <tr><td>OpenAI API key</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Para fase de chat IA en propuestas</td></tr>
+      <tr><td>Lista de shows con precios</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Xavi</td></tr>
+    </tbody>
+  </table>
+
+  <br><br>
+  <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 32px 0;">
+  <p style="text-align: center; color: #999; font-size: 13px;">
+    Documento preparado por Growth4U — Marzo 2026<br>
+    Proyecto Eventos Barcelona — Configuracion CRM
+  </p>
+
+</body>
+</html>
