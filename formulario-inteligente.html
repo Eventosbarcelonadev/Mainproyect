@@ -708,6 +708,10 @@
             <span class="option-label">Fiesta tematica</span>
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127867;</span>
+            <span class="option-label">Fiesta de empresa</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#10067;</span>
             <span class="option-label">Otro</span>
           </div>
@@ -750,13 +754,14 @@
             </div>
             <div class="subcategory-panel">
               <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Ballet</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hip-hop</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Contemporanea</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Clasica</span>
                 <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Cabaret</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED dancers</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Bollywood</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Anos 20</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hip-hop</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Tematica</span>
               </div>
             </div>
           </div>
@@ -771,12 +776,17 @@
             </div>
             <div class="subcategory-panel">
               <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Live band</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Live bands</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Clasica</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Solistas</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Cantantes</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Jazz</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Swing</span>
                 <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">DJ</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percusion</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Violin electrico</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Canto</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Arpa laser</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Rumba</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percusionistas</span>
               </div>
             </div>
           </div>
@@ -791,11 +801,13 @@
             </div>
             <div class="subcategory-panel">
               <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Acrobacias</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Malabares</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Zancos</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Danza aerea</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hula hoop</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Malabares LED</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Equilibrista</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Acrobatas</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Aereos</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Zancudos</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Fuego</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Personajes singulares</span>
               </div>
             </div>
           </div>
@@ -805,16 +817,18 @@
               <div class="show-card-check">&#10003;</div>
             </div>
             <div class="show-card-body">
-              <div class="show-card-title">Shows especiales</div>
+              <div class="show-card-title">WOW Effect</div>
               <div class="show-card-desc">Selecciona los estilos que te interesan</div>
             </div>
             <div class="subcategory-panel">
               <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Bailarines LED</span>
                 <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Video mapping</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hologramas</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Light shows</span>
                 <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Laser</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Light painting</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Sand art</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Inmersivos</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percusionistas LED</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">A medida / Custom</span>
               </div>
             </div>
           </div>
@@ -825,6 +839,13 @@
             <div class="show-card-title">No estoy seguro, quiero que me aconsejeis</div>
             <div class="show-card-desc">Nuestro equipo te recomendara los mejores espectaculos para tu evento</div>
           </div>
+        </div>
+
+        <div style="margin-top: 8px; padding: 20px; background: var(--light-gray); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <label class="checkbox-group" style="margin-bottom: 0; padding: 0; background: none;">
+            <input type="checkbox" id="produccion-check">
+            <span class="checkbox-label" style="font-size: 14px;"><strong>¿Necesitas produccion tecnica?</strong><br><span style="color: var(--gray); font-size: 13px;">Sonido, iluminacion, escenarios, pantallas LED... Te preparamos una propuesta integral.</span></span>
+          </label>
         </div>
 
         <div class="form-actions">
@@ -857,20 +878,16 @@
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Presupuesto aproximado</label>
         <div class="budget-grid">
           <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&lt; 3.000&euro;</div>
-            <div class="budget-desc">Evento pequeno</div>
+            <div class="budget-amount">&lt; 5.000&euro;</div>
           </div>
           <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">3.000 - 6.000&euro;</div>
-            <div class="budget-desc">Evento mediano</div>
+            <div class="budget-amount">5.000 - 10.000&euro;</div>
           </div>
           <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">6.000 - 12.000&euro;</div>
-            <div class="budget-desc">Evento grande</div>
+            <div class="budget-amount">10.000 - 25.000&euro;</div>
           </div>
           <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&gt; 12.000&euro;</div>
-            <div class="budget-desc">Gran produccion</div>
+            <div class="budget-amount">&gt; 25.000&euro;</div>
           </div>
         </div>
 
@@ -900,6 +917,13 @@
             <option>Evento anterior</option>
             <option>Otro</option>
           </select>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="privacy-check">
+            <span class="checkbox-label">Acepto la <a href="#">politica de privacidad</a> y el tratamiento de mis datos personales de acuerdo con la normativa vigente de proteccion de datos.</span>
+          </label>
         </div>
 
         <div class="form-actions">
