@@ -645,22 +645,22 @@
         <div class="form-row">
           <div class="form-group">
             <label>Nombre completo / Nombre artistico</label>
-            <input type="text" placeholder="Ej: Maria Lopez / Flamenko Fusion">
+            <input type="text" id="a-nombre" placeholder="Ej: Maria Lopez / Flamenko Fusion">
           </div>
           <div class="form-group">
             <label>Nombre de la compania (si aplica)</label>
-            <input type="text" placeholder="Ej: Circo Brillante SL">
+            <input type="text" id="a-compania" placeholder="Ej: Circo Brillante SL">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Correo electronico</label>
-            <input type="email" placeholder="tu@email.com">
+            <input type="email" id="a-email" placeholder="tu@email.com">
           </div>
           <div class="form-group">
             <label>Telefono</label>
             <div style="display: flex; gap: 8px;">
-              <select style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
+              <select id="a-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
                 <option value="+34" selected>&#127466;&#127480; +34</option>
                 <option value="+33">&#127467;&#127479; +33</option>
                 <option value="+44">&#127468;&#127463; +44</option>
@@ -672,13 +672,13 @@
                 <option value="+41">&#127464;&#127469; +41</option>
                 <option value="+1">&#127482;&#127480; +1</option>
               </select>
-              <input type="tel" placeholder="600 000 000" style="flex: 1;">
+              <input type="tel" id="a-phone" placeholder="600 000 000" style="flex: 1;">
             </div>
           </div>
         </div>
         <div class="form-group">
           <label>Ciudad / Zona</label>
-          <input type="text" placeholder="Ej: Barcelona, Madrid, disponibilidad nacional">
+          <input type="text" id="a-ciudad" placeholder="Ej: Barcelona, Madrid, disponibilidad nacional">
         </div>
 
         <div class="form-actions">
@@ -783,7 +783,7 @@
 
         <div class="form-group">
           <label>Describe brevemente tu espectaculo (max. 100 palabras)</label>
-          <textarea placeholder="Ej: Show de percusion con tambores LED de 30 minutos para 3 artistas. Incluye coreografia sincronizada con musica electronica. Ideal para escenario o ambient."></textarea>
+          <textarea id="a-bio" placeholder="Ej: Show de percusion con tambores LED de 30 minutos para 3 artistas. Incluye coreografia sincronizada con musica electronica. Ideal para escenario o ambient."></textarea>
         </div>
 
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">¿Que hace unico tu show?</label>
@@ -836,22 +836,22 @@
 
         <div class="form-group">
           <label>Link de video (YouTube, Vimeo)</label>
-          <input type="url" placeholder="https://youtube.com/watch?v=...">
+          <input type="url" id="a-video1" placeholder="https://youtube.com/watch?v=...">
         </div>
 
         <div class="form-group">
           <label>Link de video adicional (opcional)</label>
-          <input type="url" placeholder="https://youtube.com/watch?v=...">
+          <input type="url" id="a-video2" placeholder="https://youtube.com/watch?v=...">
         </div>
 
         <div class="form-group">
           <label>Web o redes sociales (opcional)</label>
-          <input type="url" placeholder="https://instagram.com/tuartista">
+          <input type="url" id="a-web" placeholder="https://instagram.com/tuartista">
         </div>
 
         <div class="form-group">
           <label>Rider tecnico (opcional)</label>
-          <textarea placeholder="Ej: 4 microfonos inalambricos, mesa de mezclas, espacio minimo 4x4m, toma de corriente 220V..." style="min-height: 80px;"></textarea>
+          <textarea id="a-rider" placeholder="Ej: 4 microfonos inalambricos, mesa de mezclas, espacio minimo 4x4m, toma de corriente 220V..." style="min-height: 80px;"></textarea>
         </div>
 
         <div style="margin-top: 16px; padding: 20px; background: var(--accent-light); border-radius: 12px; text-align: center; cursor: pointer; border: 2px dashed var(--accent); transition: all 0.2s;" onclick="addAnotherShow()" id="add-show-btn">
@@ -895,11 +895,11 @@
         <div class="form-row">
           <div class="form-group">
             <label>Numero de artistas en el show</label>
-            <input type="number" placeholder="Ej: 3">
+            <input type="number" id="a-num-artistas" placeholder="Ej: 3">
           </div>
           <div class="form-group">
             <label>Duracion del show</label>
-            <select>
+            <select id="a-duracion">
               <option value="" disabled selected>Selecciona</option>
               <option>15-20 minutos</option>
               <option>30 minutos</option>
@@ -913,7 +913,7 @@
 
         <div class="form-group">
           <label>Comentarios adicionales (opcional)</label>
-          <textarea placeholder="Ej: Disponibilidad solo fines de semana, posibilidad de adaptar el show a tematicas, idiomas disponibles..." style="min-height: 80px;"></textarea>
+          <textarea id="a-comentarios" placeholder="Ej: Disponibilidad solo fines de semana, posibilidad de adaptar el show a tematicas, idiomas disponibles..." style="min-height: 80px;"></textarea>
         </div>
 
         <div style="margin-top: 24px;">
@@ -1065,7 +1065,87 @@
       }
     }
 
-    function submitForm() {
+    async function submitForm() {
+      const btn = document.querySelector('.btn-submit');
+      btn.textContent = 'Enviando...';
+      btn.disabled = true;
+
+      // Collect disciplines and subcategories from step 2
+      const disciplinas = [];
+      const subcategorias = [];
+      document.querySelectorAll('#step-2 .option-grid:first-of-type .option-card.selected').forEach(card => {
+        const label = card.querySelector('.option-label')?.textContent;
+        if (label) disciplinas.push(label);
+        card.querySelectorAll('.sub-chip.active').forEach(chip => {
+          subcategorias.push(chip.textContent);
+        });
+      });
+
+      // Show format (escenario / itinerante)
+      const formatoShow = document.querySelector('#step-2 .option-grid:nth-of-type(2) .option-card.selected .option-label')?.textContent || '';
+
+      // What makes show unique
+      const showUnico = [];
+      document.querySelectorAll('#step-2 .option-grid:last-of-type .option-card.selected').forEach(card => {
+        const label = card.querySelector('.option-label')?.textContent;
+        if (label) showUnico.push(label);
+      });
+
+      // Price range
+      const rangoCache = document.querySelector('.price-card.selected .price-amount')?.textContent || '';
+
+      // Extra shows
+      const extraShows = [];
+      document.querySelectorAll('#extra-shows > div').forEach(div => {
+        const inputs = div.querySelectorAll('input, textarea');
+        if (inputs.length >= 2) {
+          extraShows.push({
+            nombre: inputs[0]?.value || '',
+            descripcion: inputs[1]?.value || '',
+            video: inputs[2]?.value || ''
+          });
+        }
+      });
+
+      const payload = {
+        nombre: document.getElementById('a-nombre')?.value || '',
+        nombreArtistico: document.getElementById('a-nombre')?.value || '',
+        compania: document.getElementById('a-compania')?.value || '',
+        email: document.getElementById('a-email')?.value || '',
+        telefono: (document.getElementById('a-prefix')?.value || '+34') + (document.getElementById('a-phone')?.value || ''),
+        ciudad: document.getElementById('a-ciudad')?.value || '',
+        disciplinas,
+        subcategorias,
+        formatoShow,
+        bioShow: document.getElementById('a-bio')?.value || '',
+        showUnico,
+        video1: document.getElementById('a-video1')?.value || '',
+        video2: document.getElementById('a-video2')?.value || '',
+        webRrss: document.getElementById('a-web')?.value || '',
+        riderTecnico: document.getElementById('a-rider')?.value || '',
+        fotosUrls: uploadedUrls,
+        rangoCache,
+        numArtistas: document.getElementById('a-num-artistas')?.value || '',
+        duracionShow: document.getElementById('a-duracion')?.value || '',
+        showsAdicionales: extraShows.length > 0 ? JSON.stringify(extraShows) : '',
+        aceptoPrivacidad: document.getElementById('privacy-check')?.checked || false,
+        aceptoVisibilidad: document.getElementById('visibility-check')?.checked || false,
+        comentarios: document.getElementById('a-comentarios')?.value || ''
+      };
+
+      try {
+        const res = await fetch('/api/lead-artista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!result.success) console.error('GHL error:', result);
+      } catch (err) {
+        console.error('Submit error:', err);
+      }
+
+      // Show success regardless
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       document.getElementById('success').classList.add('active');
 

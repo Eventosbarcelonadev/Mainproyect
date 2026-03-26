@@ -631,22 +631,22 @@
         <div class="form-row">
           <div class="form-group">
             <label>Nombre</label>
-            <input type="text" placeholder="Tu nombre completo">
+            <input type="text" id="f-nombre" placeholder="Tu nombre completo">
           </div>
           <div class="form-group">
             <label>Empresa</label>
-            <input type="text" placeholder="Nombre de la empresa">
+            <input type="text" id="f-empresa" placeholder="Nombre de la empresa">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Correo electronico</label>
-            <input type="email" placeholder="tu@empresa.com">
+            <input type="email" id="f-email" placeholder="tu@empresa.com">
           </div>
           <div class="form-group">
             <label>Telefono</label>
             <div style="display: flex; gap: 8px;">
-              <select style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
+              <select id="f-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
                 <option value="+34" selected>&#127466;&#127480; +34</option>
                 <option value="+33">&#127467;&#127479; +33</option>
                 <option value="+44">&#127468;&#127463; +44</option>
@@ -658,7 +658,7 @@
                 <option value="+41">&#127464;&#127469; +41</option>
                 <option value="+1">&#127482;&#127480; +1</option>
               </select>
-              <input type="tel" placeholder="600 000 000" style="flex: 1;">
+              <input type="tel" id="f-phone" placeholder="600 000 000" style="flex: 1;">
             </div>
           </div>
         </div>
@@ -858,17 +858,17 @@
         <div class="form-row">
           <div class="form-group">
             <label>Fecha del evento</label>
-            <input type="date">
+            <input type="date" id="f-fecha">
           </div>
           <div class="form-group">
             <label>Numero de asistentes</label>
-            <input type="number" placeholder="Ej: 200">
+            <input type="number" id="f-asistentes" placeholder="Ej: 200">
           </div>
         </div>
 
         <div class="form-group">
           <label>Ciudad / Ubicacion</label>
-          <input type="text" placeholder="Ej: Barcelona, Hotel W">
+          <input type="text" id="f-ubicacion" placeholder="Ej: Barcelona, Hotel W">
         </div>
 
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Presupuesto aproximado</label>
@@ -900,12 +900,12 @@
 
         <div class="form-group">
           <label>Comentarios adicionales</label>
-          <textarea placeholder="Ej: Queremos una tematica espacial, necesitamos que los artistas interactuen con los invitados durante la cena..."></textarea>
+          <textarea id="f-comentarios" placeholder="Ej: Queremos una tematica espacial, necesitamos que los artistas interactuen con los invitados durante la cena..."></textarea>
         </div>
 
         <div class="form-group">
           <label>¿Como nos has conocido?</label>
-          <select>
+          <select id="f-conocido">
             <option value="" disabled selected>Selecciona una opcion</option>
             <option>Busqueda en Google</option>
             <option>Recomendacion</option>
@@ -982,7 +982,58 @@
       el.classList.toggle('active');
     }
 
-    function submitForm() {
+    async function submitForm() {
+      const btn = document.querySelector('.btn-submit');
+      btn.textContent = 'Enviando...';
+      btn.disabled = true;
+
+      // Collect data
+      const tipoEvento = document.querySelector('#step-2 .option-card.selected .option-label')?.textContent || '';
+      const formatoShow = document.querySelector('#step-3 .option-grid .option-card.selected .option-label')?.textContent || '';
+
+      const categorias = [];
+      const subcategorias = [];
+      document.querySelectorAll('#step-3 .show-card.selected').forEach(card => {
+        const title = card.querySelector('.show-card-title')?.textContent;
+        if (title) categorias.push(title);
+        card.querySelectorAll('.sub-chip.active').forEach(chip => {
+          subcategorias.push(chip.textContent);
+        });
+      });
+
+      const presupuesto = document.querySelector('.budget-card.selected .budget-amount')?.textContent || '';
+
+      const payload = {
+        nombre: document.getElementById('f-nombre')?.value || '',
+        empresa: document.getElementById('f-empresa')?.value || '',
+        email: document.getElementById('f-email')?.value || '',
+        telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
+        tipoEvento,
+        formatoShow,
+        categorias,
+        subcategorias,
+        fechaEvento: document.getElementById('f-fecha')?.value || '',
+        numAsistentes: document.getElementById('f-asistentes')?.value || '',
+        ubicacion: document.getElementById('f-ubicacion')?.value || '',
+        presupuesto,
+        necesitaProduccion: document.getElementById('produccion-check')?.checked || false,
+        comentarios: document.getElementById('f-comentarios')?.value || '',
+        comoNosConocio: document.getElementById('f-conocido')?.value || ''
+      };
+
+      try {
+        const res = await fetch('/api/lead-cliente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!result.success) console.error('GHL error:', result);
+      } catch (err) {
+        console.error('Submit error:', err);
+      }
+
+      // Show success regardless (don't block UX)
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       document.getElementById('success').classList.add('active');
 
