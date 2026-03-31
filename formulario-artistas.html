@@ -763,6 +763,26 @@
             </div>
           </div>
           <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128736;</span>
+            <span class="option-label">Proveedores</span>
+            <span class="option-desc">Servicios técnicos y logísticos para eventos</span>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Sonido / AV</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Iluminación</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Carpas / Tarimas / Escenario</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Tecnología</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Catering</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Decoración / Floristería</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Fotografía / Video</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Mobiliario</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Estilismo / Maquillaje</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Venues / Espacios</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Otro</span>
+              </div>
+            </div>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
             <span class="option-icon">&#127917;</span>
             <span class="option-label">Otro</span>
             <span class="option-desc">Cualquier otra disciplina o servicio para eventos</span>
@@ -945,6 +965,119 @@
 
   <script>
     const totalSteps = 4;
+    let updateToken = null; // Set when artist arrives via update link
+
+    // Check for ?token= param to load existing artist data
+    (async function checkUpdateMode() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`/api/get-artista?token=${encodeURIComponent(token)}`);
+        if (!res.ok) return;
+        const { data } = await res.json();
+        if (!data) return;
+
+        updateToken = token;
+
+        // Update header text for returning artists
+        document.querySelector('.form-header h1').textContent = 'Actualiza tu perfil';
+        document.querySelector('.form-header p').textContent = 'Revisa y actualiza tus datos. Los campos ya estan rellenados con la informacion que tenemos.';
+        document.querySelector('.btn-submit').textContent = 'Actualizar mi perfil';
+
+        // Step 1: Personal info
+        if (data.nombre) document.getElementById('a-nombre').value = data.nombre;
+        if (data.compania) document.getElementById('a-compania').value = data.compania;
+        if (data.email) document.getElementById('a-email').value = data.email;
+        if (data.ciudad) document.getElementById('a-ciudad').value = data.ciudad;
+
+        // Phone: split prefix and number
+        if (data.telefono) {
+          const prefixes = ['+351', '+34', '+33', '+44', '+49', '+39', '+31', '+32', '+41', '+1'];
+          const matchedPrefix = prefixes.find(p => data.telefono.startsWith(p));
+          if (matchedPrefix) {
+            document.getElementById('a-prefix').value = matchedPrefix;
+            document.getElementById('a-phone').value = data.telefono.slice(matchedPrefix.length);
+          } else {
+            document.getElementById('a-phone').value = data.telefono;
+          }
+        }
+
+        // Step 2: Disciplines — click matching option cards
+        if (data.disciplinas && data.disciplinas.length > 0) {
+          document.querySelectorAll('#step-2 .option-grid:first-of-type .option-card').forEach(card => {
+            const label = card.querySelector('.option-label')?.textContent;
+            if (data.disciplinas.includes(label)) {
+              card.classList.add('selected');
+              // Activate matching subcategory chips
+              if (data.subcategorias && data.subcategorias.length > 0) {
+                card.querySelectorAll('.sub-chip').forEach(chip => {
+                  if (data.subcategorias.includes(chip.textContent)) {
+                    chip.classList.add('active');
+                  }
+                });
+              }
+            }
+          });
+        }
+
+        // Show format
+        if (data.formatoShow) {
+          document.querySelectorAll('#step-2 .option-grid:nth-of-type(2) .option-card').forEach(card => {
+            if (card.querySelector('.option-label')?.textContent === data.formatoShow) {
+              card.classList.add('selected');
+            }
+          });
+        }
+
+        // Bio
+        if (data.bioShow) document.getElementById('a-bio').value = data.bioShow;
+
+        // What makes show unique
+        if (data.showUnico && data.showUnico.length > 0) {
+          document.querySelectorAll('#step-2 .option-grid:last-of-type .option-card').forEach(card => {
+            const label = card.querySelector('.option-label')?.textContent;
+            if (data.showUnico.includes(label)) card.classList.add('selected');
+          });
+        }
+
+        // Step 3: Portfolio
+        if (data.video1) document.getElementById('a-video1').value = data.video1;
+        if (data.video2) document.getElementById('a-video2').value = data.video2;
+        if (data.webRrss) document.getElementById('a-web').value = data.webRrss;
+        if (data.riderTecnico) document.getElementById('a-rider').value = data.riderTecnico;
+
+        // Show existing photos
+        if (data.fotosUrls && data.fotosUrls.length > 0) {
+          const list = document.getElementById('photo-list');
+          data.fotosUrls.forEach(url => {
+            uploadedUrls.push(url);
+            const filename = url.split('/').pop();
+            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${filename} — foto existente</div>`;
+          });
+          document.getElementById('photo-upload').classList.add('has-files');
+          document.getElementById('upload-status').textContent = `${data.fotosUrls.length} foto(s) existente(s)`;
+          document.getElementById('upload-status').style.color = '#2ecc71';
+        }
+
+        // Step 4: Pricing
+        if (data.rangoCache) {
+          document.querySelectorAll('.price-card').forEach(card => {
+            if (card.querySelector('.price-amount')?.textContent === data.rangoCache) {
+              card.classList.add('selected');
+            }
+          });
+        }
+        if (data.numArtistas) document.getElementById('a-num-artistas').value = data.numArtistas;
+        if (data.duracionShow) document.getElementById('a-duracion').value = data.duracionShow;
+        if (data.aceptoPrivacidad) document.getElementById('privacy-check').checked = true;
+        if (data.aceptoVisibilidad) document.getElementById('visibility-check').checked = true;
+
+      } catch (err) {
+        console.error('Error loading artist data:', err);
+      }
+    })();
 
     function goToStep(n) {
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -1108,6 +1241,7 @@
       });
 
       const payload = {
+        _token: updateToken || undefined, // Include token for update mode
         nombre: document.getElementById('a-nombre')?.value || '',
         nombreArtistico: document.getElementById('a-nombre')?.value || '',
         compania: document.getElementById('a-compania')?.value || '',
@@ -1145,8 +1279,12 @@
         console.error('Submit error:', err);
       }
 
-      // Show success regardless
+      // Show success — adapt message for updates
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      if (updateToken) {
+        document.querySelector('#success h2').textContent = 'Perfil actualizado';
+        document.querySelector('#success p').textContent = 'Tus datos han sido actualizados correctamente. Gracias por mantener tu perfil al dia.';
+      }
       document.getElementById('success').classList.add('active');
 
       for (let i = 1; i <= totalSteps; i++) {
