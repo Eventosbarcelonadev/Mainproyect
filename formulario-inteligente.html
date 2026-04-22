@@ -925,13 +925,6 @@
           </select>
         </div>
 
-        <div style="margin-top: 16px;">
-          <label class="checkbox-group">
-            <input type="checkbox" id="privacy-check">
-            <span class="checkbox-label">Acepto la <a href="https://www.eventosbarcelona.com/politica-de-privacidad/" target="_blank">politica de privacidad</a> y el tratamiento de mis datos personales de acuerdo con la normativa vigente de proteccion de datos.</span>
-          </label>
-        </div>
-
         <div class="form-actions">
           <button class="btn-back" onclick="goToStep(4)">Atras</button>
           <button class="btn-submit" onclick="submitForm()">Enviar solicitud</button>
@@ -941,9 +934,9 @@
       <!-- SUCCESS -->
       <div class="success-screen" id="success">
         <div class="success-icon">&#10004;&#65039;</div>
-        <h2>Solicitud recibida</h2>
-        <p>Nuestro equipo esta preparando tu propuesta personalizada. La recibiras en menos de 24 horas. Gracias por confiar en Eventos Barcelona.</p>
-
+        <h2>¡Gracias por tu solicitud!</h2>
+        <p>Nuestro equipo revisara los detalles de tu evento y te enviara una propuesta personalizada en menos de 24 horas.</p>
+        <a href="https://www.eventosbarcelona.com" style="display: inline-block; margin-top: 20px; padding: 12px 28px; background: #cc3366; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">Ir a inicio</a>
       </div>
 
     </div>
@@ -991,6 +984,24 @@
           }
         });
         return;
+      }
+
+      // Fire partial submit after step 1 so abandoned leads still land in GHL
+      if (from === 1 && !sessionStorage.getItem('eb_partial_sent')) {
+        sessionStorage.setItem('eb_partial_sent', '1');
+        const partialPayload = {
+          partial: true,
+          nombre: document.getElementById('f-nombre')?.value || '',
+          empresa: document.getElementById('f-empresa')?.value || '',
+          email: document.getElementById('f-email')?.value || '',
+          telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || '')
+        };
+        fetch('/api/lead-cliente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(partialPayload),
+          keepalive: true
+        }).catch(err => console.error('Partial submit error:', err));
       }
 
       goToStep(to);
@@ -1103,6 +1114,18 @@
         if (line) line.classList.add('active');
       }
     }
+
+    // Auto-fill from URL params and skip step 1
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('skip') === '1') {
+        if (params.get('nombre')) document.getElementById('f-nombre').value = params.get('nombre');
+        if (params.get('empresa')) document.getElementById('f-empresa').value = params.get('empresa');
+        if (params.get('email')) document.getElementById('f-email').value = params.get('email');
+        if (params.get('telefono')) document.getElementById('f-phone').value = params.get('telefono');
+        goToStep(2);
+      }
+    })();
   </script>
 
 </body>

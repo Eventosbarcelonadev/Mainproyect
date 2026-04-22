@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   const LOC = process.env.GHL_LOCATION_ID;
   const PIPELINE = process.env.GHL_PIPELINE_CLIENTES;
   const STAGE = process.env.GHL_STAGE_NEW_LEAD;
+  const STAGE_MISSING = process.env.GHL_STAGE_MISSING_INFO || STAGE;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
   const SITE_URL = process.env.SITE_URL || 'https://eventos-barcelona.vercel.app';
@@ -22,63 +23,89 @@ export default async function handler(req, res) {
 
   try {
     const data = req.body;
+    const isPartial = data.partial === true;
 
-    // Build tags array
-    const tags = ['tipo:cliente', 'origen:web-formulario'];
+    // Partial submit: lead abandonó el form tras el paso 1 (datos de contacto)
+    if (isPartial) {
+      const partialTags = ['follow_up', 'origen_form', 'info_incompleta'];
 
-    // Event type tag
-    const eventTagMap = {
-      'Cena de gala': 'evento:gala',
-      'Cocktail / Welcome drink': 'evento:cocktail',
-      'Lanzamiento de producto': 'evento:lanzamiento',
-      'Convencion / Congreso': 'evento:convencion',
-      'Entrega de premios': 'evento:premios',
-      'Family Day corporativo': 'evento:familyday',
-      'Fiesta tematica': 'evento:fiesta-tematica',
-      'Fiesta de empresa': 'evento:fiesta-empresa',
-      'Otro': 'evento:otro'
-    };
-    if (data.tipoEvento && eventTagMap[data.tipoEvento]) {
-      tags.push(eventTagMap[data.tipoEvento]);
-    }
+      const contactBody = {
+        locationId: LOC,
+        firstName: data.nombre || '',
+        email: data.email || '',
+        phone: data.telefono || '',
+        companyName: data.empresa || '',
+        tags: partialTags,
+        customFields: [
+          { key: 'tipo', field_value: 'Cliente' },
+          { key: 'origen', field_value: 'Form' },
+          { key: 'resumen_ia', field_value: 'Lead incompleto — solo completó datos de contacto' }
+        ]
+      };
 
-    // Format tag
-    const formatTagMap = {
-      'Show de escenario': 'formato:escenario',
-      'Ambient / entre mesas': 'formato:ambient'
-    };
-    if (data.formatoShow && formatTagMap[data.formatoShow]) {
-      tags.push(formatTagMap[data.formatoShow]);
-    }
+      const contactRes = await fetch(`${API}/contacts/upsert`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(contactBody)
+      });
+      const contactData = await contactRes.json();
 
-    // Category tags
-    const catTagMap = {
-      'Danza': 'cat:danza',
-      'Musica': 'cat:musica',
-      'Circo': 'cat:circo',
-      'WOW Effect': 'cat:wow-effect'
-    };
-    if (data.categorias && Array.isArray(data.categorias)) {
-      data.categorias.forEach(cat => {
-        if (catTagMap[cat]) tags.push(catTagMap[cat]);
+      if (!contactData.contact?.id) {
+        return res.status(500).json({ error: 'Failed to create partial contact', details: contactData });
+      }
+
+      const contactId = contactData.contact.id;
+
+      // Solo crear oportunidad si el contacto es nuevo (evita duplicar en reintentos)
+      let oppId = null;
+      if (contactData.new === true || contactData.isNew === true) {
+        const oppBody = {
+          locationId: LOC,
+          pipelineId: PIPELINE,
+          pipelineStageId: STAGE_MISSING,
+          contactId: contactId,
+          name: `${data.nombre || 'Lead'} — Info incompleta`,
+          status: 'open',
+          monetaryValue: 0,
+          customFields: [
+            { key: 'resumen_ia', field_value: 'Lead abandonó el formulario tras completar datos de contacto' }
+          ]
+        };
+
+        const oppRes = await fetch(`${API}/opportunities/`, {
+          method: 'POST',
+          headers: HEADERS,
+          body: JSON.stringify(oppBody)
+        });
+        const oppData = await oppRes.json();
+        oppId = oppData.opportunity?.id || null;
+      }
+
+      return res.status(200).json({
+        success: true,
+        partial: true,
+        contactId: contactId,
+        opportunityId: oppId
       });
     }
 
-    // Budget tag
-    const budgetTagMap = {
-      '< 5.000€': 'budget:<5k',
-      '5.000 - 10.000€': 'budget:5-10k',
-      '10.000 - 25.000€': 'budget:10-25k',
-      '> 25.000€': 'budget:25k+'
-    };
-    if (data.presupuesto && budgetTagMap[data.presupuesto]) {
-      tags.push(budgetTagMap[data.presupuesto]);
-    }
+    // Build tags (Ramiro v2 2026-04-17)
+    const tags = ['follow_up', 'origen_form', 'info_completa'];
 
-    // Production tag
-    if (data.necesitaProduccion) {
-      tags.push('produccion:solicitada');
-    }
+    // Build resumen_ia from form data
+    const resumenIa = [
+      data.tipoEvento ? `Tipo evento: ${data.tipoEvento}` : '',
+      data.formatoShow ? `Entretenimiento: ${data.formatoShow}` : '',
+      data.categorias?.length ? `Categorías: ${data.categorias.join(', ')}` : '',
+      data.subcategorias?.length ? `Subcategorías: ${data.subcategorias.join(', ')}` : '',
+      data.fechaEvento ? `Fecha: ${data.fechaEvento}` : '',
+      data.numAsistentes ? `Asistentes: ${data.numAsistentes}` : '',
+      data.ubicacion ? `Ubicación: ${data.ubicacion}` : '',
+      data.presupuesto ? `Presupuesto: ${data.presupuesto}` : '',
+      `Producción técnica: ${data.necesitaProduccion ? 'Sí' : 'No'}`,
+      data.comoNosConocio ? `Cómo nos conoció: ${data.comoNosConocio}` : '',
+      data.comentarios ? `Comentarios: ${data.comentarios}` : ''
+    ].filter(Boolean).join(' | ');
 
     // 1. Create/update contact
     const contactBody = {
@@ -89,17 +116,9 @@ export default async function handler(req, res) {
       companyName: data.empresa || '',
       tags: tags,
       customFields: [
-        { key: 'tipo_de_evento', field_value: data.tipoEvento || '' },
-        { key: 'formato_show', field_value: data.formatoShow || '' },
-        { key: 'categorias_artisticas', field_value: (data.categorias || []).join(', ') },
-        { key: 'subcategorias_artisticas', field_value: (data.subcategorias || []).join(', ') },
-        { key: 'fecha_evento', field_value: data.fechaEvento || '' },
-        { key: 'num_asistentes', field_value: data.numAsistentes || '' },
-        { key: 'ubicacion_hotel', field_value: data.ubicacion || '' },
-        { key: 'presupuesto_aproximado', field_value: data.presupuesto || '' },
-        { key: 'necesita_produccion', field_value: data.necesitaProduccion ? 'Si' : 'No' },
-        { key: 'como_nos_conocio', field_value: data.comoNosConocio || '' },
-        { key: 'comentarios_cliente', field_value: data.comentarios || '' },
+        { key: 'tipo', field_value: 'Cliente' },
+        { key: 'origen', field_value: 'Form' },
+        { key: 'resumen_ia', field_value: resumenIa },
         { key: 'url_propuesta', field_value: '' }
       ]
     };
@@ -167,7 +186,39 @@ export default async function handler(req, res) {
 
     const contactId = contactData.contact.id;
 
-    // 2. Create opportunity in pipeline
+    // Remove info_incompleta tag if it was set by a prior partial submit
+    try {
+      await fetch(`${API}/contacts/${contactId}/tags`, {
+        method: 'DELETE',
+        headers: HEADERS,
+        body: JSON.stringify({ tags: ['info_incompleta'] })
+      });
+    } catch (tagErr) {
+      console.error('Remove info_incompleta tag error:', tagErr.message);
+    }
+
+    // 2. Build opportunity summary
+    const resumenOpo = [
+      '📋 Solicitud de presupuesto',
+      resumenIa,
+      proposalUrl ? `Propuesta: ${proposalUrl}` : ''
+    ].filter(Boolean).join('\n');
+
+    // 3. Find existing opportunity for this contact (created by partial submit)
+    let existingOppId = null;
+    try {
+      const searchRes = await fetch(
+        `${API}/opportunities/search?location_id=${LOC}&contact_id=${contactId}&pipeline_id=${PIPELINE}`,
+        { method: 'GET', headers: HEADERS }
+      );
+      const searchData = await searchRes.json();
+      const opps = searchData.opportunities || [];
+      const stub = opps.find(o => o.pipelineStageId === STAGE_MISSING && o.status === 'open');
+      if (stub) existingOppId = stub.id;
+    } catch (searchErr) {
+      console.error('Opportunity search error:', searchErr.message);
+    }
+
     const oppBody = {
       locationId: LOC,
       pipelineId: PIPELINE,
@@ -175,17 +226,23 @@ export default async function handler(req, res) {
       contactId: contactId,
       name: `${data.nombre || 'Lead'} — ${data.tipoEvento || 'Evento'}`,
       status: 'open',
-      monetaryValue: 0
+      monetaryValue: 0,
+      customFields: [
+        { key: 'resumen_ia', field_value: resumenOpo }
+      ]
     };
 
-    const oppRes = await fetch(`${API}/opportunities/`, {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify(oppBody)
-    });
+    const oppRes = await fetch(
+      existingOppId ? `${API}/opportunities/${existingOppId}` : `${API}/opportunities/`,
+      {
+        method: existingOppId ? 'PUT' : 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(oppBody)
+      }
+    );
     const oppData = await oppRes.json();
 
-    // 3. Create contact in Holded
+    // 5. Create contact in Holded
     let holdedId = null;
     try {
       const holdedBody = {
