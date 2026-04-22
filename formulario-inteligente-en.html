@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Request a quote — Eventos Barcelona</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #cc3366;
+      --accent-light: #fdf0f4;
+      --dark: #1a1a1a;
+      --text: #333;
+      --gray: #666;
+      --light-gray: #f9f9f9;
+      --border: #e0e0e0;
+      --white: #fff;
+      --green: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-weight: 700;
+    }
+
+    /* === NAV === */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 80px;
+      background: var(--dark);
+    }
+
+    .nav-logo img { height: 36px; width: auto; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-btn {
+      padding: 8px 20px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .nav-flags {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .nav-flags img {
+      width: 24px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .nav-flags img:hover,
+    .nav-flags img.active { opacity: 1; }
+
+    .nav-hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-hamburger span {
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+
+    /* === DEMO BANNER === */
+    .demo-banner {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* === FORM CONTAINER === */
+    .form-container {
+      max-width: 720px;
+      margin: 48px auto;
+      padding: 0 24px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .form-header h1 {
+      font-size: 36px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .form-header p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .progress-dot.completed {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .progress-line {
+      width: 40px;
+      height: 2px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    .progress-line.active {
+      background: var(--accent);
+    }
+
+    .progress-label {
+      font-size: 11px;
+      color: var(--gray);
+      display: none;
+    }
+
+    /* === FORM CARD === */
+    .form-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-title {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .step-subtitle {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    /* === FORM INPUTS === */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.2s;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* === VISUAL SELECTORS (event type) === */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .option-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .option-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card .option-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .option-card .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* === SHOW CARDS === */
+    .show-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .show-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .show-card:hover {
+      border-color: var(--accent);
+    }
+
+    .show-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .show-card-image {
+      height: 140px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .show-card-check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .show-card.selected .show-card-check {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .show-card-body {
+      padding: 14px 16px;
+    }
+
+    .show-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .show-card-desc {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    /* === SUBCATEGORY CHIPS === */
+    .subcategory-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 16px;
+    }
+
+    .show-card.selected .subcategory-panel {
+      max-height: 400px;
+      padding: 0 16px 14px;
+    }
+
+    .subcategory-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sub-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sub-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .sub-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* === BUDGET SELECTOR === */
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .budget-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .budget-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .budget-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .budget-amount {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 22px;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .budget-desc {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* === BUTTONS === */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+    }
+
+    .btn-next {
+      padding: 14px 36px;
+      background: var(--dark);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-next:hover { background: #333; }
+
+    .btn-back {
+      padding: 14px 24px;
+      background: none;
+      color: var(--gray);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover { color: var(--text); }
+
+    .btn-submit {
+      padding: 16px 48px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover { background: #aa2855; }
+
+    /* === SUCCESS === */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .success-screen.active { display: block; }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+
+    .success-screen h2 {
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .input-error {
+      border-color: #c0392b !important;
+      background: #fdf0f0 !important;
+    }
+
+    .field-error {
+      color: #c0392b;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .nav { padding: 14px 20px; }
+      .nav-logo img { height: 28px; }
+      .nav-btn { display: none; }
+      .nav-flags img { width: 20px; height: 14px; }
+      .form-container { margin: 32px auto; padding: 0 16px; }
+      .form-card { padding: 28px 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .option-grid { grid-template-columns: 1fr 1fr; }
+      .show-grid { grid-template-columns: 1fr; }
+      .budget-grid { grid-template-columns: 1fr 1fr; }
+      .form-header h1 { font-size: 26px; }
+      .form-header p { font-size: 14px; }
+      .step-title { font-size: 20px; }
+      .form-actions { gap: 12px; }
+      .btn-next, .btn-submit { padding: 14px 28px; width: 100%; }
+      .btn-back { padding: 14px 16px; }
+      .progress-line { width: 24px; }
+      .demo-banner { font-size: 11px; padding: 8px 16px; }
+    }
+
+    @media (max-width: 480px) {
+      .option-grid { grid-template-columns: 1fr; }
+      .budget-grid { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column-reverse; gap: 8px; }
+      .btn-next, .btn-submit, .btn-back { width: 100%; text-align: center; }
+      .nav-flags { gap: 8px; }
+      .nav-right { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav">
+    <div class="nav-logo">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+    </div>
+    <div class="nav-right">
+      <a href="https://www.eventosbarcelona.com/en/contact/" class="nav-btn">Contact</a>
+      <div class="nav-flags">
+        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.svg" alt="English" class="active">
+        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.svg" alt="Español">
+      </div>
+      <div class="nav-hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container">
+
+    <div class="form-header">
+      <h1>Request a quote</h1>
+      <p>Tell us about your event and we'll prepare a tailored proposal within 24 hours.</p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar">
+      <div class="progress-step">
+        <div class="progress-dot active" id="dot-1">1</div>
+      </div>
+      <div class="progress-line" id="line-1"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-2">2</div>
+      </div>
+      <div class="progress-line" id="line-2"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-3">3</div>
+      </div>
+      <div class="progress-line" id="line-3"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-4">4</div>
+      </div>
+      <div class="progress-line" id="line-4"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-5">5</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+
+      <!-- STEP 1: Basic data -->
+      <div class="step active" id="step-1">
+        <h2 class="step-title">Your contact details</h2>
+        <p class="step-subtitle">So we can send you the tailored proposal.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="f-nombre" placeholder="Your full name">
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" id="f-empresa" placeholder="Company name">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="f-email" placeholder="you@company.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="f-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
+                <option value="+34" selected>&#127466;&#127480; +34</option>
+                <option value="+33">&#127467;&#127479; +33</option>
+                <option value="+44">&#127468;&#127463; +44</option>
+                <option value="+49">&#127465;&#127466; +49</option>
+                <option value="+39">&#127470;&#127481; +39</option>
+                <option value="+351">&#127477;&#127481; +351</option>
+                <option value="+31">&#127475;&#127473; +31</option>
+                <option value="+32">&#127463;&#127466; +32</option>
+                <option value="+41">&#127464;&#127469; +41</option>
+                <option value="+1">&#127482;&#127480; +1</option>
+              </select>
+              <input type="tel" id="f-phone" placeholder="600 000 000" style="flex: 1;">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <div></div>
+          <button class="btn-next" onclick="validateAndGo(1, 2)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Event type -->
+      <div class="step" id="step-2">
+        <h2 class="step-title">What type of event are you organizing?</h2>
+        <p class="step-subtitle">Select the one that best describes your event.</p>
+
+        <div class="option-grid">
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127864;</span>
+            <span class="option-label">Gala dinner</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127863;</span>
+            <span class="option-label">Cocktail / Welcome drink</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127775;</span>
+            <span class="option-label">Product launch</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127979;</span>
+            <span class="option-label">Convention / Conference</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127942;</span>
+            <span class="option-label">Awards ceremony</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127968;</span>
+            <span class="option-label">Corporate Family Day</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127881;</span>
+            <span class="option-label">Themed party</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#127867;</span>
+            <span class="option-label">Company party</span>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'event-type')">
+            <span class="option-icon">&#10067;</span>
+            <span class="option-label">Other</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(1)">Back</button>
+          <button class="btn-next" onclick="validateAndGo(2, 3)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Show type -->
+      <div class="step" id="step-3">
+        <h2 class="step-title">What kind of entertainment are you looking for?</h2>
+        <p class="step-subtitle">Choose the format and category you're interested in. You can select multiple.</p>
+
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Show format</label>
+        <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 28px;">
+          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+            <span class="option-icon">&#127917;</span>
+            <span class="option-label">Stage show</span>
+            <div class="show-card-desc" style="margin-top: 6px;">Headline acts on stage with lighting and sound</div>
+          </div>
+          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+            <span class="option-icon">&#127865;</span>
+            <span class="option-label">Ambient / strolling</span>
+            <div class="show-card-desc" style="margin-top: 6px;">Artists who interact with guests during dinner or cocktail</div>
+          </div>
+        </div>
+
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Artistic category</label>
+        <div class="show-grid">
+          <div class="show-card" onclick="toggleShow(this)">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=80');">
+              <div class="show-card-check">&#10003;</div>
+            </div>
+            <div class="show-card-body">
+              <div class="show-card-title">Dance</div>
+              <div class="show-card-desc">Select the styles you're interested in</div>
+            </div>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Contemporary</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Cabaret</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">1920s</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hip-hop</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Themed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="show-card" onclick="toggleShow(this)">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80');">
+              <div class="show-card-check">&#10003;</div>
+            </div>
+            <div class="show-card-body">
+              <div class="show-card-title">Music</div>
+              <div class="show-card-desc">Select the styles you're interested in</div>
+            </div>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Live bands</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Soloists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Singers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Jazz</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">DJ</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Rumba</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percussionists</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="show-card" onclick="toggleShow(this)">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80');">
+              <div class="show-card-check">&#10003;</div>
+            </div>
+            <div class="show-card-body">
+              <div class="show-card-title">Circus</div>
+              <div class="show-card-desc">Select the styles you're interested in</div>
+            </div>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED juggling</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Tightrope walker</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Acrobats</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Aerialists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Stilt walkers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Fire</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Unique characters</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="show-card" onclick="toggleShow(this)">
+            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=400&q=80');">
+              <div class="show-card-check">&#10003;</div>
+            </div>
+            <div class="show-card-body">
+              <div class="show-card-title">WOW Effect</div>
+              <div class="show-card-desc">Select the styles you're interested in</div>
+            </div>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED dancers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Video mapping</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Light shows</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Laser</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Immersive</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED percussionists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Custom</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="show-card" onclick="toggleShow(this)" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; text-align: center; margin-bottom: 16px; transition: all 0.2s; background: var(--white);">
+          <div class="show-card-body" style="padding: 0;">
+            <div class="show-card-title">Not sure, I'd like your recommendation</div>
+            <div class="show-card-desc">Our team will recommend the best shows for your event</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 8px; padding: 20px; background: var(--light-gray); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <label class="checkbox-group" style="margin-bottom: 0; padding: 0; background: none;">
+            <input type="checkbox" id="produccion-check">
+            <span class="checkbox-label" style="font-size: 14px;"><strong>Do you need technical production?</strong><br><span style="color: var(--gray); font-size: 13px;">Sound, lighting, staging, LED screens… We'll put together a full solution.</span></span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(2)">Back</button>
+          <button class="btn-next" onclick="goToStep(4)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Event details -->
+      <div class="step" id="step-4">
+        <h2 class="step-title">Your event details</h2>
+        <p class="step-subtitle">The more details you give us, the better our proposal.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Event date</label>
+            <input type="date" id="f-fecha">
+          </div>
+          <div class="form-group">
+            <label>Number of guests</label>
+            <input type="number" id="f-asistentes" placeholder="e.g. 200">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>City / Venue</label>
+          <input type="text" id="f-ubicacion" placeholder="e.g. Barcelona, Hotel W">
+        </div>
+
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Approximate budget</label>
+        <div class="budget-grid">
+          <div class="budget-card" onclick="selectOption(this, 'budget')">
+            <div class="budget-amount">&lt; &euro;5,000</div>
+          </div>
+          <div class="budget-card" onclick="selectOption(this, 'budget')">
+            <div class="budget-amount">&euro;5,000 - &euro;10,000</div>
+          </div>
+          <div class="budget-card" onclick="selectOption(this, 'budget')">
+            <div class="budget-amount">&euro;10,000 - &euro;25,000</div>
+          </div>
+          <div class="budget-card" onclick="selectOption(this, 'budget')">
+            <div class="budget-amount">&gt; &euro;25,000</div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(3)">Back</button>
+          <button class="btn-next" onclick="goToStep(5)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Comments -->
+      <div class="step" id="step-5">
+        <h2 class="step-title">Anything else we should know?</h2>
+        <p class="step-subtitle">Share any additional details about your event. This step is optional.</p>
+
+        <div class="form-group">
+          <label>Additional comments</label>
+          <textarea id="f-comentarios" placeholder="e.g. We'd like a space theme, we need artists to interact with guests during dinner…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>How did you hear about us?</label>
+          <select id="f-conocido">
+            <option value="" disabled selected>Select an option</option>
+            <option>Website</option>
+            <option>Google search</option>
+            <option>Referral</option>
+            <option>Social media</option>
+            <option>Previous event</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(4)">Back</button>
+          <button class="btn-submit" onclick="submitForm()">Submit request</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success">
+        <div class="success-icon">&#10004;&#65039;</div>
+        <h2>Thank you for your request!</h2>
+        <p>Our team will review your event details and send you a tailored proposal within 24 hours.</p>
+        <a href="https://www.eventosbarcelona.com/en/" style="display: inline-block; margin-top: 20px; padding: 12px 28px; background: #cc3366; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">Back to home</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function validateAndGo(from, to) {
+      document.querySelectorAll('.field-error').forEach(el => el.remove());
+      document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+      const errors = [];
+
+      if (from === 1) {
+        const nombre = document.getElementById('f-nombre');
+        const email = document.getElementById('f-email');
+        const phone = document.getElementById('f-phone');
+
+        if (!nombre.value.trim()) errors.push({ el: nombre, msg: 'Name is required' });
+        if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+          errors.push({ el: email, msg: 'Enter a valid email' });
+        }
+        if (!phone.value.trim()) errors.push({ el: phone, msg: 'Phone is required' });
+      }
+
+      if (from === 2) {
+        const selected = document.querySelector('#step-2 .option-card.selected');
+        if (!selected) {
+          const grid = document.querySelector('#step-2 .option-grid');
+          const msg = document.createElement('div');
+          msg.className = 'field-error';
+          msg.textContent = 'Select an event type';
+          grid.parentElement.insertBefore(msg, grid.nextSibling);
+          errors.push({});
+        }
+      }
+
+      if (errors.length > 0) {
+        errors.forEach(err => {
+          if (err.el) {
+            err.el.classList.add('input-error');
+            const msg = document.createElement('div');
+            msg.className = 'field-error';
+            msg.textContent = err.msg;
+            err.el.closest('.form-group, div').appendChild(msg);
+          }
+        });
+        return;
+      }
+
+      // Fire partial submit after step 1 so abandoned leads still land in GHL
+      if (from === 1 && !sessionStorage.getItem('eb_partial_sent')) {
+        sessionStorage.setItem('eb_partial_sent', '1');
+        const partialPayload = {
+          partial: true,
+          lang: 'en',
+          nombre: document.getElementById('f-nombre')?.value || '',
+          empresa: document.getElementById('f-empresa')?.value || '',
+          email: document.getElementById('f-email')?.value || '',
+          telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || '')
+        };
+        fetch('/api/lead-cliente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(partialPayload),
+          keepalive: true
+        }).catch(err => console.error('Partial submit error:', err));
+      }
+
+      goToStep(to);
+    }
+
+    function goToStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+
+      for (let i = 1; i <= 5; i++) {
+        const dot = document.getElementById('dot-' + i);
+        const line = document.getElementById('line-' + (i - 1));
+        dot.classList.remove('active', 'completed');
+        if (i < n) {
+          dot.classList.add('completed');
+          dot.innerHTML = '&#10003;';
+        } else if (i === n) {
+          dot.classList.add('active');
+          dot.innerHTML = i;
+        } else {
+          dot.innerHTML = i;
+        }
+        if (line) {
+          line.classList.toggle('active', i < n);
+        }
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectOption(el, group) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.option-card, .budget-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleShow(el) {
+      el.classList.toggle('selected');
+      // If deselecting, clear all sub-chips
+      if (!el.classList.contains('selected')) {
+        el.querySelectorAll('.sub-chip').forEach(c => c.classList.remove('active'));
+      }
+    }
+
+    function toggleChip(el) {
+      el.classList.toggle('active');
+    }
+
+    async function submitForm() {
+      const btn = document.querySelector('.btn-submit');
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      // Collect data
+      const tipoEvento = document.querySelector('#step-2 .option-card.selected .option-label')?.textContent || '';
+      const formatoShow = document.querySelector('#step-3 .option-grid .option-card.selected .option-label')?.textContent || '';
+
+      const categorias = [];
+      const subcategorias = [];
+      document.querySelectorAll('#step-3 .show-card.selected').forEach(card => {
+        const title = card.querySelector('.show-card-title')?.textContent;
+        if (title) categorias.push(title);
+        card.querySelectorAll('.sub-chip.active').forEach(chip => {
+          subcategorias.push(chip.textContent);
+        });
+      });
+
+      const presupuesto = document.querySelector('.budget-card.selected .budget-amount')?.textContent || '';
+
+      const payload = {
+        lang: 'en',
+        nombre: document.getElementById('f-nombre')?.value || '',
+        empresa: document.getElementById('f-empresa')?.value || '',
+        email: document.getElementById('f-email')?.value || '',
+        telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
+        tipoEvento,
+        formatoShow,
+        categorias,
+        subcategorias,
+        fechaEvento: document.getElementById('f-fecha')?.value || '',
+        numAsistentes: document.getElementById('f-asistentes')?.value || '',
+        ubicacion: document.getElementById('f-ubicacion')?.value || '',
+        presupuesto,
+        necesitaProduccion: document.getElementById('produccion-check')?.checked || false,
+        comentarios: document.getElementById('f-comentarios')?.value || '',
+        comoNosConocio: document.getElementById('f-conocido')?.value || ''
+      };
+
+      try {
+        const res = await fetch('/api/lead-cliente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!result.success) console.error('GHL error:', result);
+      } catch (err) {
+        console.error('Submit error:', err);
+      }
+
+      // Show success to client
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('success').classList.add('active');
+
+      for (let i = 1; i <= 5; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.remove('active');
+        dot.classList.add('completed');
+        dot.innerHTML = '&#10003;';
+        const line = document.getElementById('line-' + i);
+        if (line) line.classList.add('active');
+      }
+    }
+
+    // Auto-fill from URL params and skip step 1
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('skip') === '1') {
+        if (params.get('nombre')) document.getElementById('f-nombre').value = params.get('nombre');
+        if (params.get('empresa')) document.getElementById('f-empresa').value = params.get('empresa');
+        if (params.get('email')) document.getElementById('f-email').value = params.get('email');
+        if (params.get('telefono')) document.getElementById('f-phone').value = params.get('telefono');
+        goToStep(2);
+      }
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Join the talent — Eventos Barcelona</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #cc3366;
+      --accent-light: #fdf0f4;
+      --dark: #1a1a1a;
+      --text: #333;
+      --gray: #666;
+      --light-gray: #f9f9f9;
+      --border: #e0e0e0;
+      --white: #fff;
+      --green: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 80px;
+      background: var(--dark);
+    }
+
+    .nav-logo img { height: 36px; width: auto; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-btn {
+      padding: 8px 20px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .nav-flags {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .nav-flags img {
+      width: 24px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .nav-flags img:hover,
+    .nav-flags img.active { opacity: 1; }
+
+    .nav-hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-hamburger span {
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+
+    .demo-banner {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .form-container {
+      max-width: 720px;
+      margin: 48px auto;
+      padding: 0 24px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .form-header h1 {
+      font-size: 36px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .form-header p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .progress-dot.completed {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .progress-line {
+      width: 48px;
+      height: 2px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    .progress-line.active {
+      background: var(--accent);
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-title {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .step-subtitle {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    /* FORM INPUTS */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.2s;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* OPTION CARDS */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .option-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .option-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-card .option-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .option-card .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .option-card .option-desc {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    /* SUBCATEGORY CHIPS */
+    .subcategory-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .option-card.selected .subcategory-panel {
+      max-height: 200px;
+    }
+
+    .subcategory-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sub-chip {
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sub-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .sub-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* FILE UPLOAD */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .upload-area.has-files {
+      border-color: var(--green);
+      background: #f0fdf4;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .upload-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .upload-desc {
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-list {
+      margin-top: 12px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--light-gray);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .file-item .file-icon { color: var(--green); }
+
+    /* PRICE RANGE */
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .price-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .price-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .price-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .price-amount {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .price-desc {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* CHECKBOX */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 20px;
+      background: var(--light-gray);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-label {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .checkbox-label a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* BUTTONS */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+    }
+
+    .btn-next {
+      padding: 14px 36px;
+      background: var(--dark);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-next:hover { background: #333; }
+
+    .btn-back {
+      padding: 14px 24px;
+      background: none;
+      color: var(--gray);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover { color: var(--text); }
+
+    .btn-submit {
+      padding: 16px 48px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover { background: #aa2855; }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .success-screen.active { display: block; }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+
+    .success-screen h2 {
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 440px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .input-error {
+      border-color: #c0392b !important;
+      background: #fdf0f0 !important;
+    }
+
+    .field-error {
+      color: #c0392b;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav { padding: 14px 20px; }
+      .nav-logo img { height: 28px; }
+      .nav-btn { display: none; }
+      .nav-flags img { width: 20px; height: 14px; }
+      .form-container { margin: 32px auto; padding: 0 16px; }
+      .form-card { padding: 28px 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .option-grid { grid-template-columns: 1fr 1fr; }
+      .price-grid { grid-template-columns: 1fr 1fr; }
+      .form-header h1 { font-size: 26px; }
+      .form-header p { font-size: 14px; }
+      .step-title { font-size: 20px; }
+      .form-actions { gap: 12px; }
+      .btn-next, .btn-submit { padding: 14px 28px; width: 100%; }
+      .btn-back { padding: 14px 16px; }
+      .progress-line { width: 24px; }
+      .demo-banner { font-size: 11px; padding: 8px 16px; }
+    }
+
+    @media (max-width: 480px) {
+      .option-grid { grid-template-columns: 1fr; }
+      .price-grid { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column-reverse; gap: 8px; }
+      .btn-next, .btn-submit, .btn-back { width: 100%; text-align: center; }
+      .nav-flags { gap: 8px; }
+      .nav-right { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav">
+    <div class="nav-logo">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+    </div>
+    <div class="nav-right">
+      <a href="https://www.eventosbarcelona.com/en/contact/" class="nav-btn">Contact</a>
+      <div class="nav-flags">
+        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.svg" alt="English" class="active">
+        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.svg" alt="Español">
+      </div>
+      <div class="nav-hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container">
+
+    <div class="form-header" id="form-header">
+      <h1>Become part of Eventos Barcelona</h1>
+      <p>We connect the best talent and the best suppliers with unique corporate events in Barcelona. Who are you?</p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar" id="progress-bar" style="display:none;">
+      <div class="progress-step">
+        <div class="progress-dot active" id="dot-1">1</div>
+      </div>
+      <div class="progress-line" id="line-1"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-2">2</div>
+      </div>
+      <div class="progress-line" id="line-2"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-3">3</div>
+      </div>
+      <div class="progress-line" id="line-3"></div>
+      <div class="progress-step">
+        <div class="progress-dot" id="dot-4">4</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+
+      <!-- STEP 0: Artist / Supplier selector -->
+      <div class="step active" id="step-0">
+        <div class="option-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="option-card" onclick="selectProfile('artista')" style="padding: 40px 24px; text-align: center;">
+            <span class="option-icon" style="font-size: 48px;">&#127917;</span>
+            <span class="option-label" style="font-size: 20px; margin-top: 8px;">I'm an Artist</span>
+            <span class="option-desc" style="font-size: 13px; line-height: 1.5; margin-top: 8px;">Dancer, musician, circus artist, performer… I want to showcase my act in the corporate events world.</span>
+          </div>
+          <div class="option-card" onclick="selectProfile('proveedor')" style="padding: 40px 24px; text-align: center;">
+            <span class="option-icon" style="font-size: 48px;">&#128736;</span>
+            <span class="option-label" style="font-size: 20px; margin-top: 8px;">I'm a Supplier</span>
+            <span class="option-desc" style="font-size: 13px; line-height: 1.5; margin-top: 8px;">Sound, lighting, catering, tents, technology… I offer technical or logistical services for events.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: Contact details -->
+      <div class="step" id="step-1">
+        <h2 class="step-title">Your contact details</h2>
+        <p class="step-subtitle">Basic information so we can get in touch.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full name / Stage name</label>
+            <input type="text" id="a-nombre" placeholder="e.g. Maria Lopez / Flamenko Fusion">
+          </div>
+          <div class="form-group">
+            <label>Company name (if applicable)</label>
+            <input type="text" id="a-compania" placeholder="e.g. Circo Brillante SL">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="a-email" placeholder="you@email.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="a-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
+                <option value="+34" selected>&#127466;&#127480; +34</option>
+                <option value="+33">&#127467;&#127479; +33</option>
+                <option value="+44">&#127468;&#127463; +44</option>
+                <option value="+49">&#127465;&#127466; +49</option>
+                <option value="+39">&#127470;&#127481; +39</option>
+                <option value="+351">&#127477;&#127481; +351</option>
+                <option value="+31">&#127475;&#127473; +31</option>
+                <option value="+32">&#127463;&#127466; +32</option>
+                <option value="+41">&#127464;&#127469; +41</option>
+                <option value="+1">&#127482;&#127480; +1</option>
+              </select>
+              <input type="tel" id="a-phone" placeholder="600 000 000" style="flex: 1;">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>City / Area</label>
+          <input type="text" id="a-ciudad" placeholder="e.g. Barcelona, Madrid, available nationwide">
+        </div>
+
+        <div class="form-actions">
+          <div></div>
+          <button class="btn-next" onclick="validateAndGo(1, 2)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Discipline / Specialty -->
+      <div class="step" id="step-2">
+        <h2 class="step-title" id="step2-title">Your artistic discipline</h2>
+        <p class="step-subtitle" id="step2-subtitle">Select the main category of your show. You can pick multiple.</p>
+
+        <!-- ARTIST categories -->
+        <div class="option-grid" id="cats-artista">
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128131;</span>
+            <span class="option-label">Dance</span>
+            <span class="option-desc">Select your styles</span>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Contemporary</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Cabaret</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">1920s</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hip-hop</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Themed</span>
+              </div>
+            </div>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127928;</span>
+            <span class="option-label">Music</span>
+            <span class="option-desc">Select your styles</span>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Live bands</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Soloists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Singers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Jazz</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Swing</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">DJ</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Rumba</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percussionists</span>
+              </div>
+            </div>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127914;</span>
+            <span class="option-label">Circus</span>
+            <span class="option-desc">Select your styles</span>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED juggling</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Tightrope walker</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Acrobats</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Aerialists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Stilt walkers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Fire</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Unique characters</span>
+              </div>
+            </div>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#10024;</span>
+            <span class="option-label">WOW Effect</span>
+            <span class="option-desc">Select your styles</span>
+            <div class="subcategory-panel">
+              <div class="subcategory-chips">
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED dancers</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Video mapping</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Light shows</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Laser</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Immersive</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED percussionists</span>
+                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Custom</span>
+              </div>
+            </div>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127917;</span>
+            <span class="option-label">Other</span>
+            <span class="option-desc">Any other discipline or event service</span>
+          </div>
+        </div>
+
+        <!-- SUPPLIER categories -->
+        <div class="option-grid" id="cats-proveedor" style="display:none;">
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127908;</span>
+            <span class="option-label">Sound / AV</span>
+            <span class="option-desc">PA, microphones, consoles, monitors</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128161;</span>
+            <span class="option-label">Lighting</span>
+            <span class="option-desc">Fixtures, LED, lighting design, effects</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127978;</span>
+            <span class="option-label">Tents / Risers / Staging</span>
+            <span class="option-desc">Structures, setups, stages</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128187;</span>
+            <span class="option-label">Technology</span>
+            <span class="option-desc">Mapping, streaming, screens, VR</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127860;</span>
+            <span class="option-label">Catering</span>
+            <span class="option-desc">Food, drinks, service</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127804;</span>
+            <span class="option-label">Decor / Florist</span>
+            <span class="option-desc">Ambience, flowers, scenography</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128248;</span>
+            <span class="option-label">Photography / Video</span>
+            <span class="option-desc">Coverage, editing, drones</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#129681;</span>
+            <span class="option-label">Furniture</span>
+            <span class="option-desc">Tables, chairs, bars, lounge</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128132;</span>
+            <span class="option-label">Styling / Makeup</span>
+            <span class="option-desc">Characterization, wardrobe, makeup</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#127970;</span>
+            <span class="option-label">Venues / Spaces</span>
+            <span class="option-desc">Premises, estates, unique spaces</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#128666;</span>
+            <span class="option-label">Transport / Logistics</span>
+            <span class="option-desc">Transfers, freight, coordination</span>
+          </div>
+          <div class="option-card" onclick="toggleOption(this)">
+            <span class="option-icon">&#10024;</span>
+            <span class="option-label">Other</span>
+            <span class="option-desc">Any other event service</span>
+          </div>
+        </div>
+
+        <!-- Artist-only fields -->
+        <div id="artista-fields">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; margin-top: 24px;">Show format</label>
+          <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+            <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 20px 16px;">
+              <span class="option-icon">&#127917;</span>
+              <span class="option-label">Stage show</span>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 20px 16px;">
+              <span class="option-icon">&#128694;</span>
+              <span class="option-label">Strolling</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Briefly describe your show (max. 100 words)</label>
+            <textarea id="a-bio" placeholder="e.g. 30-minute LED drumming show for 3 artists. Includes choreography synced to electronic music. Ideal for stage or ambient."></textarea>
+          </div>
+
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">What makes your show unique?</label>
+          <div class="option-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#128065;</span>
+              <span class="option-label">Visual impact</span>
+            </div>
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#129309;</span>
+              <span class="option-label">Audience interaction</span>
+            </div>
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#128087;</span>
+              <span class="option-label">Aesthetic / Wardrobe</span>
+            </div>
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#128161;</span>
+              <span class="option-label">Tech innovation</span>
+            </div>
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#128214;</span>
+              <span class="option-label">Narrative / Concept</span>
+            </div>
+            <div class="option-card" onclick="toggleOption(this)" style="padding: 14px 10px;">
+              <span class="option-icon" style="font-size: 24px;">&#10024;</span>
+              <span class="option-label">Other</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supplier-only fields -->
+        <div id="proveedor-fields" style="display:none;">
+          <div class="form-group">
+            <label>Describe your services (max. 100 words)</label>
+            <textarea id="a-bio-prov" placeholder="e.g. Rental and installation of professional sound equipment for events up to 2,000 people. Includes sound engineer, Line Array PA and wireless microphones."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(1)">Back</button>
+          <button class="btn-next" onclick="validateAndGo(2, 3)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Material and portfolio -->
+      <div class="step" id="step-3">
+        <h2 class="step-title" id="step3-title">Your portfolio</h2>
+        <p class="step-subtitle" id="step3-subtitle">Upload high-quality photos and share video links. Photos should be free of watermarks and logos.</p>
+
+        <div class="upload-area" id="photo-upload" onclick="document.getElementById('file-input').click()" style="position:relative;cursor:pointer;">
+          <span class="upload-icon">&#128247;</span>
+          <div class="upload-title">Upload your photos</div>
+          <div class="upload-desc">At least 2 high-quality photos, no watermarks. JPG or PNG, max. 10MB each.</div>
+        </div>
+        <input type="file" id="file-input" multiple accept="image/*" onchange="uploadToCloudinary(this.files)" style="display:none;">
+        <div class="file-list" id="photo-list"></div>
+        <div id="upload-status" style="font-size: 13px; color: var(--gray); margin-bottom: 16px;"></div>
+
+        <div class="form-group">
+          <label>Video link (YouTube, Vimeo)</label>
+          <input type="url" id="a-video1" placeholder="https://youtube.com/watch?v=...">
+        </div>
+
+        <div class="form-group">
+          <label>Additional video link (optional)</label>
+          <input type="url" id="a-video2" placeholder="https://youtube.com/watch?v=...">
+        </div>
+
+        <div class="form-group">
+          <label>Website or social media (optional)</label>
+          <input type="url" id="a-web" placeholder="https://instagram.com/yourartist">
+        </div>
+
+        <div class="form-group">
+          <label id="rider-label">Technical rider (optional)</label>
+          <textarea id="a-rider" placeholder="e.g. 4 wireless microphones, mixing console, minimum 4x4m space, 220V power..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div id="add-show-section">
+          <div style="margin-top: 16px; padding: 20px; background: var(--accent-light); border-radius: 12px; text-align: center; cursor: pointer; border: 2px dashed var(--accent); transition: all 0.2s;" onclick="addAnotherShow()" id="add-show-btn">
+            <div style="font-size: 24px; margin-bottom: 4px;">&#10133;</div>
+            <div style="font-weight: 600; font-size: 14px; color: var(--accent);">Got another show? Add it here</div>
+            <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">If you run several different shows, you can register more than one</div>
+          </div>
+          <div id="extra-shows"></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(2)">Back</button>
+          <button class="btn-next" onclick="goToStep(4)">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Pricing and conditions -->
+      <div class="step" id="step-4">
+        <h2 class="step-title">Pricing and availability</h2>
+        <p class="step-subtitle">Share your rough price range. We'll review it together if there's interest.</p>
+
+        <label id="price-label" style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Fee range per performance</label>
+        <div class="price-grid">
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&lt; &euro;500</div>
+            <div class="price-desc">Solo artist / short show</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&euro;500 - &euro;1,500</div>
+            <div class="price-desc">Standard show</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&euro;1,500 - &euro;3,000</div>
+            <div class="price-desc">Show with several artists</div>
+          </div>
+          <div class="price-card" onclick="selectOption(this, 'price')">
+            <div class="price-amount">&gt; &euro;3,000</div>
+            <div class="price-desc">Large production / company</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label id="team-label">Number of artists in the show</label>
+            <input type="number" id="a-num-artistas" placeholder="e.g. 3">
+          </div>
+          <div class="form-group" id="duracion-group">
+            <label>Show duration</label>
+            <select id="a-duracion">
+              <option value="" disabled selected>Select</option>
+              <option>15-20 minutes</option>
+              <option>30 minutes</option>
+              <option>45 minutes</option>
+              <option>1 hour</option>
+              <option>More than 1 hour</option>
+              <option>Flexible / to be agreed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Additional comments (optional)</label>
+          <textarea id="a-comentarios" placeholder="e.g. Available weekends only, flexibility on theming, available languages..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="privacy-check">
+            <span class="checkbox-label">I accept the <a href="https://www.eventosbarcelona.com/en/privacy-policy/" target="_blank">privacy policy</a> and the processing of my personal data.</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" id="visibility-check">
+            <span class="checkbox-label">I agree that Eventos Barcelona can publish my material (photos and videos) on their website and social media to increase visibility of my show and generate more opportunities.</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(3)">Back</button>
+          <button class="btn-submit" onclick="submitForm()">Submit my profile</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success">
+        <div class="success-icon">&#10004;&#65039;</div>
+        <h2>Profile received</h2>
+        <p>Our team will review your profile and get in touch if there are matching opportunities. Thanks for wanting to be part of Eventos Barcelona.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const totalSteps = 4;
+    let updateToken = null; // Set when artist arrives via update link
+    let profileType = null; // 'artista' or 'proveedor'
+
+    function selectProfile(type) {
+      profileType = type;
+      const isProveedor = type === 'proveedor';
+
+      // Update header
+      document.querySelector('#form-header h1').textContent = isProveedor
+        ? 'Register your services company'
+        : 'Show your talent to the world';
+      document.querySelector('#form-header p').textContent = isProveedor
+        ? 'We connect trusted suppliers with the best corporate events in Barcelona. Tell us what you offer.'
+        : 'We look for artists and companies to create unforgettable moments at corporate events. Tell us about your show.';
+
+      // Show progress bar
+      document.getElementById('progress-bar').style.display = '';
+
+      // Toggle category grids
+      document.getElementById('cats-artista').style.display = isProveedor ? 'none' : '';
+      document.getElementById('cats-proveedor').style.display = isProveedor ? '' : 'none';
+
+      // Toggle artista-only / proveedor-only fields in step 2
+      document.getElementById('artista-fields').style.display = isProveedor ? 'none' : '';
+      document.getElementById('proveedor-fields').style.display = isProveedor ? '' : 'none';
+
+      // Step 2 titles
+      document.getElementById('step2-title').textContent = isProveedor ? 'Your specialty' : 'Your artistic discipline';
+      document.getElementById('step2-subtitle').textContent = isProveedor
+        ? 'Select the services you offer. You can pick multiple.'
+        : 'Select the main category of your show. You can pick multiple.';
+
+      // Step 3 titles
+      document.getElementById('step3-title').textContent = isProveedor ? 'Your materials' : 'Your portfolio';
+      document.getElementById('step3-subtitle').textContent = isProveedor
+        ? 'Upload photos of your work and share relevant links.'
+        : 'Upload high-quality photos and share video links. Photos should be free of watermarks and logos.';
+
+      // Step 3 fields
+      document.getElementById('rider-label').textContent = isProveedor ? 'Own equipment (optional)' : 'Technical rider (optional)';
+      document.getElementById('a-rider').placeholder = isProveedor
+        ? 'e.g. Line Array PA up to 2,000 people, digital console, Shure microphones, own truck...'
+        : 'e.g. 4 wireless microphones, mixing console, minimum 4x4m space, 220V power...';
+      document.getElementById('add-show-section').style.display = isProveedor ? 'none' : '';
+
+      // Step 4 fields
+      document.getElementById('price-label').textContent = isProveedor ? 'Price range per service' : 'Fee range per performance';
+      document.getElementById('team-label').textContent = isProveedor ? 'People on the team' : 'Number of artists in the show';
+      document.getElementById('duracion-group').style.display = isProveedor ? 'none' : '';
+
+      // Submit button
+      document.querySelector('.btn-submit').textContent = isProveedor ? 'Submit my listing' : 'Submit my profile';
+
+      // Step 1 labels
+      document.querySelector('#step-1 .step-title').textContent = 'Your contact details';
+      const nombreLabel = document.querySelector('label[for="a-nombre"]') || document.getElementById('a-nombre').closest('.form-group').querySelector('label');
+      if (nombreLabel) nombreLabel.textContent = isProveedor ? 'Contact name' : 'Full name / Stage name';
+      document.getElementById('a-nombre').placeholder = isProveedor ? 'e.g. Juan Garcia' : 'e.g. Maria Lopez / Flamenko Fusion';
+      const companiaLabel = document.getElementById('a-compania').closest('.form-group').querySelector('label');
+      if (companiaLabel) companiaLabel.textContent = isProveedor ? 'Company name' : 'Company name (if applicable)';
+      document.getElementById('a-compania').placeholder = isProveedor ? 'e.g. StereoRent BCN SL' : 'e.g. Circo Brillante SL';
+
+      goToStep(1);
+    }
+
+    // Check for ?token= param to load existing artist data
+    (async function checkUpdateMode() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`/api/get-artista?token=${encodeURIComponent(token)}`);
+        if (!res.ok) return;
+        const { data } = await res.json();
+        if (!data) return;
+
+        updateToken = token;
+
+        // Update header text for returning artists
+        document.querySelector('.form-header h1').textContent = 'Update your profile';
+        document.querySelector('.form-header p').textContent = 'Review and update your details. Fields are pre-filled with the information we have.';
+        document.querySelector('.btn-submit').textContent = 'Update my profile';
+
+        // Step 1: Personal info
+        if (data.nombre) document.getElementById('a-nombre').value = data.nombre;
+        if (data.compania) document.getElementById('a-compania').value = data.compania;
+        if (data.email) document.getElementById('a-email').value = data.email;
+        if (data.ciudad) document.getElementById('a-ciudad').value = data.ciudad;
+
+        // Phone: split prefix and number
+        if (data.telefono) {
+          const prefixes = ['+351', '+34', '+33', '+44', '+49', '+39', '+31', '+32', '+41', '+1'];
+          const matchedPrefix = prefixes.find(p => data.telefono.startsWith(p));
+          if (matchedPrefix) {
+            document.getElementById('a-prefix').value = matchedPrefix;
+            document.getElementById('a-phone').value = data.telefono.slice(matchedPrefix.length);
+          } else {
+            document.getElementById('a-phone').value = data.telefono;
+          }
+        }
+
+        // Step 2: Disciplines — click matching option cards
+        if (data.disciplinas && data.disciplinas.length > 0) {
+          document.querySelectorAll('#step-2 .option-grid:first-of-type .option-card').forEach(card => {
+            const label = card.querySelector('.option-label')?.textContent;
+            if (data.disciplinas.includes(label)) {
+              card.classList.add('selected');
+              // Activate matching subcategory chips
+              if (data.subcategorias && data.subcategorias.length > 0) {
+                card.querySelectorAll('.sub-chip').forEach(chip => {
+                  if (data.subcategorias.includes(chip.textContent)) {
+                    chip.classList.add('active');
+                  }
+                });
+              }
+            }
+          });
+        }
+
+        // Show format
+        if (data.formatoShow) {
+          document.querySelectorAll('#step-2 .option-grid:nth-of-type(2) .option-card').forEach(card => {
+            if (card.querySelector('.option-label')?.textContent === data.formatoShow) {
+              card.classList.add('selected');
+            }
+          });
+        }
+
+        // Bio
+        if (data.bioShow) document.getElementById('a-bio').value = data.bioShow;
+
+        // What makes show unique
+        if (data.showUnico && data.showUnico.length > 0) {
+          document.querySelectorAll('#step-2 .option-grid:last-of-type .option-card').forEach(card => {
+            const label = card.querySelector('.option-label')?.textContent;
+            if (data.showUnico.includes(label)) card.classList.add('selected');
+          });
+        }
+
+        // Step 3: Portfolio
+        if (data.video1) document.getElementById('a-video1').value = data.video1;
+        if (data.video2) document.getElementById('a-video2').value = data.video2;
+        if (data.webRrss) document.getElementById('a-web').value = data.webRrss;
+        if (data.riderTecnico) document.getElementById('a-rider').value = data.riderTecnico;
+
+        // Show existing photos
+        if (data.fotosUrls && data.fotosUrls.length > 0) {
+          const list = document.getElementById('photo-list');
+          data.fotosUrls.forEach(url => {
+            uploadedUrls.push(url);
+            const filename = url.split('/').pop();
+            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${filename} — existing photo</div>`;
+          });
+          document.getElementById('photo-upload').classList.add('has-files');
+          document.getElementById('upload-status').textContent = `${data.fotosUrls.length} existing photo(s)`;
+          document.getElementById('upload-status').style.color = '#2ecc71';
+        }
+
+        // Step 4: Pricing
+        if (data.rangoCache) {
+          document.querySelectorAll('.price-card').forEach(card => {
+            if (card.querySelector('.price-amount')?.textContent === data.rangoCache) {
+              card.classList.add('selected');
+            }
+          });
+        }
+        if (data.numArtistas) document.getElementById('a-num-artistas').value = data.numArtistas;
+        if (data.duracionShow) document.getElementById('a-duracion').value = data.duracionShow;
+        if (data.aceptoPrivacidad) document.getElementById('privacy-check').checked = true;
+        if (data.aceptoVisibilidad) document.getElementById('visibility-check').checked = true;
+
+      } catch (err) {
+        console.error('Error loading artist data:', err);
+      }
+    })();
+
+    function validateAndGo(from, to) {
+      // Clear previous errors
+      document.querySelectorAll('.field-error').forEach(el => el.remove());
+      document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+      const errors = [];
+
+      if (from === 1) {
+        const nombre = document.getElementById('a-nombre');
+        const email = document.getElementById('a-email');
+        const phone = document.getElementById('a-phone');
+
+        if (!nombre.value.trim()) errors.push({ el: nombre, msg: 'Name is required' });
+        if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+          errors.push({ el: email, msg: 'Enter a valid email' });
+        }
+        if (!phone.value.trim()) errors.push({ el: phone, msg: 'Phone is required' });
+      }
+
+      if (from === 2) {
+        const gridId = profileType === 'proveedor' ? '#cats-proveedor' : '#cats-artista';
+        const selected = document.querySelectorAll(`${gridId} .option-card.selected`);
+        if (selected.length === 0) {
+          const grid = document.querySelector(gridId);
+          const msg = document.createElement('div');
+          msg.className = 'field-error';
+          msg.textContent = profileType === 'proveedor' ? 'Select at least one service' : 'Select at least one category';
+          grid.parentElement.insertBefore(msg, grid.nextSibling);
+          errors.push({});
+        }
+      }
+
+      if (errors.length > 0) {
+        errors.forEach(err => {
+          if (err.el) {
+            err.el.classList.add('input-error');
+            const msg = document.createElement('div');
+            msg.className = 'field-error';
+            msg.textContent = err.msg;
+            err.el.closest('.form-group, div').appendChild(msg);
+          }
+        });
+        return;
+      }
+
+      goToStep(to);
+    }
+
+    function goToStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        const line = document.getElementById('line-' + (i - 1));
+        dot.classList.remove('active', 'completed');
+        if (i < n) {
+          dot.classList.add('completed');
+          dot.innerHTML = '&#10003;';
+        } else if (i === n) {
+          dot.classList.add('active');
+          dot.innerHTML = i;
+        } else {
+          dot.innerHTML = i;
+        }
+        if (line) {
+          line.classList.toggle('active', i < n);
+        }
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectOption(el, group) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.option-card, .price-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleOption(el) {
+      el.classList.toggle('selected');
+      if (!el.classList.contains('selected')) {
+        el.querySelectorAll('.sub-chip').forEach(c => c.classList.remove('active'));
+      }
+    }
+
+    function toggleChip(el) {
+      el.classList.toggle('active');
+    }
+
+    let showCount = 0;
+    function addAnotherShow() {
+      showCount++;
+      const container = document.getElementById('extra-shows');
+      const div = document.createElement('div');
+      div.style.cssText = 'margin-top: 20px; padding: 24px; background: var(--light-gray); border-radius: 12px; position: relative;';
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <strong style="font-size: 14px;">Additional show #${showCount}</strong>
+          <span onclick="this.parentElement.parentElement.remove()" style="cursor: pointer; color: var(--gray); font-size: 18px;">&times;</span>
+        </div>
+        <div class="form-group">
+          <label>Show name</label>
+          <input type="text" placeholder="e.g. Fire Dance Show">
+        </div>
+        <div class="form-group">
+          <label>Short description</label>
+          <textarea placeholder="Describe this show..." style="min-height: 60px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Video link (optional)</label>
+          <input type="url" placeholder="https://youtube.com/watch?v=...">
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    const CLOUD_NAME = 'de9gs7bty';
+    const UPLOAD_PRESET = 'artistas_unsigned';
+    const uploadedUrls = [];
+
+    async function uploadToCloudinary(files) {
+      const area = document.getElementById('photo-upload');
+      const list = document.getElementById('photo-list');
+      const status = document.getElementById('upload-status');
+
+      list.innerHTML = '';
+      status.textContent = 'Uploading photos...';
+
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — too large (max 10MB)</div>`;
+          continue;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        try {
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+
+          if (data.secure_url) {
+            uploadedUrls.push(data.secure_url);
+            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${file.name} — uploaded successfully</div>`;
+          } else {
+            list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — upload error</div>`;
+          }
+        } catch (err) {
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — connection error</div>`;
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        area.classList.add('has-files');
+        status.textContent = `${uploadedUrls.length} photo(s) uploaded successfully`;
+        status.style.color = '#2ecc71';
+      } else {
+        status.textContent = 'Could not upload the photos. Please try again.';
+        status.style.color = '#c0392b';
+      }
+    }
+
+    async function submitForm() {
+      const btn = document.querySelector('.btn-submit');
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      // Collect disciplines/services and subcategories from step 2
+      const isProveedor = profileType === 'proveedor';
+      const activeGrid = isProveedor ? '#cats-proveedor' : '#cats-artista';
+      const disciplinas = [];
+      const subcategorias = [];
+      document.querySelectorAll(`${activeGrid} .option-card.selected`).forEach(card => {
+        const label = card.querySelector('.option-label')?.textContent;
+        if (label) disciplinas.push(label);
+        card.querySelectorAll('.sub-chip.active').forEach(chip => {
+          subcategorias.push(chip.textContent);
+        });
+      });
+      // For proveedor, add 'Proveedores' as wrapper discipline for API tag mapping
+      if (isProveedor && !disciplinas.includes('Proveedores')) {
+        disciplinas.unshift('Proveedores');
+      }
+
+      // Show format (stage / strolling) — only for artistas
+      const formatoShow = !isProveedor
+        ? (document.querySelector('#artista-fields .option-grid .option-card.selected .option-label')?.textContent || '')
+        : '';
+
+      // What makes show unique — only for artistas
+      const showUnico = [];
+      if (!isProveedor) {
+        document.querySelectorAll('#artista-fields .option-grid:last-of-type .option-card.selected').forEach(card => {
+          const label = card.querySelector('.option-label')?.textContent;
+          if (label) showUnico.push(label);
+        });
+      }
+
+      // Price range
+      const rangoCache = document.querySelector('.price-card.selected .price-amount')?.textContent || '';
+
+      // Extra shows
+      const extraShows = [];
+      document.querySelectorAll('#extra-shows > div').forEach(div => {
+        const inputs = div.querySelectorAll('input, textarea');
+        if (inputs.length >= 2) {
+          extraShows.push({
+            nombre: inputs[0]?.value || '',
+            descripcion: inputs[1]?.value || '',
+            video: inputs[2]?.value || ''
+          });
+        }
+      });
+
+      const payload = {
+        lang: 'en',
+        _token: updateToken || undefined, // Include token for update mode
+        nombre: document.getElementById('a-nombre')?.value || '',
+        nombreArtistico: document.getElementById('a-nombre')?.value || '',
+        compania: document.getElementById('a-compania')?.value || '',
+        email: document.getElementById('a-email')?.value || '',
+        telefono: (document.getElementById('a-prefix')?.value || '+34') + (document.getElementById('a-phone')?.value || ''),
+        ciudad: document.getElementById('a-ciudad')?.value || '',
+        disciplinas,
+        subcategorias,
+        formatoShow,
+        profileType: profileType || 'artista',
+        bioShow: isProveedor
+          ? (document.getElementById('a-bio-prov')?.value || '')
+          : (document.getElementById('a-bio')?.value || ''),
+        showUnico,
+        video1: document.getElementById('a-video1')?.value || '',
+        video2: document.getElementById('a-video2')?.value || '',
+        webRrss: document.getElementById('a-web')?.value || '',
+        riderTecnico: document.getElementById('a-rider')?.value || '',
+        fotosUrls: uploadedUrls,
+        rangoCache,
+        numArtistas: document.getElementById('a-num-artistas')?.value || '',
+        duracionShow: document.getElementById('a-duracion')?.value || '',
+        showsAdicionales: extraShows.length > 0 ? JSON.stringify(extraShows) : '',
+        aceptoPrivacidad: document.getElementById('privacy-check')?.checked || false,
+        aceptoVisibilidad: document.getElementById('visibility-check')?.checked || false,
+        comentarios: document.getElementById('a-comentarios')?.value || ''
+      };
+
+      try {
+        const res = await fetch('/api/lead-artista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!result.success) console.error('GHL error:', result);
+      } catch (err) {
+        console.error('Submit error:', err);
+      }
+
+      // Show success — adapt message for updates
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      if (updateToken) {
+        document.querySelector('#success h2').textContent = 'Profile updated';
+        document.querySelector('#success p').textContent = 'Your details have been updated successfully. Thanks for keeping your profile up to date.';
+      }
+      document.getElementById('success').classList.add('active');
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.remove('active');
+        dot.classList.add('completed');
+        dot.innerHTML = '&#10003;';
+        const line = document.getElementById('line-' + i);
+        if (line) line.classList.add('active');
+      }
+    }
+  </script>
+
+</body>
+</html>
