@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Scale IT × Eventos Barcelona · Plan 8 meses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ===========================================
+/* =========================================================
    SCALE IT IDENTITY — CSS CUSTOM PROPERTIES
-   =========================================== */
+   ========================================================= */
 :root {
     --green: #2EC4A0;
     --green-light: #e8f9f5;
@@ -29,24 +30,24 @@
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-    --title-size: clamp(1.8rem, 5vw, 3.2rem);
-    --h2-size: clamp(1.4rem, 3.5vw, 2.4rem);
-    --h3-size: clamp(0.95rem, 2vw, 1.3rem);
-    --body-size: clamp(0.75rem, 1.3vw, 1rem);
-    --small-size: clamp(0.65rem, 1vw, 0.85rem);
+    --title-size: clamp(1.6rem, 4.5vw, 2.9rem);
+    --h2-size: clamp(1.3rem, 3.2vw, 2.2rem);
+    --h3-size: clamp(0.9rem, 1.9vw, 1.2rem);
+    --body-size: clamp(0.72rem, 1.25vw, 0.95rem);
+    --small-size: clamp(0.65rem, 1vw, 0.8rem);
     --label-size: clamp(0.55rem, 0.8vw, 0.7rem);
 
-    --slide-padding: clamp(1.5rem, 4vw, 4rem);
-    --content-gap: clamp(1rem, 2vw, 2rem);
-    --element-gap: clamp(0.4rem, 1vw, 1rem);
+    --slide-padding: clamp(1.3rem, 3.5vw, 3.5rem);
+    --content-gap: clamp(0.8rem, 1.8vw, 1.6rem);
+    --element-gap: clamp(0.35rem, 0.9vw, 0.9rem);
 
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --duration-normal: 0.6s;
 }
 
-/* ===========================================
-   BASE RESET & VIEWPORT FITTING (MANDATORY)
-   =========================================== */
+/* =========================================================
+   BASE RESET & VIEWPORT FITTING
+   ========================================================= */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -64,7 +65,7 @@ html {
 
 body {
     font-size: var(--body-size);
-    line-height: 1.6;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -84,7 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: min(1200px, 92vw);
+    max-width: min(1240px, 94vw);
     width: 100%;
     margin: 0 auto;
     max-height: 100%;
@@ -93,9 +94,9 @@ body {
     gap: var(--content-gap);
 }
 
-/* ===========================================
-   THEMES — DARK / LIGHT / WHITE
-   =========================================== */
+/* =========================================================
+   THEMES
+   ========================================================= */
 .slide.dark {
     background:
         radial-gradient(ellipse at 80% 20%, rgba(46, 196, 160, 0.08) 0%, transparent 55%),
@@ -107,9 +108,9 @@ body {
 .slide.light { background: var(--gray-50); color: var(--gray-700); }
 .slide.white { background: var(--white); color: var(--gray-700); }
 
-/* ===========================================
+/* =========================================================
    TYPOGRAPHY
-   =========================================== */
+   ========================================================= */
 h1, h2, h3 {
     font-family: var(--font-display);
     font-weight: 800;
@@ -127,17 +128,16 @@ h3 { font-size: var(--h3-size); font-weight: 700; }
 
 h1 span.accent, h2 span.accent, h3 span.accent { color: var(--green); }
 
-p { font-size: var(--body-size); line-height: 1.6; }
+p { font-size: var(--body-size); line-height: 1.55; }
 .slide.dark p { color: rgba(255,255,255,0.78); }
 
-/* Eyebrow label pill */
 .label {
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
     background: var(--green-glow);
     color: var(--green);
-    padding: 0.45em 1em;
+    padding: 0.4em 0.95em;
     border-radius: 100px;
     font-size: var(--label-size);
     font-weight: 700;
@@ -147,17 +147,17 @@ p { font-size: var(--body-size); line-height: 1.6; }
     border: 1px solid var(--green-border);
 }
 
-/* ===========================================
+/* =========================================================
    CARDS & COMPONENTS
-   =========================================== */
+   ========================================================= */
 .card {
     background: var(--gray-100);
     border: 1px solid var(--gray-200);
-    border-radius: 14px;
-    padding: clamp(1rem, 2vw, 1.75rem);
+    border-radius: 12px;
+    padding: clamp(0.85rem, 1.6vw, 1.4rem);
     display: flex;
     flex-direction: column;
-    gap: 0.6em;
+    gap: 0.5em;
 }
 
 .slide.dark .card {
@@ -165,7 +165,7 @@ p { font-size: var(--body-size); line-height: 1.6; }
     border-color: rgba(255,255,255,0.08);
 }
 
-.card .card-label {
+.card .card-label, .card-label {
     font-size: var(--label-size);
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -173,69 +173,55 @@ p { font-size: var(--body-size); line-height: 1.6; }
     font-weight: 700;
 }
 
-.card h3 { color: inherit; }
-.slide.dark .card h3 { color: var(--white); }
-
 .metric {
-    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
     font-weight: 800;
     color: var(--green);
     letter-spacing: -0.02em;
     line-height: 1;
 }
 
-/* Comparison cards (gasto vs activo) */
+/* Comparison cards (paid vs activo) */
 .comparison-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(0.8rem, 2vw, 1.4rem);
+    gap: clamp(0.8rem, 1.8vw, 1.4rem);
 }
 
-.comparison-card { padding: clamp(1rem, 2.2vw, 1.75rem); border-radius: 14px; display: flex; flex-direction: column; gap: 0.6em; }
-.comparison-card.bad {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-}
+.comparison-card { padding: clamp(0.95rem, 1.9vw, 1.6rem); border-radius: 12px; display: flex; flex-direction: column; gap: 0.5em; }
+.comparison-card.bad { background: var(--gray-100); border: 1px solid var(--gray-200); }
 .comparison-card.bad .card-label { color: var(--red-muted); }
-.comparison-card.good {
-    background: var(--navy);
-    color: var(--white);
-    border: 1px solid var(--green-border);
-}
+.comparison-card.good { background: var(--navy); color: var(--white); border: 1px solid var(--green-border); }
 .comparison-card.good .card-label { color: var(--green); }
 .comparison-card.good h3 { color: var(--white); }
-.comparison-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.4em; }
+.comparison-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.35em; }
 .comparison-card ul li {
-    padding-left: 1.2em;
+    padding-left: 1.1em;
     position: relative;
     font-size: var(--body-size);
-    line-height: 1.45;
+    line-height: 1.4;
 }
 .comparison-card ul li::before {
     content: "";
     position: absolute;
     left: 0; top: 0.55em;
-    width: 0.5em; height: 0.5em;
+    width: 0.42em; height: 0.42em;
     border-radius: 50%;
     background: var(--green);
 }
 .comparison-card.bad ul li::before { background: var(--red-muted); }
 .comparison-card.good ul li { color: rgba(255,255,255,0.85); }
 
-/* 2x2 Pillar grid */
-.pillar-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(0.8rem, 1.6vw, 1.2rem);
-}
+/* Pillar grid (4 boxes) */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.1rem); }
 .pillar-card {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: clamp(0.9rem, 1.8vw, 1.4rem);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.6vw, 1.3rem);
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.4em;
 }
 .pillar-num {
     font-size: var(--label-size);
@@ -243,170 +229,106 @@ p { font-size: var(--body-size); line-height: 1.6; }
     letter-spacing: 0.2em;
     color: var(--green);
 }
-.pillar-card h3 { color: var(--white); font-size: clamp(0.9rem, 1.6vw, 1.15rem); }
-.pillar-card p { color: rgba(255,255,255,0.72); font-size: var(--small-size); line-height: 1.5; }
+.pillar-card h3 { color: var(--white); font-size: clamp(0.88rem, 1.55vw, 1.12rem); }
+.pillar-card p { color: rgba(255,255,255,0.72); font-size: var(--small-size); line-height: 1.45; }
 
 /* Two-column content */
-.two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(1rem, 2.5vw, 2rem);
-}
-.col-block { display: flex; flex-direction: column; gap: 0.7em; }
-.col-block h3 { font-size: clamp(1rem, 1.8vw, 1.3rem); color: var(--navy); }
-.col-block ul { list-style: none; display: flex; flex-direction: column; gap: 0.4em; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.9rem, 2.2vw, 1.8rem); }
+.col-block { display: flex; flex-direction: column; gap: 0.6em; }
+.col-block h3 { font-size: clamp(0.95rem, 1.7vw, 1.2rem); color: var(--navy); }
+.slide.dark .col-block h3 { color: var(--white); }
+.col-block ul { list-style: none; display: flex; flex-direction: column; gap: 0.35em; }
 .col-block ul li {
-    padding-left: 1.2em;
+    padding-left: 1.1em;
     position: relative;
     font-size: var(--body-size);
-    line-height: 1.5;
+    line-height: 1.45;
 }
-.col-block ul li::before {
-    content: "→";
-    position: absolute; left: 0; color: var(--green);
-    font-weight: 700;
-}
+.col-block ul li::before { content: "→"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
 
-/* Case studies */
-.case-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(0.8rem, 1.8vw, 1.3rem);
-}
-.case-card {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-    border-radius: 14px;
-    padding: clamp(1rem, 2vw, 1.5rem);
-    display: flex;
-    flex-direction: column;
-    gap: 0.6em;
-}
-.case-card .case-name {
-    font-size: var(--label-size);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--green);
-    font-weight: 700;
-}
-.case-card h3 { font-size: clamp(0.95rem, 1.7vw, 1.2rem); color: var(--navy); }
-.case-metric {
-    font-size: clamp(1.3rem, 2.8vw, 2rem);
-    font-weight: 800;
-    color: var(--green);
-    line-height: 1;
-    margin-top: 0.3em;
-}
-.case-desc { font-size: var(--small-size); color: var(--gray-700); line-height: 1.5; }
-
-/* Timeline phases */
-.timeline {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: clamp(0.6rem, 1.4vw, 1rem);
-}
-.phase-card {
+/* Three-column mini cards */
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.1rem); }
+.mini-card {
     background: var(--white);
     border: 1px solid var(--gray-200);
-    border-radius: 14px;
-    padding: clamp(0.9rem, 1.6vw, 1.3rem);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
-    position: relative;
+    gap: 0.45em;
 }
-.phase-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--green);
-    border-radius: 14px 14px 0 0;
-}
-.phase-num {
-    font-size: var(--label-size);
-    font-weight: 800;
-    letter-spacing: 0.2em;
-    color: var(--green);
-    text-transform: uppercase;
-}
-.phase-card h3 { font-size: clamp(0.85rem, 1.5vw, 1.05rem); color: var(--navy); }
-.phase-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.25em; }
-.phase-card ul li {
-    font-size: clamp(0.68rem, 1vw, 0.82rem);
-    line-height: 1.4;
-    padding-left: 0.9em;
-    position: relative;
-    color: var(--gray-700);
-}
-.phase-card ul li::before {
-    content: "·";
-    position: absolute; left: 0.2em; top: -0.05em;
-    color: var(--green);
-    font-weight: 800;
-}
+.mini-card h3 { font-size: clamp(0.88rem, 1.5vw, 1.1rem); color: var(--navy); }
+.mini-card p { font-size: var(--small-size); line-height: 1.45; color: var(--gray-700); }
+.slide.light .mini-card { background: var(--white); }
 
-/* Comparison table */
-.diff-table {
+/* Data tables */
+.data-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background: var(--white);
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--gray-200);
-}
-.diff-table thead th {
-    background: var(--gray-100);
-    padding: clamp(0.6rem, 1.2vw, 1rem);
-    text-align: left;
     font-size: var(--small-size);
+}
+.data-table thead th {
+    background: var(--gray-100);
+    padding: clamp(0.5rem, 1vw, 0.85rem);
+    text-align: left;
+    font-size: var(--label-size);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--gray-400);
 }
-.diff-table thead th.good-col { color: var(--green); }
-.diff-table td {
-    padding: clamp(0.5rem, 1vw, 0.85rem) clamp(0.6rem, 1.2vw, 1rem);
-    font-size: var(--body-size);
+.data-table thead th.good-col { color: var(--green); }
+.data-table td {
+    padding: clamp(0.45rem, 0.85vw, 0.75rem) clamp(0.5rem, 1vw, 0.85rem);
     border-top: 1px solid var(--gray-200);
-    line-height: 1.4;
+    line-height: 1.35;
+    color: var(--gray-700);
 }
-.diff-table td:first-child { font-weight: 700; color: var(--navy); }
-.diff-table td.bad { color: var(--red-muted); }
-.diff-table td.good { color: var(--navy); font-weight: 600; }
+.data-table td:first-child { font-weight: 700; color: var(--navy); }
+.data-table td.bad { color: var(--red-muted); }
+.data-table td.good { color: var(--green); font-weight: 700; }
+.data-table td.pos { color: var(--green); font-weight: 800; font-family: var(--font-display); }
+.data-table td .pill {
+    display: inline-block;
+    background: var(--green-glow);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+    padding: 0.15em 0.6em;
+    border-radius: 100px;
+    font-size: var(--label-size);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
 
 /* Quote block */
 .quote-block {
     background: var(--gray-100);
     border-left: 4px solid var(--green);
-    border-radius: 4px 14px 14px 4px;
-    padding: clamp(0.9rem, 2vw, 1.4rem) clamp(1.2rem, 2.5vw, 2rem);
+    border-radius: 4px 12px 12px 4px;
+    padding: clamp(0.8rem, 1.7vw, 1.25rem) clamp(1.1rem, 2.3vw, 1.8rem);
     font-style: italic;
-    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+    font-size: clamp(0.82rem, 1.4vw, 1.05rem);
     color: var(--navy);
     line-height: 1.5;
 }
-.slide.dark .quote-block {
-    background: rgba(255,255,255,0.04);
-    color: rgba(255,255,255,0.9);
-}
+.slide.dark .quote-block { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); }
 
-/* Tool cards (slide 9) */
-.tool-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(0.8rem, 1.6vw, 1.2rem);
-}
+/* Tool cards */
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.1rem); }
 .tool-card {
     background: var(--navy);
     border: 1px solid var(--green-border);
-    border-radius: 14px;
-    padding: clamp(1rem, 2vw, 1.5rem);
+    border-radius: 12px;
+    padding: clamp(0.9rem, 1.7vw, 1.3rem);
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.45em;
     position: relative;
     overflow: hidden;
 }
@@ -418,7 +340,7 @@ p { font-size: var(--body-size); line-height: 1.6; }
     background: radial-gradient(circle, rgba(46,196,160,0.1) 0%, transparent 70%);
     pointer-events: none;
 }
-.tool-card h3 { font-size: clamp(1rem, 1.8vw, 1.3rem); color: var(--white); }
+.tool-card h3 { font-size: clamp(0.95rem, 1.7vw, 1.25rem); color: var(--white); }
 .tool-card .tool-tag {
     font-size: var(--label-size);
     text-transform: uppercase;
@@ -426,9 +348,9 @@ p { font-size: var(--body-size); line-height: 1.6; }
     color: var(--green);
     font-weight: 700;
 }
-.tool-card p { color: rgba(255,255,255,0.78); font-size: var(--small-size); line-height: 1.5; }
+.tool-card p { color: rgba(255,255,255,0.78); font-size: var(--small-size); line-height: 1.45; }
 
-/* CTA button */
+/* CTA */
 .cta-btn {
     display: inline-flex;
     align-items: center;
@@ -449,48 +371,155 @@ p { font-size: var(--body-size); line-height: 1.6; }
 }
 .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(46,196,160,0.3); }
 
-.cta-row { display: flex; flex-direction: column; gap: 1.2em; align-items: center; text-align: center; }
+.cta-row { display: flex; flex-direction: column; gap: 1em; align-items: center; text-align: center; }
 .cta-contact { color: rgba(255,255,255,0.65); font-size: var(--small-size); }
 
-/* Stats row (slide 2) */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: clamp(0.6rem, 1.4vw, 1rem);
-}
+/* Stat cards row */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(0.6rem, 1.3vw, 1rem); }
+.stats-row.three { grid-template-columns: repeat(3, 1fr); }
+.stats-row.six { grid-template-columns: repeat(6, 1fr); }
 .stat-card {
     background: var(--white);
     border: 1px solid var(--gray-200);
-    border-radius: 14px;
-    padding: clamp(0.9rem, 1.7vw, 1.3rem);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
     display: flex;
     flex-direction: column;
-    gap: 0.35em;
+    gap: 0.3em;
 }
 .stat-card .stat-val {
-    font-size: clamp(1.3rem, 2.8vw, 2rem);
+    font-size: clamp(1.25rem, 2.6vw, 1.85rem);
     font-weight: 800;
     color: var(--green);
     line-height: 1;
     letter-spacing: -0.02em;
 }
-.stat-card .stat-label {
-    font-size: var(--small-size);
-    color: var(--gray-700);
-    line-height: 1.35;
+.stat-card .stat-label { font-size: var(--small-size); color: var(--gray-700); line-height: 1.3; }
+
+/* Detail pillar (single pillar deep dive) */
+.detail-header { display: flex; align-items: center; gap: 0.7em; }
+.detail-num {
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    letter-spacing: -0.03em;
 }
+.detail-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.1rem); }
+.step-card {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.75rem, 1.4vw, 1.15rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+}
+.step-num {
+    font-size: var(--label-size);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    text-transform: uppercase;
+}
+.step-card h3 { font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--navy); }
+.step-card p { font-size: var(--small-size); line-height: 1.4; color: var(--gray-700); }
+
+/* Content plan grid (6 pillars of articles) */
+.content-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.2vw, 0.9rem); }
+.content-pillar {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.75rem, 1.4vw, 1.1rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+.content-pillar .pill-count {
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+}
+.content-pillar h3 { font-size: clamp(0.82rem, 1.35vw, 1rem); color: var(--navy); }
+.content-pillar p { font-size: clamp(0.65rem, 1vw, 0.78rem); line-height: 1.35; color: var(--gray-700); }
+
+/* Timeline phases */
+.timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(0.55rem, 1.2vw, 0.9rem); }
+.phase-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.4vw, 1.15rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    position: relative;
+}
+.phase-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--green);
+    border-radius: 12px 12px 0 0;
+}
+.phase-num {
+    font-size: var(--label-size);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    text-transform: uppercase;
+}
+.phase-card h3 { font-size: clamp(0.82rem, 1.4vw, 1.02rem); color: var(--navy); }
+.phase-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.2em; }
+.phase-card ul li {
+    font-size: clamp(0.65rem, 0.95vw, 0.78rem);
+    line-height: 1.35;
+    padding-left: 0.8em;
+    position: relative;
+    color: var(--gray-700);
+}
+.phase-card ul li::before { content: "·"; position: absolute; left: 0.2em; top: -0.1em; color: var(--green); font-weight: 800; }
+
+/* Case studies */
+.case-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.7rem, 1.6vw, 1.2rem); }
+.case-card {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.9rem, 1.8vw, 1.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.case-card .case-name {
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--green);
+    font-weight: 700;
+}
+.case-card h3 { font-size: clamp(0.9rem, 1.5vw, 1.12rem); color: var(--navy); }
+.case-metric {
+    font-size: clamp(1.2rem, 2.5vw, 1.85rem);
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    margin-top: 0.2em;
+}
+.case-desc { font-size: var(--small-size); color: var(--gray-700); line-height: 1.45; }
 
 /* Title slide */
-.title-slide .slide-content { justify-content: center; align-items: flex-start; gap: clamp(0.8rem, 1.8vw, 1.4rem); }
-.title-slide h1 { font-size: clamp(2.4rem, 6.5vw, 4.8rem); max-width: 16ch; }
-.title-slide .subtitle { font-size: clamp(1rem, 1.8vw, 1.3rem); color: rgba(255,255,255,0.72); max-width: 48ch; }
-.title-slide .footer-pills {
-    display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.6em;
-}
+.title-slide .slide-content { justify-content: center; align-items: flex-start; gap: clamp(0.7rem, 1.5vw, 1.2rem); }
+.title-slide h1 { font-size: clamp(2.1rem, 5.8vw, 4.2rem); max-width: 16ch; }
+.title-slide .subtitle { font-size: clamp(0.95rem, 1.7vw, 1.25rem); color: rgba(255,255,255,0.72); max-width: 50ch; }
+.title-slide .footer-pills { display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.5em; }
 .title-slide .footer-pills span {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.12);
-    padding: 0.4em 0.9em;
+    padding: 0.4em 0.85em;
     border-radius: 100px;
     font-size: var(--small-size);
     color: rgba(255,255,255,0.85);
@@ -500,8 +529,8 @@ p { font-size: var(--body-size); line-height: 1.6; }
 /* Slide number */
 .slide-number {
     position: absolute;
-    bottom: clamp(0.8rem, 1.5vw, 1.2rem);
-    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    bottom: clamp(0.75rem, 1.4vw, 1.1rem);
+    right: clamp(0.75rem, 1.4vw, 1.1rem);
     font-size: var(--label-size);
     font-weight: 700;
     letter-spacing: 0.18em;
@@ -510,9 +539,7 @@ p { font-size: var(--body-size); line-height: 1.6; }
 }
 .slide.dark .slide-number { color: rgba(255,255,255,0.45); }
 
-/* ===========================================
-   PROGRESS BAR
-   =========================================== */
+/* Progress bar */
 .progress-bar {
     position: fixed;
     top: 0; left: 0;
@@ -523,21 +550,19 @@ p { font-size: var(--body-size); line-height: 1.6; }
     width: 0;
 }
 
-/* ===========================================
-   NAV DOTS
-   =========================================== */
+/* Nav dots */
 .nav-dots {
     position: fixed;
-    right: clamp(0.6rem, 1.5vw, 1.2rem);
+    right: clamp(0.5rem, 1.2vw, 1rem);
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.45em;
     z-index: 100;
 }
 .nav-dot {
-    width: 8px; height: 8px;
+    width: 7px; height: 7px;
     border-radius: 50%;
     background: rgba(128,128,128,0.35);
     border: none;
@@ -547,9 +572,7 @@ p { font-size: var(--body-size); line-height: 1.6; }
 }
 .nav-dot.active { background: var(--green); transform: scale(1.4); }
 
-/* ===========================================
-   ANIMATIONS — .reveal triggered by IO
-   =========================================== */
+/* Animations */
 .reveal {
     opacity: 0;
     transform: translateY(30px);
@@ -558,48 +581,51 @@ p { font-size: var(--body-size); line-height: 1.6; }
 }
 .slide.visible .reveal { opacity: 1; transform: translateY(0); }
 
-.reveal-scale {
-    opacity: 0;
-    transform: scale(0.94);
-    transition: opacity var(--duration-normal) var(--ease-out-expo),
-                transform var(--duration-normal) var(--ease-out-expo);
-}
-.slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+.slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.visible .reveal:nth-child(2) { transition-delay: 0.13s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: 0.21s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: 0.29s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: 0.37s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: 0.45s; }
 
-.slide.visible .reveal:nth-child(1), .slide.visible .reveal-scale:nth-child(1) { transition-delay: 0.05s; }
-.slide.visible .reveal:nth-child(2), .slide.visible .reveal-scale:nth-child(2) { transition-delay: 0.15s; }
-.slide.visible .reveal:nth-child(3), .slide.visible .reveal-scale:nth-child(3) { transition-delay: 0.25s; }
-.slide.visible .reveal:nth-child(4), .slide.visible .reveal-scale:nth-child(4) { transition-delay: 0.35s; }
-.slide.visible .reveal:nth-child(5), .slide.visible .reveal-scale:nth-child(5) { transition-delay: 0.45s; }
-.slide.visible .reveal:nth-child(6), .slide.visible .reveal-scale:nth-child(6) { transition-delay: 0.55s; }
-
-/* Children stagger within grids */
-.stats-row > *, .pillar-grid > *, .case-grid > *, .timeline > *, .tool-grid > *, .comparison-grid > * {
+/* Grid children stagger */
+.stats-row > *, .pillar-grid > *, .case-grid > *, .timeline > *, .tool-grid > *,
+.comparison-grid > *, .three-col > *, .detail-row > *, .content-pillars > * {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
     transition: opacity 0.55s var(--ease-out-expo), transform 0.55s var(--ease-out-expo);
 }
 .slide.visible .stats-row > *, .slide.visible .pillar-grid > *,
 .slide.visible .case-grid > *, .slide.visible .timeline > *,
-.slide.visible .tool-grid > *, .slide.visible .comparison-grid > * {
+.slide.visible .tool-grid > *, .slide.visible .comparison-grid > *,
+.slide.visible .three-col > *, .slide.visible .detail-row > *,
+.slide.visible .content-pillars > * {
     opacity: 1;
     transform: translateY(0);
 }
 .slide.visible .stats-row > *:nth-child(1), .slide.visible .pillar-grid > *:nth-child(1),
 .slide.visible .case-grid > *:nth-child(1), .slide.visible .timeline > *:nth-child(1),
-.slide.visible .tool-grid > *:nth-child(1), .slide.visible .comparison-grid > *:nth-child(1) { transition-delay: 0.2s; }
+.slide.visible .tool-grid > *:nth-child(1), .slide.visible .comparison-grid > *:nth-child(1),
+.slide.visible .three-col > *:nth-child(1), .slide.visible .detail-row > *:nth-child(1),
+.slide.visible .content-pillars > *:nth-child(1) { transition-delay: 0.2s; }
 .slide.visible .stats-row > *:nth-child(2), .slide.visible .pillar-grid > *:nth-child(2),
 .slide.visible .case-grid > *:nth-child(2), .slide.visible .timeline > *:nth-child(2),
-.slide.visible .tool-grid > *:nth-child(2), .slide.visible .comparison-grid > *:nth-child(2) { transition-delay: 0.3s; }
+.slide.visible .tool-grid > *:nth-child(2), .slide.visible .comparison-grid > *:nth-child(2),
+.slide.visible .three-col > *:nth-child(2), .slide.visible .detail-row > *:nth-child(2),
+.slide.visible .content-pillars > *:nth-child(2) { transition-delay: 0.28s; }
 .slide.visible .stats-row > *:nth-child(3), .slide.visible .pillar-grid > *:nth-child(3),
 .slide.visible .case-grid > *:nth-child(3), .slide.visible .timeline > *:nth-child(3),
-.slide.visible .tool-grid > *:nth-child(3) { transition-delay: 0.4s; }
+.slide.visible .tool-grid > *:nth-child(3), .slide.visible .three-col > *:nth-child(3),
+.slide.visible .detail-row > *:nth-child(3), .slide.visible .content-pillars > *:nth-child(3) { transition-delay: 0.36s; }
 .slide.visible .stats-row > *:nth-child(4), .slide.visible .pillar-grid > *:nth-child(4),
-.slide.visible .timeline > *:nth-child(4), .slide.visible .tool-grid > *:nth-child(4) { transition-delay: 0.5s; }
+.slide.visible .timeline > *:nth-child(4), .slide.visible .tool-grid > *:nth-child(4),
+.slide.visible .content-pillars > *:nth-child(4) { transition-delay: 0.44s; }
+.slide.visible .stats-row > *:nth-child(5), .slide.visible .content-pillars > *:nth-child(5) { transition-delay: 0.52s; }
+.slide.visible .stats-row > *:nth-child(6), .slide.visible .content-pillars > *:nth-child(6) { transition-delay: 0.6s; }
 
-/* ===========================================
+/* =========================================================
    INLINE EDITING
-   =========================================== */
+   ========================================================= */
 .edit-hotzone {
     position: fixed; top: 0; left: 0;
     width: 80px; height: 80px;
@@ -608,10 +634,10 @@ p { font-size: var(--body-size); line-height: 1.6; }
 }
 .edit-toggle {
     position: fixed;
-    top: clamp(0.6rem, 1.2vw, 1rem);
-    left: clamp(0.6rem, 1.2vw, 1rem);
-    width: clamp(38px, 4vw, 46px);
-    height: clamp(38px, 4vw, 46px);
+    top: clamp(0.55rem, 1.1vw, 0.9rem);
+    left: clamp(0.55rem, 1.1vw, 0.9rem);
+    width: clamp(36px, 3.8vw, 44px);
+    height: clamp(36px, 3.8vw, 44px);
     border-radius: 50%;
     background: var(--green);
     color: var(--navy);
@@ -620,7 +646,7 @@ p { font-size: var(--body-size); line-height: 1.6; }
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.2s ease;
-    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    font-size: clamp(0.95rem, 1.7vw, 1.2rem);
     z-index: 10001;
     display: flex;
     align-items: center;
@@ -633,25 +659,22 @@ p { font-size: var(--body-size); line-height: 1.6; }
 
 body.edit-mode [data-editable] {
     outline: 2px dashed var(--green-border);
-    outline-offset: 4px;
+    outline-offset: 3px;
     cursor: text;
     border-radius: 4px;
     transition: outline-color 0.15s ease;
 }
 body.edit-mode [data-editable]:hover { outline-color: var(--green); }
-body.edit-mode [data-editable]:focus {
-    outline: 2px solid var(--green);
-    background: rgba(46,196,160,0.06);
-}
+body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); background: rgba(46,196,160,0.06); }
 
 .edit-hint {
     position: fixed;
-    bottom: clamp(0.8rem, 1.5vw, 1.2rem);
+    bottom: clamp(0.7rem, 1.3vw, 1.1rem);
     left: 50%;
     transform: translateX(-50%);
     background: var(--navy);
     color: var(--white);
-    padding: 0.6em 1.2em;
+    padding: 0.55em 1.1em;
     border-radius: 100px;
     font-size: var(--small-size);
     font-weight: 600;
@@ -663,47 +686,58 @@ body.edit-mode [data-editable]:focus {
 }
 .edit-hint.show { opacity: 1; }
 
-/* ===========================================
+/* =========================================================
    RESPONSIVE BREAKPOINTS
-   =========================================== */
+   ========================================================= */
+@media (max-height: 820px) {
+    :root {
+        --content-gap: clamp(0.55rem, 1.3vw, 1rem);
+        --title-size: clamp(1.3rem, 4vw, 2.3rem);
+        --h2-size: clamp(1.1rem, 2.8vw, 1.75rem);
+    }
+}
 @media (max-height: 700px) {
     :root {
-        --slide-padding: clamp(0.9rem, 3vw, 2.2rem);
-        --content-gap: clamp(0.6rem, 1.5vw, 1.2rem);
-        --title-size: clamp(1.4rem, 4.5vw, 2.6rem);
-        --h2-size: clamp(1.1rem, 3vw, 1.8rem);
+        --slide-padding: clamp(0.85rem, 2.5vw, 1.8rem);
+        --content-gap: clamp(0.45rem, 1.1vw, 0.8rem);
+        --title-size: clamp(1.15rem, 3.5vw, 1.95rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.55rem);
+        --body-size: clamp(0.68rem, 1.15vw, 0.88rem);
     }
 }
 @media (max-height: 600px) {
     :root {
-        --slide-padding: clamp(0.7rem, 2.5vw, 1.5rem);
-        --content-gap: clamp(0.4rem, 1.2vw, 0.9rem);
-        --title-size: clamp(1.2rem, 4vw, 2rem);
-        --body-size: clamp(0.7rem, 1.2vw, 0.9rem);
+        --slide-padding: clamp(0.6rem, 2vw, 1.2rem);
+        --content-gap: clamp(0.3rem, 0.9vw, 0.7rem);
+        --title-size: clamp(1rem, 3vw, 1.55rem);
+        --body-size: clamp(0.64rem, 1vw, 0.8rem);
+        --small-size: clamp(0.58rem, 0.9vw, 0.72rem);
     }
     .nav-dots { display: none; }
 }
 @media (max-height: 500px) {
     :root {
-        --slide-padding: clamp(0.5rem, 2vw, 1rem);
-        --title-size: clamp(1.05rem, 3.5vw, 1.6rem);
+        --slide-padding: clamp(0.4rem, 1.5vw, 0.9rem);
+        --title-size: clamp(0.9rem, 2.8vw, 1.3rem);
     }
 }
+@media (max-width: 900px) {
+    .content-pillars, .detail-row, .three-col, .case-grid { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 700px) {
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .pillar-grid, .comparison-grid, .two-col, .tool-grid { grid-template-columns: 1fr; }
+    .stats-row, .stats-row.six { grid-template-columns: repeat(2, 1fr); }
+    .stats-row.three { grid-template-columns: 1fr; }
+    .pillar-grid, .comparison-grid, .two-col, .tool-grid,
+    .content-pillars, .detail-row, .three-col { grid-template-columns: 1fr; }
     .case-grid { grid-template-columns: 1fr; gap: 0.6rem; }
     .timeline { grid-template-columns: repeat(2, 1fr); }
-    .title-slide h1 { font-size: clamp(1.8rem, 8vw, 3rem); }
+    .title-slide h1 { font-size: clamp(1.7rem, 7.5vw, 2.7rem); }
 }
 @media (max-width: 500px) {
     .timeline { grid-template-columns: 1fr; }
-    .diff-table td, .diff-table th { font-size: var(--small-size); }
 }
 
-/* ===========================================
-   REDUCED MOTION
-   =========================================== */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -715,25 +749,18 @@ body.edit-mode [data-editable]:focus {
 </head>
 <body>
 
-<!-- Progress bar -->
 <div class="progress-bar" id="progressBar"></div>
-
-<!-- Edit hotzone + toggle -->
 <div class="edit-hotzone" id="editHotzone" title="Modo edición"></div>
 <button class="edit-toggle" id="editToggle" title="Modo edición (E) · Ctrl+S para guardar">✏️</button>
-<div class="edit-hint" id="editHint">Modo edición activo · clic en cualquier texto · Ctrl+S para guardar</div>
-
-<!-- Nav dots -->
+<div class="edit-hint" id="editHint"></div>
 <nav class="nav-dots" id="navDots" aria-label="Navegación de slides"></nav>
 
-<!-- ===========================================
-     SLIDE 1 — TÍTULO (Dark)
-     =========================================== -->
+<!-- ===== SLIDE 1 — TÍTULO ===== -->
 <section class="slide dark title-slide">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Propuesta · Abril 2026</span>
+        <span class="label reveal" data-editable>Propuesta comercial · Abril 2026</span>
         <h1 class="reveal" data-editable>Construye tu <span class="accent">motor de crecimiento</span></h1>
-        <p class="subtitle reveal" data-editable>Scale IT × Eventos Barcelona · Plan integrado de 8 meses para ampliar pipeline de clientes internacionales.</p>
+        <p class="subtitle reveal" data-editable>Scale IT × Eventos Barcelona · Plan integrado de 8 meses para ampliar pipeline de clientes corporativos internacionales mediante SEO, GEO, AEO, Partnerships y Outbound.</p>
         <div class="footer-pills reveal">
             <span data-editable>SEO</span>
             <span data-editable>GEO</span>
@@ -742,42 +769,98 @@ body.edit-mode [data-editable]:focus {
             <span data-editable>Outbound</span>
         </div>
     </div>
-    <div class="slide-number">01 / 10</div>
+    <div class="slide-number">01 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 2 — EL PROBLEMA (Light)
-     =========================================== -->
+<!-- ===== SLIDE 2 — DIAGNÓSTICO SEO ===== -->
 <section class="slide light">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Diagnóstico</span>
-        <h2 class="reveal" data-editable>15 años de reputación. <span class="accent">Google y los LLMs aún no lo saben.</span></h2>
+        <span class="label reveal" data-editable>Diagnóstico SEO · Google</span>
+        <h2 class="reveal" data-editable>Dominas producción técnica. <span class="accent">Estás ausente en el resto.</span></h2>
         <div class="stats-row">
-            <div class="stat-card">
-                <span class="stat-val" data-editable>7 / 29</span>
-                <span class="stat-label" data-editable>keywords posicionadas (24%). Tuset aparece en 20.</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-val" data-editable>22.5%</span>
-                <span class="stat-label" data-editable>tasa de recomendación IA. Menciones 40, pero solo 9 activas.</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-val" data-editable>0</span>
-                <span class="stat-label" data-editable>artículos publicados. CREA Group acumula 60+.</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-val" data-editable>19</span>
-                <span class="stat-label" data-editable>keywords EN+ES donde la competencia posiciona y EB no aparece.</span>
-            </div>
+            <div class="stat-card"><span class="stat-val" data-editable>7 / 29</span><span class="stat-label" data-editable>keywords posicionadas (24%)</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>19</span><span class="stat-label" data-editable>keywords donde competidores sí aparecen</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>#1</span><span class="stat-label" data-editable>en "producción técnica eventos BCN"</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>20 vs 7</span><span class="stat-label" data-editable>apariciones SERP Tuset vs EB</span></div>
         </div>
-        <div class="quote-block reveal" data-editable>"El mercado internacional que buscas no te encuentra en Google ni en ChatGPT cuando pregunta por agencias de eventos corporativos en Barcelona. Mientras tanto, Tuset y CREA dominan esa conversación."</div>
+        <table class="data-table reveal">
+            <thead><tr><th data-editable>Keyword</th><th data-editable>Idioma</th><th data-editable>Tu posición</th><th data-editable>Líder hoy</th><th data-editable>Oportunidad</th></tr></thead>
+            <tbody>
+                <tr><td data-editable>corporate event planner Barcelona</td><td data-editable>EN</td><td class="bad" data-editable>— (ausente)</td><td data-editable>Empirance #1</td><td><span class="pill" data-editable>Alta</span></td></tr>
+                <tr><td data-editable>event agency Barcelona corporate</td><td data-editable>EN</td><td class="bad" data-editable>— (ausente)</td><td data-editable>Tuset #1</td><td><span class="pill" data-editable>Alta</span></td></tr>
+                <tr><td data-editable>conference organizer Barcelona</td><td data-editable>EN</td><td class="bad" data-editable>— (ausente)</td><td data-editable>CREA Group #1</td><td><span class="pill" data-editable>Alta</span></td></tr>
+                <tr><td data-editable>DMC Barcelona corporate events</td><td data-editable>EN</td><td class="bad" data-editable>— (ausente)</td><td data-editable>Tuset #5</td><td><span class="pill" data-editable>Media</span></td></tr>
+                <tr><td data-editable>team building Barcelona empresas</td><td data-editable>ES</td><td class="bad" data-editable>— (ausente)</td><td data-editable>Tuset #1</td><td><span class="pill" data-editable>Alta</span></td></tr>
+                <tr><td data-editable>family day corporativo Barcelona</td><td data-editable>ES</td><td class="bad" data-editable>— (ausente)</td><td data-editable>Tuset #1</td><td><span class="pill" data-editable>Alta</span></td></tr>
+            </tbody>
+        </table>
     </div>
-    <div class="slide-number">02 / 10</div>
+    <div class="slide-number">02 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 3 — GASTO vs ACTIVO (White)
-     =========================================== -->
+<!-- ===== SLIDE 3 — DIAGNÓSTICO GEO ===== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label reveal" data-editable>Diagnóstico GEO · IA (ChatGPT, Claude, Perplexity)</span>
+        <h2 class="reveal" data-editable>Mencionados 40 veces. <span class="accent">Recomendados sólo 9.</span></h2>
+        <p class="reveal" data-editable>Los LLMs ya saben que existes (lideras en menciones y posición promedio), pero te citan sin empujar la decisión. La brecha está en contenido citable y presencia en medios que los modelos rastrean.</p>
+        <table class="data-table reveal">
+            <thead><tr><th data-editable>Marca</th><th data-editable>Menciones IA</th><th data-editable>Recomendaciones activas</th><th data-editable>Tasa recomendación</th><th data-editable>Pos. promedio</th></tr></thead>
+            <tbody>
+                <tr><td data-editable>Eventos Barcelona</td><td class="good" data-editable>40</td><td data-editable>9</td><td data-editable>22.5%</td><td class="pos" data-editable>1.2</td></tr>
+                <tr><td data-editable>Eventisimo</td><td data-editable>28</td><td data-editable>4</td><td data-editable>14.0%</td><td class="pos" data-editable>1.5</td></tr>
+                <tr><td data-editable>Divertimento</td><td data-editable>28</td><td data-editable>5</td><td data-editable>18.0%</td><td class="pos" data-editable>2.0</td></tr>
+                <tr><td data-editable>CREA Group</td><td data-editable>25</td><td data-editable>5</td><td data-editable>20.0%</td><td class="pos" data-editable>2.6</td></tr>
+                <tr><td data-editable>Tuset Eventos</td><td data-editable>25</td><td data-editable>6</td><td data-editable>24.0%</td><td class="pos" data-editable>4.6</td></tr>
+                <tr><td data-editable>Delicious Barcelona</td><td data-editable>22</td><td data-editable>4</td><td data-editable>18.0%</td><td class="pos" data-editable>4.7</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">03 / 15</div>
+</section>
+
+<!-- ===== SLIDE 4 — COMPETIDORES ===== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label reveal" data-editable>Competencia</span>
+        <h2 class="reveal" data-editable>Quién domina cada <span class="accent">conversación</span></h2>
+        <div class="three-col">
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza muy alta</span>
+                <h3 data-editable>Tuset Eventos</h3>
+                <p data-editable>SEO dominante (20 SERP). DMC con 4 oficinas en España. Rankea en casi todas las keywords Tier 1 ES. Tráfico de búsqueda altísimo.</p>
+            </div>
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza muy alta</span>
+                <h3 data-editable>CREA Group</h3>
+                <p data-editable>60+ artículos publicados. Líder de content marketing MICE y DMC. Domina la categoría editorial que los LLMs rastrean para citaciones.</p>
+            </div>
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza alta</span>
+                <h3 data-editable>Divertimento</h3>
+                <p data-editable>Marca establecida en eventos 360 y producción creativa. Sólido posicionamiento orgánico en keywords de creatividad.</p>
+            </div>
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza alta</span>
+                <h3 data-editable>Eventisimo</h3>
+                <p data-editable>Especialistas en eventos monumentales. Experiencia reconocida. Buena visibilidad en prensa sectorial española.</p>
+            </div>
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza alta</span>
+                <h3 data-editable>Delicious Barcelona</h3>
+                <p data-editable>Mercado EN. Creatividad como diferencial. Pitchan a clientes internacionales en idioma nativo — justo el hueco que EB no cubre.</p>
+            </div>
+            <div class="mini-card">
+                <span class="card-label" data-editable>Amenaza media</span>
+                <h3 data-editable>Empirance · Marca Condal · OFF</h3>
+                <p data-editable>Nichos específicos (lujo, team building, eventos únicos). Cada uno posiciona #1 en una keyword que EB debería capturar.</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">04 / 15</div>
+</section>
+
+<!-- ===== SLIDE 5 — GASTO vs ACTIVO ===== -->
 <section class="slide white">
     <div class="slide-content">
         <span class="label reveal" data-editable>Economía del crecimiento</span>
@@ -787,130 +870,213 @@ body.edit-mode [data-editable]:focus {
                 <span class="card-label" data-editable>Gasto recurrente</span>
                 <h3 data-editable>Paid + boca a boca (hoy)</h3>
                 <ul>
-                    <li data-editable>Pipeline depende del presupuesto mensual de ads</li>
-                    <li data-editable>CAC alto y creciente en mercado saturado de MICE</li>
-                    <li data-editable>Estacionalidad dura (MWC, Alimentaria, IBTM)</li>
+                    <li data-editable>El pipeline depende del presupuesto mensual de ads</li>
+                    <li data-editable>CAC alto y creciente en un mercado MICE saturado</li>
+                    <li data-editable>Estacionalidad violenta: MWC, Alimentaria, IBTM</li>
                     <li data-editable>Cero activos residuales: si apagas el grifo, se seca</li>
-                    <li data-editable>No te posiciona como autoridad ante comités de decisión</li>
+                    <li data-editable>No construyes autoridad ante comités de decisión</li>
                 </ul>
             </div>
             <div class="comparison-card good">
                 <span class="card-label" data-editable>Activo permanente</span>
-                <h3 data-editable>Trust Engine (propuesto)</h3>
+                <h3 data-editable>Trust Engine (Scale IT)</h3>
                 <ul>
-                    <li data-editable>24+ artículos que rankean durante años</li>
-                    <li data-editable>Partnerships con venues, BCB, ICCA, MPI, SITE</li>
-                    <li data-editable>Presencia en eventoplus, clutch, sortlist, bizbash</li>
-                    <li data-editable>Outbound con secuencias alineadas a MWC/IBTM/ISE</li>
+                    <li data-editable>24 artículos rankeando durante años en Google + IA</li>
+                    <li data-editable>Partnerships con venues premium, BCB, ICCA, MPI, SITE</li>
+                    <li data-editable>Presencia activa en eventoplus, clutch, sortlist, bizbash</li>
+                    <li data-editable>Outbound secuenciado al timing de MWC / IBTM / ISE</li>
                     <li data-editable>CAC decreciente: cada euro rinde más con el tiempo</li>
                 </ul>
             </div>
         </div>
+        <div class="quote-block reveal" data-editable>"Alquilar atención tiene un techo: el presupuesto mensual. Construir credibilidad no tiene techo: acumula durante años y cada activo potencia al siguiente."</div>
     </div>
-    <div class="slide-number">03 / 10</div>
+    <div class="slide-number">05 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 4 — 4 PILARES TRUST ENGINE (Dark)
-     =========================================== -->
+<!-- ===== SLIDE 6 — METODOLOGÍA 4 PILARES ===== -->
 <section class="slide dark">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Metodología</span>
+        <span class="label reveal" data-editable>Metodología Trust Engine</span>
         <h2 class="reveal" data-editable>Cuatro <span class="accent">pilares</span> conectados</h2>
         <div class="pillar-grid">
             <div class="pillar-card">
                 <span class="pillar-num" data-editable>Pilar 01</span>
-                <h3 data-editable>Partnerships &amp; Borrowed Trust</h3>
-                <p data-editable>Alianzas con venues premium, Barcelona Convention Bureau, ICCA, MPI, SITE y DMCs internacionales. Co-marketing, referrals cruzados y presencia en directorios oficiales del sector.</p>
+                <h3 data-editable>Strategic Partnerships</h3>
+                <p data-editable>Alianzas con venues premium, Barcelona Convention Bureau, ICCA, MPI, SITE y DMCs internacionales. Co-marketing, referrals cruzados y presencia en directorios oficiales del sector MICE.</p>
             </div>
             <div class="pillar-card">
                 <span class="pillar-num" data-editable>Pilar 02</span>
                 <h3 data-editable>SEO + GEO + AEO</h3>
-                <p data-editable>24+ artículos ES/EN optimizados para keywords Tier 1, sección /en/ completa, schema markup (Organization, FAQ, LocalBusiness, Event) y posicionamiento en ChatGPT, Claude y Perplexity.</p>
+                <p data-editable>24 artículos ES/EN optimizados para keywords Tier 1, sección /en/ completa, schema markup estructurado y posicionamiento en ChatGPT, Claude y Perplexity.</p>
             </div>
             <div class="pillar-card">
                 <span class="pillar-num" data-editable>Pilar 03</span>
                 <h3 data-editable>Brand Trust Assets</h3>
-                <p data-editable>Case studies con métricas reales, whitepaper "15 años de eventos en Barcelona" con datos propios, reviews verificadas en clutch/sortlist y perfiles completos en eventoplus.</p>
+                <p data-editable>Case studies con métricas reales, whitepaper "15 años de eventos en Barcelona" con datos propios, NPS post-evento y reviews verificadas en clutch/sortlist/eventoplus.</p>
             </div>
             <div class="pillar-card">
                 <span class="pillar-num" data-editable>Pilar 04</span>
                 <h3 data-editable>Outbound Nicho</h3>
-                <p data-editable>Listas segmentadas de corporate event planners, multinacionales con MICE en Barcelona y agencias internacionales. Secuencias email + LinkedIn con timing MWC, IBTM World, ISE y Smart City.</p>
+                <p data-editable>Listas segmentadas de corporate event planners, secuencias email + LinkedIn con timing MWC / IBTM / ISE, y participación value-first en comunidades de event managers.</p>
             </div>
         </div>
     </div>
-    <div class="slide-number">04 / 10</div>
+    <div class="slide-number">06 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 5 — APLICADO A EB (Light)
-     =========================================== -->
+<!-- ===== SLIDE 7 — PILAR 1 PARTNERSHIPS (Light) ===== -->
 <section class="slide light">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Tu situación</span>
-        <h2 class="reveal" data-editable>Por qué <span class="accent">Eventos Barcelona</span> es diferente</h2>
+        <div class="detail-header reveal">
+            <span class="detail-num" data-editable>01</span>
+            <div>
+                <span class="label" data-editable>Pilar · Partnerships</span>
+                <h2 data-editable>Prestar <span class="accent">confianza</span> de quien ya la tiene</h2>
+            </div>
+        </div>
+        <p class="reveal" data-editable>Cualificamos 20-30 partners (venues, DMCs, asociaciones sectoriales) y firmamos acuerdos híbridos con trackeo de referrals. Cada partner aporta audiencia cualificada que ya confía en él.</p>
+        <div class="detail-row">
+            <div class="step-card"><span class="step-num" data-editable>Paso 01</span><h3 data-editable>Mapear &amp; cualificar</h3><p data-editable>Venues premium de BCN, BCB, ICCA, MPI, SITE, Cvent Supplier Network, ISES. Análisis de fit, tráfico real y audiencia compartida.</p></div>
+            <div class="step-card"><span class="step-num" data-editable>Paso 02</span><h3 data-editable>Brief &amp; oferta</h3><p data-editable>Brief de 1-2 páginas con mensajes clave, oferta/incentivo y tracking link único. Libertad creativa, no scripts rígidos.</p></div>
+            <div class="step-card"><span class="step-num" data-editable>Paso 03</span><h3 data-editable>Negociar acuerdos</h3><p data-editable>Fee fijo bajo + variable por lead cualificado o evento cerrado. Alinea incentivos con resultados reales.</p></div>
+            <div class="step-card"><span class="step-num" data-editable>Paso 04</span><h3 data-editable>Onboarding</h3><p data-editable>Link con UTM + material de apoyo. Scale IT es el punto de contacto para dudas. Dashboard compartido de performance.</p></div>
+            <div class="step-card"><span class="step-num" data-editable>Paso 05</span><h3 data-editable>Amplificar</h3><p data-editable>Lo que mejor convierte se escala vía whitelisting (paid con voz del partner). Estatus "Official partner of [venue]".</p></div>
+            <div class="step-card"><span class="step-num" data-editable>Objetivo 8m</span><h3 data-editable>10+ partnerships activos</h3><p data-editable>5 venues premium, 3 DMCs, 2 asociaciones MICE. Referrals trackeados con CAC medible por partner.</p></div>
+        </div>
+    </div>
+    <div class="slide-number">07 / 15</div>
+</section>
+
+<!-- ===== SLIDE 8 — PILAR 2 SEO+GEO+AEO ===== -->
+<section class="slide light">
+    <div class="slide-content">
+        <div class="detail-header reveal">
+            <span class="detail-num" data-editable>02</span>
+            <div>
+                <span class="label" data-editable>Pilar · SEO + GEO + AEO</span>
+                <h2 data-editable>Dominar Google, ChatGPT, <span class="accent">Claude y Perplexity</span></h2>
+            </div>
+        </div>
         <div class="two-col">
             <div class="col-block reveal">
-                <h3 data-editable>Por qué los eventos corporativos son distintos</h3>
+                <h3 data-editable>SEO clásico — Google</h3>
                 <ul>
-                    <li data-editable>Ticket alto (€50K–€500K+), ciclo de decisión 2–6 meses</li>
-                    <li data-editable>Decisión por comité: CMO + Events Manager + Procurement</li>
-                    <li data-editable>La reputación de la agencia protege la carrera del decisor</li>
-                    <li data-editable>Clientes internacionales investigan en EN y validan con casos reales antes de pedir presupuesto</li>
-                    <li data-editable>El 65% de la decisión ocurre antes del primer contacto</li>
+                    <li data-editable>Auditoría SERP completa de keywords Tier 1/2/3 (EN + ES)</li>
+                    <li data-editable>Sección /en/ completa con landings por servicio</li>
+                    <li data-editable>Directorio /venues/ con 50+ fichas optimizadas</li>
+                    <li data-editable>Linkbuilding con medios sectoriales (bizbash, eventmanagerblog, hosteltur)</li>
                 </ul>
             </div>
             <div class="col-block reveal">
-                <h3 data-editable>Nuestro enfoque para vosotros</h3>
+                <h3 data-editable>GEO — motores IA</h3>
                 <ul>
-                    <li data-editable>Atacar keywords Tier 1 EN que Tuset y CREA dominan hoy (conference organizer, DMC, corporate planner)</li>
-                    <li data-editable>Sección /en/ completa con 12 artículos y landings por servicio</li>
-                    <li data-editable>Whitepaper con datos propios de 15 años (máximo valor para citación IA)</li>
-                    <li data-editable>Outbound targeted a multinacionales con eventos recurrentes en BCN</li>
-                    <li data-editable>Calendario editorial alineado a MWC, IBTM, ISE y Smart City</li>
+                    <li data-editable>Contenido con datos propios citables ("15 años · X eventos · Y clientes")</li>
+                    <li data-editable>Whitepaper como fuente primaria para citaciones LLM</li>
+                    <li data-editable>Publicación en medios anglófonos (70% de citations GEO)</li>
+                    <li data-editable>Tracking de menciones en las 3 IAs cada semana con Horus</li>
+                </ul>
+            </div>
+            <div class="col-block reveal">
+                <h3 data-editable>AEO — answer engines</h3>
+                <ul>
+                    <li data-editable>Schema markup: Organization, FAQ, LocalBusiness, Event</li>
+                    <li data-editable>Contenido Q&amp;A estructurado para featured snippets</li>
+                    <li data-editable>Optimización para People Also Ask en Google</li>
+                </ul>
+            </div>
+            <div class="col-block reveal">
+                <h3 data-editable>Keywords Tier 1 objetivo</h3>
+                <ul>
+                    <li data-editable>corporate event planner Barcelona · conference organizer Barcelona</li>
+                    <li data-editable>DMC Barcelona corporate events · gala dinner entertainment Barcelona</li>
+                    <li data-editable>team building Barcelona empresas · family day corporativo Barcelona</li>
+                    <li data-editable>organizar evento empresa Barcelona · artistas eventos corporativos</li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="slide-number">05 / 10</div>
+    <div class="slide-number">08 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 6 — CASOS DE ÉXITO (White)
-     =========================================== -->
-<section class="slide white">
+<!-- ===== SLIDE 9 — PILAR 3+4 TRUST ASSETS + OUTBOUND ===== -->
+<section class="slide light">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Resultados probados</span>
-        <h2 class="reveal" data-editable>Lo hemos <span class="accent">hecho antes</span></h2>
-        <div class="case-grid">
-            <div class="case-card">
-                <span class="case-name" data-editable>GoCardless · B2B</span>
-                <h3 data-editable>Lanzamiento desde cero en mercado nuevo</h3>
-                <span class="case-metric" data-editable>€10K MRR</span>
-                <p class="case-desc" data-editable>En 6 meses, combinando contenido + alianzas + ventas inteligentes. El playbook más cercano a EB: mercado conservador, ticket alto, confianza crítica.</p>
+        <div class="two-col">
+            <div class="col-block reveal">
+                <div class="detail-header">
+                    <span class="detail-num" data-editable>03</span>
+                    <span class="label" data-editable>Pilar · Trust Assets</span>
+                </div>
+                <h3 data-editable>Los activos que <span class="accent">te validan</span></h3>
+                <ul>
+                    <li data-editable><strong>NPS post-evento:</strong> survey en success moment. Promotores 9-10 → review pública en Google / clutch / sortlist.</li>
+                    <li data-editable><strong>Pasivos 7-8:</strong> "¿qué faltó para un 10?" → feedback interno para mejora.</li>
+                    <li data-editable><strong>Detractores 0-6:</strong> soporte prioritario, jamás review pública.</li>
+                    <li data-editable><strong>Case studies:</strong> 3 al año con métricas reales (guests, setup time, tech specs, NPS).</li>
+                    <li data-editable><strong>Whitepaper anual:</strong> "15 años de eventos corporativos en Barcelona". Datos propios = máximo valor GEO.</li>
+                </ul>
             </div>
-            <div class="case-card">
-                <span class="case-name" data-editable>Bnext · Fintech</span>
-                <h3 data-editable>De cero a medio millón de usuarios</h3>
-                <span class="case-metric" data-editable>CAC €12,40</span>
-                <p class="case-desc" data-editable>0 → 500.000 usuarios en 30 meses. Blended CAC de €12,40 vs >€50 en paid. 19% de adquisición por boca a boca orgánico.</p>
-            </div>
-            <div class="case-card">
-                <span class="case-name" data-editable>Bit2Me · Optimización</span>
-                <h3 data-editable>Reducción drástica de CAC</h3>
-                <span class="case-metric" data-editable>−70% CAC</span>
-                <p class="case-desc" data-editable>Optimización del funnel existente, triplicando LTV. Mismo enfoque que aplicaríamos al pipeline actual de EB para extraer más valor.</p>
+            <div class="col-block reveal">
+                <div class="detail-header">
+                    <span class="detail-num" data-editable>04</span>
+                    <span class="label" data-editable>Pilar · Outbound</span>
+                </div>
+                <h3 data-editable>Cazar mientras el SEO <span class="accent">madura</span></h3>
+                <ul>
+                    <li data-editable><strong>Listas segmentadas:</strong> corporate event managers de multinacionales con oficinas en BCN, DMC internacionales, incentive travel agencies.</li>
+                    <li data-editable><strong>Secuencias multicanal:</strong> email + LinkedIn, 5 touchpoints con warm-up y valor en cada paso.</li>
+                    <li data-editable><strong>Timing MICE:</strong> campañas sincronizadas con MWC (feb), Alimentaria (abr), IBTM (nov), Smart City (nov), ISE (ene).</li>
+                    <li data-editable><strong>Niche conversations:</strong> participación value-first en comunidades de event planners (EventPlanner, BizBash forums, LinkedIn groups MICE).</li>
+                    <li data-editable><strong>Tracking:</strong> GHL + PostHog. Atribución multi-touch desde first visit hasta presupuesto cerrado.</li>
+                </ul>
             </div>
         </div>
-        <div class="quote-block reveal" data-editable>"Operamos el Trust Engine en sectores donde la confianza es el cuello de botella. Eventos corporativos encaja perfecto: ticket alto, decisión por comité, reputación es moneda."</div>
     </div>
-    <div class="slide-number">06 / 10</div>
+    <div class="slide-number">09 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 7 — TIMELINE 8 MESES (Light)
-     =========================================== -->
+<!-- ===== SLIDE 10 — PLAN DE CONTENIDOS ===== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label reveal" data-editable>Entregables · Plan de contenidos</span>
+        <h2 class="reveal" data-editable>24 artículos en <span class="accent">6 pilares editoriales</span></h2>
+        <p class="reveal" data-editable>Ritmo 3 posts/mes (2 EN + 1 ES). CREA Group publica 5/mes, Tuset 1/mes — con este ritmo cerramos la brecha con CREA en 12 meses y superamos a Tuset en 3.</p>
+        <div class="content-pillars">
+            <div class="content-pillar"><span class="pill-count" data-editable>4</span><h3 data-editable>Guías de venues</h3><p data-editable>"Top 20 Corporate Event Venues in Barcelona", "Venues secretos para eventos de empresa", "Best Gala Dinner Venues".</p></div>
+            <div class="content-pillar"><span class="pill-count" data-editable>5</span><h3 data-editable>Guías How-To</h3><p data-editable>"How to Plan a Corporate Event in Barcelona", "Cómo organizar un congreso", "Planning a Product Launch Event".</p></div>
+            <div class="content-pillar"><span class="pill-count" data-editable>4</span><h3 data-editable>Entretenimiento (diferencial)</h3><p data-editable>"25 Corporate Entertainment Ideas", "Gala Dinner Entertainment: 15 Acts", "Artistas para Eventos Corporativos".</p></div>
+            <div class="content-pillar"><span class="pill-count" data-editable>4</span><h3 data-editable>MICE / DMC</h3><p data-editable>"Why Barcelona is Europe's #1 MICE Destination", "Barcelona DMC Services", "MWC 2027 Corporate Event Guide".</p></div>
+            <div class="content-pillar"><span class="pill-count" data-editable>3</span><h3 data-editable>Case studies + datos propios</h3><p data-editable>"How We Produced [Client]'s Awards Gala for 800 Guests" + whitepaper "15 Years of Events in Barcelona".</p></div>
+            <div class="content-pillar"><span class="pill-count" data-editable>4</span><h3 data-editable>Comparativas &amp; rankings</h3><p data-editable>"Las Mejores Agencias de Eventos en Barcelona", "Event Agency vs. In-House", "EB vs Tuset vs CREA".</p></div>
+        </div>
+    </div>
+    <div class="slide-number">10 / 15</div>
+</section>
+
+<!-- ===== SLIDE 11 — MEDIOS Y DIRECTORIOS ===== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label reveal" data-editable>Entregables · Medios &amp; directorios</span>
+        <h2 class="reveal" data-editable>Dónde <span class="accent">plantamos bandera</span></h2>
+        <table class="data-table reveal">
+            <thead><tr><th data-editable>Medio</th><th data-editable>Tipo</th><th data-editable>Por qué importa</th><th data-editable>Prioridad</th></tr></thead>
+            <tbody>
+                <tr><td data-editable>eventoplus.com</td><td data-editable>Directorio sectorial</td><td data-editable>88 menciones IA, pos avg 4.5. #1 directorio MICE España.</td><td><span class="pill" data-editable>Crítica · M1</span></td></tr>
+                <tr><td data-editable>clutch.co</td><td data-editable>Directorio B2B</td><td data-editable>19 menciones GEO+SEO. Reviews verificadas de peso.</td><td><span class="pill" data-editable>Crítica · M1</span></td></tr>
+                <tr><td data-editable>barcelonaconventionbureau.com</td><td data-editable>Institucional</td><td data-editable>17 menciones. Endorsement oficial de la ciudad.</td><td><span class="pill" data-editable>Crítica · M2</span></td></tr>
+                <tr><td data-editable>sortlist.es</td><td data-editable>Directorio</td><td data-editable>8 menciones GEO+SEO. Buyer intent alta.</td><td><span class="pill" data-editable>Crítica · M2</span></td></tr>
+                <tr><td data-editable>bizbash.com · eventmanagerblog.com</td><td data-editable>Media sectorial EN</td><td data-editable>Pitch editorial sobre entertainment trends España.</td><td><span class="pill" data-editable>Alta · M3-M4</span></td></tr>
+                <tr><td data-editable>hosteltur · expansion · marketingdirecto</td><td data-editable>Prensa ES</td><td data-editable>Feature sobre producción de eventos y MICE.</td><td><span class="pill" data-editable>Alta · M5-M6</span></td></tr>
+                <tr><td data-editable>meetingsnet · eventindustrynews · specialevents</td><td data-editable>Media MICE EN</td><td data-editable>Spotlight agencia + guía destino Barcelona.</td><td><span class="pill" data-editable>Media · M6-M7</span></td></tr>
+                <tr><td data-editable>Cvent Supplier Network · MPI · SITE · ICCA</td><td data-editable>Directorios pro</td><td data-editable>Inclusión en listados oficiales de proveedores MICE.</td><td><span class="pill" data-editable>Media · M4-M6</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">11 / 15</div>
+</section>
+
+<!-- ===== SLIDE 12 — TIMELINE 8 MESES ===== -->
 <section class="slide light">
     <div class="slide-content">
         <span class="label reveal" data-editable>Roadmap 8 meses</span>
@@ -920,11 +1086,12 @@ body.edit-mode [data-editable]:focus {
                 <span class="phase-num" data-editable>M1 – M2 · Fundación</span>
                 <h3 data-editable>Setup + primeros activos</h3>
                 <ul>
-                    <li data-editable>Schema markup completo</li>
+                    <li data-editable>Schema Organization + FAQ + LocalBusiness</li>
                     <li data-editable>Perfiles en eventoplus, clutch, sortlist, BCB</li>
-                    <li data-editable>Sección /en/ activa</li>
+                    <li data-editable>Sección /en/ completa live</li>
                     <li data-editable>4 artículos (2 EN venues + 2 ES entretenimiento)</li>
-                    <li data-editable>Setup CRM + outbound + atribución</li>
+                    <li data-editable>Setup CRM + atribución + NPS post-evento</li>
+                    <li data-editable>Identificación de 20 partners candidatos</li>
                 </ul>
             </div>
             <div class="phase-card">
@@ -932,9 +1099,9 @@ body.edit-mode [data-editable]:focus {
                 <h3 data-editable>Volumen + partnerships activos</h3>
                 <ul>
                     <li data-editable>12 artículos (MICE, team building, congresos)</li>
-                    <li data-editable>Acuerdos con venues premium</li>
-                    <li data-editable>Primer case study publicado</li>
-                    <li data-editable>Secuencias outbound en marcha</li>
+                    <li data-editable>Acuerdos firmados con 5 venues premium</li>
+                    <li data-editable>Primer case study publicado + reviews clutch</li>
+                    <li data-editable>Secuencias outbound activas (500 leads/mes)</li>
                     <li data-editable>Pitch a bizbash y eventmanagerblog</li>
                 </ul>
             </div>
@@ -945,7 +1112,7 @@ body.edit-mode [data-editable]:focus {
                     <li data-editable>6 artículos pre-grandes eventos</li>
                     <li data-editable>Whitepaper "15 años" publicado</li>
                     <li data-editable>Pitch a hosteltur, expansion, meetingsnet</li>
-                    <li data-editable>Outbound intensivo a corporate planners</li>
+                    <li data-editable>Outbound intensivo pre-IBTM (nov)</li>
                     <li data-editable>Campaña awareness con influencers nicho</li>
                 </ul>
             </div>
@@ -961,126 +1128,104 @@ body.edit-mode [data-editable]:focus {
             </div>
         </div>
     </div>
-    <div class="slide-number">07 / 10</div>
+    <div class="slide-number">12 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 8 — DIFERENCIAL SCALE IT (White)
-     =========================================== -->
+<!-- ===== SLIDE 13 — CASOS DE ÉXITO ===== -->
 <section class="slide white">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Por qué Scale IT</span>
-        <h2 class="reveal" data-editable>Agencia tradicional vs <span class="accent">Scale IT</span></h2>
-        <table class="diff-table reveal">
-            <thead>
-                <tr>
-                    <th data-editable>Aspecto</th>
-                    <th data-editable>Agencia tradicional</th>
-                    <th class="good-col" data-editable>Scale IT</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-editable>Canales</td>
-                    <td class="bad" data-editable>Monocanal (solo paid o solo SEO)</td>
-                    <td class="good" data-editable>SEO + GEO + AEO + Partnerships + Outbound</td>
-                </tr>
-                <tr>
-                    <td data-editable>Iteración</td>
-                    <td class="bad" data-editable>Reportes mensuales</td>
-                    <td class="good" data-editable>Iteración semanal con dashboard en vivo</td>
-                </tr>
-                <tr>
-                    <td data-editable>Facturación</td>
-                    <td class="bad" data-editable>Fee mensual fijo</td>
-                    <td class="good" data-editable>Retainer + variable por resultado</td>
-                </tr>
-                <tr>
-                    <td data-editable>Alcance</td>
-                    <td class="bad" data-editable>Solo ejecutan briefs</td>
-                    <td class="good" data-editable>Estrategia + ejecución + handover</td>
-                </tr>
-                <tr>
-                    <td data-editable>Herramientas</td>
-                    <td class="bad" data-editable>SaaS genérico</td>
-                    <td class="good" data-editable>Stack propio con IA (Sancho, Horus, Alarife)</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="quote-block reveal" data-editable>"No alquilamos atención. Construimos credibilidad que acumula durante años. Cuando acaban los 8 meses, los activos siguen trabajando para ti."</div>
+        <span class="label reveal" data-editable>Resultados probados</span>
+        <h2 class="reveal" data-editable>Lo hemos <span class="accent">hecho antes</span></h2>
+        <div class="case-grid">
+            <div class="case-card">
+                <span class="case-name" data-editable>GoCardless · B2B</span>
+                <h3 data-editable>Lanzamiento desde cero en mercado nuevo</h3>
+                <span class="case-metric" data-editable>€10K MRR en 6 meses</span>
+                <p class="case-desc" data-editable>Contenido + alianzas + ventas inteligentes. El playbook más cercano a EB: mercado conservador, ticket alto, confianza crítica, decisión por comité.</p>
+            </div>
+            <div class="case-card">
+                <span class="case-name" data-editable>Bnext · Fintech B2C</span>
+                <h3 data-editable>De cero a medio millón de usuarios</h3>
+                <span class="case-metric" data-editable>CAC €12,40</span>
+                <p class="case-desc" data-editable>0 → 500.000 usuarios en 30 meses. Blended CAC de €12,40 vs >€50 en paid. 19% de adquisición por boca a boca orgánico. Retención 6 meses: 55%.</p>
+            </div>
+            <div class="case-card">
+                <span class="case-name" data-editable>Bit2Me · Optimización</span>
+                <h3 data-editable>Reducción drástica de CAC</h3>
+                <span class="case-metric" data-editable>−70% CAC · x3 LTV</span>
+                <p class="case-desc" data-editable>Optimización del funnel existente con Trust Engine aplicado a canales en curso. Mismo enfoque que aplicaríamos al pipeline actual de EB.</p>
+            </div>
+        </div>
+        <div class="quote-block reveal" data-editable>"Operamos en sectores donde la confianza es el cuello de botella. Eventos corporativos encaja perfecto: ticket alto, decisión por comité, reputación es moneda."</div>
     </div>
-    <div class="slide-number">08 / 10</div>
+    <div class="slide-number">13 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 9 — STACK TECNOLÓGICO (Dark)
-     =========================================== -->
+<!-- ===== SLIDE 14 — STACK + DIFERENCIAL ===== -->
 <section class="slide dark">
     <div class="slide-content">
-        <span class="label reveal" data-editable>Herramientas</span>
-        <h2 class="reveal" data-editable>La IA que <span class="accent">trabaja por ti</span></h2>
+        <span class="label reveal" data-editable>Cómo trabajamos</span>
+        <h2 class="reveal" data-editable>IA propia + <span class="accent">iteración semanal</span></h2>
         <div class="tool-grid">
             <div class="tool-card">
                 <span class="tool-tag" data-editable>Research &amp; Strategy</span>
                 <h3 data-editable>Sancho CMO</h3>
-                <p data-editable>IA que analiza tu mercado, mapea competidores, genera briefs de artículos y automatiza el onboarding de partners y creadores.</p>
+                <p data-editable>IA que analiza tu mercado, mapea competidores en tiempo real, genera briefs de artículos y automatiza el onboarding de partners.</p>
             </div>
             <div class="tool-card">
                 <span class="tool-tag" data-editable>SEO · GEO · AEO</span>
                 <h3 data-editable>Horus</h3>
-                <p data-editable>Motor que rankea en Google y en respuestas de ChatGPT, Claude y Perplexity. Tracking de 29+ keywords y 21 prompts GEO en vivo.</p>
+                <p data-editable>Motor que rankea en Google y en ChatGPT, Claude y Perplexity. Tracking semanal de 29+ keywords y 21 prompts GEO en vivo.</p>
             </div>
             <div class="tool-card">
                 <span class="tool-tag" data-editable>Web &amp; Landings</span>
                 <h3 data-editable>Alarife</h3>
-                <p data-editable>Sección /en/ completa, landings por servicio (corporate events, gala dinners, team building) y directorio /venues/ con fichas optimizadas.</p>
+                <p data-editable>Sección /en/ completa, landings por servicio y directorio /venues/ con fichas optimizadas para schema y conversión.</p>
             </div>
             <div class="tool-card">
                 <span class="tool-tag" data-editable>CRM &amp; Atribución</span>
                 <h3 data-editable>GHL + PostHog</h3>
-                <p data-editable>Pipeline de leads con secuencias outbound automáticas, tracking multicanal y atribución real: de primera visita a presupuesto cerrado.</p>
+                <p data-editable>Pipeline con secuencias outbound automáticas, NPS post-evento y atribución multi-touch desde primera visita hasta presupuesto cerrado.</p>
             </div>
         </div>
+        <div class="quote-block reveal" data-editable>"Agencias tradicionales: fee mensual, reporting mensual, monocanal. Scale IT: iteración semanal, multicanal, dashboard en vivo, retainer alineado a resultados."</div>
     </div>
-    <div class="slide-number">09 / 10</div>
+    <div class="slide-number">14 / 15</div>
 </section>
 
-<!-- ===========================================
-     SLIDE 10 — CTA (Dark)
-     =========================================== -->
+<!-- ===== SLIDE 15 — KPIs + CTA ===== -->
 <section class="slide dark">
     <div class="slide-content">
-        <div class="cta-row">
-            <span class="label reveal" data-editable>Próximo paso</span>
-            <h1 class="reveal" data-editable>Hablemos de tu <span class="accent">plan 8 meses</span></h1>
-            <p class="subtitle reveal" data-editable>24+ artículos · 10+ perfiles directorios · 8+ backlinks sectoriales · keywords 7 → 20+ · tasa recomendación IA 22.5% → 45% · outbound activo</p>
-            <a class="cta-btn reveal" href="mailto:hola@scaleit.com?subject=Eventos%20Barcelona%20%C2%B7%20Kickoff%20Plan%208%20meses" data-editable>Agendar reunión de kickoff →</a>
-            <p class="cta-contact reveal" data-editable>Ramiro &amp; Philippe · Scale IT · hola@scaleit.com</p>
+        <span class="label reveal" data-editable>KPIs objetivo · 8 meses</span>
+        <h2 class="reveal" data-editable>Métricas que <span class="accent">medimos</span></h2>
+        <div class="stats-row six">
+            <div class="stat-card"><span class="stat-val" data-editable>7 → 20+</span><span class="stat-label" data-editable>Keywords top 10</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>40 → 70+</span><span class="stat-label" data-editable>Menciones IA</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>22.5 → 45%</span><span class="stat-label" data-editable>Tasa recomendación GEO</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>0 → 24</span><span class="stat-label" data-editable>Artículos publicados</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>0 → 10+</span><span class="stat-label" data-editable>Partnerships firmados</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>0 → 500/mes</span><span class="stat-label" data-editable>Leads outbound en secuencia</span></div>
+        </div>
+        <div class="cta-row reveal">
+            <h2 data-editable>Hablemos de tu <span class="accent">kickoff</span></h2>
+            <a class="cta-btn" href="mailto:hola@scaleit.com?subject=Eventos%20Barcelona%20%C2%B7%20Kickoff%20Plan%208%20meses" data-editable>Agendar reunión →</a>
+            <p class="cta-contact" data-editable>Ramiro &amp; Philippe · Scale IT · hola@scaleit.com</p>
         </div>
     </div>
-    <div class="slide-number">10 / 10</div>
+    <div class="slide-number">15 / 15</div>
 </section>
 
 <script>
-/* ===========================================
-   SLIDE PRESENTATION CONTROLLER
-   - Intersection Observer for .visible class
-   - Keyboard, touch, wheel navigation
-   - Progress bar + nav dots
-   =========================================== */
 class SlidePresentation {
     constructor() {
         this.slides = Array.from(document.querySelectorAll('.slide'));
         this.currentSlide = 0;
-        this.isScrolling = false;
         this.setupIntersectionObserver();
         this.setupKeyboardNav();
         this.setupTouchNav();
-        this.setupWheelNav();
         this.setupProgressBar();
         this.setupNavDots();
     }
-
     setupIntersectionObserver() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1094,12 +1239,10 @@ class SlidePresentation {
         }, { threshold: [0, 0.5, 1] });
         this.slides.forEach(slide => observer.observe(slide));
     }
-
     goTo(index) {
         if (index < 0 || index >= this.slides.length) return;
         this.slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-
     setupKeyboardNav() {
         document.addEventListener('keydown', (e) => {
             if (document.activeElement && document.activeElement.getAttribute('contenteditable') === 'true') return;
@@ -1107,14 +1250,10 @@ class SlidePresentation {
                 e.preventDefault(); this.goTo(this.currentSlide + 1);
             } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
                 e.preventDefault(); this.goTo(this.currentSlide - 1);
-            } else if (e.key === 'Home') {
-                e.preventDefault(); this.goTo(0);
-            } else if (e.key === 'End') {
-                e.preventDefault(); this.goTo(this.slides.length - 1);
-            }
+            } else if (e.key === 'Home') { e.preventDefault(); this.goTo(0); }
+            else if (e.key === 'End') { e.preventDefault(); this.goTo(this.slides.length - 1); }
         });
     }
-
     setupTouchNav() {
         let touchStartY = 0;
         document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
@@ -1125,21 +1264,12 @@ class SlidePresentation {
             else this.goTo(this.currentSlide - 1);
         }, { passive: true });
     }
-
-    setupWheelNav() {
-        /* Native scroll-snap handles this — no custom wheel handler needed */
-    }
-
-    setupProgressBar() {
-        this.progressBar = document.getElementById('progressBar');
-        this.updateProgressBar();
-    }
+    setupProgressBar() { this.progressBar = document.getElementById('progressBar'); this.updateProgressBar(); }
     updateProgressBar() {
         if (!this.progressBar) return;
         const pct = ((this.currentSlide + 1) / this.slides.length) * 100;
         this.progressBar.style.width = pct + '%';
     }
-
     setupNavDots() {
         this.navDots = document.getElementById('navDots');
         if (!this.navDots) return;
@@ -1160,9 +1290,6 @@ class SlidePresentation {
     }
 }
 
-/* ===========================================
-   INLINE EDITOR — hotzone JS pattern with delay
-   =========================================== */
 class InlineEditor {
     constructor() {
         this.isActive = false;
@@ -1177,66 +1304,41 @@ class InlineEditor {
         this.setupClickHandlers();
         this.setupAutosave();
     }
-
     setupHotzone() {
-        this.hotzone.addEventListener('mouseenter', () => {
-            clearTimeout(this.hideTimeout);
-            this.toggle.classList.add('show');
-        });
+        this.hotzone.addEventListener('mouseenter', () => { clearTimeout(this.hideTimeout); this.toggle.classList.add('show'); });
         this.hotzone.addEventListener('mouseleave', () => {
-            this.hideTimeout = setTimeout(() => {
-                if (!this.isActive) this.toggle.classList.remove('show');
-            }, 400);
+            this.hideTimeout = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400);
         });
         this.toggle.addEventListener('mouseenter', () => { clearTimeout(this.hideTimeout); });
         this.toggle.addEventListener('mouseleave', () => {
-            this.hideTimeout = setTimeout(() => {
-                if (!this.isActive) this.toggle.classList.remove('show');
-            }, 400);
+            this.hideTimeout = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400);
         });
         this.hotzone.addEventListener('click', () => this.toggleEditMode());
         this.toggle.addEventListener('click', () => this.toggleEditMode());
     }
-
     setupKeyboard() {
         document.addEventListener('keydown', (e) => {
             const ae = document.activeElement;
             const inField = ae && ae.getAttribute('contenteditable') === 'true';
-            if ((e.key === 'e' || e.key === 'E') && !inField && !e.ctrlKey && !e.metaKey) {
-                this.toggleEditMode();
-            }
+            if ((e.key === 'e' || e.key === 'E') && !inField && !e.ctrlKey && !e.metaKey) { this.toggleEditMode(); }
             if (this.isActive && (e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                this.saveToStorage();
-                this.flashHint('Cambios guardados ✓');
+                e.preventDefault(); this.saveToStorage(); this.flashHint('Cambios guardados ✓');
             }
         });
     }
-
     setupClickHandlers() {
-        this.editables.forEach(el => {
-            el.addEventListener('blur', () => {
-                if (this.isActive) this.saveToStorage();
-            });
-        });
+        this.editables.forEach(el => { el.addEventListener('blur', () => { if (this.isActive) this.saveToStorage(); }); });
     }
-
-    setupAutosave() {
-        setInterval(() => { if (this.isActive) this.saveToStorage(); }, 10000);
-    }
-
+    setupAutosave() { setInterval(() => { if (this.isActive) this.saveToStorage(); }, 10000); }
     toggleEditMode() {
         this.isActive = !this.isActive;
         document.body.classList.toggle('edit-mode', this.isActive);
         this.toggle.classList.toggle('active', this.isActive);
         this.toggle.classList.toggle('show', this.isActive);
-        this.editables.forEach(el => {
-            el.setAttribute('contenteditable', this.isActive ? 'true' : 'false');
-        });
-        if (this.isActive) this.flashHint('Modo edición activo · clic en cualquier texto · Ctrl+S para guardar');
+        this.editables.forEach(el => { el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'); });
+        if (this.isActive) this.flashHint('Modo edición · clic en cualquier texto · Ctrl+S para guardar');
         else this.flashHint('Modo edición desactivado ✓');
     }
-
     flashHint(msg) {
         if (!this.hint) return;
         this.hint.textContent = msg;
@@ -1244,15 +1346,12 @@ class InlineEditor {
         clearTimeout(this._hintTimeout);
         this._hintTimeout = setTimeout(() => this.hint.classList.remove('show'), 2200);
     }
-
-    storageKey() { return 'propuesta_eb_8m_edits_v1'; }
-
+    storageKey() { return 'propuesta_eb_8m_edits_v2'; }
     saveToStorage() {
         const data = {};
         this.editables.forEach((el, i) => { data[i] = el.innerHTML; });
         try { localStorage.setItem(this.storageKey(), JSON.stringify(data)); } catch (e) {}
     }
-
     loadFromStorage() {
         try {
             const raw = localStorage.getItem(this.storageKey());
@@ -1263,9 +1362,8 @@ class InlineEditor {
     }
 }
 
-/* Boot */
-const presentation = new SlidePresentation();
-const editor = new InlineEditor();
+new SlidePresentation();
+new InlineEditor();
 </script>
 </body>
 </html>
