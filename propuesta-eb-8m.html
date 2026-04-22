@@ -769,7 +769,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             <span data-editable>Outbound</span>
         </div>
     </div>
-    <div class="slide-number">01 / 12</div>
+    <div class="slide-number">01 / 13</div>
 </section>
 
 <!-- ===== SLIDE 2 — DIAGNÓSTICO SEO ===== -->
@@ -795,7 +795,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </tbody>
         </table>
     </div>
-    <div class="slide-number">02 / 12</div>
+    <div class="slide-number">02 / 13</div>
 </section>
 
 <!-- ===== SLIDE 3 — DIAGNÓSTICO GEO ===== -->
@@ -816,10 +816,48 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </tbody>
         </table>
     </div>
-    <div class="slide-number">03 / 12</div>
+    <div class="slide-number">03 / 13</div>
 </section>
 
-<!-- ===== SLIDE 4 — COMPETIDORES ===== -->
+<!-- ===== SLIDE 4 — DIAGNÓSTICO TÉCNICO (claude-rank) ===== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label reveal" data-editable>Diagnóstico técnico · Auditoría automatizada</span>
+        <h2 class="reveal" data-editable>El sitio <span class="accent">no está listo</span> para ser citado por IA</h2>
+        <p class="reveal" data-editable>Auditoría sobre 50 páginas con 170+ checks. 1 crítico · 17 altos · 217 medios · 108 bajos. Scores por dimensión:</p>
+        <div class="stats-row" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="stat-card"><span class="stat-val" data-editable>F · 0</span><span class="stat-label" data-editable>SEO general<br/>(54 checks)</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>F · 36</span><span class="stat-label" data-editable>GEO<br/>(IA discoverability)</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>D · 61</span><span class="stat-label" data-editable>AEO<br/>(answer engines)</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>F · 57</span><span class="stat-label" data-editable>Security<br/>(headers)</span></div>
+            <div class="stat-card"><span class="stat-val" data-editable>C · 70</span><span class="stat-label" data-editable>Performance<br/>(mobile + speed)</span></div>
+        </div>
+        <div class="two-col">
+            <div class="col-block reveal">
+                <h3 data-editable>Bloqueadores de IA</h3>
+                <ul>
+                    <li data-editable><strong>0 llms.txt</strong> — ChatGPT y Claude no tienen archivo para entender tu sitio</li>
+                    <li data-editable><strong>robots.txt sin reglas AI</strong> — GPTBot, ClaudeBot y PerplexityBot no tienen acceso explícito</li>
+                    <li data-editable><strong>1 página en noindex</strong> que bloquea crawlers (privacy-policy EN)</li>
+                    <li data-editable><strong>Canonical conflicts</strong> — múltiples páginas apuntando al mismo canonical</li>
+                </ul>
+            </div>
+            <div class="col-block reveal">
+                <h3 data-editable>Contenido no citable</h3>
+                <ul>
+                    <li data-editable><strong>49 de 50</strong> páginas con JSON-LD inválido — LLMs no extraen estructura</li>
+                    <li data-editable><strong>19 páginas</strong> con H2 en forma de pregunta pero sin answer block (40-60 palabras)</li>
+                    <li data-editable><strong>0 Speakable schema</strong> — voice search invisible</li>
+                    <li data-editable><strong>47 de 50</strong> sin <code>&lt;main&gt;</code> landmark — AI no distingue el contenido principal</li>
+                    <li data-editable><strong>37 de 50</strong> con heading hierarchy rota (H1 → H3 sin H2)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">04 / 13</div>
+</section>
+
+<!-- ===== SLIDE 5 — COMPETIDORES ===== -->
 <section class="slide white">
     <div class="slide-content">
         <span class="label reveal" data-editable>Competencia</span>
@@ -857,7 +895,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </div>
         </div>
     </div>
-    <div class="slide-number">04 / 12</div>
+    <div class="slide-number">05 / 13</div>
 </section>
 
 <!-- ===== SLIDE 5 — GASTO vs ACTIVO ===== -->
@@ -891,7 +929,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
         </div>
         <div class="quote-block reveal" data-editable>"Alquilar atención tiene un techo: el presupuesto mensual. Construir credibilidad no tiene techo: acumula durante años y cada activo potencia al siguiente."</div>
     </div>
-    <div class="slide-number">05 / 12</div>
+    <div class="slide-number">06 / 13</div>
 </section>
 
 <!-- ===== SLIDE 6 — METODOLOGÍA 4 PILARES ===== -->
@@ -922,7 +960,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </div>
         </div>
     </div>
-    <div class="slide-number">06 / 12</div>
+    <div class="slide-number">07 / 13</div>
 </section>
 
 <!-- ===== SLIDE 7 — PILAR 1 PARTNERSHIPS (Light) ===== -->
@@ -945,7 +983,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             <div class="step-card"><span class="step-num" data-editable>Objetivo 8m</span><h3 data-editable>10+ partnerships activos</h3><p data-editable>5 venues premium, 3 DMCs, 2 asociaciones MICE. Referrals trackeados con CAC medible por partner.</p></div>
         </div>
     </div>
-    <div class="slide-number">07 / 12</div>
+    <div class="slide-number">08 / 13</div>
 </section>
 
 <!-- ===== SLIDE 8 — PILAR 2 SEO+GEO+AEO ===== -->
@@ -996,7 +1034,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </div>
         </div>
     </div>
-    <div class="slide-number">08 / 12</div>
+    <div class="slide-number">09 / 13</div>
 </section>
 
 <!-- ===== SLIDE 9 — PILAR 3+4 TRUST ASSETS + OUTBOUND ===== -->
@@ -1033,7 +1071,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </div>
         </div>
     </div>
-    <div class="slide-number">09 / 12</div>
+    <div class="slide-number">10 / 13</div>
 </section>
 
 <!-- ===== SLIDE 10 — PLAN DE CONTENIDOS ===== -->
@@ -1051,7 +1089,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             <div class="content-pillar"><span class="pill-count" data-editable>4</span><h3 data-editable>Comparativas &amp; rankings</h3><p data-editable>"Las Mejores Agencias de Eventos en Barcelona", "Event Agency vs. In-House", "EB vs Tuset vs CREA".</p></div>
         </div>
     </div>
-    <div class="slide-number">10 / 12</div>
+    <div class="slide-number">11 / 13</div>
 </section>
 
 <!-- ===== SLIDE 11 — MEDIOS Y DIRECTORIOS ===== -->
@@ -1073,7 +1111,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </tbody>
         </table>
     </div>
-    <div class="slide-number">11 / 12</div>
+    <div class="slide-number">12 / 13</div>
 </section>
 
 <!-- ===== SLIDE 12 — TIMELINE 8 MESES ===== -->
@@ -1128,7 +1166,7 @@ body.edit-mode [data-editable]:focus { outline: 2px solid var(--green); backgrou
             </div>
         </div>
     </div>
-    <div class="slide-number">12 / 12</div>
+    <div class="slide-number">13 / 13</div>
 </section>
 
 <script>
