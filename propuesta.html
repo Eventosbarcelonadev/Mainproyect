@@ -1348,9 +1348,37 @@
 
     /* === PDF EXPORT STYLES === */
     @media print {
-      .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content { display: none !important; }
+      .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content, .pdf-float { display: none !important; }
       .hero { min-height: auto; padding: 60px 40px; }
       .block { page-break-inside: avoid; }
+    }
+
+    /* === FLOATING PDF DOWNLOAD (visible in both admin editor and client read-only) === */
+    .pdf-float {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .pdf-float:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.3); }
+    .pdf-float svg { width: 16px; height: 16px; flex-shrink: 0; }
+    @media (max-width: 680px) {
+      .pdf-float { right: 12px; bottom: 12px; padding: 10px 14px; font-size: 13px; }
     }
   </style>
 </head>
@@ -1520,6 +1548,12 @@
 
   <!-- PROPOSAL CONTENT (dynamically rendered) -->
   <div id="proposalContent"></div>
+
+  <!-- FLOATING PDF DOWNLOAD (always visible; outside #proposalContent so it isn't captured in the export) -->
+  <button class="pdf-float" id="pdfFloat" onclick="exportPDF()" data-html2canvas-ignore="true" aria-label="Descargar PDF">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span>Descargar PDF</span>
+  </button>
 
   <!-- ============================================= -->
   <!-- SHOW CATALOG — all available shows -->
