@@ -6,7 +6,6 @@
   <meta name="robots" content="noindex, nofollow">
   <title id="pageTitle">Propuesta — Eventos Barcelona</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* =============================================
        CSS VARIABLES — Category themes override these
@@ -1346,11 +1345,56 @@
       .chat-overlay { width: calc(100% - 32px); right: 16px; bottom: 16px; }
     }
 
-    /* === PDF EXPORT STYLES === */
+    /* === PDF EXPORT STYLES (triggered by window.print()) === */
+    @page { size: A4; margin: 0; }
     @media print {
-      .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content, .pdf-float { display: none !important; }
-      .hero { min-height: auto; padding: 60px 40px; }
-      .block { page-break-inside: avoid; }
+      html, body {
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content,
+      .pdf-float, .add-show-block, .block-remove, .builder-container, .picker-overlay,
+      .nav-right, .btn-contact { display: none !important; }
+
+      /* Hide edit affordances so admin PDFs look clean */
+      .editable-text, [contenteditable="true"] {
+        outline: none !important;
+        background: transparent !important;
+        cursor: default !important;
+      }
+
+      /* HERO: full-page, no viewport-height */
+      .hero {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 80px 60px !important;
+        page-break-after: always;
+      }
+      .hero h1 { font-size: 56px !important; }
+
+      /* CONCEPT */
+      .concept-section {
+        padding: 60px 60px !important;
+        page-break-inside: avoid;
+        page-break-after: always;
+      }
+
+      /* SHOW BLOCKS: one per page, avoid mid-split */
+      .block {
+        min-height: auto !important;
+        padding: 40px 0 !important;
+        page-break-inside: avoid;
+        page-break-after: always;
+      }
+      .block-image { min-height: 320px !important; }
+      .block-content { padding: 40px !important; }
+
+      /* Avoid orphans in summary / stats / conditions / about */
+      .stats-section, .summary-section, .about-section, .conditions-section {
+        page-break-inside: avoid;
+        padding: 60px 60px !important;
+      }
     }
 
     /* === FLOATING PDF DOWNLOAD (visible in both admin editor and client read-only) === */
@@ -2593,31 +2637,21 @@
     // PDF EXPORT
     // =============================================
     function exportPDF() {
-      showToast('Generando PDF...');
-
-      const element = document.getElementById('proposalContent');
+      // Use the browser's native print-to-PDF instead of html2pdf.js:
+      // html2canvas can't read images from eventosbarcelona.com (no CORS headers),
+      // so the exported PDF came out with blank image panels. The browser renderer
+      // already has the images in memory, so native print respects @media print
+      // CSS and produces a clean PDF with all images intact.
+      const prevTitle = document.title;
       const { event } = proposalState;
-
-      const opt = {
-        margin: 0,
-        filename: `propuesta-${event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait'
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      html2pdf().set(opt).from(element).save().then(() => {
-        showToast('PDF descargado', 'success');
-      });
+      const safe = (event && event.name ? event.name : 'propuesta')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      document.title = `propuesta-${safe}`;
+      showToast('Abriendo dialogo para guardar como PDF...', '');
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => { document.title = prevTitle; }, 500);
+      }, 150);
     }
 
     // =============================================
