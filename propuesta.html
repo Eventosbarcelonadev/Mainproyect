@@ -1389,10 +1389,16 @@
       .block-image { min-height: 320px !important; }
       .block-content { padding: 40px !important; }
 
-      /* Avoid orphans in summary / stats / conditions / about */
-      .stats-section, .summary-section, .about-section, .conditions-section {
+      /* Avoid orphans in summary / stats / conditions / about / cta / footer */
+      .stats-section, .summary-section, .about-section, .conditions-section,
+      .cta-section, .footer {
         page-break-inside: avoid;
         padding: 60px 60px !important;
+      }
+
+      /* Keep the team block intact — the bug was h4 title on page N and roles on N+1 */
+      .footer-team, .footer-roles, .footer-contact {
+        page-break-inside: avoid;
       }
     }
 
