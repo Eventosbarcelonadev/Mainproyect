@@ -2067,6 +2067,14 @@
       await loadShowCatalogFromSupabase();
 
       const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+
+      // Blank canvas: Xavi opens ?mode=blank and fills client + event + shows from zero.
+      if (mode === 'blank') {
+        initBuilder();
+        return;
+      }
+
       const proposalId = params.get('id') || 'demo';
       const isAdmin = params.get('admin') === '1';
 
@@ -2576,6 +2584,12 @@
         if (result.success && result.id) {
           proposalState.proposalId = result.id;
           const clientUrl = `${window.location.origin}/propuesta.html?id=${result.id}`;
+
+          // Update browser URL so a refresh keeps editing the saved proposal
+          // instead of dropping back into the blank builder.
+          try {
+            window.history.replaceState(null, '', `/propuesta.html?id=${result.id}&admin=1`);
+          } catch (e) {}
 
           // Show URL to copy
           showToast('Propuesta aprobada! Link copiado al portapapeles', 'success');
