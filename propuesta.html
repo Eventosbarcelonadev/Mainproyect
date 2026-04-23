@@ -1364,28 +1364,27 @@
         cursor: default !important;
       }
 
-      /* HERO: full-page, no viewport-height */
+      /* HERO: fill the first A4 page so there's no blank gap below */
       .hero {
-        min-height: auto !important;
-        height: auto !important;
+        min-height: 100vh !important;
+        height: 100vh !important;
         padding: 80px 60px !important;
         page-break-after: always;
+        page-break-inside: avoid;
       }
       .hero h1 { font-size: 56px !important; }
 
-      /* CONCEPT */
+      /* CONCEPT: keep together, let next section flow naturally on same page */
       .concept-section {
         padding: 60px 60px !important;
         page-break-inside: avoid;
-        page-break-after: always;
       }
 
-      /* SHOW BLOCKS: one per page, avoid mid-split */
+      /* SHOW BLOCKS: avoid mid-block split, but let browser place breaks naturally */
       .block {
         min-height: auto !important;
         padding: 40px 0 !important;
         page-break-inside: avoid;
-        page-break-after: always;
       }
       .block-image { min-height: 320px !important; }
       .block-content { padding: 40px !important; }
