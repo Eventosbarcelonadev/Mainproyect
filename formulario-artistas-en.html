@@ -605,7 +605,9 @@
 
 <div class="nav">
     <div class="nav-logo">
-      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+      <a href="https://www.eventosbarcelona.com/en/" aria-label="Home Eventos Barcelona">
+        <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+      </a>
     </div>
     <div class="nav-right">
       <a href="https://www.eventosbarcelona.com/en/contact/" class="nav-btn">Contact</a>
@@ -1044,6 +1046,10 @@
         <div class="success-icon">&#10004;&#65039;</div>
         <h2>Profile received</h2>
         <p>Our team will review your profile and get in touch if there are matching opportunities. Thanks for wanting to be part of Eventos Barcelona.</p>
+        <div style="margin-top: 32px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://www.eventosbarcelona.com/en/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Back to home</a>
+          <a href="https://www.eventosbarcelona.com/en/contact/" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Contact the team</a>
+        </div>
       </div>
 
     </div>
@@ -1113,7 +1119,32 @@
       if (companiaLabel) companiaLabel.textContent = isProveedor ? 'Company name' : 'Company name (if applicable)';
       document.getElementById('a-compania').placeholder = isProveedor ? 'e.g. StereoRent BCN SL' : 'e.g. Circo Brillante SL';
 
-      goToStep(1);
+      // If contact was captured in the WordPress inscription landing
+      // (?nombre=&email=&telefono=), prefill step 1 and skip to step 2.
+      const skippedContact = prefillContactFromQuery();
+      goToStep(skippedContact ? 2 : 1);
+    }
+
+    function prefillContactFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const nombre = (params.get('nombre') || '').trim();
+      const email = (params.get('email') || '').trim();
+      const telefono = (params.get('telefono') || '').trim();
+
+      if (nombre) document.getElementById('a-nombre').value = nombre;
+      if (email) document.getElementById('a-email').value = email;
+      if (telefono) {
+        const prefixes = ['+351', '+34', '+33', '+44', '+49', '+39', '+31', '+32', '+41', '+1'];
+        const match = prefixes.find(p => telefono.startsWith(p));
+        if (match) {
+          document.getElementById('a-prefix').value = match;
+          document.getElementById('a-telefono').value = telefono.slice(match.length).trim();
+        } else {
+          document.getElementById('a-telefono').value = telefono;
+        }
+      }
+
+      return !!(nombre && email && telefono);
     }
 
     // Check for ?token= param to load existing artist data
