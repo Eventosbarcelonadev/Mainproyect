@@ -711,8 +711,35 @@
           `).join('')
         : '<p style="color:var(--gray); font-size:13px;">Este artista no tiene shows todavía.</p>';
 
+      const formUrl = a.token
+        ? `${window.location.origin}/formulario-artistas.html?token=${encodeURIComponent(a.token)}`
+        : null;
+      const display = artistaDisplayName(a);
+      const waMsg = formUrl
+        ? `Hola ${display || ''}! Soy del equipo de Eventos Barcelona. Te paso tu link único para que completes tu ficha (bio, fotos, videos, shows): ${formUrl}`
+        : '';
+      const waUrl = formUrl
+        ? `https://wa.me/?text=${encodeURIComponent(waMsg)}`
+        : null;
+      const mailUrl = formUrl
+        ? `mailto:${a.email && !ph ? encodeURIComponent(a.email) : ''}?subject=${encodeURIComponent('Tu ficha en Eventos Barcelona')}&body=${encodeURIComponent(waMsg)}`
+        : null;
+
       $('drawer-body').innerHTML = `
         ${ph ? '<div class="placeholder-warning">Email placeholder — este artista fue importado de GHL sin email válido. Hay que actualizarlo.</div>' : ''}
+        ${formUrl ? `
+          <div class="drawer-section" style="margin-top:0;">
+            <h3>Link para completar ficha</h3>
+            <p style="font-size:12px;color:var(--gray);margin:0 0 8px;">Compartí este link único con el artista para que actualice bio, fotos, videos y shows.</p>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <input type="text" readonly value="${escapeHtml(formUrl)}" id="artist-link-input" style="flex:1;min-width:220px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:monospace;background:#fafaf8;">
+              <button class="btn btn-primary" id="artist-link-copy" style="font-size:12px;">Copiar</button>
+              <a href="${escapeHtml(formUrl)}" target="_blank" rel="noopener" class="btn btn-secondary" style="font-size:12px;text-decoration:none;">Abrir</a>
+              ${waUrl ? `<a href="${escapeHtml(waUrl)}" target="_blank" rel="noopener" class="btn btn-secondary" style="font-size:12px;text-decoration:none;">WhatsApp</a>` : ''}
+              ${mailUrl ? `<a href="${escapeHtml(mailUrl)}" class="btn btn-secondary" style="font-size:12px;text-decoration:none;">Email</a>` : ''}
+            </div>
+          </div>
+        ` : ''}
         <div class="field-row"><label>Nombre</label><div class="value">${escapeHtml(a.nombre || '—')}</div></div>
         <div class="field-row"><label>Nombre artístico</label><div class="value">${escapeHtml(a.nombre_artistico || '—')}</div></div>
         <div class="field-row"><label>Compañía</label><div class="value">${escapeHtml(a.compania || '—')}</div></div>
@@ -742,6 +769,23 @@
           setHash('shows', null, { show: sid });
         });
       });
+
+      const copyBtn = $('drawer-body').querySelector('#artist-link-copy');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const input = $('drawer-body').querySelector('#artist-link-input');
+          if (!input) return;
+          try {
+            await navigator.clipboard.writeText(input.value);
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = 'Copiado ✓';
+            setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+          } catch {
+            input.select();
+            try { document.execCommand('copy'); copyBtn.textContent = 'Copiado'; } catch (_) {}
+          }
+        });
+      }
     }
 
     $('artistas-q').addEventListener('input', debounce((e) => {
