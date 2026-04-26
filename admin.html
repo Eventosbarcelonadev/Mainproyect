@@ -276,8 +276,8 @@
   <div class="topbar">
     <h1>Eventos Barcelona <small>admin</small></h1>
     <div class="tabs" id="main-tabs">
-      <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="shows">Shows</button>
+      <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
     </div>
   </div>
@@ -398,10 +398,10 @@
     const VALID_TABS = ['artistas', 'shows', 'propuestas'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
-      if (!h) return { tab: 'artistas', sub: null, query: {} };
+      if (!h) return { tab: 'shows', sub: null, query: {} };
       const [pathRaw, qsRaw] = h.split('?');
       const parts = pathRaw.split('/').filter(Boolean);
-      const tab = VALID_TABS.includes(parts[0]) ? parts[0] : 'artistas';
+      const tab = VALID_TABS.includes(parts[0]) ? parts[0] : 'shows';
       const sub = parts[1] || null;
       const query = {};
       if (qsRaw) {
