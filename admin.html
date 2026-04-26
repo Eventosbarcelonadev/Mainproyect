@@ -269,6 +269,52 @@
     .pagination button { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-family: inherit; cursor: pointer; }
     .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* Favorite star + edit button on show cards */
+    .card-img { position: relative; }
+    .card-actions-overlay {
+      position: absolute; top: 8px; right: 8px;
+      display: flex; gap: 6px;
+    }
+    .icon-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: rgba(255,255,255,0.92);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; line-height: 1; padding: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.1s, background 0.15s;
+    }
+    .icon-btn:hover { transform: scale(1.08); background: #fff; }
+    .icon-btn.is-favorite { background: #ffd84d; }
+    .icon-btn.is-favorite::before { content: '★'; color: #b88a00; }
+    .icon-btn.fav::before { content: '☆'; color: #888; }
+    .icon-btn.edit::before { content: '✎'; color: #444; font-size: 13px; }
+
+    /* Edit show modal */
+    .edit-modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 200; display: none; align-items: center; justify-content: center;
+    }
+    .edit-modal-backdrop.open { display: flex; }
+    .edit-modal {
+      background: #fff; width: min(560px, 92vw); max-height: 90vh; overflow-y: auto;
+      border-radius: 16px; padding: 28px;
+    }
+    .edit-modal h2 { font-family: 'DM Serif Display', serif; font-size: 24px; margin: 0 0 4px; font-weight: 400; }
+    .edit-modal .show-id { color: var(--gray); font-size: 12px; margin-bottom: 20px; }
+    .edit-modal label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin: 14px 0 4px; }
+    .edit-modal input[type="text"], .edit-modal input[type="number"], .edit-modal input[type="url"], .edit-modal textarea, .edit-modal select {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;
+      background: #fff; box-sizing: border-box;
+    }
+    .edit-modal input:focus, .edit-modal textarea:focus, .edit-modal select:focus { outline: none; border-color: var(--accent); }
+    .edit-modal textarea { min-height: 90px; resize: vertical; }
+    .edit-modal .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .edit-modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+    .edit-modal .btn-cancel { background: #fff; border: 1.5px solid var(--border); padding: 10px 20px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; }
+    .edit-modal .btn-save { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; }
+    .edit-modal .btn-save:disabled { opacity: 0.5; cursor: progress; }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -355,6 +401,52 @@
     </div>
     <div class="drawer-body" id="drawer-body"></div>
   </aside>
+
+  <!-- Edit show modal -->
+  <div class="edit-modal-backdrop" id="edit-modal-backdrop">
+    <div class="edit-modal">
+      <h2>Editar show</h2>
+      <div class="show-id" id="edit-show-id"></div>
+      <label>Nombre</label>
+      <input type="text" id="edit-name">
+      <div class="row">
+        <div>
+          <label>Categoría</label>
+          <select id="edit-category">
+            <option value="">—</option>
+            <option value="danza">Danza</option>
+            <option value="musica">Música</option>
+            <option value="circo">Circo</option>
+            <option value="wow">WOW</option>
+          </select>
+        </div>
+        <div>
+          <label>Subcategoría</label>
+          <input type="text" id="edit-subcategory">
+        </div>
+      </div>
+      <label>Descripción</label>
+      <textarea id="edit-description"></textarea>
+      <div class="row">
+        <div>
+          <label>Caché base (€)</label>
+          <input type="number" id="edit-base-price" min="0" step="50">
+        </div>
+        <div>
+          <label>Nota del caché</label>
+          <input type="text" id="edit-price-note" placeholder="ej. 5 bailarines + 1 estilista">
+        </div>
+      </div>
+      <label>URL imagen</label>
+      <input type="url" id="edit-image-url" placeholder="https://...">
+      <label>URL video (YouTube embed o similar)</label>
+      <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/embed/...">
+      <div class="actions">
+        <button type="button" class="btn-cancel" id="edit-cancel">Cancelar</button>
+        <button type="button" class="btn-save" id="edit-save">Guardar</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ---------- utils ----------
@@ -698,8 +790,14 @@
       const artist = s.artista;
       const artistName = artistaDisplayName(artist);
 
+      const favClass = s.is_favorite ? 'is-favorite' : 'fav';
       card.innerHTML = `
-        <div class="card-img ${s.image_url ? '' : 'placeholder'}" style="${s.image_url ? `background-image:url('${escapeHtml(s.image_url)}')` : ''}">${s.image_url ? '' : '·'}</div>
+        <div class="card-img ${s.image_url ? '' : 'placeholder'}" style="${s.image_url ? `background-image:url('${escapeHtml(s.image_url)}')` : ''}">${s.image_url ? '' : '·'}
+          <div class="card-actions-overlay">
+            <button class="icon-btn ${favClass}" data-fav="${escapeHtml(s.id)}" data-fav-state="${s.is_favorite ? '1' : '0'}" title="${s.is_favorite ? 'Quitar de favoritos' : 'Marcar como favorito'}"></button>
+            <button class="icon-btn edit" data-edit="${escapeHtml(s.id)}" title="Editar show"></button>
+          </div>
+        </div>
         <div class="card-body">
           ${artistName ? `<div class="artist" data-artista-id="${escapeHtml(artist.id)}">por ${escapeHtml(artistName)} →</div>` : '<div class="artist" style="color:#aaa; cursor:default;">sin artista asignado</div>'}
           <h3>${escapeHtml(s.name || s.id)}</h3>
@@ -749,8 +847,92 @@
         b.addEventListener('click', () => reviewShow(b.dataset.id, b.dataset.action));
       });
 
+      const favBtn = card.querySelector('[data-fav]');
+      if (favBtn) {
+        favBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const wasFav = favBtn.dataset.favState === '1';
+          await toggleFavorite(s.id, !wasFav);
+        });
+      }
+      const editBtn = card.querySelector('[data-edit]');
+      if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditShowModal(s);
+        });
+      }
+
       return card;
     }
+
+    // ---------- favorite + edit ----------
+    async function toggleFavorite(id, is_favorite) {
+      try {
+        const r = await fetch('/api/admin?action=toggle-favorite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, is_favorite })
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || d.hint || 'Error'); return; }
+        loadShows();
+      } catch (err) { showError(err.message); }
+    }
+
+    let _editingShow = null;
+    function openEditShowModal(s) {
+      _editingShow = s;
+      $('edit-show-id').textContent = `id: ${s.id}`;
+      $('edit-name').value = s.name || '';
+      $('edit-category').value = s.category || '';
+      $('edit-subcategory').value = s.subcategory || '';
+      $('edit-description').value = s.description || '';
+      $('edit-base-price').value = s.base_price || '';
+      $('edit-price-note').value = s.price_note || '';
+      $('edit-image-url').value = s.image_url || '';
+      $('edit-video-url').value = s.video_url || '';
+      $('edit-modal-backdrop').classList.add('open');
+    }
+    function closeEditShowModal() {
+      _editingShow = null;
+      $('edit-modal-backdrop').classList.remove('open');
+    }
+    async function saveEditShow() {
+      if (!_editingShow) return;
+      const btn = $('edit-save');
+      btn.disabled = true;
+      const patch = {
+        name: $('edit-name').value.trim(),
+        category: $('edit-category').value || null,
+        subcategory: $('edit-subcategory').value.trim(),
+        description: $('edit-description').value.trim(),
+        base_price: $('edit-base-price').value ? parseInt($('edit-base-price').value, 10) : null,
+        price_note: $('edit-price-note').value.trim(),
+        image_url: $('edit-image-url').value.trim(),
+        video_url: $('edit-video-url').value.trim()
+      };
+      try {
+        const r = await fetch('/api/admin?action=edit-show', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: _editingShow.id, patch })
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || 'Error'); btn.disabled = false; return; }
+        closeEditShowModal();
+        loadShows();
+      } catch (err) { showError(err.message); }
+      finally { btn.disabled = false; }
+    }
+    $('edit-cancel').addEventListener('click', closeEditShowModal);
+    $('edit-modal-backdrop').addEventListener('click', (e) => {
+      if (e.target === $('edit-modal-backdrop')) closeEditShowModal();
+    });
+    $('edit-save').addEventListener('click', saveEditShow);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('edit-modal-backdrop').classList.contains('open')) closeEditShowModal();
+    });
 
     function wirePicker(card, show) {
       const input = card.querySelector('[data-picker-input]');

@@ -7,6 +7,8 @@
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}
 // GET  /api/admin?action=shows-pending&status=pending_review|active|archived
 // POST /api/admin?action=review-show  body: {id, action: approve|archive|edit, patch?}
+// POST /api/admin?action=edit-show  body: {id, patch: {name?, description?, ...}}
+// POST /api/admin?action=toggle-favorite  body: {id, is_favorite: bool}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -172,6 +174,68 @@ async function showsPending(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, shows: rows });
 }
 
+async function editShow(req, res, env) {
+  const { id, patch } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!patch || typeof patch !== 'object') return res.status(400).json({ error: 'Missing patch' });
+
+  const allowed = ['name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url'];
+  const update = {};
+  for (const k of allowed) if (k in patch) update[k] = patch[k];
+  if (Object.keys(update).length === 0) return res.status(400).json({ error: 'patch is empty' });
+
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(update)
+    }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+  if (!rows.length) return res.status(404).json({ error: 'Show not found' });
+  return res.status(200).json({ success: true, show: rows[0] });
+}
+
+async function toggleFavorite(req, res, env) {
+  const { id, is_favorite } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (typeof is_favorite !== 'boolean') return res.status(400).json({ error: 'is_favorite must be boolean' });
+
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=id,is_favorite`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify({ is_favorite })
+    }
+  );
+  if (!r.ok) {
+    const txt = await r.text();
+    if (/column.*is_favorite.*does not exist/i.test(txt)) {
+      return res.status(409).json({
+        error: 'Columna is_favorite no existe',
+        hint: 'Pega en Supabase: ALTER TABLE shows ADD COLUMN is_favorite boolean NOT NULL DEFAULT false;'
+      });
+    }
+    return res.status(r.status).json({ error: txt });
+  }
+  const rows = await r.json();
+  if (!rows.length) return res.status(404).json({ error: 'Show not found' });
+  return res.status(200).json({ success: true, show: rows[0] });
+}
+
 async function reviewShow(req, res, env) {
   const { id, action, patch } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -233,10 +297,12 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
       if (action === 'review-show') return reviewShow(req, res, env);
+      if (action === 'edit-show') return editShow(req, res, env);
+      if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET ?action=list-artistas|list-proposals|get-artista-detail|shows-pending | POST ?action=link-show-to-artista|review-show'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|toggle-favorite'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

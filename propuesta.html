@@ -412,6 +412,23 @@
       background: var(--accent);
       border-color: var(--accent);
     }
+    .picker-artist-avatar--star {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #b88a00;
+      background: #ffd84d;
+      border-color: #ffd84d;
+    }
+    .picker-favorites-section h3::after {
+      content: '';
+    }
+    .picker-fav-star {
+      color: #d6a800;
+      margin-right: 4px;
+      font-size: 0.95em;
+    }
     .picker-artist-meta { display: flex; flex-direction: column; gap: 2px; }
     .picker-artist-meta h3 {
       font-family: 'Inter', sans-serif;
@@ -2086,7 +2103,8 @@
             imageUrl: s.image_url || '',
             artistaId: s.artista_id || null,
             artistaNombre: artistaNombre,
-            artistaFotos: artistaFotos
+            artistaFotos: artistaFotos,
+            isFavorite: !!s.is_favorite
           };
         });
         console.log(`Loaded ${shows.length} shows from Supabase (artist-joined)`);
@@ -2447,10 +2465,11 @@
       const catLabels = { danza: 'Danza', musica: 'Musica', circo: 'Circo', wow: 'WOW' };
       const PLACEHOLDER_IMG = 'https://via.placeholder.com/400x200?text=Sin+imagen';
 
-      // 1) Filter by category + free-text query, then group by artist.
+      // 1) Filter by category + free-text query, then group by artist + collect favorites.
       // Query matches show.name, show.subcategory, category label, or artist name.
       const q = pickerQuery;
       const groups = new Map(); // key -> { artistaId, artistaNombre, artistaFotos, shows: [{id, show}] }
+      const favorites = []; // [{id, show}]
       Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
         if (!show) return;
         if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
@@ -2462,6 +2481,7 @@
           ].filter(Boolean).join(' ').toLowerCase();
           if (!hay.includes(q)) return;
         }
+        if (show.isFavorite) favorites.push({ id, show });
         const key = show.artistaId || '__none__';
         if (!groups.has(key)) {
           groups.set(key, {
@@ -2491,8 +2511,43 @@
         return na.localeCompare(nb);
       });
 
-      // 3) Render artist sections.
+      // 3) Render: favorites section first (if any), then artist sections.
       let html = '';
+
+      const renderShowCard = (id, show) => {
+        const already = currentIds.includes(id);
+        const safeId = _pickerEscape(id);
+        const name = show.name || '(sin nombre)';
+        const cat = catLabels[show.category] || show.category || '';
+        const sub = show.subcategory || '';
+        const meta = [cat, sub].filter(Boolean).join(' · ');
+        const img = show.imageUrl || PLACEHOLDER_IMG;
+        const star = show.isFavorite ? '<span class="picker-fav-star" title="Favorito">★</span>' : '';
+        return `
+          <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : `addShowFromPicker('${safeId}')`}">
+            <img src="${_pickerEscape(img)}" alt="${_pickerEscape(name)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';">
+            <div class="picker-card-body">
+              <small>${_pickerEscape(meta)}</small>
+              <h4>${star}${_pickerEscape(name)}${already ? ' (agregado)' : ''}</h4>
+            </div>
+          </div>`;
+      };
+
+      if (favorites.length) {
+        const favCards = favorites.map(({ id, show }) => renderShowCard(id, show)).join('');
+        html += `
+          <section class="picker-artist-section picker-favorites-section">
+            <header class="picker-artist-header">
+              <div class="picker-artist-avatar picker-artist-avatar--star">★</div>
+              <div class="picker-artist-meta">
+                <h3>Favoritos</h3>
+                <span>${favorites.length} show${favorites.length === 1 ? '' : 's'}</span>
+              </div>
+            </header>
+            <div class="picker-artist-grid">${favCards}</div>
+          </section>`;
+      }
+
       orderedKeys.forEach(key => {
         const g = groups.get(key);
         const artistLabel = key === '__none__'
@@ -2504,23 +2559,14 @@
           ? `<div class="picker-artist-avatar" style="background-image:url('${_pickerEscape(photo)}')"></div>`
           : `<div class="picker-artist-avatar picker-artist-avatar--initial">${_pickerEscape(initial)}</div>`;
 
-        const cards = g.shows.map(({ id, show }) => {
-          const already = currentIds.includes(id);
-          const safeId = _pickerEscape(id);
-          const name = show.name || '(sin nombre)';
-          const cat = catLabels[show.category] || show.category || '';
-          const sub = show.subcategory || '';
-          const meta = [cat, sub].filter(Boolean).join(' · ');
-          const img = show.imageUrl || PLACEHOLDER_IMG;
-          return `
-            <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : `addShowFromPicker('${safeId}')`}">
-              <img src="${_pickerEscape(img)}" alt="${_pickerEscape(name)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';">
-              <div class="picker-card-body">
-                <small>${_pickerEscape(meta)}</small>
-                <h4>${_pickerEscape(name)}${already ? ' (agregado)' : ''}</h4>
-              </div>
-            </div>`;
-        }).join('');
+        // Within an artist section, favorites first, then by name.
+        const sortedShows = [...g.shows].sort((a, b) => {
+          const fa = a.show.isFavorite ? 1 : 0;
+          const fb = b.show.isFavorite ? 1 : 0;
+          if (fa !== fb) return fb - fa;
+          return (a.show.name || '').localeCompare(b.show.name || '');
+        });
+        const cards = sortedShows.map(({ id, show }) => renderShowCard(id, show)).join('');
 
         html += `
           <section class="picker-artist-section">
