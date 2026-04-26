@@ -53,6 +53,7 @@ export default async function handler(req, res) {
 
     const row = {
       status: data.status || 'revision',
+      lang: data.lang === 'en' ? 'en' : 'es',
       client_name: data.client?.name || '',
       client_company: data.client?.company || '',
       client_email: data.client?.email || '',

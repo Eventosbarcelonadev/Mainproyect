@@ -1532,6 +1532,10 @@
         <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="EB" style="filter: brightness(0);">
         <h1>Constructor de Propuestas</h1>
         <p>Selecciona los shows para armar una propuesta personalizada</p>
+        <div class="builder-lang-toggle" id="builderLangToggle" style="margin-top:12px;display:inline-flex;gap:0;border:1.5px solid var(--border);border-radius:999px;overflow:hidden;">
+          <button type="button" class="lang-btn active" data-lang="es" onclick="setProposalLang('es')" style="border:none;background:var(--accent);color:#fff;padding:6px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">ES</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="setProposalLang('en')" style="border:none;background:#fff;color:var(--gray);padding:6px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button>
+        </div>
       </div>
 
       <!-- Client & Event form -->
@@ -1901,6 +1905,7 @@
       isAdmin: false,
       priceEditMode: false,
       globalMargin: 0,
+      lang: 'es', // 'es' | 'en' — which language to render show texts in
       // These get populated from proposal data
       client: {},
       event: {},
@@ -1908,6 +1913,60 @@
       concept: {},
       category: 'shows'
     };
+
+    // Pick the right text from a SHOW_CATALOG entry given current language.
+    function pickShowField(show, field) {
+      if (!show) return '';
+      const lang = (proposalState && proposalState.lang) === 'en' ? 'en' : 'es';
+      if (lang === 'en') {
+        const map = {
+          name: show.nameEn,
+          description: show.descriptionEn,
+          subcategory: show.subcategoryEn,
+          priceNote: show.priceNoteEn
+        };
+        const v = map[field];
+        if (v != null && v !== '') return v;
+      }
+      return show[field] || '';
+    }
+
+    // Switch the proposal language. Refresh the rendered show texts from
+    // SHOW_CATALOG using the new language, and re-open the picker if it
+    // is open so its labels swap too.
+    function setProposalLang(lang) {
+      if (lang !== 'es' && lang !== 'en') return;
+      if (proposalState.lang === lang) return;
+      proposalState.lang = lang;
+
+      // Update the toggle button visuals.
+      document.querySelectorAll('#builderLangToggle .lang-btn').forEach(b => {
+        const isActive = b.dataset.lang === lang;
+        b.classList.toggle('active', isActive);
+        b.style.background = isActive ? 'var(--accent)' : '#fff';
+        b.style.color = isActive ? '#fff' : 'var(--gray)';
+      });
+
+      // Re-pull lang-specific strings for any shows already added.
+      proposalState.shows = (proposalState.shows || []).map(s => {
+        const cat = SHOW_CATALOG[s.id] || s;
+        return {
+          ...s,
+          name: pickShowField(cat, 'name') || s.name,
+          description: pickShowField(cat, 'description') || s.description,
+          subcategory: pickShowField(cat, 'subcategory') || s.subcategory,
+          priceNote: pickShowField(cat, 'priceNote') || s.priceNote,
+          contextLabel: pickShowField(cat, 'subcategory') || s.contextLabel
+        };
+      });
+
+      // Re-render. If picker is open, refresh its grid.
+      try { renderProposal(); } catch (_) {}
+      const overlay = document.getElementById('pickerOverlay');
+      if (overlay && overlay.classList.contains('open')) {
+        renderPickerGrid();
+      }
+    }
 
     // =============================================
     // DEMO DATA — simulates what GHL would send
@@ -2094,11 +2153,15 @@
           const artistaFotos = (a && Array.isArray(a.fotos_urls)) ? a.fotos_urls : [];
           SHOW_CATALOG[s.id] = {
             name: s.name || '',
+            nameEn: s.name_en || '',
             category: s.category || '',
             subcategory: s.subcategory || '',
+            subcategoryEn: s.subcategory_en || '',
             description: s.description || '',
+            descriptionEn: s.description_en || '',
             basePrice: s.base_price || 0,
             priceNote: s.price_note || '',
+            priceNoteEn: s.price_note_en || '',
             videoUrl: s.video_url || '',
             imageUrl: s.image_url || '',
             artistaId: s.artista_id || null,
@@ -2156,6 +2219,7 @@
         const p = result.proposal;
         proposalState.proposalId = p.id;
         proposalState.status = p.status || 'revision';
+        proposalState.lang = (p.lang === 'en') ? 'en' : 'es';
 
         // Rebuild shows from saved data (array of {id, currentPrice, contextLabel})
         const showsData = {
@@ -2475,9 +2539,9 @@
         if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
         if (q) {
           const hay = [
-            show.name, show.subcategory, show.category,
+            show.name, show.nameEn, show.subcategory, show.subcategoryEn, show.category,
             catLabels[show.category], show.artistaNombre,
-            show.description
+            show.description, show.descriptionEn
           ].filter(Boolean).join(' ').toLowerCase();
           if (!hay.includes(q)) return;
         }
@@ -2517,9 +2581,9 @@
       const renderShowCard = (id, show) => {
         const already = currentIds.includes(id);
         const safeId = _pickerEscape(id);
-        const name = show.name || '(sin nombre)';
+        const name = pickShowField(show, 'name') || '(sin nombre)';
         const cat = catLabels[show.category] || show.category || '';
-        const sub = show.subcategory || '';
+        const sub = pickShowField(show, 'subcategory');
         const meta = [cat, sub].filter(Boolean).join(' · ');
         const img = show.imageUrl || PLACEHOLDER_IMG;
         const star = show.isFavorite ? '<span class="picker-fav-star" title="Favorito">★</span>' : '';
@@ -2587,11 +2651,18 @@
       const show = SHOW_CATALOG[id];
       if (!show) return;
 
+      // Capture both languages so toggling later doesn't lose data, but
+      // expose lang-specific defaults (name, description, subcategory,
+      // priceNote) chosen from the current proposalState.lang.
       proposalState.shows.push({
         ...show,
         id: id,
+        name: pickShowField(show, 'name'),
+        description: pickShowField(show, 'description'),
+        subcategory: pickShowField(show, 'subcategory'),
+        priceNote: pickShowField(show, 'priceNote'),
         currentPrice: show.basePrice,
-        contextLabel: show.subcategory
+        contextLabel: pickShowField(show, 'subcategory')
       });
 
       closePicker();
@@ -2737,6 +2808,7 @@
       const payload = {
         id: proposalState.proposalId || null,
         status: 'approved',
+        lang: proposalState.lang || 'es',
         client: proposalState.client,
         event: proposalState.event,
         category: proposalState.category,

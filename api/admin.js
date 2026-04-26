@@ -179,7 +179,10 @@ async function editShow(req, res, env) {
   if (!id) return res.status(400).json({ error: 'Missing id' });
   if (!patch || typeof patch !== 'object') return res.status(400).json({ error: 'Missing patch' });
 
-  const allowed = ['name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url'];
+  const allowed = [
+    'name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url',
+    'name_en', 'description_en', 'subcategory_en', 'price_note_en'
+  ];
   const update = {};
   for (const k of allowed) if (k in patch) update[k] = patch[k];
   if (Object.keys(update).length === 0) return res.status(400).json({ error: 'patch is empty' });

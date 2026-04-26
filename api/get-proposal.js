@@ -38,6 +38,7 @@ export default async function handler(req, res) {
     const proposal = {
       id: p.id,
       status: p.status,
+      lang: p.lang || 'es',
       client: {
         name: p.client_name,
         company: p.client_company,

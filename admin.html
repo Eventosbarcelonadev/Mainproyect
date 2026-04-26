@@ -422,8 +422,16 @@
     <div class="edit-modal">
       <h2>Editar show</h2>
       <div class="show-id" id="edit-show-id"></div>
-      <label>Nombre</label>
-      <input type="text" id="edit-name">
+      <div class="row">
+        <div>
+          <label>Nombre (ES)</label>
+          <input type="text" id="edit-name">
+        </div>
+        <div>
+          <label>Name (EN)</label>
+          <input type="text" id="edit-name-en">
+        </div>
+      </div>
       <div class="row">
         <div>
           <label>Categoría</label>
@@ -436,20 +444,28 @@
           </select>
         </div>
         <div>
-          <label>Subcategoría</label>
-          <input type="text" id="edit-subcategory">
+          <label>Subcategoría (ES / EN)</label>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="edit-subcategory" placeholder="ES">
+            <input type="text" id="edit-subcategory-en" placeholder="EN">
+          </div>
         </div>
       </div>
-      <label>Descripción</label>
+      <label>Descripción (ES)</label>
       <textarea id="edit-description"></textarea>
+      <label>Description (EN)</label>
+      <textarea id="edit-description-en"></textarea>
       <div class="row">
         <div>
           <label>Caché base (€)</label>
           <input type="number" id="edit-base-price" min="0" step="50">
         </div>
         <div>
-          <label>Nota del caché</label>
-          <input type="text" id="edit-price-note" placeholder="ej. 5 bailarines + 1 estilista">
+          <label>Nota del caché (ES / EN)</label>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="edit-price-note" placeholder="ES, ej. 5 bailarines + 1 estilista">
+            <input type="text" id="edit-price-note-en" placeholder="EN, e.g. 5 dancers + 1 stylist">
+          </div>
         </div>
       </div>
       <label>URL imagen</label>
@@ -938,11 +954,15 @@
       _editingShow = s;
       $('edit-show-id').textContent = `id: ${s.id}`;
       $('edit-name').value = s.name || '';
+      $('edit-name-en').value = s.name_en || '';
       $('edit-category').value = s.category || '';
       $('edit-subcategory').value = s.subcategory || '';
+      $('edit-subcategory-en').value = s.subcategory_en || '';
       $('edit-description').value = s.description || '';
+      $('edit-description-en').value = s.description_en || '';
       $('edit-base-price').value = s.base_price || '';
       $('edit-price-note').value = s.price_note || '';
+      $('edit-price-note-en').value = s.price_note_en || '';
       $('edit-image-url').value = s.image_url || '';
       $('edit-video-url').value = s.video_url || '';
       $('edit-modal-backdrop').classList.add('open');
@@ -957,11 +977,15 @@
       btn.disabled = true;
       const patch = {
         name: $('edit-name').value.trim(),
+        name_en: $('edit-name-en').value.trim(),
         category: $('edit-category').value || null,
         subcategory: $('edit-subcategory').value.trim(),
+        subcategory_en: $('edit-subcategory-en').value.trim(),
         description: $('edit-description').value.trim(),
+        description_en: $('edit-description-en').value.trim(),
         base_price: $('edit-base-price').value ? parseInt($('edit-base-price').value, 10) : null,
         price_note: $('edit-price-note').value.trim(),
+        price_note_en: $('edit-price-note-en').value.trim(),
         image_url: $('edit-image-url').value.trim(),
         video_url: $('edit-video-url').value.trim()
       };
