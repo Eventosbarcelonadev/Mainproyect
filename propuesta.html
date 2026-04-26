@@ -335,10 +335,28 @@
       color: var(--gray);
       padding: 4px 8px;
     }
+    .picker-search {
+      padding: 14px 24px 0;
+    }
+    .picker-search input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .picker-search input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
     .picker-tabs {
       display: flex;
       gap: 6px;
-      padding: 16px 24px 0;
+      padding: 12px 24px 0;
       flex-wrap: wrap;
     }
     .picker-tab {
@@ -1632,6 +1650,9 @@
         <h3>Agregar show a la propuesta</h3>
         <button class="picker-close" onclick="closePicker()">&times;</button>
       </div>
+      <div class="picker-search">
+        <input type="search" id="pickerSearch" placeholder="Buscar por artista, show o disciplina…" autocomplete="off">
+      </div>
       <div class="picker-tabs" id="pickerTabs"></div>
       <div class="picker-grid" id="pickerGrid"></div>
     </div>
@@ -2373,12 +2394,23 @@
     // SHOW PICKER — add shows in admin mode
     // =============================================
     let pickerFilter = 'all';
+    let pickerQuery = '';
 
     function openPicker() {
       pickerFilter = 'all';
+      pickerQuery = '';
+      const searchEl = document.getElementById('pickerSearch');
+      if (searchEl) {
+        searchEl.value = '';
+        searchEl.oninput = (e) => {
+          pickerQuery = (e.target.value || '').trim().toLowerCase();
+          renderPickerGrid();
+        };
+      }
       renderPickerTabs();
       renderPickerGrid();
       document.getElementById('pickerOverlay').classList.add('open');
+      if (searchEl) setTimeout(() => searchEl.focus(), 50);
     }
 
     function closePicker() {
@@ -2415,12 +2447,21 @@
       const catLabels = { danza: 'Danza', musica: 'Musica', circo: 'Circo', wow: 'WOW' };
       const PLACEHOLDER_IMG = 'https://via.placeholder.com/400x200?text=Sin+imagen';
 
-      // 1) Filter by category (if any), then group by artist.
-      // Group key = artistaId || '__none__'. Each group keeps a label and (first-seen) artist meta.
+      // 1) Filter by category + free-text query, then group by artist.
+      // Query matches show.name, show.subcategory, category label, or artist name.
+      const q = pickerQuery;
       const groups = new Map(); // key -> { artistaId, artistaNombre, artistaFotos, shows: [{id, show}] }
       Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
         if (!show) return;
         if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
+        if (q) {
+          const hay = [
+            show.name, show.subcategory, show.category,
+            catLabels[show.category], show.artistaNombre,
+            show.description
+          ].filter(Boolean).join(' ').toLowerCase();
+          if (!hay.includes(q)) return;
+        }
         const key = show.artistaId || '__none__';
         if (!groups.has(key)) {
           groups.set(key, {
@@ -2434,7 +2475,10 @@
       });
 
       if (groups.size === 0) {
-        grid.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray);font-family:Inter,sans-serif;">No hay shows disponibles en esta categoria.</div>`;
+        const msg = pickerQuery
+          ? `Sin resultados para "${_pickerEscape(pickerQuery)}".`
+          : 'No hay shows disponibles en esta categoria.';
+        grid.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray);font-family:Inter,sans-serif;">${msg}</div>`;
         return;
       }
 
