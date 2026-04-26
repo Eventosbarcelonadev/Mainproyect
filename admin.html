@@ -457,7 +457,8 @@
       params.set('offset', state.artistas.offset);
 
       try {
-        const res = await fetch('/api/list-artistas?' + params.toString());
+        params.set('action', 'list-artistas');
+        const res = await fetch('/api/admin?' + params.toString());
         const data = await res.json();
         $('artistas-loading').classList.add('hidden');
         if (!res.ok) { showError(data.error || 'Error cargando artistas'); return; }
@@ -521,7 +522,7 @@
       openDrawer();
 
       try {
-        const r = await fetch('/api/get-artista-detail?id=' + encodeURIComponent(id));
+        const r = await fetch('/api/admin?action=get-artista-detail&id=' + encodeURIComponent(id));
         const data = await r.json();
         if (!r.ok) {
           $('drawer-body').innerHTML = `<div class="error">${escapeHtml(data.error || 'Error')}</div>`;
@@ -611,7 +612,7 @@
     async function loadAllArtistasForPicker() {
       if (allArtistasCache) return allArtistasCache;
       try {
-        const r = await fetch('/api/list-artistas?limit=200');
+        const r = await fetch('/api/admin?action=list-artistas&limit=200');
         const d = await r.json();
         if (!r.ok) return [];
         allArtistasCache = d.artistas || [];
@@ -619,7 +620,7 @@
         if (d.total > d.count) {
           let offset = 200;
           while (offset < d.total && offset < 1000) {
-            const rr = await fetch('/api/list-artistas?limit=200&offset=' + offset);
+            const rr = await fetch('/api/admin?action=list-artistas&limit=200&offset=' + offset);
             const dd = await rr.json();
             if (!rr.ok || !dd.artistas?.length) break;
             allArtistasCache.push(...dd.artistas);
@@ -642,9 +643,9 @@
         if (state.shows.substatus === 'orphans') {
           // Use shows-pending with status=active and filter client-side for null artista
           // Better: do active + archived and filter. Simplest: active.
-          url = '/api/shows-pending?status=active';
+          url = '/api/admin?action=shows-pending&status=active';
         } else {
-          url = `/api/shows-pending?status=${encodeURIComponent(state.shows.substatus)}`;
+          url = `/api/admin?action=shows-pending&status=${encodeURIComponent(state.shows.substatus)}`;
         }
         const res = await fetch(url);
         const data = await res.json();
@@ -788,7 +789,7 @@
 
     async function linkShow(showId, artistaId) {
       try {
-        const r = await fetch('/api/link-show-to-artista', {
+        const r = await fetch('/api/admin?action=link-show-to-artista', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ showId, artistaId })
@@ -803,7 +804,7 @@
 
     async function reviewShow(id, action) {
       try {
-        const r = await fetch('/api/review-show', {
+        const r = await fetch('/api/admin?action=review-show', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, action })
@@ -842,7 +843,8 @@
       params.set('limit', '100');
 
       try {
-        const res = await fetch('/api/list-proposals?' + params.toString());
+        params.set('action', 'list-proposals');
+        const res = await fetch('/api/admin?' + params.toString());
         const data = await res.json();
         $('propuestas-loading').classList.add('hidden');
         if (!res.ok) { showError(data.error || 'Error'); return; }

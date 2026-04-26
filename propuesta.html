@@ -356,11 +356,65 @@
     .picker-tab:hover { border-color: var(--accent); color: var(--accent); }
     .picker-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .picker-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 16px 24px 24px;
+      overflow-y: auto;
+    }
+    .picker-artist-section {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .picker-artist-section:first-child { border-top: none; padding-top: 0; }
+    .picker-artist-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .picker-artist-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-gray);
+      background-size: cover;
+      background-position: center;
+      border: 1.5px solid var(--border);
+      flex: 0 0 40px;
+    }
+    .picker-artist-avatar--initial {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .picker-artist-meta { display: flex; flex-direction: column; gap: 2px; }
+    .picker-artist-meta h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.2;
+    }
+    .picker-artist-meta span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .picker-artist-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 12px;
-      padding: 16px 24px 24px;
-      overflow-y: auto;
     }
     .picker-card {
       border: 1.5px solid var(--border);
@@ -1605,85 +1659,20 @@
   </button>
 
   <!-- ============================================= -->
-  <!-- SHOW CATALOG — all available shows -->
+  <!-- SHOW CATALOG — populated from Supabase at init -->
   <!-- ============================================= -->
   <script>
     // =============================================
     // SHOW CATALOG
-    // Each show has: id, name, category, subcategory,
-    // description, basePrice, priceNote, duration,
-    // performers, videoUrl, imageUrl
+    // In-memory state populated 100% from Supabase by
+    // loadShowCatalogFromSupabase() at init time.
+    // Each entry: { name, category, subcategory,
+    // description, basePrice, priceNote, videoUrl,
+    // imageUrl, artistaId, artistaNombre, artistaFotos }
+    // The legacy hardcoded catalog (68 shows) was removed
+    // because all rows are now in the Supabase `shows` table.
     // =============================================
-    let SHOW_CATALOG = {
-      'shadows-of-the-future': { name: 'Shadows of the Future', category: 'danza', subcategory: 'Tematica', description: 'Espectaculo de danza inmersivo inspirado en Blade Runner y Cyberpunk. Ideal para fiestas tematicas futuristas.', basePrice: 2950, priceNote: '5 dancers + 1 stylist', videoUrl: 'https://www.youtube.com/embed/bhuB9pCOY20', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/Captura-de-Pantalla-2025-04-06-a-las-11.40.23.png' },
-      'pulsar-dancers': { name: 'Pulsar Dancers', category: 'danza', subcategory: 'Tematica', description: 'Fiesta tematica futurista con decoracion LED, shows inmersivos y tecnologia.', basePrice: 2950, priceNote: '5 dancers + 1 stylist', videoUrl: 'https://www.youtube.com/embed/oW5HMLnjs7Q', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05295-scaled.jpg' },
-      'silk-road-burlesque': { name: 'Silk Road Burlesque', category: 'danza', subcategory: 'Cabaret', description: 'Espectaculo exclusivo de burlesque inspirado en la Ruta de la Seda. Show elegante y sofisticado.', basePrice: 2950, priceNote: '5 dancers + 1 stylist', videoUrl: 'https://www.youtube.com/embed/y17SOCgwDPA', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05418-scaled.jpg' },
-      'street-dancers': { name: 'EB Street Dancers', category: 'danza', subcategory: 'Hip-hop', description: 'Espectaculo de danza urbana. Hip hop, breakdance y estilo callejero.', basePrice: 2750, priceNote: '5 bailarines', videoUrl: 'https://www.youtube.com/embed/sbINqr02Ibw', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/05/DSC05268-scaled.jpg' },
-      'show-danza-funky': { name: 'Show Danza Funky', category: 'danza', subcategory: 'Contemporanea', description: 'Espectaculo de danza funky de produccion propia de Eventos Barcelona. Animacion unica para cenas y galas.', basePrice: 2950, priceNote: '5 dancers + 1 stylist', videoUrl: 'https://www.youtube.com/embed/CT8t09heriA', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/05/Captura-de-Pantalla-2025-04-03-a-las-9.53.19.png' },
-      'olympian-odyssey': { name: 'Olympian Odyssey', category: 'danza', subcategory: 'Tematica', description: 'Espectaculo de danza inspirado en diosas griegas. Ideal para eventos corporativos, galas y fiestas tematicas.', basePrice: 2950, priceNote: '5 dancers + 1 stylist', videoUrl: 'https://www.youtube.com/embed/Rs6pBJilVCY', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/05/Captura-de-Pantalla-2025-04-06-a-las-11.10.14.png' },
-      'ballet-clasica': { name: 'Bailarinas de Ballet y Danza Clasica', category: 'danza', subcategory: 'Clasica', description: 'Bailarinas de ballet y danza clasica para eventos. Elegancia y profesionalidad.', basePrice: 1800, priceNote: '4 bailarinas', videoUrl: 'https://www.youtube.com/embed/-fsRcbpBeZg', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/IMG_9815-copia.jpg' },
-      'pole-dance': { name: 'Espectaculos de Pole Dance', category: 'danza', subcategory: 'Contemporanea', description: 'Shows de Pole Dance para eventos. Actuacion llena de fuerza, acrobacia y arte.', basePrice: 750, priceNote: '1 artista + barra', videoUrl: 'https://www.youtube.com/embed/ye0XqX5ucV0', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/pexels-pixabay-163497.jpg' },
-      'hiphop-breakdance': { name: 'Bailarines de Hip-hop & Breakdance', category: 'danza', subcategory: 'Hip-hop', description: 'Bailarines profesionales de Hip-hop y Breakdance para dar energia a tus eventos.', basePrice: 1750, priceNote: '350€/artista (5 bailarines)', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/show-hiphop.jpg' },
-      'bollywood': { name: 'Show de Bollywood', category: 'danza', subcategory: 'Tematica', description: 'Espectaculo de Bollywood con danza hindu para eventos corporativos y fiestas tematicas.', basePrice: 2500, priceNote: '5 bailarinas', videoUrl: 'https://www.youtube.com/embed/IUU0n2_kAik', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Bollywood-show.jpg' },
-      'flamenco-danza': { name: 'Espectaculos de Flamenco', category: 'danza', subcategory: 'Flamenco', description: 'Bailarines de flamenco profesionales para eventos. Pasion y arte en cada actuacion.', basePrice: 3500, priceNote: '4 musicos + 3 bailaoras', videoUrl: 'https://www.youtube.com/embed/4DNFFXRKK9E', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/bailarines-de-flamenco-recortada-scaled.jpg' },
-      'cabaret-burlesque': { name: 'Show de Cabaret y Burlesque', category: 'danza', subcategory: 'Cabaret', description: 'Espectaculo de cabaret y burlesque para eventos corporativos y fiestas privadas.', basePrice: 2750, priceNote: '5 bailarinas', videoUrl: 'https://www.youtube.com/embed/z8PMPmo1vcU', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/PHOTO-2021-11-16-14-37-04.jpg' },
-      'danza-aerea': { name: 'Danza Aerea', category: 'danza', subcategory: 'Contemporanea', description: 'Espectaculo de danza aerea para eventos. Acrobacia y elegancia en las alturas.', basePrice: 1200, priceNote: '1 artista (sin rigging)', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/danzaaerea.jpg' },
-      'espectaculo-brasileno': { name: 'Espectaculo Brasileno', category: 'danza', subcategory: 'Salsa', description: 'Espectaculo brasileno con samba y ritmos tropicales para eventos y fiestas.', basePrice: 2250, priceNote: '5 bailarinas (+1.400€ con musicos)', videoUrl: 'https://www.youtube.com/embed/9rp8HbCbwdM', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/braziliandancer.jpg' },
-      'hula-hoop-led': { name: 'Show de Hula Hoop LED', category: 'danza', subcategory: 'Contemporanea', description: 'Espectaculo de Hula Hoop LED para eventos. Luz y movimiento combinados.', basePrice: 1600, priceNote: '4 bailarinas (850€ x2)', videoUrl: 'https://www.youtube.com/embed/qAtB95jTmEU', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/image00058-1.jpeg' },
-      'glamm-dancers': { name: 'Bailarinas Glamm Dancers', category: 'danza', subcategory: 'Contemporanea', description: 'Bailarinas Glamm Dancers para eventos de alto nivel. Elegancia y sofisticacion.', basePrice: 3950, priceNote: '4 bailarinas + 1 estilista', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/10/eventos-de-exito-en-barcelona.webp' },
-      'bailarines-salsa': { name: 'Bailarines de Salsa', category: 'danza', subcategory: 'Salsa', description: 'Bailarines de salsa profesionales para animar eventos con ritmo latino.', basePrice: 700, priceNote: 'Por pareja', videoUrl: 'https://www.youtube.com/embed/1HlQaQNyvUA', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/IMG_8446-scaled.jpg' },
-      'grupos-flamenco': { name: 'Grupos de Flamenco', category: 'musica', subcategory: 'Flamenco', description: 'Grupos de Flamenco para eventos y fiestas. Autenticidad y pasion en cada actuacion.', basePrice: 3500, priceNote: '4 musicos + 3 bailaoras', videoUrl: 'https://www.youtube.com/embed/4DNFFXRKK9E', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/09/Sodify_d2_soire_239.jpg' },
-      'arpista-clasica': { name: 'Arpista Clasica', category: 'musica', subcategory: 'Clasica', description: 'Arpista clasica para eventos especiales. Toque elegante y sofisticado.', basePrice: 900, priceNote: 'Solista 80 min', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/7CE2AB6B-C698-4A88-AC33-1EBD8F0B6DE0.jpeg' },
-      'saxofonista-chillout': { name: 'Saxofonista Chill Out', category: 'musica', subcategory: 'Solistas', description: 'Saxofonista chill out para crear un momento unico en tu evento.', basePrice: 550, priceNote: 'Solista 60 min (+495€ equipo sonido)', videoUrl: 'https://www.youtube.com/embed/ywevb_uOC8s', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/rudy-saxo-2.jpg' },
-      'cantante-jazz': { name: 'Cantante Pop, Blues & Jazz', category: 'musica', subcategory: 'Cantantes', description: 'Cantante de pop, jazz y blues para eventos exclusivos.', basePrice: 2200, priceNote: 'Cuarteto (800€ solista / 1.600€ trio)', videoUrl: 'https://www.youtube.com/embed/sH4zGi7mXQ8', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/marina4.jpg' },
-      'trio-violin': { name: 'W&S Trio de Violin', category: 'musica', subcategory: 'Clasica', description: 'Trio musical adaptable desde lo clasico hasta el pop mas actual.', basePrice: 1800, priceNote: 'Trio (2.400€ cuarteto)', videoUrl: 'https://www.youtube.com/embed/t0D35zIefOY', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/trio-violin-e1715366416285.jpg' },
-      'flamenco-instrumental': { name: 'Flamenco Instrumental', category: 'musica', subcategory: 'Flamenco', description: 'Grupo de musica flamenco instrumental para deleitar tu evento.', basePrice: 1800, priceNote: '4 musicos', videoUrl: 'https://www.youtube.com/embed/zGiXtVMEqKU', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/DSC04086aa-1.jpg' },
-      'djs': { name: 'DJ\'s para Eventos', category: 'musica', subcategory: 'DJ', description: 'DJs profesionales para crear una experiencia memorable en tu evento.', basePrice: 650, priceNote: '3h (desde 550€)', videoUrl: 'https://www.youtube.com/embed/1NR8J9LxMN0', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/dj3.jpg' },
-      'orquesta-clasica': { name: 'Orquesta de Musica Clasica', category: 'musica', subcategory: 'Clasica', description: 'Toque clasico y elegante para tu evento con orquesta profesional.', basePrice: 8500, priceNote: '10 musicos + 1 director', videoUrl: 'https://www.youtube.com/embed/-mOgykCNPow', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/C2.jpg' },
-      'bandas-jazz': { name: 'Bandas de Jazz', category: 'musica', subcategory: 'Jazz', description: 'Gran variedad de bandas de Jazz para eventos corporativos y privados.', basePrice: 1500, priceNote: 'Cuarteto (1.100€ trio)', videoUrl: 'https://www.youtube.com/embed/tPhOMu0d7qU', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/GB3.jpg' },
-      'dixieland': { name: 'Banda de Dixieland', category: 'musica', subcategory: 'Jazz', description: 'Banda de Dixieland jazz para eventos. Musica festiva y animada estilo Nueva Orleans.', basePrice: 2200, priceNote: 'Sexteto (1.600€ cuarteto)', videoUrl: 'https://www.youtube.com/embed/JKVCbAqvXkQ', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/RAB_8816.jpg' },
-      'flamenco-chillout': { name: 'Grupo de Flamenco Chill Out', category: 'musica', subcategory: 'Flamenco', description: 'Flamenco chill out para ambientacion elegante en cocktails y cenas.', basePrice: 2500, priceNote: '4 musicos', videoUrl: 'https://www.youtube.com/embed/twxHnhOf5Lo', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/grupoflamenco2.jpg' },
-      'percusionistas-batucadas': { name: 'Percusionistas y Batucadas', category: 'musica', subcategory: 'Percusionistas', description: 'Percusionistas y batucadas para dar energia y ritmo a tus eventos.', basePrice: 1875, priceNote: 'Quinteto (2.500€ sexteto)', videoUrl: 'https://www.youtube.com/embed/lJgRzp3r3Jw', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/percusionistas-eventos-barcelona.jpg' },
-      'cantantes-opera': { name: 'Cantantes de Opera', category: 'musica', subcategory: 'Cantantes', description: 'Cantantes de opera para eventos de alto nivel. Elegancia y potencia vocal.', basePrice: 1960, priceNote: '490€/artista (x4)', videoUrl: 'https://www.youtube.com/embed/ANMACDPBFus', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/cantantes-de-opera-eventos.jpg' },
-      'rumba-catalana': { name: 'Grupo de Rumba Catalana', category: 'musica', subcategory: 'Rumba', description: 'Grupo de Rumba Catalana para eventos en Barcelona. Ritmo y fiesta asegurados.', basePrice: 3500, priceNote: '4 musicos + 3 bailaoras', videoUrl: 'https://www.youtube.com/embed/oGvkqCwJ_RI', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/flamencorumba.jpg' },
-      'bossa-nova': { name: 'Banda de Bossa Nova & Brazilian Jazz', category: 'musica', subcategory: 'Jazz', description: 'Bossa Nova y Brazilian Jazz para ambientacion sofisticada en eventos.', basePrice: 1200, priceNote: 'Trio (1.600€ cuarteto)', videoUrl: 'https://www.youtube.com/embed/w4cEYqY3m9U', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/BN1.jpg' },
-      'pop-rock': { name: 'Grupo de Pop Rock', category: 'musica', subcategory: 'Live bands', description: 'Banda de Pop Rock en vivo para eventos en Barcelona. Energia y diversión.', basePrice: 1500, priceNote: 'Cuarteto (2.200€ quinteto)', videoUrl: 'https://www.youtube.com/embed/Yu6P9Gf0uoE', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/s2-2.jpg' },
-      'soul-bossa-nova': { name: 'Banda de Soul & Bossa Nova', category: 'musica', subcategory: 'Live bands', description: 'Banda de Soul y Bossa Nova para eventos con estilo y groove.', basePrice: 1800, priceNote: 'Trio', videoUrl: 'https://www.youtube.com/embed/0Y3LqqBdlQI', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/bossanovagroup.jpg' },
-      'soul-rb-femenina': { name: 'Banda de Soul y R&B Femenina', category: 'musica', subcategory: 'Live bands', description: 'Banda femenina de Soul y R&B para eventos con potencia y elegancia.', basePrice: 2250, priceNote: 'Trio bases (4.250€ banda completa)', videoUrl: 'https://www.youtube.com/embed/_yjUEMSYrLo', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/S8B0550.jpg' },
-      'jazz-vintage': { name: 'Banda de Jazz Vintage', category: 'musica', subcategory: 'Jazz', description: 'Banda de Jazz Vintage estilo anos 20-30 para eventos tematicos y galas.', basePrice: 1800, priceNote: 'Cuarteto', videoUrl: 'https://www.youtube.com/embed/MiQWRbzDBEo', imageUrl: '' },
-      'malabaristas-zancudos-led': { name: 'Malabaristas y Zancudos LED', category: 'circo', subcategory: 'Malabares LED', description: 'Malabaristas y zancudos LED para eventos corporativos y fiestas.', basePrice: 1600, priceNote: '2 artistas (2.250€ x4)', videoUrl: 'https://www.youtube.com/embed/_W0yM3U21so', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/MG_0093.jpg' },
-      'malabares-fuego': { name: 'Espectaculos Malabares de Fuego', category: 'circo', subcategory: 'Fuego', description: 'Malabaristas profesionales de fuego para eventos corporativos al aire libre.', basePrice: 1650, priceNote: '550€/artista (x3)', videoUrl: 'https://www.youtube.com/embed/M2AgKaNTHic', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/image00022.jpeg' },
-      'personajes-halloween': { name: 'Personajes de Halloween', category: 'circo', subcategory: 'Personajes singulares', description: 'Personajes de Halloween para convertir tu fiesta de empresa en una experiencia escalofriante.', basePrice: 1300, priceNote: '~650€/artista (x2)', videoUrl: 'https://www.youtube.com/embed/tjqTWvT_uic', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/5a4d469c-ff6e-40b1-abb9-3e93cee7fdba.jpg' },
-      'freestylers-futbol': { name: 'Freestylers de Futbol', category: 'circo', subcategory: 'Acrobatas', description: 'Freestylers de futbol y malabaristas del balon para generar impacto en tus invitados.', basePrice: 450, priceNote: '1 artista 2h', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/DSC03382-scaled.jpg' },
-      'personajes-gaudi': { name: 'Personajes Gaudi', category: 'circo', subcategory: 'Personajes singulares', description: 'Artistas inspirados en el estilo de Gaudi. Creatividad, color y esencia del modernismo.', basePrice: 2150, priceNote: '2 artistas + 1 estilista', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/personajes-gaudi.jpg' },
-      'artistas-asiaticos': { name: 'Artistas Asiaticos', category: 'circo', subcategory: 'Personajes singulares', description: 'Espectaculo de artistas asiaticos combinando tradicion, cultura y entretenimiento. Geishas, Kendo, Samurai.', basePrice: 1200, priceNote: '2 geishas + 1 estilista', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/IMG_2890-e1723497773226.jpg' },
-      'siluetista': { name: 'Siluetista', category: 'circo', subcategory: 'Personajes singulares', description: 'Siluetista para eventos. Recuerdos personalizados recortados a mano para tus invitados.', basePrice: 650, priceNote: '2h', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/IB_STAR_BCN_2019_0062_web.jpg' },
-      'zancudos-surrealistas': { name: 'Zancudos Surrealistas', category: 'circo', subcategory: 'Zancudos', description: 'Zancudos surrealistas para recibir invitados y crear impacto visual en eventos.', basePrice: 1100, priceNote: '550€/zancudo (x2)', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/zancudos-stilt-walkers-1-1200x800-1.jpg' },
-      'magos-ilusionistas': { name: 'Magos e Ilusionistas', category: 'circo', subcategory: 'Personajes singulares', description: 'Magos e ilusionistas profesionales para eventos corporativos y fiestas privadas.', basePrice: 475, priceNote: 'Close-up 2h (2.500€ gran formato)', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/RAB_9449.jpg' },
-      'acrobatas-equilibristas': { name: 'Acrobatas y Equilibristas', category: 'circo', subcategory: 'Acrobatas', description: 'Acrobatas y equilibristas profesionales para espectaculos de alto nivel.', basePrice: 1275, priceNote: 'Duo', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/acro-innova-2-1-scaled-e1710348575750.jpg' },
-      'caricaturistas': { name: 'Caricaturistas', category: 'circo', subcategory: 'Personajes singulares', description: 'Caricaturistas para eventos. Recuerdos divertidos y personalizados para tus invitados.', basePrice: 450, priceNote: '2h', videoUrl: 'https://www.youtube.com/embed/skmYFev5ur4', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/caricaturistas-barcelona-4.jpg' },
-      'actores-animadores': { name: 'Actores y Animadores', category: 'circo', subcategory: 'Personajes singulares', description: 'Actores y animadores profesionales para dinamizar eventos corporativos.', basePrice: 550, priceNote: '2h', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/cantantes-de-opera-eventos.jpg' },
-      'body-painter': { name: 'Body Painter', category: 'circo', subcategory: 'Personajes singulares', description: 'Body painter profesional para eventos. Arte corporal en vivo.', basePrice: 2200, priceNote: '3 bailarinas + 1 body painter', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/bodypainting.jpg' },
-      'maestros-ceremonias': { name: 'Maestros de Ceremonias', category: 'circo', subcategory: 'Personajes singulares', description: 'Maestros de ceremonias profesionales para conducir galas y eventos corporativos.', basePrice: 550, priceNote: '2h', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Maestros-de-ceremonia.jpg' },
-      'personajes-bienvenida': { name: 'Personajes de Bienvenida', category: 'circo', subcategory: 'Personajes singulares', description: 'Personajes de bienvenida para recibir invitados con estilo y originalidad.', basePrice: 790, priceNote: 'Red Carpet Lady', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/lady-alfombra-carpet-2-1-scaled.jpg' },
-      'light-boxes-show': { name: 'Light Boxes Show', category: 'wow', subcategory: 'Light shows', description: 'Espectaculo innovador fusionando arte, tecnologia y marca para eventos corporativos de alto impacto.', basePrice: 4750, priceNote: '+450€ personalizacion logo', videoUrl: 'https://www.youtube.com/embed/3IXWwVLpDIY', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2026/02/1-1-scaled.png' },
-      'fire-painting': { name: 'Fire Painting', category: 'wow', subcategory: 'A medida / Custom', description: 'Show de pintura con fuego. Espectaculo impactante para dejar al publico impresionado.', basePrice: 1950, priceNote: 'Materiales incluidos', videoUrl: '', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/FP2.jpg' },
-      'light-painting': { name: 'Artista Light Painting', category: 'wow', subcategory: 'Light shows', description: 'Artista de Light Painting para ofrecer a tus invitados un recuerdo personalizado.', basePrice: 3950, priceNote: 'Show completo', videoUrl: 'https://www.youtube.com/embed/SYUHsAIp8v8', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Konica-Minolta-07-1200x800-1.jpg' },
-      'natacion-sincronizada': { name: 'Show Natacion Sincronizada', category: 'wow', subcategory: 'A medida / Custom', description: 'Espectaculo acuatico con danza contemporanea, equilibrio y acrobacia con bailarinas profesionales.', basePrice: 1600, priceNote: '4 bailarinas', videoUrl: 'https://www.youtube.com/embed/tCwFC-KYM3k', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Synchronizedswimming.jpg' },
-      'violin-laser': { name: 'Show Violin Laser', category: 'wow', subcategory: 'Laser', description: 'Fusion de musica y efectos laser de alto impacto para eventos corporativos.', basePrice: 850, priceNote: 'Show (+1.500€ equipo laser)', videoUrl: 'https://www.youtube.com/embed/2y9Rk-MOgbo', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/laserviolin.jpg' },
-      'artista-arena': { name: 'Artista de Arena', category: 'wow', subcategory: 'A medida / Custom', description: 'Un artista relata tu historia corporativa usando luz y arena. Show personalizado, emotivo y unico.', basePrice: 3950, priceNote: 'Show 10-12 min personalizado', videoUrl: 'https://www.youtube.com/embed/ND6_DhmKGB8', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/sandartist.jpg' },
-      'light-art-show': { name: 'Light Art Show', category: 'wow', subcategory: 'Light shows', description: 'El artista juega con sprays de luces para relatar una historia personalizada.', basePrice: 7950, priceNote: 'Show 10 min + logo (no incl. desplazamiento)', videoUrl: 'https://www.youtube.com/embed/KR8ayg8qo3g', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/lightart.jpg' },
-      'shows-laser': { name: 'Shows Laser', category: 'wow', subcategory: 'Laser', description: 'Espectaculo laser de alto impacto visual para eventos.', basePrice: 6750, priceNote: 'Show 10 min personalizado con equipo', videoUrl: 'https://www.youtube.com/embed/ji9ZPVHo5AE', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/lasershow.jpg' },
-      'bailarines-led': { name: 'Bailarines LED', category: 'wow', subcategory: 'Bailarines LED', description: 'Bailarines LED para eventos. Espectaculo visual de alto impacto con trajes luminosos.', basePrice: 3750, priceNote: '5 bailarines (show coreografiado)', videoUrl: 'https://www.youtube.com/embed/XPlO5VNmDBc', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/led-dancers-eventos-barcelona-2.jpg' },
-      'percusionistas-led': { name: 'Percusionistas LED', category: 'wow', subcategory: 'Percusionistas LED', description: 'Percusionistas LED para eventos. Ritmo y luz combinados en un espectaculo unico.', basePrice: 3950, priceNote: '8 artistas + 1 tecnico', videoUrl: 'https://www.youtube.com/embed/f5JNIvrLZYw', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/leddrummers.jpg' },
-      'arpa-laser': { name: 'Show Arpa Laser', category: 'wow', subcategory: 'Laser', description: 'Show de arpa laser para eventos. Musica y tecnologia en un espectaculo futurista.', basePrice: 2950, priceNote: '+1.500€ extra laser', videoUrl: 'https://www.youtube.com/embed/xHLd9ty-bOQ', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/arpalaser.jpg' },
-      'video-mapping': { name: 'Espectaculo Barcelona Video Mapping', category: 'wow', subcategory: 'Video mapping', description: 'Video mapping para eventos. Proyecciones inmersivas sobre edificios y escenarios.', basePrice: 3950, priceNote: '2 dancers + 1 tecnico AV (no incl. pantalla)', videoUrl: 'https://www.youtube.com/embed/gznFkForu70', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Barcelona-video-mapping.jpg' },
-      'malabares-led': { name: 'Show Malabares LED', category: 'wow', subcategory: 'Bailarines LED', description: 'Show de malabares LED para eventos. Espectaculo visual nocturno de alto impacto.', basePrice: 1600, priceNote: '2 artistas (2.250€ x4)', videoUrl: 'https://www.youtube.com/embed/SYUHsAIp8v8', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/LJ1.jpg' },
-      '3d-dreams': { name: '3D Dreams: Dance & Video Mapping', category: 'wow', subcategory: 'Video mapping', description: 'Espectaculo que fusiona danza contemporanea con video mapping 3D. Inmersivo y unico.', basePrice: 3450, priceNote: '1 bailarina + 1 tecnico AV (no incl. pantalla)', videoUrl: 'https://www.youtube.com/embed/katRN1j5jl0', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/3DDreams-03-scaled.jpg' },
-      'percusionistas-agua': { name: 'Percusionistas con Agua', category: 'wow', subcategory: 'A medida / Custom', description: 'Percusionistas con agua y proyecciones. Espectaculo sensorial unico.', basePrice: 4750, priceNote: 'Trio + 1 tecnico', videoUrl: 'https://www.youtube.com/embed/1vWPuLgPpOs', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/waterdrummers.jpg' },
-      'flamenco-mapping': { name: 'Flamenco Mapping Show', category: 'wow', subcategory: 'Video mapping', description: 'Fusion de flamenco y video mapping. Tradicion y tecnologia en un espectaculo innovador.', basePrice: 3750, priceNote: '3 bailarinas + 1 tecnico AV (no incl. pantalla)', videoUrl: 'https://www.youtube.com/embed/URgQ5_ME60Q', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/IMG_8489-e1724837362244.jpg' },
-      'holovortex': { name: 'Holovortex: Show Mapping Holografico', category: 'wow', subcategory: 'Video mapping', description: 'Show de mapping holografico. Espectaculo visual futurista con hologramas y proyecciones.', basePrice: 9750, priceNote: 'Sistema holografico completo', videoUrl: 'https://www.youtube.com/embed/wQr9uHDiUws', imageUrl: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/02/mapping-dance-1.jpg' }
-    };
+    let SHOW_CATALOG = {};
 
     // =============================================
     // I18N — language detection + translated strings
@@ -2031,34 +2020,59 @@
     // =============================================
     // INIT
     // =============================================
+    function showCatalogLoadError(msg) {
+      // Insert a sticky red banner above #proposalContent so Xavi/admin notice the failure.
+      if (document.getElementById('catalogErrorBanner')) return;
+      const banner = document.createElement('div');
+      banner.id = 'catalogErrorBanner';
+      banner.style.cssText = 'background:#c0392b;color:#fff;padding:14px 24px;font-family:Inter,sans-serif;font-size:0.9rem;font-weight:600;text-align:center;position:sticky;top:0;z-index:500;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
+      banner.textContent = 'No se pudo cargar el catalogo de shows desde Supabase. ' + (msg || '');
+      const target = document.getElementById('proposalContent');
+      if (target && target.parentNode) {
+        target.parentNode.insertBefore(banner, target);
+      } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+    }
+
     async function loadShowCatalogFromSupabase() {
+      const SUPABASE_URL = 'https://szixutlvhtwvnyizceww.supabase.co';
+      const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6aXh1dGx2aHR3dm55aXpjZXd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTUyODYsImV4cCI6MjA5MDI5MTI4Nn0.OmMfeTq4Q2YwtkBY5IaCaiITdxPH-2qnvIODwMOHiz0';
+      // Single query: shows with status=active + joined artista (id, names, fotos, disciplinas).
+      const url = `${SUPABASE_URL}/rest/v1/shows?status=eq.active&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,fotos_urls,disciplinas)`;
       try {
-        const SUPABASE_URL = 'https://szixutlvhtwvnyizceww.supabase.co';
-        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6aXh1dGx2aHR3dm55aXpjZXd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTUyODYsImV4cCI6MjA5MDI5MTI4Nn0.OmMfeTq4Q2YwtkBY5IaCaiITdxPH-2qnvIODwMOHiz0';
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/shows?active=eq.true&select=*`, {
-          headers: { 'apikey': SUPABASE_ANON }
-        });
-        if (!res.ok) return;
+        const res = await fetch(url, { headers: { 'apikey': SUPABASE_ANON } });
+        if (!res.ok) {
+          showCatalogLoadError('HTTP ' + res.status);
+          SHOW_CATALOG = {};
+          return;
+        }
         const shows = await res.json();
-        if (!shows.length) return;
-        // Merge into SHOW_CATALOG: Supabase wins per-field only when it has a real value,
-        // otherwise keep hardcoded fallback so empty columns don't blank out images/videos.
+        SHOW_CATALOG = {};
         shows.forEach(s => {
-          const fb = SHOW_CATALOG[s.id] || {};
+          if (!s || !s.id) return;
+          const a = s.artista || null;
+          const artistaNombre = a ? (a.nombre_artistico || a.compania || a.nombre || '') : '';
+          const artistaFotos = (a && Array.isArray(a.fotos_urls)) ? a.fotos_urls : [];
           SHOW_CATALOG[s.id] = {
-            name: s.name || fb.name || '',
-            category: s.category || fb.category || '',
-            subcategory: s.subcategory || fb.subcategory || '',
-            description: s.description || fb.description || '',
-            basePrice: s.base_price || fb.basePrice || 0,
-            priceNote: s.price_note || fb.priceNote || '',
-            videoUrl: s.video_url || fb.videoUrl || '',
-            imageUrl: s.image_url || fb.imageUrl || ''
+            name: s.name || '',
+            category: s.category || '',
+            subcategory: s.subcategory || '',
+            description: s.description || '',
+            basePrice: s.base_price || 0,
+            priceNote: s.price_note || '',
+            videoUrl: s.video_url || '',
+            imageUrl: s.image_url || '',
+            artistaId: s.artista_id || null,
+            artistaNombre: artistaNombre,
+            artistaFotos: artistaFotos
           };
         });
-        console.log(`Loaded ${shows.length} shows from Supabase`);
+        console.log(`Loaded ${shows.length} shows from Supabase (artist-joined)`);
       } catch (err) {
-        console.warn('Supabase catalog load failed, using hardcoded:', err.message);
+        console.warn('Supabase catalog load failed:', err && err.message);
+        showCatalogLoadError(err && err.message ? err.message : '');
+        SHOW_CATALOG = {};
       }
     }
 
@@ -2385,24 +2399,96 @@
       renderPickerGrid();
     }
 
+    // Minimal HTML escape so we never inject user-controlled artist/show text raw.
+    function _pickerEscape(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function renderPickerGrid() {
       const grid = document.getElementById('pickerGrid');
       const currentIds = proposalState.shows.map(s => s.id);
       const catLabels = { danza: 'Danza', musica: 'Musica', circo: 'Circo', wow: 'WOW' };
+      const PLACEHOLDER_IMG = 'https://via.placeholder.com/400x200?text=Sin+imagen';
 
-      let html = '';
+      // 1) Filter by category (if any), then group by artist.
+      // Group key = artistaId || '__none__'. Each group keeps a label and (first-seen) artist meta.
+      const groups = new Map(); // key -> { artistaId, artistaNombre, artistaFotos, shows: [{id, show}] }
       Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
+        if (!show) return;
         if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
-        const already = currentIds.includes(id);
+        const key = show.artistaId || '__none__';
+        if (!groups.has(key)) {
+          groups.set(key, {
+            artistaId: show.artistaId || null,
+            artistaNombre: show.artistaNombre || '',
+            artistaFotos: Array.isArray(show.artistaFotos) ? show.artistaFotos : [],
+            shows: []
+          });
+        }
+        groups.get(key).shows.push({ id, show });
+      });
+
+      if (groups.size === 0) {
+        grid.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray);font-family:Inter,sans-serif;">No hay shows disponibles en esta categoria.</div>`;
+        return;
+      }
+
+      // 2) Order groups: named artists alphabetically first, "Sin artista asignado" last.
+      const orderedKeys = Array.from(groups.keys()).sort((a, b) => {
+        if (a === '__none__') return 1;
+        if (b === '__none__') return -1;
+        const na = (groups.get(a).artistaNombre || '').toLowerCase();
+        const nb = (groups.get(b).artistaNombre || '').toLowerCase();
+        return na.localeCompare(nb);
+      });
+
+      // 3) Render artist sections.
+      let html = '';
+      orderedKeys.forEach(key => {
+        const g = groups.get(key);
+        const artistLabel = key === '__none__'
+          ? 'Sin artista asignado'
+          : (g.artistaNombre || 'Artista sin nombre');
+        const photo = (g.artistaFotos && g.artistaFotos[0]) ? g.artistaFotos[0] : '';
+        const initial = (artistLabel.trim()[0] || '?').toUpperCase();
+        const avatar = photo
+          ? `<div class="picker-artist-avatar" style="background-image:url('${_pickerEscape(photo)}')"></div>`
+          : `<div class="picker-artist-avatar picker-artist-avatar--initial">${_pickerEscape(initial)}</div>`;
+
+        const cards = g.shows.map(({ id, show }) => {
+          const already = currentIds.includes(id);
+          const safeId = _pickerEscape(id);
+          const name = show.name || '(sin nombre)';
+          const cat = catLabels[show.category] || show.category || '';
+          const sub = show.subcategory || '';
+          const meta = [cat, sub].filter(Boolean).join(' · ');
+          const img = show.imageUrl || PLACEHOLDER_IMG;
+          return `
+            <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : `addShowFromPicker('${safeId}')`}">
+              <img src="${_pickerEscape(img)}" alt="${_pickerEscape(name)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';">
+              <div class="picker-card-body">
+                <small>${_pickerEscape(meta)}</small>
+                <h4>${_pickerEscape(name)}${already ? ' (agregado)' : ''}</h4>
+              </div>
+            </div>`;
+        }).join('');
+
         html += `
-          <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : 'addShowFromPicker(\'' + id + '\')'}">
-            <img src="${show.imageUrl || 'https://via.placeholder.com/400x200?text=Sin+imagen'}" alt="${show.name}" loading="lazy">
-            <div class="picker-card-body">
-              <small>${catLabels[show.category] || show.category} · ${show.subcategory}</small>
-              <h4>${show.name}${already ? ' (agregado)' : ''}</h4>
-            </div>
-          </div>
-        `;
+          <section class="picker-artist-section">
+            <header class="picker-artist-header">
+              ${avatar}
+              <div class="picker-artist-meta">
+                <h3>${_pickerEscape(artistLabel)}</h3>
+                <span>${g.shows.length} show${g.shows.length === 1 ? '' : 's'}</span>
+              </div>
+            </header>
+            <div class="picker-artist-grid">${cards}</div>
+          </section>`;
       });
       grid.innerHTML = html;
     }
