@@ -269,6 +269,16 @@
     .pagination button { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-family: inherit; cursor: pointer; }
     .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* Status badge on artist cards */
+    .status-badge {
+      position: absolute; top: 8px; left: 8px;
+      font-size: 10px; font-weight: 700;
+      padding: 4px 8px; border-radius: 999px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .status-completa { background: #dff5e3; color: #1f6b34; }
+    .status-incompleta { background: #ffe8e1; color: #b3401f; }
+
     /* Favorite star + edit button on show cards */
     .card-img { position: relative; }
     .card-actions-overlay {
@@ -342,6 +352,11 @@
           <option value="Circo">Circo</option>
           <option value="WOW">WOW</option>
           <option value="__none__">Sin disciplina</option>
+        </select>
+        <select id="artistas-status">
+          <option value="">Todos los perfiles</option>
+          <option value="incompleta">Solo incompletos</option>
+          <option value="completa">Solo completos</option>
         </select>
         <span id="artistas-summary" style="color: var(--gray); font-size: 13px;"></span>
       </div>
@@ -469,6 +484,12 @@
       if (!a) return null;
       return a.nombre_artistico || a.compania || a.nombre || 'sin nombre';
     }
+    function isArtistComplete(a) {
+      const realEmail = a && a.email && !isPlaceholderEmail(a.email);
+      const hasPhone = !!(a && a.telefono && String(a.telefono).trim());
+      const hasContent = !!(a && (a.bio_show || (Array.isArray(a.fotos_urls) && a.fotos_urls.length) || a.video1));
+      return !!(realEmail && hasPhone && hasContent);
+    }
     function showsCountFromNested(shows) {
       // shows can be array of objects, or [{count: N}] in count mode
       if (!Array.isArray(shows)) return 0;
@@ -521,6 +542,7 @@
       shows: { substatus: 'pending_review', artistaFilter: null, items: [] },
       propuestas: { q: '', status: '', items: [] }
     };
+    state.artistas.statusFilter = '';
 
     // ---------- tabs ----------
     function activateTab(tab) {
@@ -545,8 +567,17 @@
       const params = new URLSearchParams();
       if (state.artistas.q) params.set('q', state.artistas.q);
       if (state.artistas.disciplina) params.set('disciplina', state.artistas.disciplina);
-      params.set('limit', state.artistas.limit);
-      params.set('offset', state.artistas.offset);
+      // When filtering by status (completa/incompleta) we need all rows in
+      // memory because the criterion is computed client-side. Bump the
+      // limit and skip pagination in that mode.
+      const statusFilter = state.artistas.statusFilter || '';
+      if (statusFilter) {
+        params.set('limit', 500);
+        params.set('offset', 0);
+      } else {
+        params.set('limit', state.artistas.limit);
+        params.set('offset', state.artistas.offset);
+      }
 
       try {
         params.set('action', 'list-artistas');
@@ -555,21 +586,35 @@
         $('artistas-loading').classList.add('hidden');
         if (!res.ok) { showError(data.error || 'Error cargando artistas'); return; }
 
-        state.artistas.items = data.artistas || [];
-        state.artistas.total = data.total || 0;
-        $('artistas-summary').textContent = `${data.total} artistas${data.total > data.count ? ` (mostrando ${data.count})` : ''}`;
+        let items = data.artistas || [];
+        const totalServer = data.total || 0;
 
-        if (!state.artistas.items.length) { $('artistas-empty').classList.remove('hidden'); return; }
+        // Tally complete vs incomplete in this batch (best-effort summary)
+        const completeCount = items.filter(isArtistComplete).length;
+        const incompleteCount = items.length - completeCount;
+
+        if (statusFilter === 'completa') items = items.filter(isArtistComplete);
+        else if (statusFilter === 'incompleta') items = items.filter(a => !isArtistComplete(a));
+
+        state.artistas.items = items;
+        state.artistas.total = totalServer;
+
+        const summary = statusFilter
+          ? `${items.length} ${statusFilter === 'completa' ? 'completos' : 'incompletos'} de ${totalServer}`
+          : `${totalServer} artistas (${completeCount} completos · ${incompleteCount} incompletos en esta página)`;
+        $('artistas-summary').textContent = summary;
+
+        if (!items.length) { $('artistas-empty').classList.remove('hidden'); return; }
         const grid = $('artistas-grid');
-        for (const a of state.artistas.items) grid.appendChild(renderArtistaCard(a));
+        for (const a of items) grid.appendChild(renderArtistaCard(a));
 
-        if (data.total > state.artistas.limit) {
+        if (!statusFilter && totalServer > state.artistas.limit) {
           $('artistas-pagination').classList.remove('hidden');
           const cur = Math.floor(state.artistas.offset / state.artistas.limit) + 1;
-          const tot = Math.ceil(data.total / state.artistas.limit);
+          const tot = Math.ceil(totalServer / state.artistas.limit);
           $('artistas-page-info').textContent = `Página ${cur} / ${tot}`;
           $('artistas-prev').disabled = state.artistas.offset === 0;
-          $('artistas-next').disabled = state.artistas.offset + state.artistas.limit >= data.total;
+          $('artistas-next').disabled = state.artistas.offset + state.artistas.limit >= totalServer;
         }
       } catch (err) {
         $('artistas-loading').classList.add('hidden');
@@ -585,8 +630,11 @@
       const showsCount = showsCountFromNested(a.shows);
       const disciplinas = Array.isArray(a.disciplinas) ? a.disciplinas : [];
       const ph = isPlaceholderEmail(a.email);
+      const complete = isArtistComplete(a);
       card.innerHTML = `
-        <div class="card-img ${photo ? '' : 'placeholder'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}">${photo ? '' : '·'}</div>
+        <div class="card-img ${photo ? '' : 'placeholder'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}">${photo ? '' : '·'}
+          <span class="status-badge ${complete ? 'status-completa' : 'status-incompleta'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'completo' : 'incompleto'}</span>
+        </div>
         <div class="card-body">
           <h3>${escapeHtml(display)}</h3>
           ${a.compania && a.compania !== display ? `<div class="meta"><span>${escapeHtml(a.compania)}</span></div>` : ''}
@@ -687,6 +735,11 @@
     }, 300));
     $('artistas-disciplina').addEventListener('change', (e) => {
       state.artistas.disciplina = e.target.value;
+      state.artistas.offset = 0;
+      loadArtistas();
+    });
+    $('artistas-status').addEventListener('change', (e) => {
+      state.artistas.statusFilter = e.target.value;
       state.artistas.offset = 0;
       loadArtistas();
     });
