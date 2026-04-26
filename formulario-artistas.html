@@ -934,14 +934,31 @@
         <div class="upload-area" id="photo-upload" onclick="document.getElementById('file-input').click()" style="position:relative;cursor:pointer;">
           <span class="upload-icon">&#128247;</span>
           <div class="upload-title">Sube tus fotos</div>
-          <div class="upload-desc">Minimo 2 fotos en alta calidad, sin marca de agua. JPG o PNG, max. 10MB por foto.</div>
+          <div class="upload-desc">Arrastra o haz click. Minimo 2 fotos. JPG, PNG, WebP o GIF. Max. 20MB por foto.</div>
         </div>
-        <input type="file" id="file-input" multiple accept="image/*" onchange="uploadToCloudinary(this.files)" style="display:none;">
+        <input type="file" id="file-input" multiple accept="image/jpeg,image/png,image/webp,image/gif" onchange="uploadPhotos(this.files)" style="display:none;">
+        <div id="photo-thumbs" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 8px;"></div>
         <div class="file-list" id="photo-list"></div>
         <div id="upload-status" style="font-size: 13px; color: var(--gray); margin-bottom: 16px;"></div>
 
         <div class="form-group">
-          <label>Link de video (YouTube, Vimeo)</label>
+          <label>O pega URLs externas de fotos (una por linea, opcional)</label>
+          <textarea id="a-fotos-extra" placeholder="https://drive.google.com/...&#10;https://instagram.com/..." style="min-height: 60px;" oninput="syncExternalPhotoUrls()"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Sube tu video principal (opcional)</label>
+          <div class="upload-area" id="video-upload" onclick="document.getElementById('video-file-input').click()" style="padding: 24px 16px; margin-bottom: 8px;">
+            <span class="upload-icon" style="font-size: 28px;">&#127909;</span>
+            <div class="upload-title" id="video-upload-title">Sube un video del show</div>
+            <div class="upload-desc">MP4, MOV o WebM. Max. 20MB.</div>
+          </div>
+          <input type="file" id="video-file-input" accept="video/mp4,video/quicktime,video/webm" onchange="uploadMainVideo(this.files)" style="display:none;">
+          <div id="video-status" style="font-size: 13px; color: var(--gray); margin-bottom: 8px;"></div>
+        </div>
+
+        <div class="form-group">
+          <label>O pega una URL externa (YouTube, Vimeo, Drive...)</label>
           <input type="url" id="a-video1" placeholder="https://youtube.com/watch?v=...">
         </div>
 
@@ -960,18 +977,45 @@
           <textarea id="a-rider" placeholder="Ej: 4 microfonos inalambricos, mesa de mezclas, espacio minimo 4x4m, toma de corriente 220V..." style="min-height: 80px;"></textarea>
         </div>
 
-        <div id="add-show-section">
-          <div style="margin-top: 16px; padding: 20px; background: var(--accent-light); border-radius: 12px; text-align: center; cursor: pointer; border: 2px dashed var(--accent); transition: all 0.2s;" onclick="addAnotherShow()" id="add-show-btn">
-            <div style="font-size: 24px; margin-bottom: 4px;">&#10133;</div>
-            <div style="font-weight: 600; font-size: 14px; color: var(--accent);">¿Tienes otro show? Anadelo aqui</div>
-            <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">Si tienes varios espectaculos diferentes, puedes registrar mas de uno</div>
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(2)">Atras</button>
+          <button class="btn-next" onclick="goToStep('shows')">Siguiente</button>
+        </div>
+      </div>
+
+      <!-- PASO 3b (NUEVO): Registra tus shows -->
+      <div class="step" id="step-shows">
+        <h2 class="step-title">Registra tus shows</h2>
+        <p class="step-subtitle">Cuentanos los shows que ofreces. Cada show aparecera en nuestro catalogo tras revision.</p>
+
+        <div id="shows-question">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">¿Quieres registrar uno o mas shows?</label>
+          <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 8px;">
+            <div class="option-card" onclick="setShowsAnswer(true, this)" style="padding: 22px 16px;">
+              <span class="option-icon">&#9989;</span>
+              <span class="option-label">Si, quiero registrar shows</span>
+              <span class="option-desc">Recomendado para que aparezcas en el catalogo</span>
+            </div>
+            <div class="option-card" onclick="setShowsAnswer(false, this)" style="padding: 22px 16px;">
+              <span class="option-icon">&#9197;</span>
+              <span class="option-label">Por ahora no</span>
+              <span class="option-desc">Lo hare mas adelante</span>
+            </div>
           </div>
-          <div id="extra-shows"></div>
+        </div>
+
+        <div id="shows-list" style="display:none; margin-top: 24px;"></div>
+
+        <div id="shows-add-btn-wrap" style="display:none;">
+          <div style="margin-top: 16px; padding: 18px; background: var(--accent-light); border-radius: 12px; text-align: center; cursor: pointer; border: 2px dashed var(--accent); transition: all 0.2s;" onclick="addShowBlock()">
+            <div style="font-size: 22px; margin-bottom: 2px;">&#10133;</div>
+            <div style="font-weight: 600; font-size: 14px; color: var(--accent);">Anadir otro show</div>
+          </div>
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(2)">Atras</button>
-          <button class="btn-next" onclick="goToStep(4)">Siguiente</button>
+          <button class="btn-back" onclick="goToStep(3)">Atras</button>
+          <button class="btn-next" onclick="validateAndGo('shows', 4)">Siguiente</button>
         </div>
       </div>
 
@@ -1036,7 +1080,7 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(3)">Atras</button>
+          <button class="btn-back" onclick="goToStep('shows')">Atras</button>
           <button class="btn-submit" onclick="submitForm()">Enviar mi perfil</button>
         </div>
       </div>
@@ -1100,7 +1144,6 @@
       document.getElementById('a-rider').placeholder = isProveedor
         ? 'Ej: PA Line Array hasta 2000 personas, mesa digital, microfonía Shure, camión propio...'
         : 'Ej: 4 microfonos inalambricos, mesa de mezclas, espacio minimo 4x4m, toma de corriente 220V...';
-      document.getElementById('add-show-section').style.display = isProveedor ? 'none' : '';
 
       // Step 4 fields
       document.getElementById('price-label').textContent = isProveedor ? 'Rango de precios por servicio' : 'Rango de cache por actuacion';
@@ -1231,12 +1274,13 @@
 
         // Show existing photos
         if (data.fotosUrls && data.fotosUrls.length > 0) {
-          const list = document.getElementById('photo-list');
           data.fotosUrls.forEach(url => {
-            uploadedUrls.push(url);
-            const filename = url.split('/').pop();
-            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${filename} — foto existente</div>`;
+            if (!uploadedUrls.includes(url)) {
+              uploadedUrls.push(url);
+              uploadedPhotos.push({ url, name: (url.split('/').pop() || 'foto'), source: 'upload' });
+            }
           });
+          renderPhotoThumbs();
           document.getElementById('photo-upload').classList.add('has-files');
           document.getElementById('upload-status').textContent = `${data.fotosUrls.length} foto(s) existente(s)`;
           document.getElementById('upload-status').style.color = '#2ecc71';
@@ -1292,6 +1336,26 @@
         }
       }
 
+      if (from === 'shows') {
+        // If user said "yes" they must register at least 1 valid show with a name.
+        if (showsAnswer === true) {
+          const blocks = document.querySelectorAll('#shows-list > .show-block');
+          let valid = 0;
+          blocks.forEach(block => {
+            const name = block.querySelector('.show-name')?.value.trim();
+            if (name) valid++;
+          });
+          if (blocks.length === 0 || valid === 0) {
+            const list = document.getElementById('shows-list');
+            const msg = document.createElement('div');
+            msg.className = 'field-error';
+            msg.textContent = 'Anade al menos un show con su nombre, o elige "Por ahora no".';
+            list.parentElement.insertBefore(msg, list);
+            errors.push({});
+          }
+        }
+      }
+
       if (errors.length > 0) {
         errors.forEach(err => {
           if (err.el) {
@@ -1312,21 +1376,24 @@
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       document.getElementById('step-' + n).classList.add('active');
 
+      // The "shows" extension keeps the progress bar at dot 3 (it's a sub-step
+      // of "portfolio"). Numeric steps drive the dot states normally.
+      const dotN = (n === 'shows') ? 3 : n;
       for (let i = 1; i <= totalSteps; i++) {
         const dot = document.getElementById('dot-' + i);
         const line = document.getElementById('line-' + (i - 1));
         dot.classList.remove('active', 'completed');
-        if (i < n) {
+        if (i < dotN) {
           dot.classList.add('completed');
           dot.innerHTML = '&#10003;';
-        } else if (i === n) {
+        } else if (i === dotN) {
           dot.classList.add('active');
           dot.innerHTML = i;
         } else {
           dot.innerHTML = i;
         }
         if (line) {
-          line.classList.toggle('active', i < n);
+          line.classList.toggle('active', i < dotN);
         }
       }
 
@@ -1350,81 +1417,346 @@
       el.classList.toggle('active');
     }
 
-    let showCount = 0;
-    function addAnotherShow() {
-      showCount++;
-      const container = document.getElementById('extra-shows');
-      const div = document.createElement('div');
-      div.style.cssText = 'margin-top: 20px; padding: 24px; background: var(--light-gray); border-radius: 12px; position: relative;';
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <strong style="font-size: 14px;">Show adicional #${showCount}</strong>
-          <span onclick="this.parentElement.parentElement.remove()" style="cursor: pointer; color: var(--gray); font-size: 18px;">&times;</span>
+    // ============================================================
+    // Supabase Storage uploads (artist-assets bucket)
+    // ============================================================
+    const SUPABASE_URL = 'https://szixutlvhtwvnyizceww.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6aXh1dGx2aHR3dm55aXpjZXd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTUyODYsImV4cCI6MjA5MDI5MTI4Nn0.OmMfeTq4Q2YwtkBY5IaCaiITdxPH-2qnvIODwMOHiz0';
+    const STORAGE_BUCKET = 'artist-assets';
+    const MAX_BYTES = 20 * 1024 * 1024;
+    const ALLOWED_IMAGE = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const ALLOWED_VIDEO = ['video/mp4', 'video/quicktime', 'video/webm'];
+
+    // Per-page-load session UUID (folder prefix in Storage)
+    const sessionUuid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : ('s-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10));
+
+    // Track uploaded photo URLs for the form. Two arrays kept in sync:
+    //   - uploadedUrls: live list of all photo URLs (uploaded + pasted)
+    //   - uploadedPhotos: parallel metadata for thumbnails (uploaded only)
+    const uploadedUrls = [];
+    const uploadedPhotos = []; // [{url, name, source: 'upload'|'external'}]
+    let uploadIndex = 0;
+
+    function safeFilename(name) {
+      return String(name || 'file')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9._-]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 80) || 'file';
+    }
+
+    async function supabaseUpload(file, folder) {
+      const path = `${folder}/${uploadIndex++}-${Date.now()}-${safeFilename(file.name)}`;
+      const url = `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(`Storage ${res.status}: ${txt.slice(0, 200)}`);
+      }
+      return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+    }
+
+    function renderPhotoThumbs() {
+      const wrap = document.getElementById('photo-thumbs');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      uploadedPhotos.forEach((p, i) => {
+        const cell = document.createElement('div');
+        cell.style.cssText = 'position: relative; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--light-gray);';
+        cell.innerHTML = `
+          <img src="${p.url}" alt="${p.name || 'foto'}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          <button type="button" aria-label="Eliminar foto" onclick="removePhoto(${i})" style="position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.65); color: #fff; font-size: 14px; cursor: pointer; line-height: 1; display:flex; align-items:center; justify-content:center;">&times;</button>
+        `;
+        wrap.appendChild(cell);
+      });
+      // Refresh photo checkboxes inside any open show blocks
+      document.querySelectorAll('.show-block').forEach(block => refreshShowPhotoCheckboxes(block));
+    }
+
+    function removePhoto(idx) {
+      const p = uploadedPhotos[idx];
+      if (!p) return;
+      const urlIdx = uploadedUrls.indexOf(p.url);
+      if (urlIdx >= 0) uploadedUrls.splice(urlIdx, 1);
+      uploadedPhotos.splice(idx, 1);
+      const status = document.getElementById('upload-status');
+      const area = document.getElementById('photo-upload');
+      if (uploadedUrls.length === 0) {
+        area.classList.remove('has-files');
+        status.textContent = '';
+      } else {
+        status.textContent = `${uploadedUrls.length} foto(s) listas`;
+      }
+      renderPhotoThumbs();
+    }
+
+    async function uploadPhotos(files) {
+      if (!files || !files.length) return;
+      const list = document.getElementById('photo-list');
+      const status = document.getElementById('upload-status');
+      const area = document.getElementById('photo-upload');
+      list.innerHTML = '';
+      status.style.color = 'var(--gray)';
+      status.textContent = 'Subiendo fotos...';
+
+      let okCount = 0, failCount = 0;
+      for (const file of files) {
+        if (file.size > MAX_BYTES) {
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>&times;</span> ${file.name} &mdash; demasiado grande (max 20MB)</div>`;
+          failCount++;
+          continue;
+        }
+        if (!ALLOWED_IMAGE.includes(file.type)) {
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>&times;</span> ${file.name} &mdash; formato no admitido</div>`;
+          failCount++;
+          continue;
+        }
+        try {
+          const publicUrl = await supabaseUpload(file, `uploads/${sessionUuid}`);
+          uploadedUrls.push(publicUrl);
+          uploadedPhotos.push({ url: publicUrl, name: file.name, source: 'upload' });
+          okCount++;
+          renderPhotoThumbs();
+        } catch (err) {
+          console.error('Photo upload error:', err);
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>&times;</span> ${file.name} &mdash; error al subir (${err.message || 'fallo'})</div>`;
+          failCount++;
+        }
+      }
+
+      if (uploadedUrls.length > 0) area.classList.add('has-files');
+      if (failCount === 0) {
+        status.style.color = '#2ecc71';
+        status.textContent = `${uploadedUrls.length} foto(s) listas`;
+      } else if (okCount > 0) {
+        status.style.color = '#c0392b';
+        status.textContent = `${okCount} foto(s) ok, ${failCount} fallaron. Reintenta o pega URLs externas.`;
+      } else {
+        status.style.color = '#c0392b';
+        status.textContent = 'No se pudo subir ninguna foto. Reintenta o pega URLs externas.';
+      }
+      // Reset input so re-selecting the same file works
+      document.getElementById('file-input').value = '';
+    }
+
+    function syncExternalPhotoUrls() {
+      // Remove previously added external URLs and re-parse the textarea.
+      for (let i = uploadedPhotos.length - 1; i >= 0; i--) {
+        if (uploadedPhotos[i].source === 'external') {
+          const url = uploadedPhotos[i].url;
+          const j = uploadedUrls.indexOf(url);
+          if (j >= 0) uploadedUrls.splice(j, 1);
+          uploadedPhotos.splice(i, 1);
+        }
+      }
+      const raw = document.getElementById('a-fotos-extra')?.value || '';
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => /^https?:\/\//i.test(l));
+      lines.forEach(url => {
+        if (!uploadedUrls.includes(url)) {
+          uploadedUrls.push(url);
+          uploadedPhotos.push({ url, name: url.split('/').pop() || 'externa', source: 'external' });
+        }
+      });
+      renderPhotoThumbs();
+      const status = document.getElementById('upload-status');
+      if (uploadedUrls.length > 0) {
+        document.getElementById('photo-upload').classList.add('has-files');
+        if (!status.textContent || status.style.color !== 'rgb(192, 57, 43)') {
+          status.style.color = '#2ecc71';
+          status.textContent = `${uploadedUrls.length} foto(s) listas`;
+        }
+      }
+    }
+
+    async function uploadMainVideo(files) {
+      if (!files || !files.length) return;
+      const file = files[0];
+      const status = document.getElementById('video-status');
+      const area = document.getElementById('video-upload');
+      const titleEl = document.getElementById('video-upload-title');
+
+      if (file.size > MAX_BYTES) {
+        status.style.color = '#c0392b';
+        status.textContent = `${file.name} demasiado grande (max 20MB)`;
+        document.getElementById('video-file-input').value = '';
+        return;
+      }
+      if (!ALLOWED_VIDEO.includes(file.type)) {
+        status.style.color = '#c0392b';
+        status.textContent = 'Formato no admitido. Usa MP4, MOV o WebM.';
+        document.getElementById('video-file-input').value = '';
+        return;
+      }
+
+      status.style.color = 'var(--gray)';
+      status.textContent = 'Subiendo video...';
+      try {
+        const publicUrl = await supabaseUpload(file, `uploads/${sessionUuid}/video`);
+        document.getElementById('a-video1').value = publicUrl;
+        area.classList.add('has-files');
+        titleEl.textContent = file.name;
+        status.style.color = '#2ecc71';
+        status.textContent = 'Video subido correctamente';
+      } catch (err) {
+        console.error('Video upload error:', err);
+        status.style.color = '#c0392b';
+        status.textContent = `Error al subir video: ${err.message || 'fallo'}. Pega una URL externa abajo.`;
+      }
+      document.getElementById('video-file-input').value = '';
+    }
+
+    // ============================================================
+    // Shows subform
+    // ============================================================
+    let showsAnswer = null; // null = unanswered, true = yes, false = no
+    let showBlockCount = 0;
+
+    function setShowsAnswer(yes, cardEl) {
+      showsAnswer = !!yes;
+      // Toggle visual selection
+      const grid = cardEl.parentElement;
+      grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+
+      const list = document.getElementById('shows-list');
+      const addWrap = document.getElementById('shows-add-btn-wrap');
+      list.style.display = yes ? '' : 'none';
+      addWrap.style.display = yes ? '' : 'none';
+      // Clear any previous validation error
+      document.querySelectorAll('#step-shows .field-error').forEach(el => el.remove());
+      if (yes && list.children.length === 0) addShowBlock();
+    }
+
+    function addShowBlock() {
+      showBlockCount++;
+      const container = document.getElementById('shows-list');
+      const block = document.createElement('div');
+      block.className = 'show-block';
+      block.dataset.idx = showBlockCount;
+      block.style.cssText = 'margin-bottom: 16px; padding: 20px; background: var(--light-gray); border-radius: 12px; position: relative;';
+      block.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <strong style="font-size: 14px;">Show #${showBlockCount}</strong>
+          <span onclick="removeShowBlock(this)" style="cursor: pointer; color: var(--gray); font-size: 20px; line-height: 1; padding: 0 6px;" aria-label="Eliminar show">&times;</span>
         </div>
         <div class="form-group">
           <label>Nombre del show</label>
-          <input type="text" placeholder="Ej: Fire Dance Show">
+          <input type="text" class="show-name" placeholder="Ej: Fire Dance Show">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoria</label>
+            <select class="show-category">
+              <option value="" disabled selected>Selecciona</option>
+              <option value="danza">Danza</option>
+              <option value="musica">Musica</option>
+              <option value="circo">Circo</option>
+              <option value="wow">WOW</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subcategoria (opcional)</label>
+            <input type="text" class="show-subcategory" placeholder="Ej: Flamenco fusion">
+          </div>
         </div>
         <div class="form-group">
-          <label>Descripcion breve</label>
-          <textarea placeholder="Describe este espectaculo..." style="min-height: 60px;"></textarea>
+          <label>Descripcion (max ~200 caracteres)</label>
+          <textarea class="show-description" maxlength="220" placeholder="Resumen breve del show..." style="min-height: 60px;"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cache base (&euro;)</label>
+            <input type="number" class="show-base-price" min="0" step="50" placeholder="Ej: 800">
+          </div>
+          <div class="form-group">
+            <label>Nota del cache (opcional)</label>
+            <input type="text" class="show-price-note" placeholder="Ej: 5 bailarines + estilista">
+          </div>
         </div>
         <div class="form-group">
-          <label>Link de video (opcional)</label>
-          <input type="url" placeholder="https://youtube.com/watch?v=...">
+          <label>Video especifico de este show (opcional)</label>
+          <input type="url" class="show-video-url" placeholder="Si lo dejas vacio se usa tu video principal">
+        </div>
+        <div class="form-group">
+          <label>Fotos asociadas a este show</label>
+          <div class="show-photos-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px;"></div>
+          <div class="show-photos-empty" style="font-size: 12px; color: var(--gray); margin-top: 4px;">Sube fotos en el paso anterior para poder asignarlas aqui.</div>
         </div>
       `;
-      container.appendChild(div);
+      container.appendChild(block);
+      refreshShowPhotoCheckboxes(block);
     }
 
-    const CLOUD_NAME = 'de9gs7bty';
-    const UPLOAD_PRESET = 'artistas_unsigned';
-    const uploadedUrls = [];
+    function removeShowBlock(span) {
+      const block = span.closest('.show-block');
+      if (block) block.remove();
+    }
 
-    async function uploadToCloudinary(files) {
-      const area = document.getElementById('photo-upload');
-      const list = document.getElementById('photo-list');
-      const status = document.getElementById('upload-status');
-
-      list.innerHTML = '';
-      status.textContent = 'Subiendo fotos...';
-
-      for (const file of files) {
-        if (file.size > 10 * 1024 * 1024) {
-          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — demasiado grande (max 10MB)</div>`;
-          continue;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', UPLOAD_PRESET);
-
-        try {
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-            method: 'POST',
-            body: formData
-          });
-          const data = await res.json();
-
-          if (data.secure_url) {
-            uploadedUrls.push(data.secure_url);
-            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${file.name} — subida correctamente</div>`;
-          } else {
-            list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — error al subir</div>`;
-          }
-        } catch (err) {
-          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — error de conexion</div>`;
-        }
+    function refreshShowPhotoCheckboxes(block) {
+      const wrap = block.querySelector('.show-photos-checkboxes');
+      const empty = block.querySelector('.show-photos-empty');
+      if (!wrap) return;
+      // Preserve previously checked URLs
+      const previouslyChecked = new Set(
+        Array.from(wrap.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value)
+      );
+      wrap.innerHTML = '';
+      if (uploadedPhotos.length === 0) {
+        empty.style.display = '';
+        return;
       }
+      empty.style.display = 'none';
+      uploadedPhotos.forEach((p, i) => {
+        const id = `show-${block.dataset.idx}-photo-${i}`;
+        const cell = document.createElement('label');
+        cell.setAttribute('for', id);
+        cell.style.cssText = 'position: relative; cursor: pointer; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1; display: block;';
+        const isChecked = previouslyChecked.has(p.url);
+        cell.innerHTML = `
+          <input type="checkbox" id="${id}" value="${p.url}" ${isChecked ? 'checked' : ''} style="position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; accent-color: var(--accent); z-index: 2;">
+          <img src="${p.url}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        `;
+        wrap.appendChild(cell);
+      });
+    }
 
-      if (uploadedUrls.length > 0) {
-        area.classList.add('has-files');
-        status.textContent = `${uploadedUrls.length} foto(s) subida(s) correctamente`;
-        status.style.color = '#2ecc71';
-      } else {
-        status.textContent = 'No se pudieron subir las fotos. Intentalo de nuevo.';
-        status.style.color = '#c0392b';
-      }
+    function collectShowsFromUI() {
+      if (showsAnswer !== true) return [];
+      const out = [];
+      document.querySelectorAll('#shows-list > .show-block').forEach(block => {
+        const name = block.querySelector('.show-name')?.value.trim();
+        if (!name) return;
+        const checkedPhotoUrls = Array.from(
+          block.querySelectorAll('.show-photos-checkboxes input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        const imageUrl = checkedPhotoUrls[0] || (uploadedPhotos[0]?.url || '');
+        const videoUrl = block.querySelector('.show-video-url')?.value.trim()
+          || document.getElementById('a-video1')?.value.trim()
+          || '';
+        out.push({
+          name,
+          category: block.querySelector('.show-category')?.value || '',
+          subcategory: block.querySelector('.show-subcategory')?.value.trim() || '',
+          description: block.querySelector('.show-description')?.value.trim() || '',
+          basePrice: parseInt(block.querySelector('.show-base-price')?.value, 10) || 0,
+          priceNote: block.querySelector('.show-price-note')?.value.trim() || '',
+          videoUrl,
+          imageUrl,
+          photoUrls: checkedPhotoUrls
+        });
+      });
+      return out;
     }
 
     async function submitForm() {
@@ -1466,18 +1798,8 @@
       // Price range
       const rangoCache = document.querySelector('.price-card.selected .price-amount')?.textContent || '';
 
-      // Extra shows
-      const extraShows = [];
-      document.querySelectorAll('#extra-shows > div').forEach(div => {
-        const inputs = div.querySelectorAll('input, textarea');
-        if (inputs.length >= 2) {
-          extraShows.push({
-            nombre: inputs[0]?.value || '',
-            descripcion: inputs[1]?.value || '',
-            video: inputs[2]?.value || ''
-          });
-        }
-      });
+      // Shows registered via the new wizard step (linked to artista_id by backend)
+      const shows = collectShowsFromUI();
 
       const payload = {
         _token: updateToken || undefined, // Include token for update mode
@@ -1503,7 +1825,8 @@
         rangoCache,
         numArtistas: document.getElementById('a-num-artistas')?.value || '',
         duracionShow: document.getElementById('a-duracion')?.value || '',
-        showsAdicionales: extraShows.length > 0 ? JSON.stringify(extraShows) : '',
+        shows,
+        showsAdicionales: '',
         aceptoPrivacidad: document.getElementById('privacy-check')?.checked || false,
         aceptoVisibilidad: document.getElementById('visibility-check')?.checked || false,
         comentarios: document.getElementById('a-comentarios')?.value || ''
