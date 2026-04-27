@@ -345,6 +345,7 @@
     <!-- TAB: ARTISTAS -->
     <section id="tab-artistas" class="tab-panel hidden">
       <div class="toolbar">
+        <button class="btn btn-primary" onclick="openAddArtistaModal('artista')" style="font-weight:600;">+ Agregar artista</button>
         <input id="artistas-q" type="search" placeholder="Buscar por nombre, email, compañía…">
         <select id="artistas-disciplina">
           <option value="">Todas las disciplinas</option>
@@ -374,6 +375,7 @@
     <!-- TAB: PROVEEDORES -->
     <section id="tab-proveedores" class="tab-panel hidden">
       <div class="toolbar">
+        <button class="btn btn-primary" onclick="openAddArtistaModal('proveedor')" style="font-weight:600;">+ Agregar proveedor</button>
         <input id="proveedores-q" type="search" placeholder="Buscar por nombre, email, compañía…">
         <select id="proveedores-status">
           <option value="">Todos los perfiles</option>
@@ -439,6 +441,64 @@
     </div>
     <div class="drawer-body" id="drawer-body"></div>
   </aside>
+
+  <!-- Edit/add artista modal -->
+  <div class="edit-modal-backdrop" id="art-modal-backdrop">
+    <div class="edit-modal">
+      <h2 id="art-modal-title">Editar artista</h2>
+      <div class="show-id" id="art-modal-sub"></div>
+      <div class="row">
+        <div>
+          <label>Nombre del contacto</label>
+          <input type="text" id="art-nombre" placeholder="Juan Pérez">
+        </div>
+        <div>
+          <label>Nombre artístico / nombre comercial</label>
+          <input type="text" id="art-nombre-artistico" placeholder="DJ Juano / Sonority">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Compañía</label>
+          <input type="text" id="art-compania">
+        </div>
+        <div>
+          <label>Tipo</label>
+          <select id="art-tipo">
+            <option value="artista">Artista</option>
+            <option value="proveedor">Proveedor</option>
+            <option value="venue">Venue</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Email</label>
+          <input type="email" id="art-email">
+        </div>
+        <div>
+          <label>Teléfono</label>
+          <input type="tel" id="art-telefono" placeholder="+34 600 000 000">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Ciudad</label>
+          <input type="text" id="art-ciudad">
+        </div>
+        <div>
+          <label>Disciplinas (coma-separadas)</label>
+          <input type="text" id="art-disciplinas" placeholder="Danza, Música">
+        </div>
+      </div>
+      <label>Bio / descripción</label>
+      <textarea id="art-bio"></textarea>
+      <div class="actions">
+        <button type="button" class="btn-cancel" id="art-cancel">Cancelar</button>
+        <button type="button" class="btn-save" id="art-save">Guardar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Edit show modal -->
   <div class="edit-modal-backdrop" id="edit-modal-backdrop">
@@ -673,17 +733,27 @@
       const disciplinas = Array.isArray(a.disciplinas) ? a.disciplinas : [];
       const ph = isPlaceholderEmail(a.email);
       const complete = isArtistComplete(a);
+      // Contact person line: prefer nombre if it's different from the display
+      // (typical case: a proveedor is "Sonority" but the human contact is
+      // "Juan Pérez"; we want both visible on the card).
+      const contactPerson = a.nombre && a.nombre.trim() && a.nombre !== display ? a.nombre : '';
+      const tipoLabel = a.tipo === 'proveedor' ? 'Proveedor' : a.tipo === 'venue' ? 'Venue' : 'Artista';
       card.innerHTML = `
         <div class="card-img ${photo ? '' : 'placeholder'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}">${photo ? '' : '·'}
           <span class="status-badge ${complete ? 'status-completa' : 'status-incompleta'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'completo' : 'incompleto'}</span>
+          <div class="card-actions-overlay">
+            <button class="icon-btn edit" data-edit-artista="${escapeHtml(a.id)}" title="Editar artista/proveedor"></button>
+          </div>
         </div>
         <div class="card-body">
           <h3>${escapeHtml(display)}</h3>
+          ${contactPerson ? `<div class="meta" style="margin-top:-4px;"><span style="color:var(--accent);font-weight:600;">contacto: ${escapeHtml(contactPerson)}</span></div>` : ''}
           ${a.compania && a.compania !== display ? `<div class="meta"><span>${escapeHtml(a.compania)}</span></div>` : ''}
           ${disciplinas.length ? `<div class="chips">${disciplinas.map(d => `<span class="chip">${escapeHtml(d)}</span>`).join('')}</div>` : '<div class="chips"><span class="chip" style="color:#aaa;">sin disciplina</span></div>'}
           <div class="meta" style="margin-top:6px;">
             <span>${showsCount} show${showsCount === 1 ? '' : 's'}</span>
             ${a.ciudad ? `<span>· ${escapeHtml(a.ciudad)}</span>` : ''}
+            <span>· ${tipoLabel}</span>
           </div>
           <div class="meta ${ph ? '' : ''}" title="${escapeHtml(a.email || '')}">
             ${ph ? `<span class="chip chip-warning" style="font-size:10px;">email placeholder</span>` : `<span>${escapeHtml(shortEmail(a.email))}</span>`}
@@ -694,6 +764,13 @@
         </div>
       `;
       card.querySelector('[data-detail]').addEventListener('click', () => setHash('artistas', a.id, {}));
+      const editArtBtn = card.querySelector('[data-edit-artista]');
+      if (editArtBtn) {
+        editArtBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditArtistaModal(a);
+        });
+      }
       return card;
     }
 
@@ -1156,6 +1233,82 @@
     $('edit-save').addEventListener('click', saveEditShow);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && $('edit-modal-backdrop').classList.contains('open')) closeEditShowModal();
+    });
+
+    // ---------- artista add/edit modal ----------
+    let _editingArtista = null; // null = adding new
+    let _addingTipo = 'artista'; // when _editingArtista is null
+
+    function openEditArtistaModal(a) {
+      _editingArtista = a;
+      $('art-modal-title').textContent = 'Editar ' + ((a && a.tipo) || 'artista');
+      $('art-modal-sub').textContent = 'id: ' + (a.id || '—');
+      $('art-nombre').value = a.nombre || '';
+      $('art-nombre-artistico').value = a.nombre_artistico || '';
+      $('art-compania').value = a.compania || '';
+      $('art-tipo').value = a.tipo || 'artista';
+      $('art-email').value = (a.email || '').endsWith('@placeholder.eventosbarcelona.local') ? '' : (a.email || '');
+      $('art-telefono').value = a.telefono || '';
+      $('art-ciudad').value = a.ciudad || '';
+      $('art-disciplinas').value = (Array.isArray(a.disciplinas) ? a.disciplinas : []).join(', ');
+      $('art-bio').value = a.bio_show || '';
+      $('art-modal-backdrop').classList.add('open');
+    }
+    function openAddArtistaModal(tipo) {
+      _editingArtista = null;
+      _addingTipo = tipo === 'proveedor' || tipo === 'venue' ? tipo : 'artista';
+      const label = _addingTipo === 'proveedor' ? 'proveedor' : _addingTipo === 'venue' ? 'venue' : 'artista';
+      $('art-modal-title').textContent = 'Agregar ' + label;
+      $('art-modal-sub').textContent = 'Se creará en Supabase y en GHL';
+      ['art-nombre','art-nombre-artistico','art-compania','art-email','art-telefono','art-ciudad','art-disciplinas','art-bio'].forEach(id => $(id).value = '');
+      $('art-tipo').value = _addingTipo;
+      $('art-modal-backdrop').classList.add('open');
+    }
+    function closeArtistaModal() {
+      _editingArtista = null;
+      $('art-modal-backdrop').classList.remove('open');
+    }
+    async function saveArtistaModal() {
+      const btn = $('art-save');
+      btn.disabled = true;
+      const disciplinasArr = $('art-disciplinas').value
+        .split(',').map(s => s.trim()).filter(Boolean);
+      const body = {
+        nombre: $('art-nombre').value.trim(),
+        nombre_artistico: $('art-nombre-artistico').value.trim(),
+        compania: $('art-compania').value.trim(),
+        email: $('art-email').value.trim(),
+        telefono: $('art-telefono').value.trim(),
+        ciudad: $('art-ciudad').value.trim(),
+        tipo: $('art-tipo').value,
+        disciplinas: disciplinasArr,
+        bio_show: $('art-bio').value.trim()
+      };
+      try {
+        const action = _editingArtista ? 'edit-artista' : 'add-artista';
+        const payload = _editingArtista ? { id: _editingArtista.id, patch: body } : body;
+        const r = await fetch('/api/admin?action=' + action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || d.hint || 'Error'); btn.disabled = false; return; }
+        closeArtistaModal();
+        // Refresh whichever tab is active
+        const tab = state.currentTab;
+        if (tab === 'artistas') loadArtistas();
+        else if (tab === 'proveedores') loadProveedores();
+      } catch (err) { showError(err.message); }
+      finally { btn.disabled = false; }
+    }
+    $('art-cancel').addEventListener('click', closeArtistaModal);
+    $('art-modal-backdrop').addEventListener('click', (e) => {
+      if (e.target === $('art-modal-backdrop')) closeArtistaModal();
+    });
+    $('art-save').addEventListener('click', saveArtistaModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('art-modal-backdrop').classList.contains('open')) closeArtistaModal();
     });
 
     function wirePicker(card, show) {

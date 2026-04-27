@@ -9,6 +9,8 @@
 // POST /api/admin?action=review-show  body: {id, action: approve|archive|edit, patch?}
 // POST /api/admin?action=edit-show  body: {id, patch: {name?, description?, ...}}
 // POST /api/admin?action=toggle-favorite  body: {id, is_favorite: bool}
+// POST /api/admin?action=add-artista  body: {nombre, nombre_artistico?, compania?, email?, telefono?, ciudad?, tipo, disciplinas?[], bio_show?}
+// POST /api/admin?action=edit-artista  body: {id, patch: {nombre?, ...}}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -156,6 +158,180 @@ async function linkShowToArtista(req, res, env) {
   return res.status(200).json({ success: true, show: rows[0] });
 }
 
+// ---- artistas ADD/EDIT ----
+const GHL_API = 'https://services.leadconnectorhq.com';
+function ghlHeaders(env) {
+  return {
+    Authorization: `Bearer ${env.GHL_TOKEN}`,
+    Version: '2021-07-28',
+    'Content-Type': 'application/json'
+  };
+}
+
+async function ghlUpsertContact(env, body) {
+  const r = await fetch(`${GHL_API}/contacts/upsert`, {
+    method: 'POST',
+    headers: ghlHeaders(env),
+    body: JSON.stringify({ locationId: env.GHL_LOC, ...body })
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(`GHL upsert ${r.status}: ${txt.slice(0, 160)}`);
+  }
+  const d = await r.json();
+  return d.contact?.id || null;
+}
+
+async function ghlPutContact(env, id, body) {
+  const r = await fetch(`${GHL_API}/contacts/${id}`, {
+    method: 'PUT',
+    headers: ghlHeaders(env),
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(`GHL put ${r.status}: ${txt.slice(0, 160)}`);
+  }
+}
+
+async function ghlAddTag(env, id, tag) {
+  await fetch(`${GHL_API}/contacts/${id}/tags`, {
+    method: 'POST', headers: ghlHeaders(env),
+    body: JSON.stringify({ tags: [tag] })
+  }).catch(() => {});
+}
+async function ghlDelTag(env, id, tag) {
+  await fetch(`${GHL_API}/contacts/${id}/tags`, {
+    method: 'DELETE', headers: ghlHeaders(env),
+    body: JSON.stringify({ tags: [tag] })
+  }).catch(() => {});
+}
+
+async function addArtista(req, res, env) {
+  const { nombre, nombre_artistico, compania, email, telefono, ciudad, tipo, disciplinas, bio_show } = req.body || {};
+  if (!nombre && !compania && !nombre_artistico) {
+    return res.status(400).json({ error: 'Debe haber al menos nombre, nombre_artistico o compania' });
+  }
+  const tipoSafe = ['artista', 'proveedor', 'venue'].includes(tipo) ? tipo : 'artista';
+  const tipoTag = `tipo:${tipoSafe}`;
+
+  // 1. Create GHL contact (upsert: dedupe by email if provided)
+  let ghlContactId = null;
+  try {
+    const fullName = [nombre, nombre_artistico].filter(Boolean).join(' / ').trim();
+    const ghlBody = {
+      firstName: nombre || nombre_artistico || compania || '',
+      lastName: '',
+      companyName: compania || '',
+      email: email || '',
+      phone: telefono || '',
+      city: ciudad || '',
+      tags: [tipoTag, 'follow_up', 'origen:admin']
+    };
+    if (!email) delete ghlBody.email;
+    ghlContactId = await ghlUpsertContact(env, ghlBody);
+  } catch (e) {
+    return res.status(500).json({ error: 'GHL contact failed: ' + e.message });
+  }
+
+  // 2. Insert in Supabase
+  const row = {
+    nombre: nombre || '',
+    nombre_artistico: nombre_artistico || '',
+    compania: compania || '',
+    email: email || `no-email-${ghlContactId}@placeholder.eventosbarcelona.local`,
+    telefono: telefono || '',
+    ciudad: ciudad || '',
+    disciplinas: Array.isArray(disciplinas) ? disciplinas : [],
+    bio_show: bio_show || '',
+    tipo: tipoSafe,
+    ghl_contact_id: ghlContactId,
+    origen: 'admin-create'
+  };
+  const sbRes = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?on_conflict=ghl_contact_id`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates,return=representation'
+    },
+    body: JSON.stringify(row)
+  });
+  if (!sbRes.ok) return res.status(sbRes.status).json({ error: await sbRes.text() });
+  const created = await sbRes.json();
+  const artista = Array.isArray(created) ? created[0] : created;
+  return res.status(200).json({ success: true, artista });
+}
+
+async function editArtista(req, res, env) {
+  const { id, patch } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!patch || typeof patch !== 'object') return res.status(400).json({ error: 'Missing patch' });
+
+  // 1. Fetch current row to detect tipo change
+  const curR = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=*`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!curR.ok) return res.status(curR.status).json({ error: await curR.text() });
+  const curRows = await curR.json();
+  if (!curRows.length) return res.status(404).json({ error: 'Artista not found' });
+  const cur = curRows[0];
+
+  const allowed = ['nombre', 'nombre_artistico', 'compania', 'email', 'telefono', 'ciudad', 'tipo', 'disciplinas', 'bio_show'];
+  const update = {};
+  for (const k of allowed) if (k in patch) update[k] = patch[k];
+  if (Object.keys(update).length === 0) return res.status(400).json({ error: 'patch is empty' });
+
+  if ('tipo' in update && !['artista', 'proveedor', 'venue'].includes(update.tipo)) {
+    return res.status(400).json({ error: 'tipo invalid' });
+  }
+  // Don't downgrade real email back to placeholder
+  if (update.email === '') update.email = cur.email;
+
+  // 2. Patch Supabase
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=*`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(update)
+    }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+  const artista = rows[0];
+
+  // 3. Sync to GHL (best-effort)
+  const ghlErrors = [];
+  if (cur.ghl_contact_id) {
+    try {
+      const ghlBody = {};
+      if ('nombre' in update) ghlBody.firstName = update.nombre || '';
+      if ('compania' in update) ghlBody.companyName = update.compania || '';
+      if ('email' in update && update.email && !update.email.endsWith('@placeholder.eventosbarcelona.local')) ghlBody.email = update.email;
+      if ('telefono' in update) ghlBody.phone = update.telefono || '';
+      if ('ciudad' in update) ghlBody.city = update.ciudad || '';
+      if (Object.keys(ghlBody).length) await ghlPutContact(env, cur.ghl_contact_id, ghlBody);
+    } catch (e) { ghlErrors.push('contact: ' + e.message); }
+
+    if ('tipo' in update && update.tipo !== cur.tipo) {
+      try {
+        await ghlDelTag(env, cur.ghl_contact_id, `tipo:${cur.tipo}`);
+        await ghlAddTag(env, cur.ghl_contact_id, `tipo:${update.tipo}`);
+      } catch (e) { ghlErrors.push('tipo-tag: ' + e.message); }
+    }
+  }
+
+  return res.status(200).json({ success: true, artista, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
+}
+
 async function showsPending(req, res, env) {
   const status = req.query.status || 'pending_review';
   const url = `${env.SUPABASE_URL}/rest/v1/shows?status=eq.${encodeURIComponent(status)}`
@@ -287,7 +463,9 @@ export default async function handler(req, res) {
 
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL,
-    SUPABASE_KEY: process.env.SUPABASE_SERVICE_KEY
+    SUPABASE_KEY: process.env.SUPABASE_SERVICE_KEY,
+    GHL_TOKEN: process.env.GHL_API_KEY,
+    GHL_LOC: process.env.GHL_LOCATION_ID
   };
   if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
     return res.status(500).json({ error: 'Supabase not configured' });
@@ -307,10 +485,12 @@ export default async function handler(req, res) {
       if (action === 'review-show') return reviewShow(req, res, env);
       if (action === 'edit-show') return editShow(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
+      if (action === 'add-artista') return addArtista(req, res, env);
+      if (action === 'edit-artista') return editArtista(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|toggle-favorite'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|toggle-favorite|add-artista|edit-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
