@@ -28,6 +28,7 @@ function parseTotal(headerValue, fallback) {
 async function listArtistas(req, res, env) {
   const q = (req.query.q || '').trim();
   const disciplina = (req.query.disciplina || '').trim();
+  const tipo = (req.query.tipo || '').trim();
   const limit = clampInt(req.query.limit, 50, 1, 200);
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
@@ -45,6 +46,10 @@ async function listArtistas(req, res, env) {
     } else {
       params.push(`disciplinas=cs.{${encodeURIComponent(disciplina)}}`);
     }
+  }
+
+  if (tipo && ['artista', 'proveedor', 'venue'].includes(tipo)) {
+    params.push(`tipo=eq.${tipo}`);
   }
 
   const r = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?${params.join('&')}`, {

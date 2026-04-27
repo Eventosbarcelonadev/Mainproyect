@@ -345,6 +345,12 @@
     <section id="tab-artistas" class="tab-panel hidden">
       <div class="toolbar">
         <input id="artistas-q" type="search" placeholder="Buscar por nombre, email, compañía…">
+        <select id="artistas-tipo">
+          <option value="">Todos los tipos</option>
+          <option value="artista">Solo artistas</option>
+          <option value="proveedor">Solo proveedores</option>
+          <option value="venue">Solo venues</option>
+        </select>
         <select id="artistas-disciplina">
           <option value="">Todas las disciplinas</option>
           <option value="Danza">Danza</option>
@@ -560,6 +566,7 @@
       propuestas: { q: '', status: '', items: [] }
     };
     state.artistas.statusFilter = '';
+    state.artistas.tipo = '';
 
     // ---------- tabs ----------
     function activateTab(tab) {
@@ -584,6 +591,7 @@
       const params = new URLSearchParams();
       if (state.artistas.q) params.set('q', state.artistas.q);
       if (state.artistas.disciplina) params.set('disciplina', state.artistas.disciplina);
+      if (state.artistas.tipo) params.set('tipo', state.artistas.tipo);
       // When filtering by status (completa/incompleta) we need all rows in
       // memory because the criterion is computed client-side. Bump the
       // limit and skip pagination in that mode.
@@ -796,6 +804,11 @@
     }, 300));
     $('artistas-disciplina').addEventListener('change', (e) => {
       state.artistas.disciplina = e.target.value;
+      state.artistas.offset = 0;
+      loadArtistas();
+    });
+    $('artistas-tipo').addEventListener('change', (e) => {
+      state.artistas.tipo = e.target.value;
       state.artistas.offset = 0;
       loadArtistas();
     });
