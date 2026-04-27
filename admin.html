@@ -334,6 +334,7 @@
     <div class="tabs" id="main-tabs">
       <button class="tab" data-tab="shows">Shows</button>
       <button class="tab" data-tab="artistas">Artistas</button>
+      <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
     </div>
   </div>
@@ -345,12 +346,6 @@
     <section id="tab-artistas" class="tab-panel hidden">
       <div class="toolbar">
         <input id="artistas-q" type="search" placeholder="Buscar por nombre, email, compañía…">
-        <select id="artistas-tipo">
-          <option value="">Todos los tipos</option>
-          <option value="artista">Solo artistas</option>
-          <option value="proveedor">Solo proveedores</option>
-          <option value="venue">Solo venues</option>
-        </select>
         <select id="artistas-disciplina">
           <option value="">Todas las disciplinas</option>
           <option value="Danza">Danza</option>
@@ -373,6 +368,27 @@
         <button id="artistas-prev">← Anterior</button>
         <span id="artistas-page-info"></span>
         <button id="artistas-next">Siguiente →</button>
+      </div>
+    </section>
+
+    <!-- TAB: PROVEEDORES -->
+    <section id="tab-proveedores" class="tab-panel hidden">
+      <div class="toolbar">
+        <input id="proveedores-q" type="search" placeholder="Buscar por nombre, email, compañía…">
+        <select id="proveedores-status">
+          <option value="">Todos los perfiles</option>
+          <option value="incompleta">Solo incompletos</option>
+          <option value="completa">Solo completos</option>
+        </select>
+        <span id="proveedores-summary" style="color: var(--gray); font-size: 13px;"></span>
+      </div>
+      <div id="proveedores-loading" class="loading">Cargando…</div>
+      <div id="proveedores-empty" class="empty hidden">No hay proveedores que coincidan.</div>
+      <div id="proveedores-grid" class="grid"></div>
+      <div id="proveedores-pagination" class="pagination hidden">
+        <button id="proveedores-prev">← Anterior</button>
+        <span id="proveedores-page-info"></span>
+        <button id="proveedores-next">Siguiente →</button>
       </div>
     </section>
 
@@ -531,7 +547,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'shows', 'propuestas'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -563,10 +579,11 @@
       currentTab: null,
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
       shows: { substatus: 'pending_review', artistaFilter: null, items: [] },
+      proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
     };
     state.artistas.statusFilter = '';
-    state.artistas.tipo = '';
+    state.artistas.tipo = 'artista';
 
     // ---------- tabs ----------
     function activateTab(tab) {
@@ -807,10 +824,82 @@
       state.artistas.offset = 0;
       loadArtistas();
     });
-    $('artistas-tipo').addEventListener('change', (e) => {
-      state.artistas.tipo = e.target.value;
-      state.artistas.offset = 0;
-      loadArtistas();
+    // ---------- PROVEEDORES ---------- (uses same renderArtistaCard + drawer)
+    async function loadProveedores() {
+      $('proveedores-loading').classList.remove('hidden');
+      $('proveedores-empty').classList.add('hidden');
+      $('proveedores-grid').innerHTML = '';
+      $('proveedores-pagination').classList.add('hidden');
+
+      const params = new URLSearchParams();
+      if (state.proveedores.q) params.set('q', state.proveedores.q);
+      params.set('tipo', 'proveedor');
+      const statusFilter = state.proveedores.statusFilter || '';
+      if (statusFilter) {
+        params.set('limit', 500); params.set('offset', 0);
+      } else {
+        params.set('limit', state.proveedores.limit);
+        params.set('offset', state.proveedores.offset);
+      }
+
+      try {
+        params.set('action', 'list-artistas');
+        const res = await fetch('/api/admin?' + params.toString());
+        const data = await res.json();
+        $('proveedores-loading').classList.add('hidden');
+        if (!res.ok) { showError(data.error || 'Error cargando proveedores'); return; }
+
+        let items = data.artistas || [];
+        const totalServer = data.total || 0;
+        const completeCount = items.filter(isArtistComplete).length;
+        const incompleteCount = items.length - completeCount;
+
+        if (statusFilter === 'completa') items = items.filter(isArtistComplete);
+        else if (statusFilter === 'incompleta') items = items.filter(a => !isArtistComplete(a));
+
+        state.proveedores.items = items;
+        state.proveedores.total = totalServer;
+
+        const summary = statusFilter
+          ? `${items.length} ${statusFilter === 'completa' ? 'completos' : 'incompletos'} de ${totalServer}`
+          : `${totalServer} proveedores (${completeCount} completos · ${incompleteCount} incompletos en esta página)`;
+        $('proveedores-summary').textContent = summary;
+
+        if (!items.length) { $('proveedores-empty').classList.remove('hidden'); return; }
+        const grid = $('proveedores-grid');
+        for (const a of items) grid.appendChild(renderArtistaCard(a));
+
+        if (!statusFilter && totalServer > state.proveedores.limit) {
+          $('proveedores-pagination').classList.remove('hidden');
+          const cur = Math.floor(state.proveedores.offset / state.proveedores.limit) + 1;
+          const tot = Math.ceil(totalServer / state.proveedores.limit);
+          $('proveedores-page-info').textContent = `Página ${cur} / ${tot}`;
+          $('proveedores-prev').disabled = state.proveedores.offset === 0;
+          $('proveedores-next').disabled = state.proveedores.offset + state.proveedores.limit >= totalServer;
+        }
+      } catch (err) {
+        $('proveedores-loading').classList.add('hidden');
+        showError(err.message);
+      }
+    }
+
+    $('proveedores-q').addEventListener('input', debounce((e) => {
+      state.proveedores.q = e.target.value.trim();
+      state.proveedores.offset = 0;
+      loadProveedores();
+    }, 300));
+    $('proveedores-status').addEventListener('change', (e) => {
+      state.proveedores.statusFilter = e.target.value;
+      state.proveedores.offset = 0;
+      loadProveedores();
+    });
+    $('proveedores-prev').addEventListener('click', () => {
+      state.proveedores.offset = Math.max(0, state.proveedores.offset - state.proveedores.limit);
+      loadProveedores();
+    });
+    $('proveedores-next').addEventListener('click', () => {
+      state.proveedores.offset += state.proveedores.limit;
+      loadProveedores();
     });
     $('artistas-status').addEventListener('change', (e) => {
       state.artistas.statusFilter = e.target.value;
@@ -1252,6 +1341,10 @@
         if (state.artistas.items.length === 0 || state.currentTab !== 'artistas-loaded') {
           await loadArtistas();
         }
+        if (sub) openArtistaDetail(sub);
+        else closeDrawer();
+      } else if (tab === 'proveedores') {
+        await loadProveedores();
         if (sub) openArtistaDetail(sub);
         else closeDrawer();
       } else if (tab === 'shows') {
