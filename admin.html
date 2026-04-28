@@ -1194,6 +1194,12 @@
     function closeEditShowModal() {
       _editingShow = null;
       $('edit-modal-backdrop').classList.remove('open');
+      // If the URL points to a single show, reset back to the substatus tab
+      const cur = parseHash();
+      const allowed = ['pending_review', 'active', 'archived', 'orphans'];
+      if (cur.tab === 'shows' && cur.sub && !allowed.includes(cur.sub)) {
+        setHash('shows', state.shows.substatus, {});
+      }
     }
     async function saveEditShow() {
       if (!_editingShow) return;
@@ -1502,11 +1508,24 @@
         else closeDrawer();
       } else if (tab === 'shows') {
         const allowed = ['pending_review', 'active', 'archived', 'orphans'];
-        const sub2 = allowed.includes(sub) ? sub : state.shows.substatus;
+        let openShowId = null;
+        let sub2;
+        if (sub && !allowed.includes(sub)) {
+          // sub is a show id → load all active and open the edit modal for it
+          openShowId = sub;
+          sub2 = 'active';
+        } else {
+          sub2 = allowed.includes(sub) ? sub : state.shows.substatus;
+        }
         state.shows.substatus = sub2;
         state.shows.artistaFilter = query.artista || null;
-        state.shows.showFilter = query.show || null;
-        loadShows();
+        state.shows.showFilter = openShowId ? null : (query.show || null);
+        await loadShows();
+        if (openShowId) {
+          const found = state.shows.items.find(s => s.id === openShowId);
+          if (found) openEditShowModal(found);
+          else showError('Show no encontrado: ' + openShowId);
+        }
       } else if (tab === 'propuestas') {
         loadPropuestas();
       }
