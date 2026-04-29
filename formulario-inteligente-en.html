@@ -551,6 +551,165 @@
       font-weight: 500;
     }
 
+    /* === CUSTOM SELECT (single + multi) === */
+    .eb-select { position: relative; }
+    .eb-select-control {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 40px 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .eb-select-control:hover { border-color: var(--accent); }
+    .eb-select.open .eb-select-control { border-color: var(--accent); }
+    .eb-select-placeholder { color: var(--gray); font-size: 15px; }
+    .eb-select-value { color: var(--text); font-size: 15px; }
+    .eb-select-value.placeholder { color: var(--gray); }
+    .eb-select-caret {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 12px;
+      pointer-events: none;
+      transition: transform 0.2s;
+    }
+    .eb-select.open .eb-select-caret { transform: translateY(-50%) rotate(180deg); }
+
+    .eb-select-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+    }
+    .eb-select-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px 4px 12px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .eb-select-pill-x {
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      opacity: 0.5;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .eb-select-pill-x:hover { opacity: 1; background: rgba(204,51,102,0.15); }
+
+    .eb-select-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      max-height: 340px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      padding: 4px 0;
+    }
+    .eb-select.open .eb-select-panel { display: block; }
+
+    .eb-select-option {
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .eb-select-option:hover { background: var(--accent-light); color: var(--accent); }
+    .eb-select-option.active {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .eb-select-section { padding: 6px 0; }
+    .eb-select-section + .eb-select-section { border-top: 1px solid var(--border); }
+    .eb-select-section-title {
+      padding: 8px 16px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .eb-select-section-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 16px 8px;
+    }
+    .eb-chip-option {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .eb-chip-option:hover { border-color: var(--accent); color: var(--accent); }
+    .eb-chip-option.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* === NO SURE CARD === */
+    #no-sure-card:hover { border-color: var(--accent) !important; }
+    #no-sure-card.selected {
+      border-color: var(--accent) !important;
+      background: var(--accent-light) !important;
+    }
+
+    /* === COMPACT FORMAT CARDS === */
+    .option-card-compact {
+      padding: 14px 12px !important;
+      display: flex !important;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    .option-card-compact .option-icon {
+      font-size: 22px !important;
+      margin-bottom: 0 !important;
+      display: inline-block !important;
+    }
+    .option-card-compact .option-label {
+      font-size: 14px !important;
+      line-height: 1.3;
+    }
+
     /* === ARTIST SWITCH BANNER === */
     .artist-switch {
       display: flex;
@@ -802,113 +961,81 @@
         <p class="step-subtitle">Choose the format and category you're interested in. You can select multiple.</p>
 
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Show format</label>
-        <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 28px;">
-          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+        <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+          <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
             <span class="option-icon">&#127917;</span>
             <span class="option-label">Stage show</span>
-            <div class="show-card-desc" style="margin-top: 6px;">Headline acts on stage with lighting and sound</div>
           </div>
-          <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 24px 16px;">
+          <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
             <span class="option-icon">&#127865;</span>
             <span class="option-label">Ambient / strolling</span>
-            <div class="show-card-desc" style="margin-top: 6px;">Artists who interact with guests during dinner or cocktail</div>
           </div>
         </div>
 
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Artistic category</label>
-        <div class="show-grid">
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">Dance</div>
-              <div class="show-card-desc">Select the styles you're interested in</div>
-            </div>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Contemporary</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Cabaret</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">1920s</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Hip-hop</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Salsa</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Themed</span>
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Artistic styles</label>
+        <div class="eb-select" id="ms-categoria">
+          <div class="eb-select-control" onclick="toggleEbSelect('ms-categoria', event)">
+            <span class="eb-select-placeholder" id="ms-categoria-placeholder">Select the styles you're interested in...</span>
+            <div class="eb-select-pills" id="ms-categoria-pills"></div>
+            <span class="eb-select-caret">&#9662;</span>
+          </div>
+          <div class="eb-select-panel" onclick="event.stopPropagation()">
+            <div class="eb-select-section">
+              <div class="eb-select-section-title">&#129665; Dance</div>
+              <div class="eb-select-section-chips">
+                <span class="eb-chip-option" data-cat="Dance" data-val="Contemporary" onclick="toggleMsChip(this, 'ms-categoria')">Contemporary</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Classical" onclick="toggleMsChip(this, 'ms-categoria')">Classical</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Cabaret" onclick="toggleMsChip(this, 'ms-categoria')">Cabaret</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Flamenco" onclick="toggleMsChip(this, 'ms-categoria')">Flamenco</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="1920s" onclick="toggleMsChip(this, 'ms-categoria')">1920s</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Hip-hop" onclick="toggleMsChip(this, 'ms-categoria')">Hip-hop</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Salsa" onclick="toggleMsChip(this, 'ms-categoria')">Salsa</span>
+                <span class="eb-chip-option" data-cat="Dance" data-val="Themed" onclick="toggleMsChip(this, 'ms-categoria')">Themed</span>
               </div>
             </div>
-          </div>
-
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">Music</div>
-              <div class="show-card-desc">Select the styles you're interested in</div>
-            </div>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Live bands</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Soloists</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Singers</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Jazz</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">DJ</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Rumba</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Percussionists</span>
+            <div class="eb-select-section">
+              <div class="eb-select-section-title">&#127925; Music</div>
+              <div class="eb-select-section-chips">
+                <span class="eb-chip-option" data-cat="Music" data-val="Live bands" onclick="toggleMsChip(this, 'ms-categoria')">Live bands</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Classical" onclick="toggleMsChip(this, 'ms-categoria')">Classical</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Soloists" onclick="toggleMsChip(this, 'ms-categoria')">Soloists</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Singers" onclick="toggleMsChip(this, 'ms-categoria')">Singers</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Jazz" onclick="toggleMsChip(this, 'ms-categoria')">Jazz</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="DJ" onclick="toggleMsChip(this, 'ms-categoria')">DJ</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Rumba" onclick="toggleMsChip(this, 'ms-categoria')">Rumba</span>
+                <span class="eb-chip-option" data-cat="Music" data-val="Percussionists" onclick="toggleMsChip(this, 'ms-categoria')">Percussionists</span>
               </div>
             </div>
-          </div>
-
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">Circus</div>
-              <div class="show-card-desc">Select the styles you're interested in</div>
-            </div>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED juggling</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Tightrope walker</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Acrobats</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Aerialists</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Stilt walkers</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Fire</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Unique characters</span>
+            <div class="eb-select-section">
+              <div class="eb-select-section-title">&#127914; Circus</div>
+              <div class="eb-select-section-chips">
+                <span class="eb-chip-option" data-cat="Circus" data-val="LED juggling" onclick="toggleMsChip(this, 'ms-categoria')">LED juggling</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Tightrope walker" onclick="toggleMsChip(this, 'ms-categoria')">Tightrope walker</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Acrobats" onclick="toggleMsChip(this, 'ms-categoria')">Acrobats</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Aerialists" onclick="toggleMsChip(this, 'ms-categoria')">Aerialists</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Stilt walkers" onclick="toggleMsChip(this, 'ms-categoria')">Stilt walkers</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Fire" onclick="toggleMsChip(this, 'ms-categoria')">Fire</span>
+                <span class="eb-chip-option" data-cat="Circus" data-val="Unique characters" onclick="toggleMsChip(this, 'ms-categoria')">Unique characters</span>
               </div>
             </div>
-          </div>
-
-          <div class="show-card" onclick="toggleShow(this)">
-            <div class="show-card-image" style="background-image: url('https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=400&q=80');">
-              <div class="show-card-check">&#10003;</div>
-            </div>
-            <div class="show-card-body">
-              <div class="show-card-title">WOW Effect</div>
-              <div class="show-card-desc">Select the styles you're interested in</div>
-            </div>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED dancers</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Video mapping</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Light shows</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Laser</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Immersive</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">LED percussionists</span>
-                <span class="sub-chip" onclick="event.stopPropagation(); toggleChip(this)">Custom</span>
+            <div class="eb-select-section">
+              <div class="eb-select-section-title">&#10024; WOW Effect</div>
+              <div class="eb-select-section-chips">
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="LED dancers" onclick="toggleMsChip(this, 'ms-categoria')">LED dancers</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Video mapping" onclick="toggleMsChip(this, 'ms-categoria')">Video mapping</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Light shows" onclick="toggleMsChip(this, 'ms-categoria')">Light shows</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Laser" onclick="toggleMsChip(this, 'ms-categoria')">Laser</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Immersive" onclick="toggleMsChip(this, 'ms-categoria')">Immersive</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="LED percussionists" onclick="toggleMsChip(this, 'ms-categoria')">LED percussionists</span>
+                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Custom" onclick="toggleMsChip(this, 'ms-categoria')">Custom</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="show-card" onclick="toggleShow(this)" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; text-align: center; margin-bottom: 16px; transition: all 0.2s; background: var(--white);">
-          <div class="show-card-body" style="padding: 0;">
-            <div class="show-card-title">Not sure, I'd like your recommendation</div>
-            <div class="show-card-desc">Our team will recommend the best shows for your event</div>
-          </div>
+        <div id="no-sure-card" onclick="toggleNoSure(this)" style="margin-top: 14px; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; text-align: center; transition: all 0.2s; background: var(--white);">
+          <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 2px;">Not sure, I'd like your recommendation</div>
+          <div style="font-size: 12px; color: var(--gray);">Our team will recommend the best shows for your event</div>
         </div>
 
         <div style="margin-top: 8px; padding: 20px; background: var(--light-gray); border-radius: 12px; border-left: 3px solid var(--accent);">
@@ -979,15 +1106,21 @@
 
         <div class="form-group">
           <label>How did you hear about us?</label>
-          <select id="f-conocido">
-            <option value="" disabled selected>Select an option</option>
-            <option>Website</option>
-            <option>Google search</option>
-            <option>Referral</option>
-            <option>Social media</option>
-            <option>Previous event</option>
-            <option>Other</option>
-          </select>
+          <div class="eb-select" id="sel-conocido">
+            <div class="eb-select-control" onclick="toggleEbSelect('sel-conocido', event)">
+              <span class="eb-select-value placeholder" id="sel-conocido-value">Select an option</span>
+              <span class="eb-select-caret">&#9662;</span>
+            </div>
+            <div class="eb-select-panel">
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Website', this)">Website</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Google search', this)">Google search</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Referral', this)">Referral</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Social media', this)">Social media</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Previous event', this)">Previous event</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Other', this)">Other</div>
+            </div>
+          </div>
+          <input type="hidden" id="f-conocido" value="">
         </div>
 
         <div class="form-actions">
@@ -1121,17 +1254,67 @@
       el.classList.add('selected');
     }
 
-    function toggleShow(el) {
-      el.classList.toggle('selected');
-      // If deselecting, clear all sub-chips
-      if (!el.classList.contains('selected')) {
-        el.querySelectorAll('.sub-chip').forEach(c => c.classList.remove('active'));
-      }
+    /* === Custom dropdown helpers === */
+    function toggleEbSelect(id, e) {
+      if (e) e.stopPropagation();
+      document.querySelectorAll('.eb-select.open').forEach(s => {
+        if (s.id !== id) s.classList.remove('open');
+      });
+      document.getElementById(id).classList.toggle('open');
     }
 
-    function toggleChip(el) {
-      el.classList.toggle('active');
+    function setEbSelect(id, value, optionEl) {
+      const valueEl = document.getElementById(id + '-value');
+      valueEl.textContent = value;
+      valueEl.classList.remove('placeholder');
+      const hidden = document.getElementById('f-' + id.replace(/^sel-/, ''));
+      if (hidden) hidden.value = value;
+      const panel = optionEl.parentElement;
+      panel.querySelectorAll('.eb-select-option.active').forEach(o => o.classList.remove('active'));
+      optionEl.classList.add('active');
+      document.getElementById(id).classList.remove('open');
     }
+
+    function toggleMsChip(chip, msId) {
+      chip.classList.toggle('active');
+      updateMsPills(msId);
+    }
+
+    function updateMsPills(msId) {
+      const ms = document.getElementById(msId);
+      const pillsContainer = document.getElementById(msId + '-pills');
+      const placeholder = document.getElementById(msId + '-placeholder');
+      const activeChips = ms.querySelectorAll('.eb-chip-option.active');
+      pillsContainer.innerHTML = '';
+      if (activeChips.length === 0) {
+        placeholder.style.display = '';
+        return;
+      }
+      placeholder.style.display = 'none';
+      activeChips.forEach(chip => {
+        const pill = document.createElement('span');
+        pill.className = 'eb-select-pill';
+        pill.textContent = chip.dataset.val;
+        const x = document.createElement('span');
+        x.className = 'eb-select-pill-x';
+        x.textContent = '×';
+        x.onclick = function(ev) {
+          ev.stopPropagation();
+          chip.classList.remove('active');
+          updateMsPills(msId);
+        };
+        pill.appendChild(x);
+        pillsContainer.appendChild(pill);
+      });
+    }
+
+    function toggleNoSure(el) {
+      el.classList.toggle('selected');
+    }
+
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.eb-select.open').forEach(s => s.classList.remove('open'));
+    });
 
     async function submitForm() {
       const btn = document.querySelector('.btn-submit');
@@ -1142,15 +1325,16 @@
       const tipoEvento = document.querySelector('#step-2 .option-card.selected .option-label')?.textContent || '';
       const formatoShow = document.querySelector('#step-3 .option-grid .option-card.selected .option-label')?.textContent || '';
 
-      const categorias = [];
+      const categoriasSet = new Set();
       const subcategorias = [];
-      document.querySelectorAll('#step-3 .show-card.selected').forEach(card => {
-        const title = card.querySelector('.show-card-title')?.textContent;
-        if (title) categorias.push(title);
-        card.querySelectorAll('.sub-chip.active').forEach(chip => {
-          subcategorias.push(chip.textContent);
-        });
+      document.querySelectorAll('#ms-categoria .eb-chip-option.active').forEach(chip => {
+        if (chip.dataset.cat) categoriasSet.add(chip.dataset.cat);
+        if (chip.dataset.val) subcategorias.push(chip.dataset.val);
       });
+      if (document.getElementById('no-sure-card')?.classList.contains('selected')) {
+        categoriasSet.add('Not sure');
+      }
+      const categorias = Array.from(categoriasSet);
 
       const presupuesto = document.querySelector('.budget-card.selected .budget-amount')?.textContent || '';
 
