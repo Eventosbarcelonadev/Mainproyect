@@ -69,6 +69,7 @@ export default async function handler(req, res) {
       hero_sub: data.heroSub || '',
       shows: JSON.stringify(data.shows || []),
       global_margin: data.globalMargin || 0,
+      hide_summary: !!data.hideSummary,
       ghl_contact_id: data.ghlContactId || null,
       ghl_opportunity_id: data.ghlOpportunityId || null
     };

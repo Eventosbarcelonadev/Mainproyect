@@ -638,6 +638,29 @@
       padding: 100px 80px;
       background: var(--light-gray);
     }
+    .summary-section.admin-mode { position: relative; }
+    .summary-section.admin-mode .summary-remove { display: flex; }
+
+    .summary-remove {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .summary-remove:hover { background: #e74c3c; }
 
     .summary-inner {
       max-width: 680px;
@@ -1443,7 +1466,7 @@
         print-color-adjust: exact !important;
       }
       .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content,
-      .pdf-float, .add-show-block, .block-remove, .builder-container, .picker-overlay,
+      .pdf-float, .add-show-block, .block-remove, .summary-remove, .builder-container, .picker-overlay,
       .nav-right, .btn-contact { display: none !important; }
 
       /* Hide edit affordances so admin PDFs look clean */
@@ -1905,6 +1928,7 @@
       isAdmin: false,
       priceEditMode: false,
       globalMargin: 0,
+      hideSummary: false,
       lang: 'es', // 'es' | 'en' — which language to render show texts in
       // These get populated from proposal data
       client: {},
@@ -2234,6 +2258,7 @@
         });
 
         proposalState.globalMargin = p.globalMargin || 0;
+        proposalState.hideSummary = !!p.hideSummary;
         loadProposal(showsData, isAdmin);
 
         // Restore custom prices if saved
@@ -2382,7 +2407,15 @@
         </div>
 
         <!-- RESUMEN PRESUPUESTO -->
-        <div class="summary-section">
+        ${proposalState.hideSummary ? (isAdmin ? `
+        <div class="add-show-block" onclick="toggleSummary()">
+          <div class="add-show-icon">+</div>
+          <h3>Mostrar resumen del presupuesto</h3>
+          <p>El bloque de precios esta oculto en la propuesta del cliente</p>
+        </div>
+        ` : '') : `
+        <div class="summary-section ${isAdmin ? 'admin-mode' : ''}">
+          ${isAdmin ? `<button class="summary-remove" onclick="toggleSummary()" title="Ocultar resumen">&times;</button>` : ''}
           <div class="summary-inner">
             <div class="section-label">${T.summaryLabel}</div>
             <div style="margin-top: 24px;" id="summaryRows">
@@ -2410,6 +2443,7 @@
             ` : ''}
           </div>
         </div>
+        `}
 
         <!-- ABOUT -->
         <div class="about-section">
@@ -2690,6 +2724,16 @@
       showToast('Eliminado: ' + show.name);
     }
 
+    function toggleSummary() {
+      proposalState.hideSummary = !proposalState.hideSummary;
+      renderProposal();
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+      }
+      showToast(proposalState.hideSummary ? 'Resumen de presupuesto ocultado' : 'Resumen de presupuesto visible');
+    }
+
     function togglePriceEdit() {
       proposalState.priceEditMode = !proposalState.priceEditMode;
       const marginControl = document.getElementById('marginControl');
@@ -2815,7 +2859,8 @@
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel
         })),
-        globalMargin: proposalState.globalMargin
+        globalMargin: proposalState.globalMargin,
+        hideSummary: proposalState.hideSummary
       };
 
       try {
