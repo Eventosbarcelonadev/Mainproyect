@@ -264,9 +264,9 @@
     }
 
     .option-card {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
@@ -284,15 +284,16 @@
     }
 
     .option-card .option-icon {
-      font-size: 32px;
-      margin-bottom: 8px;
+      font-size: 22px;
+      margin-bottom: 4px;
       display: block;
     }
 
     .option-card .option-label {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       color: var(--text);
+      line-height: 1.3;
     }
 
     .option-card .option-desc {
@@ -301,17 +302,166 @@
       margin-top: 4px;
     }
 
-    /* SUBCATEGORY CHIPS */
+    /* === COMPACT FORMAT CARDS === */
+    .option-card-compact {
+      padding: 10px 12px !important;
+      display: flex !important;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+    }
+    .option-card-compact .option-icon {
+      font-size: 18px !important;
+      margin-bottom: 0 !important;
+      display: inline-block !important;
+    }
+    .option-card-compact .option-label {
+      font-size: 13px !important;
+      line-height: 1.3;
+    }
+
+    /* === CUSTOM SELECT (single + multi) === */
+    .eb-select { position: relative; }
+    .eb-select-control {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 40px 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .eb-select-control:hover { border-color: var(--accent); }
+    .eb-select.open .eb-select-control { border-color: var(--accent); }
+    .eb-select-placeholder { color: var(--gray); font-size: 15px; }
+    .eb-select-value { color: var(--text); font-size: 15px; }
+    .eb-select-value.placeholder { color: var(--gray); }
+    .eb-select-caret {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 12px;
+      pointer-events: none;
+      transition: transform 0.2s;
+    }
+    .eb-select.open .eb-select-caret { transform: translateY(-50%) rotate(180deg); }
+
+    .eb-select-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+    }
+    .eb-select-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px 4px 12px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .eb-select-pill-x {
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      opacity: 0.5;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .eb-select-pill-x:hover { opacity: 1; background: rgba(204,51,102,0.15); }
+
+    .eb-select-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      max-height: 340px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      padding: 4px 0;
+    }
+    .eb-select.open .eb-select-panel { display: block; }
+
+    .eb-select-option {
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .eb-select-option:hover { background: var(--accent-light); color: var(--accent); }
+    .eb-select-option.active {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .eb-select-section { padding: 6px 0; }
+    .eb-select-section + .eb-select-section { border-top: 1px solid var(--border); }
+    .eb-select-section-title {
+      padding: 8px 16px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .eb-select-section.highlight .eb-select-section-title { color: var(--accent); }
+    .eb-select-section-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 4px 14px 8px;
+    }
+    .eb-chip-option {
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 11.5px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .eb-chip-option:hover { border-color: var(--accent); color: var(--accent); }
+    .eb-chip-option.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Legacy sub-chip styles kept for backwards compat (e.g. dynamic shows) */
     .subcategory-panel {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.3s ease;
     }
-
-    .option-card.selected .subcategory-panel {
-      max-height: 200px;
-    }
-
+    .option-card.selected .subcategory-panel { max-height: 200px; }
     .subcategory-chips {
       display: flex;
       flex-wrap: wrap;
@@ -320,7 +470,6 @@
       margin-top: 10px;
       border-top: 1px solid var(--border);
     }
-
     .sub-chip {
       padding: 4px 10px;
       border-radius: 16px;
@@ -332,12 +481,7 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-
-    .sub-chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
+    .sub-chip:hover { border-color: var(--accent); color: var(--accent); }
     .sub-chip.active {
       background: var(--accent);
       border-color: var(--accent);
@@ -720,96 +864,91 @@
         <h2 class="step-title" id="step2-title">Your artistic discipline</h2>
         <p class="step-subtitle" id="step2-subtitle">Select the main category of your show. You can pick multiple.</p>
 
-        <!-- ARTIST categories -->
-        <div class="option-grid" id="cats-artista">
-          <div class="option-card" onclick="toggleOption(this)">
-            <span class="option-icon">&#128131;</span>
-            <span class="option-label">Dance</span>
-            <span class="option-desc">Select your styles</span>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" data-value="Aerea" onclick="event.stopPropagation(); toggleChip(this)">Aerial</span>
-                <span class="sub-chip" data-value="Body Painting" onclick="event.stopPropagation(); toggleChip(this)">Body Painting</span>
-                <span class="sub-chip" data-value="Burlesque" onclick="event.stopPropagation(); toggleChip(this)">Burlesque</span>
-                <span class="sub-chip" data-value="Clasica" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
-                <span class="sub-chip" data-value="Flamenco" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
-                <span class="sub-chip" data-value="Funky" onclick="event.stopPropagation(); toggleChip(this)">Funky</span>
-                <span class="sub-chip" data-value="Latina" onclick="event.stopPropagation(); toggleChip(this)">Latin</span>
-                <span class="sub-chip" data-value="LED" onclick="event.stopPropagation(); toggleChip(this)">LED</span>
-                <span class="sub-chip" data-value="Pole Dance" onclick="event.stopPropagation(); toggleChip(this)">Pole Dance</span>
-                <span class="sub-chip" data-value="Tematica" onclick="event.stopPropagation(); toggleChip(this)">Themed</span>
-                <span class="sub-chip" data-value="Urbano" onclick="event.stopPropagation(); toggleChip(this)">Urban</span>
+        <!-- ARTIST categories: multiselect dropdown -->
+        <div id="cats-artista">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Discipline & styles</label>
+          <div class="eb-select" id="ms-disciplina">
+            <div class="eb-select-control" onclick="toggleEbSelect('ms-disciplina', event)">
+              <span class="eb-select-placeholder" id="ms-disciplina-placeholder">Pick your discipline and styles...</span>
+              <div class="eb-select-pills" id="ms-disciplina-pills"></div>
+              <span class="eb-select-caret">&#9662;</span>
+            </div>
+            <div class="eb-select-panel" onclick="event.stopPropagation()">
+              <div class="eb-select-section" data-cat="Dance">
+                <div class="eb-select-section-title">&#128131; Dance</div>
+                <div class="eb-select-section-chips">
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Aerea" onclick="toggleMsChip(this, 'ms-disciplina')">Aerial</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Body Painting" onclick="toggleMsChip(this, 'ms-disciplina')">Body Painting</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Burlesque" onclick="toggleMsChip(this, 'ms-disciplina')">Burlesque</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Clasica" onclick="toggleMsChip(this, 'ms-disciplina')">Classical</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Flamenco" onclick="toggleMsChip(this, 'ms-disciplina')">Flamenco</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Funky" onclick="toggleMsChip(this, 'ms-disciplina')">Funky</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Latina" onclick="toggleMsChip(this, 'ms-disciplina')">Latin</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="LED" onclick="toggleMsChip(this, 'ms-disciplina')">LED</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Pole Dance" onclick="toggleMsChip(this, 'ms-disciplina')">Pole Dance</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Tematica" onclick="toggleMsChip(this, 'ms-disciplina')">Themed</span>
+                  <span class="eb-chip-option" data-cat="Dance" data-val="Urbano" onclick="toggleMsChip(this, 'ms-disciplina')">Urban</span>
+                </div>
+              </div>
+              <div class="eb-select-section" data-cat="Music">
+                <div class="eb-select-section-title">&#127925; Music</div>
+                <div class="eb-select-section-chips">
+                  <span class="eb-chip-option" data-cat="Music" data-val="Bossa Nova" onclick="toggleMsChip(this, 'ms-disciplina')">Bossa Nova</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Chillout" onclick="toggleMsChip(this, 'ms-disciplina')">Chillout</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Clasica" onclick="toggleMsChip(this, 'ms-disciplina')">Classical</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="DJ" onclick="toggleMsChip(this, 'ms-disciplina')">DJ</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Flamenco" onclick="toggleMsChip(this, 'ms-disciplina')">Flamenco</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Jazz" onclick="toggleMsChip(this, 'ms-disciplina')">Jazz</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Latina" onclick="toggleMsChip(this, 'ms-disciplina')">Latin</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Opera" onclick="toggleMsChip(this, 'ms-disciplina')">Opera</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Percusion" onclick="toggleMsChip(this, 'ms-disciplina')">Percussion</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Pop Rock" onclick="toggleMsChip(this, 'ms-disciplina')">Pop Rock</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Reggae" onclick="toggleMsChip(this, 'ms-disciplina')">Reggae</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Rumba" onclick="toggleMsChip(this, 'ms-disciplina')">Rumba</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Soul" onclick="toggleMsChip(this, 'ms-disciplina')">Soul</span>
+                  <span class="eb-chip-option" data-cat="Music" data-val="Violin" onclick="toggleMsChip(this, 'ms-disciplina')">Violin</span>
+                </div>
+              </div>
+              <div class="eb-select-section" data-cat="Circus">
+                <div class="eb-select-section-title">&#127914; Circus</div>
+                <div class="eb-select-section-chips">
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Acrobacia" onclick="toggleMsChip(this, 'ms-disciplina')">Acrobatics</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Artesania" onclick="toggleMsChip(this, 'ms-disciplina')">Crafts</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Body Painting" onclick="toggleMsChip(this, 'ms-disciplina')">Body Painting</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Circo" onclick="toggleMsChip(this, 'ms-disciplina')">Circus</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Freestyle" onclick="toggleMsChip(this, 'ms-disciplina')">Freestyle</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Magia" onclick="toggleMsChip(this, 'ms-disciplina')">Magic</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Malabares" onclick="toggleMsChip(this, 'ms-disciplina')">Juggling</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Personajes" onclick="toggleMsChip(this, 'ms-disciplina')">Characters</span>
+                  <span class="eb-chip-option" data-cat="Circus" data-val="Zancudos" onclick="toggleMsChip(this, 'ms-disciplina')">Stilts</span>
+                </div>
+              </div>
+              <div class="eb-select-section" data-cat="WOW Effect">
+                <div class="eb-select-section-title">&#10024; WOW Effect</div>
+                <div class="eb-select-section-chips">
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Acrobacia" onclick="toggleMsChip(this, 'ms-disciplina')">Acrobatics</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Acuatico" onclick="toggleMsChip(this, 'ms-disciplina')">Aquatic</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Artesania" onclick="toggleMsChip(this, 'ms-disciplina')">Crafts</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Body Painting" onclick="toggleMsChip(this, 'ms-disciplina')">Body Painting</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Gastronomia" onclick="toggleMsChip(this, 'ms-disciplina')">Gastronomy</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Laser" onclick="toggleMsChip(this, 'ms-disciplina')">Laser</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="LED" onclick="toggleMsChip(this, 'ms-disciplina')">LED</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Light" onclick="toggleMsChip(this, 'ms-disciplina')">Light</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Mapping" onclick="toggleMsChip(this, 'ms-disciplina')">Mapping</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Percusion LED" onclick="toggleMsChip(this, 'ms-disciplina')">LED Percussion</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Pintura" onclick="toggleMsChip(this, 'ms-disciplina')">Painting</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Tecnologia" onclick="toggleMsChip(this, 'ms-disciplina')">Tech</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Urbano" onclick="toggleMsChip(this, 'ms-disciplina')">Urban</span>
+                  <span class="eb-chip-option" data-cat="WOW Effect" data-val="Zancudos" onclick="toggleMsChip(this, 'ms-disciplina')">Stilts</span>
+                </div>
+              </div>
+              <div class="eb-select-section" data-cat="Other">
+                <div class="eb-select-section-title">&#127917; Other</div>
+                <div class="eb-select-section-chips">
+                  <span class="eb-chip-option" data-cat="Other" data-val="Other" onclick="toggleMsChip(this, 'ms-disciplina')">Any other discipline or service</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="option-card" onclick="toggleOption(this)">
-            <span class="option-icon">&#127928;</span>
-            <span class="option-label">Music</span>
-            <span class="option-desc">Select your styles</span>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" data-value="Bossa Nova" onclick="event.stopPropagation(); toggleChip(this)">Bossa Nova</span>
-                <span class="sub-chip" data-value="Chillout" onclick="event.stopPropagation(); toggleChip(this)">Chillout</span>
-                <span class="sub-chip" data-value="Clasica" onclick="event.stopPropagation(); toggleChip(this)">Classical</span>
-                <span class="sub-chip" data-value="DJ" onclick="event.stopPropagation(); toggleChip(this)">DJ</span>
-                <span class="sub-chip" data-value="Flamenco" onclick="event.stopPropagation(); toggleChip(this)">Flamenco</span>
-                <span class="sub-chip" data-value="Jazz" onclick="event.stopPropagation(); toggleChip(this)">Jazz</span>
-                <span class="sub-chip" data-value="Latina" onclick="event.stopPropagation(); toggleChip(this)">Latin</span>
-                <span class="sub-chip" data-value="Opera" onclick="event.stopPropagation(); toggleChip(this)">Opera</span>
-                <span class="sub-chip" data-value="Percusion" onclick="event.stopPropagation(); toggleChip(this)">Percussion</span>
-                <span class="sub-chip" data-value="Pop Rock" onclick="event.stopPropagation(); toggleChip(this)">Pop Rock</span>
-                <span class="sub-chip" data-value="Reggae" onclick="event.stopPropagation(); toggleChip(this)">Reggae</span>
-                <span class="sub-chip" data-value="Rumba" onclick="event.stopPropagation(); toggleChip(this)">Rumba</span>
-                <span class="sub-chip" data-value="Soul" onclick="event.stopPropagation(); toggleChip(this)">Soul</span>
-                <span class="sub-chip" data-value="Violin" onclick="event.stopPropagation(); toggleChip(this)">Violin</span>
-              </div>
-            </div>
-          </div>
-          <div class="option-card" onclick="toggleOption(this)">
-            <span class="option-icon">&#127914;</span>
-            <span class="option-label">Circus</span>
-            <span class="option-desc">Select your styles</span>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" data-value="Acrobacia" onclick="event.stopPropagation(); toggleChip(this)">Acrobatics</span>
-                <span class="sub-chip" data-value="Artesania" onclick="event.stopPropagation(); toggleChip(this)">Crafts</span>
-                <span class="sub-chip" data-value="Body Painting" onclick="event.stopPropagation(); toggleChip(this)">Body Painting</span>
-                <span class="sub-chip" data-value="Circo" onclick="event.stopPropagation(); toggleChip(this)">Circus</span>
-                <span class="sub-chip" data-value="Freestyle" onclick="event.stopPropagation(); toggleChip(this)">Freestyle</span>
-                <span class="sub-chip" data-value="Magia" onclick="event.stopPropagation(); toggleChip(this)">Magic</span>
-                <span class="sub-chip" data-value="Malabares" onclick="event.stopPropagation(); toggleChip(this)">Juggling</span>
-                <span class="sub-chip" data-value="Personajes" onclick="event.stopPropagation(); toggleChip(this)">Characters</span>
-                <span class="sub-chip" data-value="Zancudos" onclick="event.stopPropagation(); toggleChip(this)">Stilts</span>
-              </div>
-            </div>
-          </div>
-          <div class="option-card" onclick="toggleOption(this)">
-            <span class="option-icon">&#10024;</span>
-            <span class="option-label">WOW Effect</span>
-            <span class="option-desc">Select your styles</span>
-            <div class="subcategory-panel">
-              <div class="subcategory-chips">
-                <span class="sub-chip" data-value="Acrobacia" onclick="event.stopPropagation(); toggleChip(this)">Acrobatics</span>
-                <span class="sub-chip" data-value="Acuatico" onclick="event.stopPropagation(); toggleChip(this)">Aquatic</span>
-                <span class="sub-chip" data-value="Artesania" onclick="event.stopPropagation(); toggleChip(this)">Crafts</span>
-                <span class="sub-chip" data-value="Body Painting" onclick="event.stopPropagation(); toggleChip(this)">Body Painting</span>
-                <span class="sub-chip" data-value="Gastronomia" onclick="event.stopPropagation(); toggleChip(this)">Gastronomy</span>
-                <span class="sub-chip" data-value="Laser" onclick="event.stopPropagation(); toggleChip(this)">Laser</span>
-                <span class="sub-chip" data-value="LED" onclick="event.stopPropagation(); toggleChip(this)">LED</span>
-                <span class="sub-chip" data-value="Light" onclick="event.stopPropagation(); toggleChip(this)">Light</span>
-                <span class="sub-chip" data-value="Mapping" onclick="event.stopPropagation(); toggleChip(this)">Mapping</span>
-                <span class="sub-chip" data-value="Percusion LED" onclick="event.stopPropagation(); toggleChip(this)">LED Percussion</span>
-                <span class="sub-chip" data-value="Pintura" onclick="event.stopPropagation(); toggleChip(this)">Painting</span>
-                <span class="sub-chip" data-value="Tecnologia" onclick="event.stopPropagation(); toggleChip(this)">Tech</span>
-                <span class="sub-chip" data-value="Urbano" onclick="event.stopPropagation(); toggleChip(this)">Urban</span>
-                <span class="sub-chip" data-value="Zancudos" onclick="event.stopPropagation(); toggleChip(this)">Stilts</span>
-              </div>
-            </div>
-          </div>
-          <div class="option-card" onclick="toggleOption(this)">
-            <span class="option-icon">&#127917;</span>
-            <span class="option-label">Other</span>
-            <span class="option-desc">Any other discipline or event service</span>
           </div>
         </div>
 
@@ -881,11 +1020,11 @@
         <div id="artista-fields">
           <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; margin-top: 24px;">Show format</label>
           <div class="option-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
-            <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 20px 16px;">
+            <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
               <span class="option-icon">&#127917;</span>
               <span class="option-label">Stage show</span>
             </div>
-            <div class="option-card" onclick="selectOption(this, 'show-format')" style="padding: 20px 16px;">
+            <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
               <span class="option-icon">&#128694;</span>
               <span class="option-label">Strolling</span>
             </div>
@@ -1020,15 +1159,21 @@
           </div>
           <div class="form-group" id="duracion-group">
             <label>Show duration</label>
-            <select id="a-duracion">
-              <option value="" disabled selected>Select</option>
-              <option>15-20 minutes</option>
-              <option>30 minutes</option>
-              <option>45 minutes</option>
-              <option>1 hour</option>
-              <option>More than 1 hour</option>
-              <option>Flexible / to be agreed</option>
-            </select>
+            <div class="eb-select" id="sel-duracion">
+              <div class="eb-select-control" onclick="toggleEbSelect('sel-duracion', event)">
+                <span class="eb-select-value placeholder" id="sel-duracion-value">Select</span>
+                <span class="eb-select-caret">&#9662;</span>
+              </div>
+              <div class="eb-select-panel">
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', '15-20 minutes', this)">15-20 minutes</div>
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', '30 minutes', this)">30 minutes</div>
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', '45 minutes', this)">45 minutes</div>
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', '1 hour', this)">1 hour</div>
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', 'More than 1 hour', this)">More than 1 hour</div>
+                <div class="eb-select-option" onclick="setEbSelect('sel-duracion', 'Flexible / to be agreed', this)">Flexible / to be agreed</div>
+              </div>
+            </div>
+            <input type="hidden" id="a-duracion" value="">
           </div>
         </div>
 
@@ -1168,28 +1313,28 @@
           }
         }
 
-        // Step 2: Disciplines — click matching option cards
-        if (data.disciplinas && data.disciplinas.length > 0) {
-          document.querySelectorAll('#step-2 .option-grid:first-of-type .option-card').forEach(card => {
+        // Step 2: Disciplines — preselect chips in the multiselect (artista)
+        //                       or option-cards (proveedor)
+        const cats = (data.disciplinas || []).filter(d => d !== 'Proveedores');
+        const subs = data.subcategorias || [];
+        if (data.profileType === 'proveedor' || data.disciplinas?.includes('Proveedores')) {
+          document.querySelectorAll('#cats-proveedor .option-card').forEach(card => {
             const label = card.querySelector('.option-label')?.textContent;
-            if (data.disciplinas.includes(label)) {
-              card.classList.add('selected');
-              // Activate matching subcategory chips
-              if (data.subcategorias && data.subcategorias.length > 0) {
-                card.querySelectorAll('.sub-chip').forEach(chip => {
-                  const v = chip.dataset.value || chip.textContent;
-                  if (data.subcategorias.includes(v)) {
-                    chip.classList.add('active');
-                  }
-                });
-              }
+            if (cats.includes(label)) card.classList.add('selected');
+          });
+        } else if (cats.length > 0) {
+          document.querySelectorAll('#ms-disciplina .eb-chip-option').forEach(chip => {
+            if (cats.includes(chip.dataset.cat) &&
+                (subs.includes(chip.dataset.val) || chip.dataset.val === chip.dataset.cat)) {
+              chip.classList.add('active');
             }
           });
+          updateMsPills('ms-disciplina');
         }
 
         // Show format
         if (data.formatoShow) {
-          document.querySelectorAll('#step-2 .option-grid:nth-of-type(2) .option-card').forEach(card => {
+          document.querySelectorAll('#artista-fields .option-grid:first-of-type .option-card').forEach(card => {
             if (card.querySelector('.option-label')?.textContent === data.formatoShow) {
               card.classList.add('selected');
             }
@@ -1201,7 +1346,7 @@
 
         // What makes show unique
         if (data.showUnico && data.showUnico.length > 0) {
-          document.querySelectorAll('#step-2 .option-grid:last-of-type .option-card').forEach(card => {
+          document.querySelectorAll('#artista-fields .option-grid:last-of-type .option-card').forEach(card => {
             const label = card.querySelector('.option-label')?.textContent;
             if (data.showUnico.includes(label)) card.classList.add('selected');
           });
@@ -1235,7 +1380,14 @@
           });
         }
         if (data.numArtistas) document.getElementById('a-num-artistas').value = data.numArtistas;
-        if (data.duracionShow) document.getElementById('a-duracion').value = data.duracionShow;
+        if (data.duracionShow) {
+          document.getElementById('a-duracion').value = data.duracionShow;
+          const valueEl = document.getElementById('sel-duracion-value');
+          if (valueEl) {
+            valueEl.textContent = data.duracionShow;
+            valueEl.classList.remove('placeholder');
+          }
+        }
         if (data.aceptoPrivacidad) document.getElementById('privacy-check').checked = true;
         if (data.aceptoVisibilidad) document.getElementById('visibility-check').checked = true;
 
@@ -1271,6 +1423,21 @@
         // Step 1 already collected via mini-form on /unete-al-equipo/. Jump straight to step 2.
         goToStep(2);
       }
+
+      // ?genero=Music → auto-open the multiselect on the matching section
+      const genero = params.get('genero');
+      if (genero) {
+        setTimeout(() => {
+          const ms = document.getElementById('ms-disciplina');
+          if (!ms || ms.style.display === 'none') return;
+          const target = ms.querySelector(`.eb-select-section[data-cat="${genero}"]`);
+          if (target) {
+            ms.classList.add('open');
+            target.classList.add('highlight');
+            target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }, 200);
+      }
     })();
 
     function validateAndGo(from, to) {
@@ -1293,14 +1460,16 @@
       }
 
       if (from === 2) {
-        const gridId = profileType === 'proveedor' ? '#cats-proveedor' : '#cats-artista';
-        const selected = document.querySelectorAll(`${gridId} .option-card.selected`);
-        if (selected.length === 0) {
-          const grid = document.querySelector(gridId);
+        const isProv = profileType === 'proveedor';
+        const selectedCount = isProv
+          ? document.querySelectorAll('#cats-proveedor .option-card.selected').length
+          : document.querySelectorAll('#ms-disciplina .eb-chip-option.active').length;
+        if (selectedCount === 0) {
+          const target = isProv ? document.querySelector('#cats-proveedor') : document.querySelector('#ms-disciplina');
           const msg = document.createElement('div');
           msg.className = 'field-error';
-          msg.textContent = profileType === 'proveedor' ? 'Select at least one service' : 'Select at least one category';
-          grid.parentElement.insertBefore(msg, grid.nextSibling);
+          msg.textContent = isProv ? 'Select at least one service' : 'Select at least one style';
+          target.parentElement.insertBefore(msg, target.nextSibling);
           errors.push({});
         }
       }
@@ -1362,6 +1531,64 @@
     function toggleChip(el) {
       el.classList.toggle('active');
     }
+
+    /* === Custom dropdown helpers === */
+    function toggleEbSelect(id, e) {
+      if (e) e.stopPropagation();
+      document.querySelectorAll('.eb-select.open').forEach(s => {
+        if (s.id !== id) s.classList.remove('open');
+      });
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function setEbSelect(id, value, optionEl) {
+      const valueEl = document.getElementById(id + '-value');
+      valueEl.textContent = value;
+      valueEl.classList.remove('placeholder');
+      const hidden = document.getElementById('a-' + id.replace(/^sel-/, ''));
+      if (hidden) hidden.value = value;
+      const panel = optionEl.parentElement;
+      panel.querySelectorAll('.eb-select-option.active').forEach(o => o.classList.remove('active'));
+      optionEl.classList.add('active');
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function toggleMsChip(chip, msId) {
+      chip.classList.toggle('active');
+      updateMsPills(msId);
+    }
+
+    function updateMsPills(msId) {
+      const ms = document.getElementById(msId);
+      const pillsContainer = document.getElementById(msId + '-pills');
+      const placeholder = document.getElementById(msId + '-placeholder');
+      const activeChips = ms.querySelectorAll('.eb-chip-option.active');
+      pillsContainer.innerHTML = '';
+      if (activeChips.length === 0) {
+        if (placeholder) placeholder.style.display = '';
+        return;
+      }
+      if (placeholder) placeholder.style.display = 'none';
+      activeChips.forEach(chip => {
+        const pill = document.createElement('span');
+        pill.className = 'eb-select-pill';
+        pill.textContent = (chip.dataset.cat ? chip.dataset.cat + ' · ' : '') + chip.dataset.val;
+        const x = document.createElement('span');
+        x.className = 'eb-select-pill-x';
+        x.textContent = '×';
+        x.onclick = function(ev) {
+          ev.stopPropagation();
+          chip.classList.remove('active');
+          updateMsPills(msId);
+        };
+        pill.appendChild(x);
+        pillsContainer.appendChild(pill);
+      });
+    }
+
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.eb-select.open').forEach(s => s.classList.remove('open'));
+    });
 
     let showCount = 0;
     function addAnotherShow() {
@@ -1447,20 +1674,23 @@
 
       // Collect disciplines/services and subcategories from step 2
       const isProveedor = profileType === 'proveedor';
-      const activeGrid = isProveedor ? '#cats-proveedor' : '#cats-artista';
-      const disciplinas = [];
+      const disciplinasSet = new Set();
       const subcategorias = [];
-      document.querySelectorAll(`${activeGrid} .option-card.selected`).forEach(card => {
-        const label = card.querySelector('.option-label')?.textContent;
-        if (label) disciplinas.push(label);
-        card.querySelectorAll('.sub-chip.active').forEach(chip => {
-          subcategorias.push(chip.dataset.value || chip.textContent);
+      if (isProveedor) {
+        document.querySelectorAll('#cats-proveedor .option-card.selected').forEach(card => {
+          const label = card.querySelector('.option-label')?.textContent;
+          if (label) disciplinasSet.add(label);
         });
-      });
-      // For proveedor, add 'Proveedores' as wrapper discipline for API tag mapping
-      if (isProveedor && !disciplinas.includes('Proveedores')) {
-        disciplinas.unshift('Proveedores');
+        disciplinasSet.add('Proveedores');
+      } else {
+        document.querySelectorAll('#ms-disciplina .eb-chip-option.active').forEach(chip => {
+          if (chip.dataset.cat) disciplinasSet.add(chip.dataset.cat);
+          if (chip.dataset.val && chip.dataset.val !== chip.dataset.cat) {
+            subcategorias.push(chip.dataset.val);
+          }
+        });
       }
+      const disciplinas = Array.from(disciplinasSet);
 
       // Show format (stage / strolling) — only for artistas
       const formatoShow = !isProveedor
