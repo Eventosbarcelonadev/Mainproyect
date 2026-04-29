@@ -551,6 +551,52 @@
       font-weight: 500;
     }
 
+    /* === ARTIST SWITCH BANNER === */
+    .artist-switch {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--accent-light);
+      border: 1.5px solid #f3c4d4;
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+    .artist-switch-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .artist-switch-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .artist-switch-text strong { color: var(--dark); }
+    .artist-switch-btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .artist-switch-btn:hover { background: #aa2855; }
+    @media (max-width: 640px) {
+      .artist-switch {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px;
+      }
+      .artist-switch-btn { width: 100%; }
+    }
+
     /* === RESPONSIVE === */
     @media (max-width: 768px) {
       .nav { padding: 14px 20px; }
@@ -674,6 +720,16 @@
             </div>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company website <span style="font-weight: 400; color: var(--gray);">(optional)</span></label>
+            <input type="url" id="f-web" placeholder="https://yourcompany.com">
+          </div>
+          <div class="form-group">
+            <label>Job title / role <span style="font-weight: 400; color: var(--gray);">(optional)</span></label>
+            <input type="text" id="f-cargo" placeholder="E.g. Marketing Director, CEO, Event Manager">
+          </div>
+        </div>
 
         <div class="form-actions">
           <div></div>
@@ -685,6 +741,15 @@
       <div class="step" id="step-2">
         <h2 class="step-title">What type of event are you organizing?</h2>
         <p class="step-subtitle">Select the one that best describes your event.</p>
+
+        <div class="artist-switch">
+          <div class="artist-switch-icon">&#127913;</div>
+          <div class="artist-switch-text">
+            <strong>Are you an artist, group or company?</strong><br>
+            This form is for booking shows. If you want to join our roster, switch to the artists form.
+          </div>
+          <button type="button" class="artist-switch-btn" onclick="switchToArtista()">I'm an artist &rarr;</button>
+        </div>
 
         <div class="option-grid">
           <div class="option-card" onclick="selectOption(this, 'event-type')">
@@ -995,7 +1060,9 @@
           nombre: document.getElementById('f-nombre')?.value || '',
           empresa: document.getElementById('f-empresa')?.value || '',
           email: document.getElementById('f-email')?.value || '',
-          telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || '')
+          telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
+          webEmpresa: document.getElementById('f-web')?.value || '',
+          cargo: document.getElementById('f-cargo')?.value || ''
         };
         fetch('/api/lead-cliente', {
           method: 'POST',
@@ -1031,6 +1098,21 @@
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchToArtista() {
+      const params = new URLSearchParams();
+      const nombre = document.getElementById('f-nombre')?.value?.trim() || '';
+      const email = document.getElementById('f-email')?.value?.trim() || '';
+      const phone = document.getElementById('f-phone')?.value?.trim() || '';
+      const prefix = document.getElementById('f-prefix')?.value || '+34';
+      if (nombre) params.set('nombre', nombre);
+      if (email) params.set('email', email);
+      if (phone) params.set('telefono', prefix + phone);
+      params.set('from', 'cliente_form');
+      params.set('lang', 'en');
+      const qs = params.toString();
+      window.location.href = '/formulario-artistas-en.html' + (qs ? '?' + qs : '');
     }
 
     function selectOption(el, group) {
@@ -1078,6 +1160,8 @@
         empresa: document.getElementById('f-empresa')?.value || '',
         email: document.getElementById('f-email')?.value || '',
         telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
+        webEmpresa: document.getElementById('f-web')?.value || '',
+        cargo: document.getElementById('f-cargo')?.value || '',
         tipoEvento,
         formatoShow,
         categorias,
@@ -1125,6 +1209,8 @@
         if (params.get('empresa')) document.getElementById('f-empresa').value = params.get('empresa');
         if (params.get('email')) document.getElementById('f-email').value = params.get('email');
         if (params.get('telefono')) document.getElementById('f-phone').value = params.get('telefono');
+        if (params.get('web')) document.getElementById('f-web').value = params.get('web');
+        if (params.get('cargo')) document.getElementById('f-cargo').value = params.get('cargo');
         goToStep(2);
       }
     })();

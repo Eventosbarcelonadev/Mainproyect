@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   const LOC = process.env.GHL_LOCATION_ID;
   const PIPELINE = process.env.GHL_PIPELINE_ARTISTAS;
   const STAGE = process.env.GHL_STAGE_SOLICITUD_RECIBIDA;
+  const PIPELINE_CLIENTES = process.env.GHL_PIPELINE_CLIENTES;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
   const HEADERS = {
@@ -30,7 +31,8 @@ export default async function handler(req, res) {
     const tipoContacto = hasProveedor ? 'Proveedor' : 'Artista';
 
     // Build tags (Ramiro v2 2026-04-17)
-    const tags = ['follow_up', 'origen_form', `lang:${lang}`];
+    const tags = ['follow_up', 'origen_form'];
+    if (lang === 'en') tags.push('lang:en');
 
     // Build resumen_ia from form data
     const resumenIa = [
@@ -81,6 +83,41 @@ export default async function handler(req, res) {
 
     const contactId = contactData.contact.id;
 
+    // 1b. Pivot from Cliente pipeline if this contact came from the cliente form
+    //     (partial submit creates them as Cliente with info_incompleta tag).
+    //     Mark any open Clientes opportunity as lost and clean up cliente-only tags.
+    if (PIPELINE_CLIENTES) {
+      try {
+        const oppSearchRes = await fetch(
+          `${API}/opportunities/search?location_id=${LOC}&contact_id=${contactId}&pipeline_id=${PIPELINE_CLIENTES}&status=open`,
+          { method: 'GET', headers: HEADERS }
+        );
+        const oppSearchData = await oppSearchRes.json();
+        const openClienteOpps = oppSearchData.opportunities || [];
+
+        for (const opp of openClienteOpps) {
+          await fetch(`${API}/opportunities/${opp.id}`, {
+            method: 'PUT',
+            headers: HEADERS,
+            body: JSON.stringify({
+              status: 'lost',
+              name: `${opp.name || 'Lead'} — Cambió a artista`
+            })
+          });
+        }
+
+        if (openClienteOpps.length > 0) {
+          await fetch(`${API}/contacts/${contactId}/tags`, {
+            method: 'DELETE',
+            headers: HEADERS,
+            body: JSON.stringify({ tags: ['info_incompleta', 'info_completa'] })
+          });
+        }
+      } catch (pivotErr) {
+        console.error('Cliente→Artista pivot error:', pivotErr.message);
+      }
+    }
+
     // 2. Create opportunity in Artistas pipeline (only for NEW submissions, not updates)
     let oppId = null;
     if (!isUpdate) {
@@ -93,7 +130,7 @@ export default async function handler(req, res) {
         status: 'open',
         monetaryValue: 0,
         customFields: [
-          { key: 'resumen_ia', field_value: resumenIa }
+          { key: 'resumen_ia_opo', field_value: resumenIa }
         ]
       };
 
@@ -149,7 +186,6 @@ export default async function handler(req, res) {
 
     // 4. Upsert to Supabase (always — creates or updates by email)
     let supabaseToken = data._token || null;
-    let artistaId = null;
     if (SUPABASE_URL && SUPABASE_KEY) {
       try {
         const supabaseRow = {
@@ -195,74 +231,11 @@ export default async function handler(req, res) {
           }
         );
         const sbData = await sbRes.json();
-        if (Array.isArray(sbData) && sbData[0]) {
-          if (sbData[0].token) supabaseToken = sbData[0].token;
-          if (sbData[0].id) artistaId = sbData[0].id;
+        if (Array.isArray(sbData) && sbData[0]?.token) {
+          supabaseToken = sbData[0].token;
         }
       } catch (sbErr) {
         console.error('Supabase sync error:', sbErr.message);
-      }
-    }
-
-    // 5. If the form supplied one or more shows, register them as pending_review
-    //    rows linked to the artist. Requires migration 20260424_shows_artista_fk
-    //    to have run — otherwise the insert fails on the new columns and we
-    //    just log it. The artist record is already saved, so this is non-fatal.
-    const createdShows = [];
-    if (SUPABASE_URL && SUPABASE_KEY && artistaId && Array.isArray(data.shows) && data.shows.length) {
-      for (const show of data.shows) {
-        if (!show || !show.name) continue;
-        const slugBase = String(show.name).toLowerCase()
-          .normalize('NFD').replace(/[̀-ͯ]/g, '')
-          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'show';
-        const slug = `${slugBase}-${Math.random().toString(36).slice(2, 8)}`;
-
-        const showRow = {
-          id: slug,
-          name: show.name || '',
-          category: show.category || '',
-          subcategory: show.subcategory || '',
-          description: show.description || '',
-          base_price: parseInt(show.price || show.basePrice) || 0,
-          price_note: show.priceNote || '',
-          video_url: show.videoUrl || '',
-          image_url: show.imageUrl || '',
-          source: 'artist-form',
-          active: true,
-          artista_id: artistaId,
-          status: 'pending_review',
-          submitted_at: new Date().toISOString()
-        };
-
-        try {
-          const shRes = await fetch(`${SUPABASE_URL}/rest/v1/shows`, {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_KEY,
-              'Authorization': `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify(showRow)
-          });
-          if (shRes.ok) {
-            createdShows.push(slug);
-            // Tag the GHL contact so Xavi can filter by the shows they submitted
-            try {
-              await fetch(`${API}/contacts/${contactId}/tags`, {
-                method: 'POST',
-                headers: HEADERS,
-                body: JSON.stringify({ tags: [`show:${slug}`] })
-              });
-            } catch (tagErr) {
-              console.error('GHL show tag error:', tagErr.message);
-            }
-          } else {
-            console.warn(`Show ${slug} insert ${shRes.status}: ${await shRes.text()}`);
-          }
-        } catch (e) {
-          console.error('Show create error:', e.message);
-        }
       }
     }
 
@@ -272,8 +245,6 @@ export default async function handler(req, res) {
       opportunityId: oppId,
       holdedId: holdedId,
       supabaseToken: supabaseToken,
-      artistaId: artistaId,
-      createdShows: createdShows,
       updated: isUpdate
     });
 

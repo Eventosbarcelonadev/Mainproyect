@@ -28,7 +28,14 @@ export default async function handler(req, res) {
 
     // Partial submit: lead abandonó el form tras el paso 1 (datos de contacto)
     if (isPartial) {
-      const partialTags = ['follow_up', 'origen_form', 'info_incompleta', `lang:${lang}`];
+      const partialTags = ['follow_up', 'origen_form', 'info_incompleta'];
+      if (lang === 'en') partialTags.push('lang:en');
+
+      const partialResumen = [
+        'Lead incompleto — solo completó datos de contacto',
+        data.cargo ? `Cargo: ${data.cargo}` : '',
+        data.webEmpresa ? `Web: ${data.webEmpresa}` : ''
+      ].filter(Boolean).join(' | ');
 
       const contactBody = {
         locationId: LOC,
@@ -36,12 +43,13 @@ export default async function handler(req, res) {
         email: data.email || '',
         phone: data.telefono || '',
         companyName: data.empresa || '',
+        website: data.webEmpresa || '',
         tags: partialTags,
         customFields: [
           { key: 'tipo', field_value: 'Cliente' },
           { key: 'origen', field_value: 'Form' },
           { key: 'idioma', field_value: lang },
-          { key: 'resumen_ia', field_value: 'Lead incompleto — solo completó datos de contacto' }
+          { key: 'resumen_ia', field_value: partialResumen }
         ]
       };
 
@@ -70,7 +78,7 @@ export default async function handler(req, res) {
           status: 'open',
           monetaryValue: 0,
           customFields: [
-            { key: 'resumen_ia', field_value: 'Lead abandonó el formulario tras completar datos de contacto' }
+            { key: 'resumen_ia_opo', field_value: 'Lead abandonó el formulario tras completar datos de contacto' }
           ]
         };
 
@@ -92,10 +100,13 @@ export default async function handler(req, res) {
     }
 
     // Build tags (Ramiro v2 2026-04-17)
-    const tags = ['follow_up', 'origen_form', 'info_completa', `lang:${lang}`];
+    const tags = ['follow_up', 'origen_form', 'info_completa'];
+    if (lang === 'en') tags.push('lang:en');
 
     // Build resumen_ia from form data
     const resumenIa = [
+      data.cargo ? `Cargo: ${data.cargo}` : '',
+      data.webEmpresa ? `Web: ${data.webEmpresa}` : '',
       data.tipoEvento ? `Tipo evento: ${data.tipoEvento}` : '',
       data.formatoShow ? `Entretenimiento: ${data.formatoShow}` : '',
       data.categorias?.length ? `Categorías: ${data.categorias.join(', ')}` : '',
@@ -116,6 +127,7 @@ export default async function handler(req, res) {
       email: data.email || '',
       phone: data.telefono || '',
       companyName: data.empresa || '',
+      website: data.webEmpresa || '',
       tags: tags,
       customFields: [
         { key: 'tipo', field_value: 'Cliente' },
@@ -232,7 +244,7 @@ export default async function handler(req, res) {
       status: 'open',
       monetaryValue: 0,
       customFields: [
-        { key: 'resumen_ia', field_value: resumenOpo }
+        { key: 'resumen_ia_opo', field_value: resumenOpo }
       ]
     };
 
@@ -256,6 +268,8 @@ export default async function handler(req, res) {
         type: 'client',
         tags: tags,
         notes: [
+          data.cargo ? `Cargo: ${data.cargo}` : '',
+          data.webEmpresa ? `Web: ${data.webEmpresa}` : '',
           data.tipoEvento ? `Evento: ${data.tipoEvento}` : '',
           data.formatoShow ? `Formato: ${data.formatoShow}` : '',
           data.categorias?.length ? `Categorías: ${data.categorias.join(', ')}` : '',
@@ -268,7 +282,8 @@ export default async function handler(req, res) {
         contactPersons: data.nombre ? [{
           name: data.nombre,
           email: data.email || '',
-          phone: data.telefono || ''
+          phone: data.telefono || '',
+          jobTitle: data.cargo || ''
         }] : []
       };
 
