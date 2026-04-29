@@ -1320,6 +1320,35 @@
       }
     })();
 
+    // Prefill step 1 from URL params (sent by mini-form on /unete-al-equipo/) and skip step 1 if requested
+    (function checkPrefillAndSkip() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('token')) return; // checkUpdateMode handles this case
+
+      const setVal = (id, val) => { if (val) document.getElementById(id).value = val; };
+      setVal('a-nombre', params.get('nombre'));
+      setVal('a-compania', params.get('empresa'));
+      setVal('a-email', params.get('email'));
+      setVal('a-ciudad', params.get('ciudad'));
+
+      const tel = params.get('telefono');
+      if (tel) {
+        const prefixes = ['+351', '+34', '+33', '+44', '+49', '+39', '+31', '+32', '+41', '+1'];
+        const matched = prefixes.find(p => tel.startsWith(p));
+        if (matched) {
+          document.getElementById('a-prefix').value = matched;
+          document.getElementById('a-phone').value = tel.slice(matched.length).trim();
+        } else {
+          document.getElementById('a-phone').value = tel;
+        }
+      }
+
+      if (params.get('skip') === '1') {
+        // Step 1 ya capturado en mini-form de /unete-al-equipo/. Saltar al step 2.
+        goToStep(2);
+      }
+    })();
+
     function validateAndGo(from, to) {
       // Clear previous errors
       document.querySelectorAll('.field-error').forEach(el => el.remove());
