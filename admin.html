@@ -1532,6 +1532,16 @@
     }
 
     window.addEventListener('hashchange', applyHash);
+
+    // Deep link from GHL: ?artista=<uuid> abre la ficha del artista directamente.
+    // Se reescribe a la ruta de hash existente para reusar el router.
+    {
+      const __qsArtista = new URLSearchParams(location.search).get('artista');
+      if (__qsArtista) {
+        history.replaceState(null, '', location.pathname + '#artistas/' + encodeURIComponent(__qsArtista));
+      }
+    }
+
     applyHash();
   </script>
 </body>

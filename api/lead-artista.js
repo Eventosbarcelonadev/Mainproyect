@@ -12,12 +12,21 @@ export default async function handler(req, res) {
   const PIPELINE = process.env.GHL_PIPELINE_ARTISTAS;
   const STAGE = process.env.GHL_STAGE_SOLICITUD_RECIBIDA;
   const PIPELINE_CLIENTES = process.env.GHL_PIPELINE_CLIENTES;
+  const WORKFLOW_NOTIFY = process.env.GHL_WORKFLOW_NOTIFY_EXISTING_LEAD;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+  const SITE_URL = process.env.SITE_URL || 'https://eventos-barcelona.vercel.app';
   const HEADERS = {
     'Authorization': `Bearer ${TOKEN}`,
     'Version': '2021-07-28',
     'Content-Type': 'application/json'
+  };
+
+  const triggerNotifyXavi = async (contactId) => {
+    if (!WORKFLOW_NOTIFY || !contactId) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/workflow/${WORKFLOW_NOTIFY}`, { method: 'POST', headers: HEADERS });
+    } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
   try {
@@ -30,9 +39,7 @@ export default async function handler(req, res) {
     const hasProveedor = disciplinas.includes('Proveedores');
     const tipoContacto = hasProveedor ? 'Proveedor' : 'Artista';
 
-    // Build tags (Ramiro v2 2026-04-17)
-    const tags = ['follow_up', 'origen_form'];
-    if (lang === 'en') tags.push('lang:en');
+    const tags = isUpdate ? [] : ['new_lead'];
 
     // Build resumen_ia from form data
     const resumenIa = [
@@ -48,10 +55,9 @@ export default async function handler(req, res) {
       data.bioShow ? `Bio: ${data.bioShow}` : ''
     ].filter(Boolean).join(' | ');
 
-    // Build Supabase URL for the artist
-    const supabaseUrl = SUPABASE_URL ? `${SUPABASE_URL}/rest/v1/artistas?email=eq.${encodeURIComponent(data.email || '')}` : '';
-
     // 1. Create/update contact
+    //    url_supabase no se setea aquí — se actualiza con PUT tras conocer el uuid del artista en Supabase
+    //    para que apunte al panel admin (`/admin.html?artista=<uuid>`), no a la API REST cruda.
     const contactBody = {
       locationId: LOC,
       firstName: data.nombre || '',
@@ -60,11 +66,9 @@ export default async function handler(req, res) {
       city: data.ciudad || '',
       tags: tags,
       customFields: [
-        { key: 'tipo', field_value: tipoContacto },
         { key: 'origen', field_value: 'Form' },
         { key: 'idioma', field_value: lang },
         { key: 'resumen_ia', field_value: resumenIa },
-        { key: 'url_supabase', field_value: supabaseUrl },
         { key: 'acepto_privacidad', field_value: data.aceptoPrivacidad ? 'Si' : 'No' },
         { key: 'acepto_visibilidad', field_value: data.aceptoVisibilidad ? 'Si' : 'No' }
       ]
@@ -82,6 +86,11 @@ export default async function handler(req, res) {
     }
 
     const contactId = contactData.contact.id;
+    const isExistingContact = !(contactData.new === true || contactData.isNew === true);
+
+    // Spec: si form normal + contacto ya existía, notificar a Xavi (workflow GHL).
+    // No notificar cuando es auto-update del artista actualizando su propio perfil (isUpdate)
+    if (isExistingContact && !isUpdate) await triggerNotifyXavi(contactId);
 
     // 1b. Pivot from Cliente pipeline if this contact came from the cliente form
     //     (partial submit creates them as Cliente with info_incompleta tag).
@@ -106,11 +115,12 @@ export default async function handler(req, res) {
           });
         }
 
+        // Limpieza pasiva: borrar tags rogue legacy si existen tras pivote cliente→artista
         if (openClienteOpps.length > 0) {
           await fetch(`${API}/contacts/${contactId}/tags`, {
             method: 'DELETE',
             headers: HEADERS,
-            body: JSON.stringify({ tags: ['info_incompleta', 'info_completa'] })
+            body: JSON.stringify({ tags: ['info_incompleta', 'info_completa', 'origen_form', 'tipo:cliente'] })
           });
         }
       } catch (pivotErr) {
@@ -152,7 +162,7 @@ export default async function handler(req, res) {
           email: data.email || '',
           phone: data.telefono || '',
           type: 'supplier',
-          tags: tags,
+          tags: [],
           notes: [
             data.disciplinas?.length ? `Disciplinas: ${data.disciplinas.join(', ')}` : '',
             data.subcategorias?.length ? `Subcategorías: ${data.subcategorias.join(', ')}` : '',
@@ -186,6 +196,7 @@ export default async function handler(req, res) {
 
     // 4. Upsert to Supabase (always — creates or updates by email)
     let supabaseToken = data._token || null;
+    let artistaId = null;
     if (SUPABASE_URL && SUPABASE_KEY) {
       try {
         const supabaseRow = {
@@ -231,11 +242,30 @@ export default async function handler(req, res) {
           }
         );
         const sbData = await sbRes.json();
-        if (Array.isArray(sbData) && sbData[0]?.token) {
-          supabaseToken = sbData[0].token;
+        if (Array.isArray(sbData) && sbData[0]) {
+          if (sbData[0].token) supabaseToken = sbData[0].token;
+          if (sbData[0].id) artistaId = sbData[0].id;
         }
       } catch (sbErr) {
         console.error('Supabase sync error:', sbErr.message);
+      }
+    }
+
+    // 5. Update GHL contact with admin panel URL pointing to the artista in Supabase.
+    //    Esta URL se usa desde el contacto en GHL para abrir la ficha del artista en /admin.
+    if (artistaId) {
+      try {
+        await fetch(`${API}/contacts/${contactId}`, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({
+            customFields: [
+              { key: 'url_supabase', field_value: `${SITE_URL}/admin.html?artista=${artistaId}` }
+            ]
+          })
+        });
+      } catch (urlErr) {
+        console.error('GHL url_supabase update error:', urlErr.message);
       }
     }
 
@@ -245,6 +275,7 @@ export default async function handler(req, res) {
       opportunityId: oppId,
       holdedId: holdedId,
       supabaseToken: supabaseToken,
+      artistaId: artistaId,
       updated: isUpdate
     });
 
