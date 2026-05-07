@@ -45,22 +45,83 @@ const HEADERS = {
 };
 
 async function fetchAllContacts() {
-  const all = [];
-  let page = 1;
-  const pageSize = 100;
+  // Junta IDs de dos fuentes:
+  //   1. GHL /contacts/search (visibles al PIT — típicamente solo recientes)
+  //   2. Supabase artistas.ghl_contact_id (todos los artistas/proveedores con vínculo)
+  // El PIT puede operar por id en contactos no visibles via search, así que esta
+  // unión cubre el universo real.
+  const ids = new Map(); // id → contacto (con tags)
+
+  // Fuente 1: GHL search
+  const pageLimit = 100;
+  let searchAfter = null;
   while (true) {
-    const url = `${API}/contacts/?locationId=${LOC}&limit=${pageSize}&page=${page}`;
-    const r = await fetch(url, { headers: HEADERS });
-    if (!r.ok) throw new Error(`Fetch contacts ${r.status}: ${await r.text()}`);
+    const body = { locationId: LOC, pageLimit };
+    if (searchAfter) body.searchAfter = searchAfter;
+    const r = await fetch(`${API}/contacts/search`, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(`POST /contacts/search ${r.status}: ${(await r.text()).slice(0, 200)}`);
     const d = await r.json();
     const batch = d.contacts || [];
-    all.push(...batch);
-    process.stdout.write(`  página ${page}: ${batch.length} contactos (total ${all.length})\r`);
-    if (batch.length < pageSize) break;
-    page++;
+    for (const c of batch) ids.set(c.id, c);
+    if (batch.length < pageLimit) break;
+    const last = batch[batch.length - 1];
+    const ts = last.dateAdded ? new Date(last.dateAdded).getTime() : null;
+    if (!ts || !last.id) break;
+    searchAfter = [ts, last.id];
   }
-  console.log('');
-  return all;
+  console.log(`  GHL search: ${ids.size} contactos`);
+
+  // Fuente 2: Supabase artistas — completar IDs faltantes con GET /contacts/{id}
+  const SB_URL = process.env.SUPABASE_URL;
+  const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
+  if (SB_URL && SB_KEY) {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/artistas?select=ghl_contact_id&ghl_contact_id=not.is.null`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+    );
+    if (r.ok) {
+      const rows = await r.json();
+      const missing = rows.map((row) => row.ghl_contact_id).filter((id) => id && !ids.has(id));
+      console.log(`  Supabase artistas: ${rows.length} IDs (${missing.length} no vistos en search)`);
+      // GET por contactId con concurrencia limitada
+      const concurrency = 5;
+      let i = 0;
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const fetchOne = async (id) => {
+        let attempt = 0;
+        while (true) {
+          const r2 = await fetch(`${API}/contacts/${id}`, { headers: HEADERS });
+          if (r2.ok) {
+            const d2 = await r2.json();
+            if (d2.contact) ids.set(id, d2.contact);
+            return;
+          }
+          if (r2.status === 429 && attempt < 5) {
+            await sleep(1000 * Math.pow(2, attempt));
+            attempt++;
+            continue;
+          }
+          if (r2.status === 400 || r2.status === 404) return; // contacto huérfano, skip
+          throw new Error(`GET ${r2.status}`);
+        }
+      };
+      const workers = Array.from({ length: concurrency }, async () => {
+        while (i < missing.length) {
+          const idx = i++;
+          try { await fetchOne(missing[idx]); } catch (e) { /* skip */ }
+          if (idx % 50 === 0) process.stdout.write(`  fetch ${idx}/${missing.length}\r`);
+        }
+      });
+      await Promise.all(workers);
+      console.log(`  total tras unión: ${ids.size} contactos`);
+    }
+  }
+
+  return Array.from(ids.values());
 }
 
 async function delTags(contactId, tags) {
