@@ -1439,6 +1439,7 @@
               <td style="white-space:nowrap;">
                 <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
                 <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
+                ${p.status !== 'approved' ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>` : ''}
               </td>
             </tr>
           `;
@@ -1459,6 +1460,32 @@
             const url = `${location.origin}/propuesta.html?id=${b.dataset.copy}`;
             try { await navigator.clipboard.writeText(url); b.textContent = 'Copiado'; setTimeout(() => b.textContent = 'Copiar URL', 1500); }
             catch { prompt('Copia la URL:', url); }
+          });
+        });
+
+        $('propuestas-table-wrap').querySelectorAll('[data-validate]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm('Validar propuesta? Marca como aprobada en Supabase, setea validacion_propuesta y añade tag proposal en GHL.')) return;
+            const proposalId = b.dataset.validate;
+            b.disabled = true;
+            const original = b.textContent;
+            b.textContent = 'Validando…';
+            try {
+              const r = await fetch('/api/validate-proposal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ proposalId })
+              });
+              const data = await r.json();
+              if (!r.ok || !data.success) throw new Error(data.error || 'Error validando');
+              b.textContent = 'Validado ✓';
+              loadPropuestas();
+            } catch (err) {
+              showError(err.message);
+              b.textContent = original;
+              b.disabled = false;
+            }
           });
         });
       } catch (err) {
