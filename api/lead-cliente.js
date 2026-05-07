@@ -12,6 +12,7 @@ export default async function handler(req, res) {
   const PIPELINE = process.env.GHL_PIPELINE_CLIENTES;
   const STAGE = process.env.GHL_STAGE_NEW_LEAD;
   const STAGE_MISSING = process.env.GHL_STAGE_MISSING_INFO || STAGE;
+  const WORKFLOW_NOTIFY = process.env.GHL_WORKFLOW_NOTIFY_EXISTING_LEAD;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
   const SITE_URL = process.env.SITE_URL || 'https://eventos-barcelona.vercel.app';
@@ -21,6 +22,34 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json'
   };
 
+  const triggerNotifyXavi = async (contactId) => {
+    if (!WORKFLOW_NOTIFY || !contactId) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/workflow/${WORKFLOW_NOTIFY}`, { method: 'POST', headers: HEADERS });
+    } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
+  };
+
+  // Heurística para clasificar leads cliente en High/Mid/Low.
+  // Señales: presupuesto, nº asistentes, dominio email, empresa, cargo decision-maker.
+  // Reemplazable por LLM más adelante si compensa el coste por lead.
+  const computeClienteScore = (data) => {
+    let s = 0;
+    const presupuesto = String(data.presupuesto || '').toLowerCase();
+    if (/100\.?000|200\.?000|500\.?000|millón|millon|\bm\b|\+/.test(presupuesto)) s += 3;
+    else if (/50\.?000|20\.?000-?50|30\.?000|40\.?000/.test(presupuesto)) s += 2;
+    else if (/5\.?000|10\.?000|15\.?000/.test(presupuesto)) s += 1;
+    const asistentes = parseInt(String(data.numAsistentes || '').replace(/[^\d]/g, ''), 10) || 0;
+    if (asistentes >= 500) s += 2;
+    else if (asistentes >= 200) s += 1;
+    const email = String(data.email || '').toLowerCase();
+    if (email && !/@(gmail|yahoo|hotmail|outlook|live|icloud|aol|protonmail)\./.test(email)) s += 1;
+    if (data.empresa) s += 1;
+    if (/director|cmo|ceo|head|chief|gerente|founder|presidente|owner/.test(String(data.cargo || '').toLowerCase())) s += 1;
+    if (s >= 5) return 'High';
+    if (s >= 2) return 'Mid';
+    return 'Low';
+  };
+
   try {
     const data = req.body;
     const isPartial = data.partial === true;
@@ -28,15 +57,6 @@ export default async function handler(req, res) {
 
     // Partial submit: lead abandonó el form tras el paso 1 (datos de contacto)
     if (isPartial) {
-      const partialTags = ['follow_up', 'origen_form', 'info_incompleta'];
-      if (lang === 'en') partialTags.push('lang:en');
-
-      const partialResumen = [
-        'Lead incompleto — solo completó datos de contacto',
-        data.cargo ? `Cargo: ${data.cargo}` : '',
-        data.webEmpresa ? `Web: ${data.webEmpresa}` : ''
-      ].filter(Boolean).join(' | ');
-
       const contactBody = {
         locationId: LOC,
         firstName: data.nombre || '',
@@ -44,12 +64,12 @@ export default async function handler(req, res) {
         phone: data.telefono || '',
         companyName: data.empresa || '',
         website: data.webEmpresa || '',
-        tags: partialTags,
+        tags: ['new_lead'],
         customFields: [
-          { key: 'tipo', field_value: 'Cliente' },
-          { key: 'origen', field_value: 'Form' },
-          { key: 'idioma', field_value: lang },
-          { key: 'resumen_ia', field_value: partialResumen }
+          { key: 'contact_type', field_value: 'Cliente' },
+          { key: 'contact_origen', field_value: 'form' },
+          { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
+          { key: 'contact_score', field_value: 'Low' }
         ]
       };
 
@@ -76,10 +96,7 @@ export default async function handler(req, res) {
           contactId: contactId,
           name: `${data.nombre || 'Lead'} — Info incompleta`,
           status: 'open',
-          monetaryValue: 0,
-          customFields: [
-            { key: 'resumen_ia_opo', field_value: 'Lead abandonó el formulario tras completar datos de contacto' }
-          ]
+          monetaryValue: 0
         };
 
         const oppRes = await fetch(`${API}/opportunities/`, {
@@ -99,26 +116,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Build tags (Ramiro v2 2026-04-17)
-    const tags = ['follow_up', 'origen_form', 'info_completa'];
-    if (lang === 'en') tags.push('lang:en');
-
-    // Build resumen_ia from form data
-    const resumenIa = [
-      data.cargo ? `Cargo: ${data.cargo}` : '',
-      data.webEmpresa ? `Web: ${data.webEmpresa}` : '',
-      data.tipoEvento ? `Tipo evento: ${data.tipoEvento}` : '',
-      data.formatoShow ? `Entretenimiento: ${data.formatoShow}` : '',
-      data.categorias?.length ? `Categorías: ${data.categorias.join(', ')}` : '',
-      data.subcategorias?.length ? `Subcategorías: ${data.subcategorias.join(', ')}` : '',
-      data.fechaEvento ? `Fecha: ${data.fechaEvento}` : '',
-      data.numAsistentes ? `Asistentes: ${data.numAsistentes}` : '',
-      data.ubicacion ? `Ubicación: ${data.ubicacion}` : '',
-      data.presupuesto ? `Presupuesto: ${data.presupuesto}` : '',
-      `Producción técnica: ${data.necesitaProduccion ? 'Sí' : 'No'}`,
-      data.comoNosConocio ? `Cómo nos conoció: ${data.comoNosConocio}` : '',
-      data.comentarios ? `Comentarios: ${data.comentarios}` : ''
-    ].filter(Boolean).join(' | ');
+    const tags = ['new_lead'];
+    const score = computeClienteScore(data);
 
     // 1. Create/update contact
     const contactBody = {
@@ -130,10 +129,10 @@ export default async function handler(req, res) {
       website: data.webEmpresa || '',
       tags: tags,
       customFields: [
-        { key: 'tipo', field_value: 'Cliente' },
-        { key: 'origen', field_value: 'Form' },
-        { key: 'idioma', field_value: lang },
-        { key: 'resumen_ia', field_value: resumenIa },
+        { key: 'contact_type', field_value: 'Cliente' },
+        { key: 'contact_origen', field_value: 'form' },
+        { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
+        { key: 'contact_score', field_value: score },
         { key: 'url_propuesta', field_value: '' }
       ]
     };
@@ -201,26 +200,12 @@ export default async function handler(req, res) {
     }
 
     const contactId = contactData.contact.id;
+    const isExistingContact = !(contactData.new === true || contactData.isNew === true);
 
-    // Remove info_incompleta tag if it was set by a prior partial submit
-    try {
-      await fetch(`${API}/contacts/${contactId}/tags`, {
-        method: 'DELETE',
-        headers: HEADERS,
-        body: JSON.stringify({ tags: ['info_incompleta'] })
-      });
-    } catch (tagErr) {
-      console.error('Remove info_incompleta tag error:', tagErr.message);
-    }
+    // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
+    if (isExistingContact) await triggerNotifyXavi(contactId);
 
-    // 2. Build opportunity summary
-    const resumenOpo = [
-      '📋 Solicitud de presupuesto',
-      resumenIa,
-      proposalUrl ? `Propuesta: ${proposalUrl}` : ''
-    ].filter(Boolean).join('\n');
-
-    // 3. Find existing opportunity for this contact (created by partial submit)
+    // 2. Find existing opportunity for this contact (created by partial submit)
     let existingOppId = null;
     try {
       const searchRes = await fetch(
@@ -242,10 +227,7 @@ export default async function handler(req, res) {
       contactId: contactId,
       name: `${data.nombre || 'Lead'} — ${data.tipoEvento || 'Evento'}`,
       status: 'open',
-      monetaryValue: 0,
-      customFields: [
-        { key: 'resumen_ia_opo', field_value: resumenOpo }
-      ]
+      monetaryValue: 0
     };
 
     const oppRes = await fetch(
@@ -266,7 +248,7 @@ export default async function handler(req, res) {
         email: data.email || '',
         phone: data.telefono || '',
         type: 'client',
-        tags: tags,
+        tags: [],
         notes: [
           data.cargo ? `Cargo: ${data.cargo}` : '',
           data.webEmpresa ? `Web: ${data.webEmpresa}` : '',

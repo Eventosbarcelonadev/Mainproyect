@@ -29,6 +29,25 @@ export default async function handler(req, res) {
     } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
+  // Heurística para clasificar artistas/proveedores en High/Mid/Low por completitud
+  // y profesionalidad del perfil. Reemplazable por LLM más adelante.
+  const computeArtistaScore = (data) => {
+    let s = 0;
+    if (data.nombreArtistico || data.compania) s += 1;
+    if (typeof data.bioShow === 'string' && data.bioShow.length > 100) s += 1;
+    if (data.video1) s += 1;
+    if (data.video2) s += 1;
+    if (data.rangoCache) s += 1;
+    if (data.formatoShow) s += 1;
+    if (data.duracionShow) s += 1;
+    if (Array.isArray(data.fotosUrls) && data.fotosUrls.length >= 2) s += 1;
+    if (data.webRrss) s += 1;
+    if (data.aceptoVisibilidad) s += 1;
+    if (s >= 7) return 'High';
+    if (s >= 4) return 'Mid';
+    return 'Low';
+  };
+
   try {
     const data = req.body;
     const isUpdate = !!data._token; // Form sends _token when pre-filled
@@ -40,24 +59,10 @@ export default async function handler(req, res) {
     const tipoContacto = hasProveedor ? 'Proveedor' : 'Artista';
 
     const tags = isUpdate ? [] : ['new_lead'];
-
-    // Build resumen_ia from form data
-    const resumenIa = [
-      `Categoría: ${tipoContacto}`,
-      disciplinas.length ? `Disciplinas: ${disciplinas.join(', ')}` : '',
-      data.subcategorias?.length ? `Subcategorías: ${data.subcategorias.join(', ')}` : '',
-      data.formatoShow ? `Formato: ${data.formatoShow}` : '',
-      data.nombreArtistico ? `Nombre artístico: ${data.nombreArtistico}` : '',
-      data.compania ? `Compañía: ${data.compania}` : '',
-      data.rangoCache ? `Caché: ${data.rangoCache}` : '',
-      data.numArtistas ? `Nº artistas: ${data.numArtistas}` : '',
-      data.duracionShow ? `Duración: ${data.duracionShow}` : '',
-      data.bioShow ? `Bio: ${data.bioShow}` : ''
-    ].filter(Boolean).join(' | ');
+    const score = computeArtistaScore(data);
 
     // 1. Create/update contact
-    //    url_supabase no se setea aquí — se actualiza con PUT tras conocer el uuid del artista en Supabase
-    //    para que apunte al panel admin (`/admin.html?artista=<uuid>`), no a la API REST cruda.
+    //    url_supabase se setea con PUT tras el upsert a Supabase (apunta al panel /admin).
     const contactBody = {
       locationId: LOC,
       firstName: data.nombre || '',
@@ -66,11 +71,17 @@ export default async function handler(req, res) {
       city: data.ciudad || '',
       tags: tags,
       customFields: [
-        { key: 'origen', field_value: 'Form' },
-        { key: 'idioma', field_value: lang },
-        { key: 'resumen_ia', field_value: resumenIa },
-        { key: 'acepto_privacidad', field_value: data.aceptoPrivacidad ? 'Si' : 'No' },
-        { key: 'acepto_visibilidad', field_value: data.aceptoVisibilidad ? 'Si' : 'No' }
+        { key: 'contact_type', field_value: tipoContacto },
+        { key: 'contact_origen', field_value: 'form' },
+        { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
+        { key: 'contact_score', field_value: score },
+        { key: 'nombre_artista', field_value: data.nombreArtistico || data.compania || '' },
+        { key: 'categoria_artista', field_value: disciplinas.join(', ') },
+        { key: 'subcategoria_artista', field_value: (data.subcategorias || []).join(', ') },
+        { key: 'descripcion_del_espectaculo', field_value: data.bioShow || '' },
+        { key: 'formato_del_show', field_value: data.formatoShow ? [data.formatoShow] : [] },
+        { key: 'acepto_politica_privacidad', field_value: data.aceptoPrivacidad ? 'Sí' : 'No' },
+        { key: 'acepto_visibilidad_web_rrss', field_value: data.aceptoVisibilidad ? 'Sí' : 'No' }
       ]
     };
 
@@ -138,10 +149,7 @@ export default async function handler(req, res) {
         contactId: contactId,
         name: `${data.nombreArtistico || data.compania || data.nombre || tipoContacto} — ${disciplinas.join(', ')}`,
         status: 'open',
-        monetaryValue: 0,
-        customFields: [
-          { key: 'resumen_ia_opo', field_value: resumenIa }
-        ]
+        monetaryValue: 0
       };
 
       const oppRes = await fetch(`${API}/opportunities/`, {

@@ -10,12 +10,19 @@ export default async function handler(req, res) {
   const TOKEN = process.env.GHL_API_KEY;
   const LOC = process.env.GHL_LOCATION_ID;
   const PIPELINE = process.env.GHL_PIPELINE_CLIENTES;
-  const STAGE_NEW = process.env.GHL_STAGE_NEW_LEAD;
-  const STAGE_MISSING = process.env.GHL_STAGE_MISSING_INFO || STAGE_NEW;
+  const STAGE = process.env.GHL_STAGE_NEW_LEAD;
+  const WORKFLOW_NOTIFY = process.env.GHL_WORKFLOW_NOTIFY_EXISTING_LEAD;
   const HEADERS = {
     'Authorization': `Bearer ${TOKEN}`,
     'Version': '2021-07-28',
     'Content-Type': 'application/json'
+  };
+
+  const triggerNotifyXavi = async (contactId) => {
+    if (!WORKFLOW_NOTIFY || !contactId) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/workflow/${WORKFLOW_NOTIFY}`, { method: 'POST', headers: HEADERS });
+    } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
   try {
@@ -134,14 +141,7 @@ export default async function handler(req, res) {
     }
 
     const lang = (raw.lang === 'en') ? 'en' : 'es';
-    // Los forms que vienen por eb-form.js (contacto-web / artista-web) son una
-    // captura inicial: el usuario es redirigido a formulario-inteligente.html
-    // o formulario-artistas.html para completar. Si abandona ahí, queremos que
-    // el opp quede en MISSING_INFO hasta que cierre el formulario largo
-    // (lead-cliente.js / lead-artista.js lo mueven a NEW_LEAD al completar).
-    const isPartialCapture = /^(contacto-web|artista-web)$/i.test(formName);
-    const tags = ['tipo:cliente', 'origen:web-elementor', `form:${formName}`, `lang:${lang}`];
-    if (isPartialCapture) tags.push('info_incompleta');
+    const tags = ['new_lead'];
 
     // 1. Create/update contact in GHL
     const contactBody = {
@@ -153,11 +153,11 @@ export default async function handler(req, res) {
       tags: tags,
       source: `Web Elementor - ${formName}`,
       customFields: [
-        { key: 'idioma', field_value: lang },
-        { key: 'fecha_evento', field_value: fecha },
-        { key: 'comentarios_cliente', field_value: mensaje },
-        { key: 'pagina_origen', field_value: pageUrl }
-      ].filter(f => f.field_value)
+        { key: 'contact_type', field_value: 'Cliente' },
+        { key: 'contact_origen', field_value: 'form' },
+        { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
+        { key: 'contact_score', field_value: 'Low' }
+      ]
     };
 
     const contactRes = await fetch(`${API}/contacts/upsert`, {
@@ -175,16 +175,18 @@ export default async function handler(req, res) {
     }
 
     const contactId = contactData.contact.id;
+    const isExistingContact = !(contactData.new === true || contactData.isNew === true);
 
-    // 2. Create opportunity — MISSING_INFO para capturas parciales, NEW_LEAD para submits full
+    // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
+    if (isExistingContact) await triggerNotifyXavi(contactId);
+
+    // 2. Create opportunity
     const oppBody = {
       locationId: LOC,
       pipelineId: PIPELINE,
-      pipelineStageId: isPartialCapture ? STAGE_MISSING : STAGE_NEW,
+      pipelineStageId: STAGE,
       contactId: contactId,
-      name: isPartialCapture
-        ? `${nombre || 'Lead'} — Info incompleta`
-        : `${nombre || 'Lead'} — ${formName}`,
+      name: `${nombre || 'Lead'} — ${formName}`,
       status: 'open',
       monetaryValue: 0
     };
@@ -203,7 +205,7 @@ export default async function handler(req, res) {
         email: emailValue,
         phone: phoneValue,
         type: 'client',
-        tags: tags,
+        tags: [],
         notes: [
           mensaje ? `Mensaje: ${mensaje}` : '',
           fecha ? `Fecha: ${fecha}` : '',
