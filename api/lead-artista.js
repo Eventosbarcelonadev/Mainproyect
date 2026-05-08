@@ -107,6 +107,19 @@ export default async function handler(req, res) {
     // No notificar cuando es auto-update del artista actualizando su propio perfil (isUpdate)
     if (isExistingContact && !isUpdate) await triggerNotifyXavi(contactId);
 
+    // Lead completó el form-artistas → quitar tag missing_info si lo tenía
+    // (lo había puesto el webhook-elementor cuando llenó el mini-form de
+    // /unete-al-equipo/).
+    if (!isUpdate) {
+      try {
+        await fetch(`${API}/contacts/${contactId}/tags`, {
+          method: 'DELETE',
+          headers: HEADERS,
+          body: JSON.stringify({ tags: ['missing_info'] })
+        });
+      } catch (e) { console.error('Remove missing_info tag error:', e.message); }
+    }
+
     // 1b. Pivot from Cliente pipeline if this contact came from the cliente form
     //     (partial submit creates them as Cliente with info_incompleta tag).
     //     Mark any open Clientes opportunity as lost and clean up cliente-only tags.

@@ -149,7 +149,12 @@ export default async function handler(req, res) {
     const isInscripcion = /unete-al-equipo|join-our-team|inscripcion|artist|proveedor|equipo/i
       .test(`${pageUrl} ${formName}`);
 
-    const tags = isInscripcion ? [] : ['new_lead'];
+    // Tag missing_info: el visitante rellenó el mini-form pero aún no ha
+    // completado el formulario inteligente (cliente) ni el form-artistas.
+    // Permite a Xavi/automation detectar leads incompletos y enviar un
+    // recordatorio. El tag se borra cuando el lead completa el form
+    // (lead-cliente.js o lead-artista.js).
+    const tags = isInscripcion ? ['missing_info'] : ['new_lead', 'missing_info'];
 
     // 1. Create/update contact in GHL
     const contactBody = {

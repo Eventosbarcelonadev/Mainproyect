@@ -14,9 +14,10 @@ function ebSubmit(form){
     (isEn?'&lang=en':'')+
     '&skip=1';
   if(tipo==='artista'||tipo==='proveedor'){
-    // Auto-select del profile en el form completo según data-form-type del mini-form
-    params+='&type='+encodeURIComponent(tipo)+
-            '&genero='+encodeURIComponent(d.genero||'');
+    // No pasamos &type= para que la primera pantalla del form completo sea
+    // siempre el selector artista/proveedor (decisión Phil 2026-05-08).
+    // El data-form-type del mini-form solo se usa para clasificar el webhook.
+    params+='&genero='+encodeURIComponent(d.genero||'');
     fetch(base+'api/webhook-elementor',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
