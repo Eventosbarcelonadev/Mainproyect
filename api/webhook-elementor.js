@@ -146,8 +146,14 @@ export default async function handler(req, res) {
     // de /unete-al-equipo/. En ese caso NO crear opp en pipeline Clientes ni asumir
     // contact_type=Cliente — el form-artistas.html completo creará la opp correcta
     // (Artistas o Proveedores) al terminar.
-    const isInscripcion = /unete-al-equipo|join-our-team|inscripcion|artist|proveedor|equipo/i
-      .test(`${pageUrl} ${formName}`);
+    //
+    // Importante: regex restringida. Antes incluía "artist|proveedor" lo cual
+    // matcheaba falsamente con páginas como /artistas-y-espectaculos/ y dejaba
+    // a clientes legítimos sin contact_type=Cliente. Ahora solo matchea las
+    // páginas de inscripción reales y los form_name explícitos del eb-form.js.
+    const isInscripcion =
+      /unete-al-equipo|join-our-team/i.test(pageUrl) ||
+      /^(artista|proveedor)-web$/i.test(formName);
 
     // Spec Ramiro 2026-05-08: solo 3 tags válidos (new_lead/new_artist/new_supplier).
     // El estado "incompleto" se infiere de que los custom fields del opportunity
