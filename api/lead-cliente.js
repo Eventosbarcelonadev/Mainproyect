@@ -63,12 +63,13 @@ export default async function handler(req, res) {
         phone: data.telefono || '',
         companyName: data.empresa || '',
         website: data.webEmpresa || '',
-        tags: ['new_lead', 'missing_info'],
+        tags: ['new_lead'],
         customFields: [
           { key: 'contact_type', field_value: 'Cliente' },
           { key: 'contact_origen', field_value: 'form' },
           { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
-          { key: 'contact_score', field_value: 'COLD' }
+          { key: 'contact_score', field_value: 'COLD' },
+          ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : [])
         ]
       };
 
@@ -136,7 +137,8 @@ export default async function handler(req, res) {
         { key: 'contact_origen', field_value: 'form' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         { key: 'contact_score', field_value: score },
-        { key: 'url_propuesta', field_value: '' }
+        { key: 'url_propuesta', field_value: '' },
+        ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : [])
       ]
     };
 
@@ -208,15 +210,6 @@ export default async function handler(req, res) {
     // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
     if (isExistingContact) await triggerNotifyXavi(contactId);
 
-    // Lead completó el formulario inteligente → quitar tag missing_info
-    // (lo había puesto un partial submit previo o el webhook-elementor).
-    try {
-      await fetch(`${API}/contacts/${contactId}/tags`, {
-        method: 'DELETE',
-        headers: HEADERS,
-        body: JSON.stringify({ tags: ['missing_info'] })
-      });
-    } catch (e) { console.error('Remove missing_info tag error:', e.message); }
 
     // 2. Find existing open opportunity for this contact (created by partial submit
     //    o reintento). Si existe, actualizar en lugar de crear duplicada.

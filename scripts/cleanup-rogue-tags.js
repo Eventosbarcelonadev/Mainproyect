@@ -2,8 +2,11 @@
 /**
  * Limpia tags rogue de TODOS los contactos en GHL.
  *
- * Spec oficial — únicos tags permitidos:
- *   artista_ok, follow_up, missing_info, new_lead, new_artist, new_supplier, proposal, proveedor_ok
+ * Spec oficial 2026-05-08 (Ramiro) — únicos tags que el código pone son 3:
+ *   new_lead, new_artist, new_supplier
+ *
+ * Tags adicionales permitidos (manuales en GHL): artista_ok, proveedor_ok,
+ * follow_up, proposal.
  *
  * Idioma/tipo/origen se modelan ahora como custom fields (contact_idioma,
  * contact_type, contact_origen), NO como tags.
@@ -20,14 +23,15 @@
 import 'dotenv/config';
 
 const ALLOWED_TAGS = new Set([
-  'artista_ok',
-  'follow_up',
-  'missing_info',
+  // Tags que pone el código (3):
   'new_lead',
   'new_artist',
   'new_supplier',
-  'proposal',
-  'proveedor_ok'
+  // Tags manuales (Xavi pone en GHL UI):
+  'artista_ok',
+  'proveedor_ok',
+  'follow_up',
+  'proposal'
 ]);
 
 const API = 'https://services.leadconnectorhq.com';
