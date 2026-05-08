@@ -13,13 +13,15 @@ function ebSubmit(form){
     '&telefono='+encodeURIComponent(d.telefono)+
     (isEn?'&lang=en':'')+
     '&skip=1';
-  if(tipo==='artista'){
-    params+='&genero='+encodeURIComponent(d.genero||'');
+  if(tipo==='artista'||tipo==='proveedor'){
+    // Auto-select del profile en el form completo según data-form-type del mini-form
+    params+='&type='+encodeURIComponent(tipo)+
+            '&genero='+encodeURIComponent(d.genero||'');
     fetch(base+'api/webhook-elementor',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        form_name:'artista-web',
+        form_name:tipo+'-web',
         form_fields:{name:d.nombre,field_genero:d.genero,field_7bfecee:d.email,field_016bf1b:d.telefono},
         privacidad_aceptada:'Si',
         lang:isEn?'en':'es'
