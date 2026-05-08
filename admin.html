@@ -1464,28 +1464,15 @@
         });
 
         $('propuestas-table-wrap').querySelectorAll('[data-validate]').forEach(b => {
-          b.addEventListener('click', async (e) => {
+          b.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!confirm('Validar propuesta? Marca como aprobada en Supabase, setea validacion_propuesta y añade tag proposal en GHL.')) return;
+            if (!confirm('Validar propuesta? Se abrirá la propuesta en una nueva pestaña, generará el PDF, lo subirá a GHL y marcará la propuesta como aprobada. Espera a ver el toast verde antes de cerrar la pestaña.')) return;
             const proposalId = b.dataset.validate;
-            b.disabled = true;
-            const original = b.textContent;
-            b.textContent = 'Validando…';
-            try {
-              const r = await fetch('/api/validate-proposal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ proposalId })
-              });
-              const data = await r.json();
-              if (!r.ok || !data.success) throw new Error(data.error || 'Error validando');
-              b.textContent = 'Validado ✓';
-              loadPropuestas();
-            } catch (err) {
-              showError(err.message);
-              b.textContent = original;
-              b.disabled = false;
-            }
+            const url = `/propuesta.html?id=${encodeURIComponent(proposalId)}&admin=1&validate=1`;
+            window.open(url, '_blank');
+            // No esperamos a que termine — la pestaña hijo se ocupa.
+            // Refrescar la lista en 8s para mostrar el cambio de status.
+            setTimeout(() => loadPropuestas(), 8000);
           });
         });
       } catch (err) {

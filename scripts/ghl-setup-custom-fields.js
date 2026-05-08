@@ -90,6 +90,27 @@ async function deleteCustomField(id) {
     }
   }
 
+  // -- 1b. Crear url_propuesta_pdf (TEXT, contact) --
+  const pdfKeys = ['url_propuesta_pdf', 'contact.url_propuesta_pdf'];
+  const existingPdf = fields.find((f) => pdfKeys.includes(f.fieldKey));
+  if (existingPdf) {
+    console.log(`✓ url_propuesta_pdf ya existe (id=${existingPdf.id})`);
+  } else {
+    const pdfPayload = {
+      name: 'URL Propuesta PDF',
+      dataType: 'TEXT',
+      placeholder: '',
+      position: 0,
+      model: 'contact'
+    };
+    if (APPLY) {
+      const created = await createCustomField(pdfPayload);
+      console.log(`✓ url_propuesta_pdf creado (id=${created.customField?.id || created.id || '?'})`);
+    } else {
+      console.log(`→ crearía url_propuesta_pdf TEXT`);
+    }
+  }
+
   // -- 2. Borrar contact.id (NUMERICAL) huérfano --
   const orphan = fields.find((f) => f.fieldKey === 'contact.id' || (f.name === 'id' && f.dataType === 'NUMERICAL'));
   if (orphan) {

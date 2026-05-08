@@ -2639,6 +2639,77 @@
     }
 
     // =============================================
+    // PDF VALIDATE FLOW (?validate=1)
+    // =============================================
+    // Generar PDF cliente-side del bloque #proposalContent y subirlo via
+    // /api/upload-proposal-pdf, que también escribe url_propuesta_pdf en
+    // el contacto GHL. Después dispara /api/validate-proposal para marcar
+    // la propuesta como aprobada (mismo efecto que el botón Validar de /admin).
+    async function generateAndUploadProposalPdf(proposalId, contactId) {
+      const element = document.getElementById('proposalContent');
+      if (!element) throw new Error('proposalContent no encontrado');
+
+      const opt = {
+        margin: 0,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      document.body.classList.add('exporting-pdf');
+      const blob = await html2pdf().set(opt).from(element).outputPdf('blob');
+      document.body.classList.remove('exporting-pdf');
+
+      const reader = new FileReader();
+      const base64 = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+
+      const r = await fetch('/api/upload-proposal-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposalId, contactId, pdfBase64: base64 })
+      });
+      const data = await r.json();
+      if (!r.ok || !data.success) throw new Error(data.error || `upload ${r.status}`);
+      return data;
+    }
+
+    async function runValidateFlow() {
+      const params = new URLSearchParams(window.location.search);
+      const proposalId = params.get('id');
+      if (!proposalId) { showToast('Falta proposalId', 'error'); return; }
+
+      showToast('Generando PDF…');
+      let pdfData;
+      try {
+        pdfData = await generateAndUploadProposalPdf(proposalId, null);
+      } catch (e) {
+        console.error(e);
+        showToast('Error generando/subiendo PDF: ' + e.message, 'error');
+        return;
+      }
+      showToast('PDF subido. Validando propuesta…');
+
+      try {
+        const r = await fetch('/api/validate-proposal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proposalId })
+        });
+        const data = await r.json();
+        if (!r.ok || !data.success) throw new Error(data.error || `validate ${r.status}`);
+        showToast('Propuesta validada y PDF adjunto en GHL ✓', 'success');
+      } catch (e) {
+        console.error(e);
+        showToast('PDF subido, pero falló la validación: ' + e.message, 'error');
+      }
+    }
+
+    // =============================================
     // TOAST
     // =============================================
     function showToast(message, type) {
@@ -2925,7 +2996,15 @@
       } else if (mode === 'auto') {
         initAuto();
       } else {
-        init();
+        await init();
+      }
+
+      // ?validate=1 → tras renderizar la propuesta, generar PDF + validar.
+      // Útil cuando se abre desde el botón "Validar" de /admin: la página
+      // se ocupa del PDF gracias a html2pdf que ya tiene cargado.
+      if (params.get('validate') === '1') {
+        // Pequeño delay para que el render termine (imágenes, etc.)
+        setTimeout(() => { runValidateFlow().catch(console.error); }, 1500);
       }
     });
   </script>
