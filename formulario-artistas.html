@@ -680,14 +680,53 @@
     .success-screen {
       display: none;
       text-align: center;
-      padding: 60px 40px;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 16px;
     }
 
     .success-screen.active { display: block; }
 
+    .success-hero {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://www.eventosbarcelona.com/wp-content/uploads/2025/10/eventos-de-exito-en-barcelona.webp');
+    }
+    .success-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(26,26,26,0) 0%, rgba(26,26,26,.45) 70%, rgba(26,26,26,.85) 100%);
+    }
+
+    .success-body {
+      padding: 48px 40px 56px;
+    }
+
     .success-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -88px auto 24px;
+      box-shadow: 0 12px 32px rgba(204,51,102,.35);
+      position: relative;
+      z-index: 1;
+      animation: successPulse .6s ease-out;
+    }
+
+    @keyframes successPulse {
+      0%   { transform: scale(.6); opacity: 0; }
+      60%  { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
     .success-screen h2 {
@@ -699,9 +738,28 @@
     .success-screen p {
       font-size: 16px;
       color: var(--gray);
-      max-width: 440px;
-      margin: 0 auto;
+      max-width: 480px;
+      margin: 0 auto 8px;
       line-height: 1.7;
+    }
+
+    .success-meta {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--gray);
+    }
+    .success-meta div { display: flex; align-items: center; gap: 6px; }
+    .success-meta strong { color: var(--dark); }
+
+    @media (max-width: 640px) {
+      .success-hero { height: 160px; }
+      .success-body { padding: 36px 20px 44px; }
+      .success-icon { width: 60px; height: 60px; font-size: 30px; margin-top: -68px; }
+      .success-screen h2 { font-size: 24px; }
     }
 
     .input-error {
@@ -1249,12 +1307,23 @@
 
       <!-- SUCCESS -->
       <div class="success-screen" id="success">
-        <div class="success-icon">&#10004;&#65039;</div>
-        <h2>Perfil recibido</h2>
-        <p>Nuestro equipo revisara tu perfil y se pondra en contacto contigo si hay oportunidades que encajen. Gracias por querer formar parte de Eventos Barcelona.</p>
-        <div style="margin-top: 32px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <a href="https://www.eventosbarcelona.com/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Volver al inicio</a>
-          <a href="https://www.eventosbarcelona.com/contacto/" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Contactar al equipo</a>
+        <div class="success-hero" role="img" aria-label="Eventos corporativos en Barcelona"></div>
+        <div class="success-body">
+          <div class="success-icon">&#10003;</div>
+          <h2 id="success-title">Bienvenido al equipo</h2>
+          <p id="success-desc">Recibimos tu perfil. Nuestro equipo lo revisara en los proximos dias y, si tu show encaja con un evento, te contactaremos directamente.</p>
+          <p style="font-size:14px;margin-top:8px;">Gracias por querer formar parte de Eventos Barcelona.</p>
+
+          <div class="success-meta">
+            <div>&#128338; <span><strong>2-5 dias</strong> para revision</span></div>
+            <div>&#128231; <span>Te avisamos por <strong>email</strong></span></div>
+            <div>&#127881; <span>+200 eventos al ano</span></div>
+          </div>
+
+          <div style="margin-top: 36px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://www.eventosbarcelona.com/artistas/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Ver el catalogo</a>
+            <a href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Siguenos en Instagram</a>
+          </div>
         </div>
       </div>
 
@@ -2183,11 +2252,16 @@
         console.error('Submit error:', err);
       }
 
-      // Show success — adapt message for updates
+      // Show success — adapt message for updates / proveedor
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const successTitle = document.getElementById('success-title');
+      const successDesc = document.getElementById('success-desc');
       if (updateToken) {
-        document.querySelector('#success h2').textContent = 'Perfil actualizado';
-        document.querySelector('#success p').textContent = 'Tus datos han sido actualizados correctamente. Gracias por mantener tu perfil al dia.';
+        if (successTitle) successTitle.textContent = 'Perfil actualizado';
+        if (successDesc) successDesc.textContent = 'Tus datos han sido actualizados correctamente. Gracias por mantener tu perfil al dia.';
+      } else if (profileType === 'proveedor') {
+        if (successTitle) successTitle.textContent = 'Empresa registrada';
+        if (successDesc) successDesc.textContent = 'Recibimos tu ficha. Nuestro equipo la revisara en los proximos dias y, si tus servicios encajan con un evento, te contactaremos directamente.';
       }
       document.getElementById('success').classList.add('active');
 
