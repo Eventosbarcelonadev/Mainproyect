@@ -145,6 +145,22 @@ export default async function handler(req, res) {
     let oppId = null;
     if (!isUpdate) {
       const isProveedor = tipoContacto === 'Proveedor';
+
+      // Custom fields del Opportunity (compartidos entre Artistas y Proveedores).
+      // categoria_artista vs categoria_proveedor según el tipo.
+      const oppCustomFields = [];
+      if (data.nombreArtistico || data.compania) {
+        oppCustomFields.push({ key: 'nombre_artistico', field_value: data.nombreArtistico || data.compania });
+      }
+      if (disciplinas.length) {
+        oppCustomFields.push({
+          key: isProveedor ? 'categoria_proveedor' : 'categoria_artista',
+          field_value: disciplinas.join(', ')
+        });
+      }
+      if (data.formatoShow) oppCustomFields.push({ key: 'formato_espectaculo', field_value: data.formatoShow });
+      if (data.bioShow) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.bioShow });
+
       const oppBody = {
         locationId: LOC,
         pipelineId: isProveedor ? PIPELINE_PROVEEDORES : PIPELINE_ARTISTAS,
@@ -152,7 +168,8 @@ export default async function handler(req, res) {
         contactId: contactId,
         name: `${data.nombreArtistico || data.compania || data.nombre || tipoContacto} — ${disciplinas.join(', ')}`,
         status: 'open',
-        monetaryValue: 0
+        monetaryValue: 0,
+        customFields: oppCustomFields
       };
 
       const oppRes = await fetch(`${API}/opportunities/`, {

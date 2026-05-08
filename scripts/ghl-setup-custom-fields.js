@@ -30,8 +30,11 @@ const HEADERS = {
   'Content-Type': 'application/json'
 };
 
-async function listCustomFields() {
-  const r = await fetch(`${API}/locations/${LOC}/customFields`, { headers: HEADERS });
+async function listCustomFields(model) {
+  const url = model
+    ? `${API}/locations/${LOC}/customFields?model=${model}`
+    : `${API}/locations/${LOC}/customFields`;
+  const r = await fetch(url, { headers: HEADERS });
   if (!r.ok) throw new Error(`GET customFields ${r.status}: ${await r.text()}`);
   const d = await r.json();
   return d.customFields || [];
@@ -63,6 +66,7 @@ async function deleteCustomField(id) {
   console.log(`=== Setup custom fields GHL ${APPLY ? '(APPLY)' : '(dry run)'} ===\n`);
 
   const fields = await listCustomFields();
+  const oppFields = await listCustomFields('opportunity');
 
   // -- 1. Crear contact_type si no existe --
   const typeKeys = ['contact_type', 'contact.contact_type'];
@@ -97,6 +101,44 @@ async function deleteCustomField(id) {
     }
   } else {
     console.log(`✓ no hay custom field "id" huérfano`);
+  }
+
+  // -- 3. Crear custom fields opportunity (Cliente): presupuesto + como_nos_conocio --
+  const oppFieldsToCreate = [
+    {
+      key: 'presupuesto',
+      payload: {
+        name: 'Presupuesto',
+        dataType: 'TEXT',
+        position: 0,
+        model: 'opportunity'
+      }
+    },
+    {
+      key: 'como_nos_conocio',
+      payload: {
+        name: 'Como nos conocio',
+        dataType: 'TEXT',
+        position: 0,
+        model: 'opportunity'
+      }
+    }
+  ];
+
+  for (const { key, payload } of oppFieldsToCreate) {
+    const exists = oppFields.find((f) =>
+      [`opportunity.${key}`, key].includes(f.fieldKey)
+    );
+    if (exists) {
+      console.log(`✓ opportunity.${key} ya existe (id=${exists.id})`);
+      continue;
+    }
+    if (APPLY) {
+      const created = await createCustomField(payload);
+      console.log(`✓ opportunity.${key} creado (id=${created.customField?.id || created.id || '?'})`);
+    } else {
+      console.log(`→ crearía opportunity.${key} ${payload.dataType}`);
+    }
   }
 
   if (!APPLY) console.log(`\n→ Dry run. Para aplicar: --apply`);

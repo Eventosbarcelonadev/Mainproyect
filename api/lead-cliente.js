@@ -220,6 +220,22 @@ export default async function handler(req, res) {
       console.error('Opportunity search error:', searchErr.message);
     }
 
+    // Vincular campos del form a custom fields del Opportunity (pipeline Clientes).
+    // Los picklists tienen valores fijos en GHL — si el form manda algo distinto,
+    // GHL ignora el valor pero no falla.
+    const oppCustomFields = [];
+    if (data.tipoEvento) oppCustomFields.push({ key: 'tipo_de_evento', field_value: [data.tipoEvento] });
+    if (data.fechaEvento) oppCustomFields.push({ key: 'fecha_evento', field_value: data.fechaEvento });
+    if (data.numAsistentes) oppCustomFields.push({ key: 'numero_asistentes', field_value: parseInt(data.numAsistentes, 10) || 0 });
+    if (data.ubicacion) oppCustomFields.push({ key: 'ciudad_evento', field_value: data.ubicacion });
+    if (data.formatoShow) oppCustomFields.push({ key: 'formato_espectaculo', field_value: data.formatoShow });
+    const estilos = [...(data.categorias || []), ...(data.subcategorias || [])];
+    if (estilos.length) oppCustomFields.push({ key: 'estilos_artisticos', field_value: estilos });
+    oppCustomFields.push({ key: 'produccion_tecnica_necesaria', field_value: data.necesitaProduccion ? 'si' : 'no' });
+    if (data.comentarios) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.comentarios });
+    if (data.presupuesto) oppCustomFields.push({ key: 'presupuesto', field_value: String(data.presupuesto) });
+    if (data.comoNosConocio) oppCustomFields.push({ key: 'como_nos_conocio', field_value: data.comoNosConocio });
+
     const oppBody = {
       locationId: LOC,
       pipelineId: PIPELINE,
@@ -227,7 +243,8 @@ export default async function handler(req, res) {
       contactId: contactId,
       name: `${data.nombre || 'Lead'} — ${data.tipoEvento || 'Evento'}`,
       status: 'open',
-      monetaryValue: 0
+      monetaryValue: 0,
+      customFields: oppCustomFields
     };
 
     const oppRes = await fetch(
