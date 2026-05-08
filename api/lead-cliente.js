@@ -242,12 +242,23 @@ export default async function handler(req, res) {
     if (data.presupuesto) oppCustomFields.push({ key: 'presupuesto', field_value: String(data.presupuesto) });
     if (data.comoNosConocio) oppCustomFields.push({ key: 'como_nos_conocio', field_value: data.comoNosConocio });
 
-    const oppBody = {
+    // PUT /opportunities/{id} NO acepta locationId/pipelineId/contactId
+    // (devuelve 422 "property locationId should not exist"). Por eso los
+    // bodies de POST y PUT son distintos.
+    const oppName = data.empresa || data.nombre || 'Lead';
+    const oppBodyPost = {
       locationId: LOC,
       pipelineId: PIPELINE,
       pipelineStageId: STAGE,
       contactId: contactId,
-      name: data.empresa || data.nombre || 'Lead',
+      name: oppName,
+      status: 'open',
+      monetaryValue: 0,
+      customFields: oppCustomFields
+    };
+    const oppBodyPut = {
+      pipelineStageId: STAGE,
+      name: oppName,
       status: 'open',
       monetaryValue: 0,
       customFields: oppCustomFields
@@ -258,10 +269,13 @@ export default async function handler(req, res) {
       {
         method: existingOppId ? 'PUT' : 'POST',
         headers: HEADERS,
-        body: JSON.stringify(oppBody)
+        body: JSON.stringify(existingOppId ? oppBodyPut : oppBodyPost)
       }
     );
     const oppData = await oppRes.json();
+    if (!oppRes.ok) {
+      console.error('Opportunity', existingOppId ? 'PUT' : 'POST', 'failed:', oppRes.status, JSON.stringify(oppData).slice(0, 300));
+    }
 
     // 5. Create contact in Holded
     let holdedId = null;
