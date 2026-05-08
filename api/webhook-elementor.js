@@ -141,7 +141,15 @@ export default async function handler(req, res) {
     }
 
     const lang = (raw.lang === 'en') ? 'en' : 'es';
-    const tags = ['new_lead'];
+
+    // Detectar si el submit viene del mini-form de inscripción (artistas/proveedores)
+    // de /unete-al-equipo/. En ese caso NO crear opp en pipeline Clientes ni asumir
+    // contact_type=Cliente — el form-artistas.html completo creará la opp correcta
+    // (Artistas o Proveedores) al terminar.
+    const isInscripcion = /unete-al-equipo|join-our-team|inscripcion|artist|proveedor|equipo/i
+      .test(`${pageUrl} ${formName}`);
+
+    const tags = isInscripcion ? [] : ['new_lead'];
 
     // 1. Create/update contact in GHL
     const contactBody = {
@@ -153,10 +161,15 @@ export default async function handler(req, res) {
       tags: tags,
       source: `Web Elementor - ${formName}`,
       customFields: [
-        { key: 'contact_type', field_value: 'Cliente' },
         { key: 'contact_origen', field_value: 'form' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
-        { key: 'contact_score', field_value: 'Low' }
+        // contact_type y contact_score se setean en el flow correspondiente
+        // (lead-cliente.js para Cliente, lead-artista.js para Artista/Proveedor).
+        // En este webhook genérico solo los rellenamos cuando sabemos que es Cliente.
+        ...(isInscripcion ? [] : [
+          { key: 'contact_type', field_value: 'Cliente' },
+          { key: 'contact_score', field_value: 'Low' }
+        ])
       ]
     };
 
@@ -180,23 +193,27 @@ export default async function handler(req, res) {
     // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
     if (isExistingContact) await triggerNotifyXavi(contactId);
 
-    // 2. Create opportunity
-    const oppBody = {
-      locationId: LOC,
-      pipelineId: PIPELINE,
-      pipelineStageId: STAGE,
-      contactId: contactId,
-      name: `${nombre || 'Lead'} — ${formName}`,
-      status: 'open',
-      monetaryValue: 0
-    };
+    // 2. Create opportunity en pipeline Clientes — solo si NO es inscripción
+    // (los flows de artistas/proveedores crean su propia opp en su pipeline).
+    let oppData = {};
+    if (!isInscripcion) {
+      const oppBody = {
+        locationId: LOC,
+        pipelineId: PIPELINE,
+        pipelineStageId: STAGE,
+        contactId: contactId,
+        name: `${nombre || 'Lead'} — ${formName}`,
+        status: 'open',
+        monetaryValue: 0
+      };
 
-    const oppRes = await fetch(`${API}/opportunities/`, {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify(oppBody)
-    });
-    const oppData = await oppRes.json();
+      const oppRes = await fetch(`${API}/opportunities/`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(oppBody)
+      });
+      oppData = await oppRes.json();
+    }
 
     // 3. Holded sync (non-blocking)
     try {

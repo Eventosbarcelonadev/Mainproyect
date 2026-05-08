@@ -9,8 +9,10 @@ export default async function handler(req, res) {
   const API = 'https://services.leadconnectorhq.com';
   const TOKEN = process.env.GHL_API_KEY;
   const LOC = process.env.GHL_LOCATION_ID;
-  const PIPELINE = process.env.GHL_PIPELINE_ARTISTAS;
-  const STAGE = process.env.GHL_STAGE_SOLICITUD_RECIBIDA;
+  const PIPELINE_ARTISTAS = process.env.GHL_PIPELINE_ARTISTAS;
+  const STAGE_ARTISTAS = process.env.GHL_STAGE_SOLICITUD_RECIBIDA;
+  const PIPELINE_PROVEEDORES = process.env.GHL_PIPELINE_PROVEEDORES;
+  const STAGE_PROVEEDORES = process.env.GHL_STAGE_PROVEEDOR_NUEVO;
   const PIPELINE_CLIENTES = process.env.GHL_PIPELINE_CLIENTES;
   const WORKFLOW_NOTIFY = process.env.GHL_WORKFLOW_NOTIFY_EXISTING_LEAD;
   const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -139,13 +141,14 @@ export default async function handler(req, res) {
       }
     }
 
-    // 2. Create opportunity in Artistas pipeline (only for NEW submissions, not updates)
+    // 2. Create opportunity in Artistas o Proveedores pipeline según tipoContacto
     let oppId = null;
     if (!isUpdate) {
+      const isProveedor = tipoContacto === 'Proveedor';
       const oppBody = {
         locationId: LOC,
-        pipelineId: PIPELINE,
-        pipelineStageId: STAGE,
+        pipelineId: isProveedor ? PIPELINE_PROVEEDORES : PIPELINE_ARTISTAS,
+        pipelineStageId: isProveedor ? STAGE_PROVEEDORES : STAGE_ARTISTAS,
         contactId: contactId,
         name: `${data.nombreArtistico || data.compania || data.nombre || tipoContacto} — ${disciplinas.join(', ')}`,
         status: 'open',
