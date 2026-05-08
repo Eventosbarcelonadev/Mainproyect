@@ -1273,7 +1273,9 @@
       if (companiaLabel) companiaLabel.textContent = isProveedor ? 'Company name' : 'Company name (if applicable)';
       document.getElementById('a-compania').placeholder = isProveedor ? 'e.g. StereoRent BCN SL' : 'e.g. Circo Brillante SL';
 
-      goToStep(1);
+      // If contact info was prefilled (from /unete-al-equipo/ mini-form), skip step 1
+      const hasPrefill = !!(document.getElementById('a-nombre').value && document.getElementById('a-email').value);
+      goToStep(hasPrefill ? 2 : 1);
     }
 
     // Check for ?token= param to load existing artist data
@@ -1419,10 +1421,9 @@
         }
       }
 
-      if (params.get('skip') === '1') {
-        // Step 1 already collected via mini-form on /unete-al-equipo/. Jump straight to step 2.
-        goToStep(2);
-      }
+      // When arriving from /unete-al-equipo/ with prefill, do NOT skip step 0
+      // (artist/supplier selector). The jump to step 2 happens inside
+      // selectProfile() once the user picks a type, via prefillContactFromQuery().
 
       // ?genero=Music → auto-open the multiselect on the matching section
       const genero = params.get('genero');

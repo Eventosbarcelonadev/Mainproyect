@@ -1497,10 +1497,9 @@
         }
       }
 
-      if (params.get('skip') === '1') {
-        // Step 1 ya capturado en mini-form de /unete-al-equipo/. Saltar al step 2.
-        goToStep(2);
-      }
+      // Si viene desde /unete-al-equipo/ con prefill, NO se salta el step 0
+      // (selector artista/proveedor) — el skip al step 2 lo hace selectProfile()
+      // tras elegir el tipo, gracias a prefillContactFromQuery().
 
       // ?genero=Musica → auto-open the multiselect on the matching section
       const genero = params.get('genero');
