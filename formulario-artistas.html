@@ -1135,7 +1135,7 @@
 
         <div class="form-actions">
           <button class="btn-back" onclick="goToStep(2)">Atras</button>
-          <button class="btn-next" onclick="goToStep('shows')">Siguiente</button>
+          <button class="btn-next" onclick="validateAndGo(3, 'shows')">Siguiente</button>
         </div>
       </div>
 
@@ -1556,6 +1556,44 @@
           msg.textContent = isProv ? 'Selecciona al menos un servicio' : 'Selecciona al menos un estilo';
           target.parentElement.insertBefore(msg, target.nextSibling);
           errors.push({});
+        }
+
+        // Artista: formato del show + bio breve obligatorios
+        if (!isProv) {
+          const formatoSel = document.querySelectorAll('#artista-fields .option-card.selected[onclick*="show-format"]').length;
+          if (formatoSel === 0) {
+            const target = document.querySelector('#artista-fields .option-grid');
+            if (target) {
+              const msg = document.createElement('div');
+              msg.className = 'field-error';
+              msg.textContent = 'Selecciona el formato del show';
+              target.parentElement.insertBefore(msg, target.nextSibling);
+              errors.push({});
+            }
+          }
+          const bio = document.getElementById('a-bio');
+          if (bio && !bio.value.trim()) {
+            errors.push({ el: bio, msg: 'Describe brevemente tu espectaculo' });
+          }
+        } else {
+          const bioProv = document.getElementById('a-bio-prov');
+          if (bioProv && !bioProv.value.trim()) {
+            errors.push({ el: bioProv, msg: 'Describe tus servicios' });
+          }
+        }
+      }
+
+      if (from === 3) {
+        // Al menos 1 foto subida o pegada por URL
+        if (typeof uploadedUrls !== 'undefined' && uploadedUrls.length === 0) {
+          const area = document.getElementById('photo-upload');
+          if (area) {
+            const msg = document.createElement('div');
+            msg.className = 'field-error';
+            msg.textContent = 'Sube al menos una foto (o pega una URL externa)';
+            area.parentElement.insertBefore(msg, area.nextSibling);
+            errors.push({});
+          }
         }
       }
 
@@ -2042,6 +2080,21 @@
 
     async function submitForm() {
       const btn = document.querySelector('.btn-submit');
+
+      // Validar step 4 antes de enviar: rango de precios obligatorio
+      const priceSelected = document.querySelector('#step-4 .price-card.selected');
+      if (!priceSelected) {
+        document.querySelectorAll('#step-4 .field-error').forEach((el) => el.remove());
+        const grid = document.querySelector('#step-4 .price-grid');
+        if (grid) {
+          const msg = document.createElement('div');
+          msg.className = 'field-error';
+          msg.textContent = 'Selecciona un rango de precio';
+          grid.parentElement.insertBefore(msg, grid.nextSibling);
+        }
+        return;
+      }
+
       btn.textContent = 'Enviando...';
       btn.disabled = true;
 
