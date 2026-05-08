@@ -1344,9 +1344,9 @@
         const match = prefixes.find(p => telefono.startsWith(p));
         if (match) {
           document.getElementById('a-prefix').value = match;
-          document.getElementById('a-telefono').value = telefono.slice(match.length).trim();
+          document.getElementById('a-phone').value = telefono.slice(match.length).trim();
         } else {
-          document.getElementById('a-telefono').value = telefono;
+          document.getElementById('a-phone').value = telefono;
         }
       }
 
