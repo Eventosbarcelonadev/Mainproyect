@@ -45,9 +45,9 @@ export default async function handler(req, res) {
     if (email && !/@(gmail|yahoo|hotmail|outlook|live|icloud|aol|protonmail)\./.test(email)) s += 1;
     if (data.empresa) s += 1;
     if (/director|cmo|ceo|head|chief|gerente|founder|presidente|owner/.test(String(data.cargo || '').toLowerCase())) s += 1;
-    if (s >= 5) return 'High';
-    if (s >= 2) return 'Mid';
-    return 'Low';
+    if (s >= 5) return 'HOT';
+    if (s >= 2) return 'WARM';
+    return 'COLD';
   };
 
   try {
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
           { key: 'contact_type', field_value: 'Cliente' },
           { key: 'contact_origen', field_value: 'form' },
           { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
-          { key: 'contact_score', field_value: 'Low' }
+          { key: 'contact_score', field_value: 'COLD' }
         ]
       };
 

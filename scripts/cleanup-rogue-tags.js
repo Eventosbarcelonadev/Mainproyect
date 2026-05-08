@@ -3,7 +3,7 @@
  * Limpia tags rogue de TODOS los contactos en GHL.
  *
  * Spec oficial — únicos tags permitidos:
- *   artista_ok, follow_up, new_lead, proposal, proveedor_ok
+ *   artista_ok, follow_up, new_lead, new_artist, new_supplier, proposal, proveedor_ok
  *
  * Idioma/tipo/origen se modelan ahora como custom fields (contact_idioma,
  * contact_type, contact_origen), NO como tags.
@@ -23,6 +23,8 @@ const ALLOWED_TAGS = new Set([
   'artista_ok',
   'follow_up',
   'new_lead',
+  'new_artist',
+  'new_supplier',
   'proposal',
   'proveedor_ok'
 ]);

@@ -45,9 +45,9 @@ export default async function handler(req, res) {
     if (Array.isArray(data.fotosUrls) && data.fotosUrls.length >= 2) s += 1;
     if (data.webRrss) s += 1;
     if (data.aceptoVisibilidad) s += 1;
-    if (s >= 7) return 'High';
-    if (s >= 4) return 'Mid';
-    return 'Low';
+    if (s >= 7) return 'HOT';
+    if (s >= 4) return 'WARM';
+    return 'COLD';
   };
 
   try {
@@ -60,7 +60,9 @@ export default async function handler(req, res) {
     const hasProveedor = disciplinas.includes('Proveedores');
     const tipoContacto = hasProveedor ? 'Proveedor' : 'Artista';
 
-    const tags = isUpdate ? [] : ['new_lead'];
+    // Tag por tipo: new_artist o new_supplier (brief 2026-05-08).
+    // En isUpdate (artista actualiza su perfil) no añadir tags nuevos.
+    const tags = isUpdate ? [] : [tipoContacto === 'Proveedor' ? 'new_supplier' : 'new_artist'];
     const score = computeArtistaScore(data);
 
     // 1. Create/update contact

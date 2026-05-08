@@ -168,7 +168,7 @@ export default async function handler(req, res) {
         // En este webhook genérico solo los rellenamos cuando sabemos que es Cliente.
         ...(isInscripcion ? [] : [
           { key: 'contact_type', field_value: 'Cliente' },
-          { key: 'contact_score', field_value: 'Low' }
+          { key: 'contact_score', field_value: 'COLD' }
         ])
       ]
     };
