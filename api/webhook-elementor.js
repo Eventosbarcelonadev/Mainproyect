@@ -198,14 +198,21 @@ export default async function handler(req, res) {
 
     // 2. Create opportunity en pipeline Clientes — solo si NO es inscripción
     // (los flows de artistas/proveedores crean su propia opp en su pipeline).
+    // Nombre: "{nombre} - {teléfono}" (Ramiro 2026-05-08).
+    // Los custom fields del opportunity quedan vacíos en este mini-form;
+    // se rellenan cuando el lead completa el formulario inteligente
+    // (lead-cliente.js localiza esta opp por contact y la actualiza).
     let oppData = {};
     if (!isInscripcion) {
+      const oppName = nombre
+        ? `${nombre}${phoneValue ? ' - ' + phoneValue : (emailValue ? ' - ' + emailValue : '')}`
+        : (empresa || emailValue || phoneValue || 'Lead');
       const oppBody = {
         locationId: LOC,
         pipelineId: PIPELINE,
         pipelineStageId: STAGE,
         contactId: contactId,
-        name: `${nombre || 'Lead'} — ${formName}`,
+        name: oppName,
         status: 'open',
         monetaryValue: 0
       };
