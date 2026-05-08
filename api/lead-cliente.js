@@ -11,7 +11,6 @@ export default async function handler(req, res) {
   const LOC = process.env.GHL_LOCATION_ID;
   const PIPELINE = process.env.GHL_PIPELINE_CLIENTES;
   const STAGE = process.env.GHL_STAGE_NEW_LEAD;
-  const STAGE_MISSING = process.env.GHL_STAGE_MISSING_INFO || STAGE;
   const WORKFLOW_NOTIFY = process.env.GHL_WORKFLOW_NOTIFY_EXISTING_LEAD;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -86,15 +85,19 @@ export default async function handler(req, res) {
 
       const contactId = contactData.contact.id;
 
-      // Solo crear oportunidad si el contacto es nuevo (evita duplicar en reintentos)
+      // Solo crear oportunidad si el contacto es nuevo (evita duplicar en reintentos).
+      // La opp se crea en stage New Lead (el pipeline ya no tiene "Missing Info"
+      // — Xavi pidió que todo aterrice en New Lead). El nombre es solo el del
+      // cliente/empresa, sin sufijo "Info incompleta". Si el lead nunca completa
+      // el flow extendido, queda en New Lead para que Xavi/Ramiro la trabajen.
       let oppId = null;
       if (contactData.new === true || contactData.isNew === true) {
         const oppBody = {
           locationId: LOC,
           pipelineId: PIPELINE,
-          pipelineStageId: STAGE_MISSING,
+          pipelineStageId: STAGE,
           contactId: contactId,
-          name: `${data.nombre || 'Lead'} — Info incompleta`,
+          name: data.empresa || data.nombre || 'Lead',
           status: 'open',
           monetaryValue: 0
         };
@@ -205,17 +208,17 @@ export default async function handler(req, res) {
     // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
     if (isExistingContact) await triggerNotifyXavi(contactId);
 
-    // 2. Find existing opportunity for this contact (created by partial submit)
+    // 2. Find existing open opportunity for this contact (created by partial submit
+    //    o reintento). Si existe, actualizar en lugar de crear duplicada.
     let existingOppId = null;
     try {
       const searchRes = await fetch(
-        `${API}/opportunities/search?location_id=${LOC}&contact_id=${contactId}&pipeline_id=${PIPELINE}`,
+        `${API}/opportunities/search?location_id=${LOC}&contact_id=${contactId}&pipeline_id=${PIPELINE}&status=open`,
         { method: 'GET', headers: HEADERS }
       );
       const searchData = await searchRes.json();
       const opps = searchData.opportunities || [];
-      const stub = opps.find(o => o.pipelineStageId === STAGE_MISSING && o.status === 'open');
-      if (stub) existingOppId = stub.id;
+      if (opps.length) existingOppId = opps[0].id;
     } catch (searchErr) {
       console.error('Opportunity search error:', searchErr.message);
     }
@@ -241,7 +244,7 @@ export default async function handler(req, res) {
       pipelineId: PIPELINE,
       pipelineStageId: STAGE,
       contactId: contactId,
-      name: `${data.nombre || 'Lead'} — ${data.tipoEvento || 'Evento'}`,
+      name: data.empresa || data.nombre || 'Lead',
       status: 'open',
       monetaryValue: 0,
       customFields: oppCustomFields
