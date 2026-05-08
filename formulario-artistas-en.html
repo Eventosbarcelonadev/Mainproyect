@@ -1425,6 +1425,12 @@
       // (artist/supplier selector). The jump to step 2 happens inside
       // selectProfile() once the user picks a type, via prefillContactFromQuery().
 
+      // Auto-select profile when landing from the selector with ?type=artista|proveedor
+      const typeParam = params.get('type');
+      if (typeParam === 'artista' || typeParam === 'proveedor') {
+        setTimeout(() => selectProfile(typeParam), 0);
+      }
+
       // ?genero=Music → auto-open the multiselect on the matching section
       const genero = params.get('genero');
       if (genero) {
