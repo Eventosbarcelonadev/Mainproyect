@@ -2558,6 +2558,15 @@
           proposalState.proposalId = result.id;
           const clientUrl = `${window.location.origin}/propuesta.html?id=${result.id}`;
 
+          // Tras guardar, llamar validate-proposal para setear opp.validar_propuesta
+          // ("validada por Xavi"), tag `proposal` y monetaryValue. Eso dispara los
+          // workflows GHL (W2-Proposal's approval, W4-Sending proposal to lead).
+          fetch('/api/validate-proposal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proposalId: result.id })
+          }).catch(err => console.error('validate-proposal trigger error:', err));
+
           // Show URL to copy
           showToast('Propuesta aprobada! Link copiado al portapapeles', 'success');
           try { await navigator.clipboard.writeText(clientUrl); } catch(e) {}
