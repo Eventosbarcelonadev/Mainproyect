@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Solicita un presupuesto — Eventos Barcelona</title>
+  <link rel="icon" type="image/webp" href="/EB-eventos-barcelona-logo-3d.webp">
+  <link rel="apple-touch-icon" href="/EB-eventos-barcelona-logo-3d.webp">
+  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/EB-eventos-barcelona-logo-3d.webp">
+  <meta property="og:title" content="Eventos Barcelona — Solicita una propuesta">
+  <meta property="og:description" content="Recibe una propuesta personalizada para tu evento corporativo en menos de 24 horas.">
+  <meta name="twitter:card" content="summary_large_image">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -516,14 +522,53 @@
     .success-screen {
       display: none;
       text-align: center;
-      padding: 60px 40px;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 16px;
     }
 
     .success-screen.active { display: block; }
 
+    .success-hero {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://www.eventosbarcelona.com/wp-content/uploads/2024/09/Sodify_d2_soire_239.jpg');
+    }
+    .success-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(26,26,26,0) 0%, rgba(26,26,26,.45) 70%, rgba(26,26,26,.85) 100%);
+    }
+
+    .success-body {
+      padding: 48px 40px 56px;
+    }
+
     .success-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -88px auto 24px;
+      box-shadow: 0 12px 32px rgba(204,51,102,.35);
+      position: relative;
+      z-index: 1;
+      animation: successPulse .6s ease-out;
+    }
+
+    @keyframes successPulse {
+      0%   { transform: scale(.6); opacity: 0; }
+      60%  { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
     .success-screen h2 {
@@ -535,9 +580,28 @@
     .success-screen p {
       font-size: 16px;
       color: var(--gray);
-      max-width: 400px;
-      margin: 0 auto;
+      max-width: 480px;
+      margin: 0 auto 8px;
       line-height: 1.7;
+    }
+
+    .success-meta {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--gray);
+    }
+    .success-meta div { display: flex; align-items: center; gap: 6px; }
+    .success-meta strong { color: var(--dark); }
+
+    @media (max-width: 640px) {
+      .success-hero { height: 160px; }
+      .success-body { padding: 36px 20px 44px; }
+      .success-icon { width: 60px; height: 60px; font-size: 30px; margin-top: -68px; }
+      .success-screen h2 { font-size: 24px; }
     }
 
     .input-error {
@@ -1136,10 +1200,24 @@
 
       <!-- SUCCESS -->
       <div class="success-screen" id="success">
-        <div class="success-icon">&#10004;&#65039;</div>
-        <h2>¡Gracias por tu solicitud!</h2>
-        <p>Nuestro equipo revisara los detalles de tu evento y te enviara una propuesta personalizada en menos de 24 horas.</p>
-        <a href="https://www.eventosbarcelona.com" style="display: inline-block; margin-top: 20px; padding: 12px 28px; background: #cc3366; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">Ir a inicio</a>
+        <div class="success-hero" role="img" aria-label="Eventos corporativos en Barcelona"></div>
+        <div class="success-body">
+          <div class="success-icon">&#10003;</div>
+          <h2>¡Solicitud recibida!</h2>
+          <p>Nuestro equipo revisara los detalles de tu evento y te enviara una propuesta personalizada en menos de 24 horas.</p>
+          <p style="font-size:14px;margin-top:8px;">Mientras tanto, echa un vistazo a nuestro catalogo.</p>
+
+          <div class="success-meta">
+            <div>&#128338; <span><strong>&lt; 24h</strong> para tu propuesta</span></div>
+            <div>&#128231; <span>Te avisamos por <strong>email</strong></span></div>
+            <div>&#127881; <span>+200 eventos al ano</span></div>
+          </div>
+
+          <div style="margin-top: 36px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://www.eventosbarcelona.com/artistas-y-espectaculos/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Ver el catalogo</a>
+            <a href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Siguenos en Instagram</a>
+          </div>
+        </div>
       </div>
 
     </div>
