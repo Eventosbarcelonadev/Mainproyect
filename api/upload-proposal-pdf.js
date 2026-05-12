@@ -1,15 +1,14 @@
 // POST /api/upload-proposal-pdf
 // Body: { proposalId, contactId?, pdfBase64 }
 //
-// Sube el PDF de la propuesta (generado cliente-side con html2pdf) al bucket
-// `propuestas-pdf` en Supabase Storage, escribe el link en el custom field
-// `url_propuesta_pdf` del contacto en GHL, y opcionalmente dispara la
-// validación de la propuesta.
-//
-// Path: Propuesta_{contactId|proposalId}_{timestamp}.pdf
+// 1. Sube el PDF (generado cliente-side con html2pdf) al bucket Supabase
+//    `propuestas-pdf` con path Propuesta_{contactId|proposalId}_{timestamp}.pdf
+// 2. Escribe el link público en custom field contact.url_propuesta_pdf
+//    + añade nota en el contacto con el enlace (timeline visible).
+// 3. Patchea pdf_url en proposals (auditoría).
 
-const URL_PROPUESTA_PDF_FIELD_ID = 'BNeWNg1iyKdIema6VnAG';
 const SUPABASE_BUCKET = 'propuestas-pdf';
+const URL_PROPUESTA_PDF_FIELD_ID = 'kAvVxvoHfKmTvZgshppS';
 
 export const config = {
   api: { bodyParser: { sizeLimit: '12mb' } }
@@ -72,21 +71,35 @@ export default async function handler(req, res) {
     }
     const publicUrl = `${SB_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
 
-    // 2. Escribir url_propuesta_pdf en el contacto GHL (si tenemos contactId)
+    // 2. Escribir url_propuesta_pdf en contact + nota con el enlace (timeline)
     let ghlSync = { ok: false, reason: 'no_contact_id' };
     if (contactId) {
-      const ghlRes = await fetch(`${GHL_API}/contacts/${contactId}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${GHL_TOKEN}`,
-          Version: '2021-07-28',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          customFields: [{ id: URL_PROPUESTA_PDF_FIELD_ID, field_value: publicUrl }]
+      const ghlHeaders = {
+        Authorization: `Bearer ${GHL_TOKEN}`,
+        Version: '2021-07-28',
+        'Content-Type': 'application/json'
+      };
+      const [fieldRes, noteRes] = await Promise.all([
+        fetch(`${GHL_API}/contacts/${contactId}`, {
+          method: 'PUT',
+          headers: ghlHeaders,
+          body: JSON.stringify({
+            customFields: [{ id: URL_PROPUESTA_PDF_FIELD_ID, field_value: publicUrl }]
+          })
+        }),
+        fetch(`${GHL_API}/contacts/${contactId}/notes`, {
+          method: 'POST',
+          headers: ghlHeaders,
+          body: JSON.stringify({
+            body: `Propuesta PDF generada: ${publicUrl}\nArchivo: ${path}`
+          })
         })
-      });
-      ghlSync = { ok: ghlRes.ok, status: ghlRes.status };
+      ]);
+      ghlSync = {
+        ok: fieldRes.ok && noteRes.ok,
+        fieldStatus: fieldRes.status,
+        noteStatus: noteRes.status
+      };
     }
 
     // 3. Guardar también el path/url en la fila de proposals (auditoría)

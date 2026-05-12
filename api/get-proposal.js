@@ -62,7 +62,9 @@ export default async function handler(req, res) {
       globalMargin: p.global_margin,
       hideSummary: !!p.hide_summary,
       createdAt: p.created_at,
-      approvedAt: p.approved_at
+      approvedAt: p.approved_at,
+      ghl_contact_id: p.ghl_contact_id,
+      ghl_opportunity_id: p.ghl_opportunity_id
     };
 
     return res.status(200).json({ success: true, proposal });

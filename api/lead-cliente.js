@@ -124,6 +124,7 @@ export default async function handler(req, res) {
     const score = computeClienteScore(data);
 
     // 1. Create/update contact
+    // url_generador_propuesta vive ahora en OPPORTUNITY (no en contact) — spec 2026-05-12.
     const contactBody = {
       locationId: LOC,
       firstName: data.nombre || '',
@@ -137,7 +138,6 @@ export default async function handler(req, res) {
         { key: 'contact_origen', field_value: 'form' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         { key: 'contact_score', field_value: score },
-        { key: 'url_propuesta', field_value: '' },
         ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : [])
       ]
     };
@@ -190,8 +190,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Add proposal URL to contact custom fields
-    contactBody.customFields.find(f => f.key === 'url_propuesta').field_value = proposalUrl;
+    // (url_generador_propuesta se añade al opportunity más abajo, no al contact)
 
     const contactRes = await fetch(`${API}/contacts/upsert`, {
       method: 'POST',
@@ -227,20 +226,51 @@ export default async function handler(req, res) {
     }
 
     // Vincular campos del form a custom fields del Opportunity (pipeline Clientes).
-    // Los picklists tienen valores fijos en GHL — si el form manda algo distinto,
-    // GHL ignora el valor pero no falla.
+    // Los picklists tienen valores fijos en GHL (todos en ES) — si el form viene
+    // en EN, traducimos al string exacto del picklist para que GHL lo acepte.
+    const TIPO_EVENTO_EN_TO_ES = {
+      'Gala dinner': 'Cena de gala',
+      'Cocktail / Welcome drink': 'Cocktail / Welcom drink',
+      'Product launch': 'Lanzamiento de producto',
+      'Convention / Conference': 'Convencion / Congreso',
+      'Awards ceremony': 'Entrega de premios',
+      'Corporate Family Day': 'Family Day corporativo',
+      'Themed party': 'Fiesta tematica',
+      'Company party': 'Fiesta de empresa',
+      'Other': 'Otro'
+    };
+    const FORMATO_EN_TO_ES = {
+      'Stage show': 'Show de escenario',
+      'Ambient / strolling': 'Ambient / entre mesas',
+      'Full event management': 'Gestión integral'
+    };
+    const tipoEventoNorm = TIPO_EVENTO_EN_TO_ES[data.tipoEvento] || data.tipoEvento;
+    const formatoNorm = FORMATO_EN_TO_ES[data.formatoShow] || data.formatoShow;
+
     const oppCustomFields = [];
-    if (data.tipoEvento) oppCustomFields.push({ key: 'tipo_de_evento', field_value: [data.tipoEvento] });
+    if (tipoEventoNorm) oppCustomFields.push({ key: 'tipo_de_evento', field_value: [tipoEventoNorm] });
     if (data.fechaEvento) oppCustomFields.push({ key: 'fecha_evento', field_value: data.fechaEvento });
     if (data.numAsistentes) oppCustomFields.push({ key: 'numero_asistentes', field_value: parseInt(data.numAsistentes, 10) || 0 });
     if (data.ubicacion) oppCustomFields.push({ key: 'ciudad_evento', field_value: data.ubicacion });
-    if (data.formatoShow) oppCustomFields.push({ key: 'formato_espectaculo', field_value: data.formatoShow });
+    if (formatoNorm) oppCustomFields.push({ key: 'formato_espectaculo', field_value: formatoNorm });
     const estilos = [...(data.categorias || []), ...(data.subcategorias || [])];
     if (estilos.length) oppCustomFields.push({ key: 'estilos_artisticos', field_value: estilos });
     oppCustomFields.push({ key: 'produccion_tecnica_necesaria', field_value: data.necesitaProduccion ? 'si' : 'no' });
     if (data.comentarios) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.comentarios });
-    if (data.presupuesto) oppCustomFields.push({ key: 'presupuesto', field_value: String(data.presupuesto) });
     if (data.comoNosConocio) oppCustomFields.push({ key: 'como_nos_conocio', field_value: data.comoNosConocio });
+    if (proposalUrl) oppCustomFields.push({ key: 'url_generador_propuesta', field_value: proposalUrl });
+
+    // presupuesto del form ("< 5.000€", "5.000 - 10.000€", "> 25.000€"...) →
+    // opp.monetaryValue (no es un custom field). Promedio del rango si tiene 2 números.
+    const parseBudget = (s) => {
+      const nums = (String(s || '').match(/\d[\d.]*/g) || [])
+        .map(x => parseInt(x.replace(/\./g, ''), 10))
+        .filter(Boolean);
+      if (!nums.length) return 0;
+      if (nums.length === 1) return nums[0];
+      return Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
+    };
+    const monetaryValue = parseBudget(data.presupuesto);
 
     // PUT /opportunities/{id} NO acepta locationId/pipelineId/contactId
     // (devuelve 422 "property locationId should not exist"). Por eso los
@@ -253,14 +283,14 @@ export default async function handler(req, res) {
       contactId: contactId,
       name: oppName,
       status: 'open',
-      monetaryValue: 0,
+      monetaryValue: monetaryValue,
       customFields: oppCustomFields
     };
     const oppBodyPut = {
       pipelineStageId: STAGE,
       name: oppName,
       status: 'open',
-      monetaryValue: 0,
+      monetaryValue: monetaryValue,
       customFields: oppCustomFields
     };
 
@@ -275,6 +305,26 @@ export default async function handler(req, res) {
     const oppData = await oppRes.json();
     if (!oppRes.ok) {
       console.error('Opportunity', existingOppId ? 'PUT' : 'POST', 'failed:', oppRes.status, JSON.stringify(oppData).slice(0, 300));
+    }
+    const opportunityId = oppData.opportunity?.id || existingOppId || null;
+
+    // Linkear ghl_contact_id/opportunity_id en la fila de proposals.
+    // validate-proposal.js los necesita para resolver desde workflow GHL.
+    if (proposalId && SUPABASE_URL && SUPABASE_KEY) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}`, {
+          method: 'PATCH',
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ghl_contact_id: contactId,
+            ghl_opportunity_id: opportunityId
+          })
+        });
+      } catch (e) { console.error('Link proposal→ghl error:', e.message); }
     }
 
     // 5. Create contact in Holded
@@ -321,7 +371,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       contactId: contactId,
-      opportunityId: oppData.opportunity?.id || null,
+      opportunityId: opportunityId,
       holdedId: holdedId,
       proposalId: proposalId,
       proposalUrl: proposalUrl

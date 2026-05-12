@@ -56,8 +56,40 @@ export default async function handler(req, res) {
     const lang = (data.lang === 'en') ? 'en' : 'es';
 
     // Determine contact type based on selected disciplines
-    const disciplinas = data.disciplinas || [];
-    const hasProveedor = disciplinas.includes('Proveedores');
+    // Normalizamos categorías EN → ES (los GHL custom fields esperan ES)
+    const CATEGORIA_PROVEEDOR_EN_TO_ES = {
+      'Sound / AV': 'Audiovisuales',
+      'Audio / AV': 'Audiovisuales',
+      'Lighting': 'Iluminación',
+      'Tents / Risers / Staging': 'Producción técnica',
+      'Technical production': 'Producción técnica',
+      'Technology': 'Producción técnica',
+      'Catering': 'Catering',
+      'Decor / Florist': 'Decoración',
+      'Decor': 'Decoración',
+      'Florist': 'Floristería',
+      'Photography / Video': 'Foto/Vídeo',
+      'Photo / Video': 'Foto/Vídeo',
+      'Furniture': 'Mobiliario',
+      'Styling / Makeup': 'Otros',
+      'Venues / Spaces': 'Espacios',
+      'Venues': 'Espacios',
+      'Transport / Logistics': 'Transporte',
+      'Transport': 'Transporte',
+      'Security': 'Seguridad',
+      'Hostessing': 'Hostessing',
+      'Branding': 'Branding',
+      'Other': 'Otros'
+    };
+    const FORMATO_EN_TO_ES = {
+      'Stage show': 'Show de escenario',
+      'Strolling': 'Ambient / entre mesas',
+      'Ambient / strolling': 'Ambient / entre mesas',
+      'Full event management': 'Gestión integral'
+    };
+    const disciplinasRaw = data.disciplinas || [];
+    const disciplinas = disciplinasRaw.map(d => CATEGORIA_PROVEEDOR_EN_TO_ES[d] || d);
+    const hasProveedor = disciplinasRaw.includes('Proveedores') || disciplinas.includes('Proveedores');
     const tipoContacto = hasProveedor ? 'Proveedor' : 'Artista';
 
     // Tag por tipo: new_artist o new_supplier (brief 2026-05-08).
@@ -161,7 +193,8 @@ export default async function handler(req, res) {
           field_value: disciplinas.join(', ')
         });
       }
-      if (data.formatoShow) oppCustomFields.push({ key: 'formato_espectaculo', field_value: data.formatoShow });
+      const formatoNorm = FORMATO_EN_TO_ES[data.formatoShow] || data.formatoShow;
+      if (formatoNorm) oppCustomFields.push({ key: 'formato_espectaculo', field_value: formatoNorm });
       if (data.bioShow) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.bioShow });
 
       const oppBody = {

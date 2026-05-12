@@ -1,10 +1,11 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
-const URL_PROPUESTA_VALIDADA_FIELD_ID = 'R1XtZUYECtUKmvPeKoXD';
+// Custom field id en el modelo OPPORTUNITY (no contact). Spec 2026-05-12.
+const OPP_URL_PROPUESTA_VALIDADA = '40FFHGx5fYeV3VOK0yC4';
 
-async function writeValidatedUrlToGHL(email, validatedUrl) {
+async function writeValidatedUrlToGHL(opportunityId, email, validatedUrl) {
   const TOKEN = process.env.GHL_API_KEY;
   const LOC = process.env.GHL_LOCATION_ID;
-  if (!TOKEN || !LOC || !email) return { ok: false, reason: 'missing_config_or_email' };
+  if (!TOKEN || !LOC) return { ok: false, reason: 'missing_config' };
 
   const HEADERS = {
     'Authorization': `Bearer ${TOKEN}`,
@@ -12,22 +13,33 @@ async function writeValidatedUrlToGHL(email, validatedUrl) {
     'Content-Type': 'application/json'
   };
 
-  const searchRes = await fetch(
-    `${GHL_API}/contacts/search/duplicate?locationId=${LOC}&email=${encodeURIComponent(email)}`,
-    { headers: HEADERS }
-  );
-  const searchData = await searchRes.json();
-  const contact = searchData.contact;
-  if (!contact?.id) return { ok: false, reason: 'contact_not_found' };
+  // Resolver opportunityId si no viene (fallback por email del contacto)
+  let oppId = opportunityId || null;
+  if (!oppId && email) {
+    const searchRes = await fetch(
+      `${GHL_API}/contacts/search/duplicate?locationId=${LOC}&email=${encodeURIComponent(email)}`,
+      { headers: HEADERS }
+    );
+    const searchData = await searchRes.json();
+    const contactId = searchData.contact?.id;
+    if (!contactId) return { ok: false, reason: 'contact_not_found' };
+    const oppSearch = await fetch(
+      `${GHL_API}/opportunities/search?location_id=${LOC}&contact_id=${contactId}`,
+      { headers: HEADERS }
+    );
+    const oppData = await oppSearch.json();
+    oppId = (oppData.opportunities || [])[0]?.id;
+  }
+  if (!oppId) return { ok: false, reason: 'opportunity_not_found' };
 
-  const updateRes = await fetch(`${GHL_API}/contacts/${contact.id}`, {
+  const updateRes = await fetch(`${GHL_API}/opportunities/${oppId}`, {
     method: 'PUT',
     headers: HEADERS,
     body: JSON.stringify({
-      customFields: [{ id: URL_PROPUESTA_VALIDADA_FIELD_ID, field_value: validatedUrl }]
+      customFields: [{ id: OPP_URL_PROPUESTA_VALIDADA, field_value: validatedUrl }]
     })
   });
-  return { ok: updateRes.ok, status: updateRes.status, contactId: contact.id };
+  return { ok: updateRes.ok, status: updateRes.status, opportunityId: oppId };
 }
 
 export default async function handler(req, res) {
@@ -98,9 +110,9 @@ export default async function handler(req, res) {
       const updated = await updateRes.json();
 
       let ghlSync;
-      if (data.status === 'approved' && data.client?.email && baseUrl) {
+      if (data.status === 'approved' && baseUrl) {
         const validatedUrl = `${baseUrl}/propuesta.html?id=${data.id}`;
-        ghlSync = await writeValidatedUrlToGHL(data.client.email, validatedUrl);
+        ghlSync = await writeValidatedUrlToGHL(data.ghlOpportunityId, data.client?.email, validatedUrl);
       }
 
       return res.status(200).json({ success: true, id: data.id, proposal: updated[0], ghlSync });
@@ -127,9 +139,9 @@ export default async function handler(req, res) {
     }
 
     let ghlSync;
-    if (data.status === 'approved' && data.client?.email && baseUrl) {
+    if (data.status === 'approved' && baseUrl) {
       const validatedUrl = `${baseUrl}/propuesta.html?id=${created[0].id}`;
-      ghlSync = await writeValidatedUrlToGHL(data.client.email, validatedUrl);
+      ghlSync = await writeValidatedUrlToGHL(data.ghlOpportunityId, data.client?.email, validatedUrl);
     }
 
     return res.status(200).json({
