@@ -114,10 +114,11 @@ export default async function handler(req, res) {
         { key: 'nombre_artista', field_value: data.nombreArtistico || data.compania || '' },
         { key: 'categoria_artista', field_value: disciplinas.join(', ') },
         { key: 'subcategoria_artista', field_value: (data.subcategorias || []).join(', ') },
-        { key: 'descripcion_del_espectaculo', field_value: data.bioShow || '' },
-        { key: 'formato_del_show', field_value: data.formatoShow ? [data.formatoShow] : [] },
         { key: 'acepto_politica_privacidad', field_value: data.aceptoPrivacidad ? 'Sí' : 'No' },
         { key: 'acepto_visibilidad_web_rrss', field_value: data.aceptoVisibilidad ? 'Sí' : 'No' }
+        // descripcion_del_espectaculo y formato_del_show no son fields del contact en
+        // GHL (sí del opportunity como `comentarios_adicionales` y `formato_espectaculo`).
+        // bioShow se persiste en Supabase artistas y va al opp en oppCustomFields abajo.
       ]
     };
 
