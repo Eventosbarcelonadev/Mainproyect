@@ -100,7 +100,8 @@ export default async function handler(req, res) {
           contactId: contactId,
           name: data.empresa || data.nombre || 'Lead',
           status: 'open',
-          monetaryValue: 0
+          monetaryValue: 0,
+          source: 'Form Cliente - Partial'
         };
 
         const oppRes = await fetch(`${API}/opportunities/`, {
@@ -302,6 +303,7 @@ export default async function handler(req, res) {
       name: oppName,
       status: 'open',
       monetaryValue: monetaryValue,
+      source: 'Form Cliente',
       customFields: oppCustomFields
     };
     const oppBodyPut = {

@@ -239,7 +239,8 @@ export default async function handler(req, res) {
         contactId: contactId,
         name: oppName,
         status: 'open',
-        monetaryValue: 0
+        monetaryValue: 0,
+        source: `Web Elementor - ${formName}`
       };
 
       const oppRes = await fetch(`${API}/opportunities/`, {

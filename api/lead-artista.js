@@ -224,6 +224,7 @@ export default async function handler(req, res) {
         name: `${data.nombreArtistico || data.compania || data.nombre || tipoContacto} — ${disciplinas.join(', ')}`,
         status: 'open',
         monetaryValue: 0,
+        source: isProveedor ? 'Form Proveedor' : 'Form Artista',
         customFields: oppCustomFields
       };
 
