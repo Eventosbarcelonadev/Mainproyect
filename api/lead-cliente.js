@@ -63,7 +63,7 @@ export default async function handler(req, res) {
         phone: data.telefono || '',
         companyName: data.empresa || '',
         website: data.webEmpresa || '',
-        tags: ['new_lead'],
+        tags: ['new_lead', `lang:${lang}`],
         source: 'Form Cliente - Partial',
         customFields: [
           { key: 'contact_type', field_value: 'Cliente' },
@@ -121,7 +121,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const tags = ['new_lead'];
+    const tags = ['new_lead', `lang:${lang}`];
     const score = computeClienteScore(data);
 
     // 1. Create/update contact

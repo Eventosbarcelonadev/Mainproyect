@@ -158,7 +158,7 @@ export default async function handler(req, res) {
     // Spec Ramiro 2026-05-08: solo 3 tags válidos (new_lead/new_artist/new_supplier).
     // El estado "incompleto" se infiere de que los custom fields del opportunity
     // estén vacíos — no se etiqueta con tag.
-    const tags = isInscripcion ? [] : ['new_lead'];
+    const tags = isInscripcion ? [`lang:${lang}`] : ['new_lead', `lang:${lang}`];
 
     // 1. Create/update contact in GHL
     const contactBody = {

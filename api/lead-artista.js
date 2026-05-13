@@ -94,7 +94,9 @@ export default async function handler(req, res) {
 
     // Tag por tipo: new_artist o new_supplier (brief 2026-05-08).
     // En isUpdate (artista actualiza su perfil) no añadir tags nuevos.
-    const tags = isUpdate ? [] : [tipoContacto === 'Proveedor' ? 'new_supplier' : 'new_artist'];
+    const tags = isUpdate
+      ? [`lang:${lang}`]
+      : [tipoContacto === 'Proveedor' ? 'new_supplier' : 'new_artist', `lang:${lang}`];
     const score = computeArtistaScore(data);
 
     // 1. Create/update contact

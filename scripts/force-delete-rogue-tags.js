@@ -10,9 +10,12 @@
  * limpia el resto.
  *
  * Tags borrados:
- *   lang:es, lang:en, tipo:cliente, tipo:artista, tipo:proveedor,
+ *   tipo:cliente, tipo:artista, tipo:proveedor,
  *   origen:web-elementor, origen:form, origen_form, form:contacto-web,
  *   info_incompleta, info_completa
+ *
+ * Nota: `lang:es` y `lang:en` SÍ son válidos (los setean los forms web
+ * para que GHL pueda enrutar workflows por idioma). No incluirlos aquí.
  *
  * Uso:
  *   node scripts/force-delete-rogue-tags.js                # dry run
@@ -33,7 +36,6 @@ if (!TOKEN || !SB_URL || !SB_KEY) {
 }
 
 const ROGUE_TAGS = [
-  'lang:es', 'lang:en',
   'tipo:cliente', 'tipo:artista', 'tipo:proveedor',
   'origen:web-elementor', 'origen:form', 'origen_form',
   'form:contacto-web',
