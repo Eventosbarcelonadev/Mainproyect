@@ -272,8 +272,10 @@ export default async function handler(req, res) {
     if (data.numAsistentes) oppCustomFields.push({ key: 'numero_asistentes', field_value: parseInt(data.numAsistentes, 10) || 0 });
     if (data.ubicacion) oppCustomFields.push({ key: 'ciudad_evento', field_value: data.ubicacion });
     if (formatoNorm) oppCustomFields.push({ key: 'formato_espectaculo', field_value: formatoNorm });
+    // estilos_artisticos pasó de CHECKBOX → LARGE_TEXT (2026-05-13) para que
+    // el template de propuesta {{opportunity.estilos_artisticos}} lo muestre como lista.
     const estilos = [...(data.categorias || []), ...(data.subcategorias || [])];
-    if (estilos.length) oppCustomFields.push({ key: 'estilos_artisticos', field_value: estilos });
+    if (estilos.length) oppCustomFields.push({ key: 'estilos_artisticos', field_value: estilos.join('\n') });
     oppCustomFields.push({ key: 'produccion_tecnica_necesaria', field_value: data.necesitaProduccion ? 'si' : 'no' });
     if (data.comentarios) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.comentarios });
     if (data.comoNosConocio) oppCustomFields.push({ key: 'como_nos_conocio', field_value: data.comoNosConocio });
