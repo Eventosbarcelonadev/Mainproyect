@@ -106,9 +106,9 @@ export default async function handler(req, res) {
       phone: data.telefono || '',
       city: data.ciudad || '',
       tags: tags,
+      source: tipoContacto === 'Proveedor' ? 'Form Proveedor' : 'Form Artista',
       customFields: [
         { key: 'contact_type', field_value: tipoContacto },
-        { key: 'contact_origen', field_value: 'form' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         { key: 'contact_score', field_value: score },
         { key: 'nombre_artista', field_value: data.nombreArtistico || data.compania || '' },
@@ -149,9 +149,9 @@ export default async function handler(req, res) {
           method: 'PUT',
           headers: HEADERS,
           body: JSON.stringify({
+            source: tipoContacto === 'Proveedor' ? 'Form Proveedor' : 'Form Artista',
             customFields: [
-              { key: 'contact_type', field_value: tipoContacto },
-              { key: 'contact_origen', field_value: 'form' }
+              { key: 'contact_type', field_value: tipoContacto }
             ]
           })
         });

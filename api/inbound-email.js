@@ -68,9 +68,9 @@ export default async function handler(req, res) {
       action = 'message_added_existing';
     } else {
       // 2. Create new contact
-      // contact_origen depende del buzón destino. Default 'info@'; si el envío
-      // viene de un alias hacia xavi@, se setea 'xavi@'. Si no hay info de
-      // destino, queda 'info@' como heurística.
+      // origen depende del buzón destino. Se concatena al contact.source standard
+      // (string libre tipo "Email entrante - info@"). Si el envío viene a xavi@
+      // se distingue para que Xavi vea en GHL de qué buzón vino el lead.
       const toEmail = (body.to || body.To || body.recipient || '').toLowerCase();
       const origen = /xavi/.test(toEmail) ? 'xavi@' : 'info@';
       const [firstName, ...lastParts] = fromName.split(' ');
@@ -157,10 +157,9 @@ async function createContact({ ghlHeaders, locationId, firstName, lastName, emai
       firstName,
       lastName,
       email,
-      source: 'Email entrante',
+      source: `Email entrante - ${origen || 'info@'}`,
       tags: [],
       customFields: [
-        { key: 'contact_origen', field_value: origen || 'info@' },
         { key: 'contact_type', field_value: 'Cliente' }
       ]
     })

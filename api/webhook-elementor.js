@@ -170,7 +170,6 @@ export default async function handler(req, res) {
       tags: tags,
       source: `Web Elementor - ${formName}`,
       customFields: [
-        { key: 'contact_origen', field_value: 'form' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         // contact_type y contact_score se setean en el flow correspondiente
         // (lead-cliente.js para Cliente, lead-artista.js para Artista/Proveedor).
@@ -212,9 +211,9 @@ export default async function handler(req, res) {
           method: 'PUT',
           headers: HEADERS,
           body: JSON.stringify({
+            source: `Web Elementor - ${formName}`,
             customFields: [
-              { key: 'contact_type', field_value: 'Cliente' },
-              { key: 'contact_origen', field_value: 'form' }
+              { key: 'contact_type', field_value: 'Cliente' }
             ]
           })
         });
