@@ -279,11 +279,12 @@ export default async function handler(req, res) {
     if (data.comoNosConocio) oppCustomFields.push({ key: 'como_nos_conocio', field_value: data.comoNosConocio });
     if (proposalUrl) oppCustomFields.push({ key: 'url_generador_propuesta', field_value: proposalUrl });
 
-    // presupuesto del form ("< 5.000€", "5.000 - 10.000€", "> 25.000€"...) →
+    // presupuesto del form ("< 5.000€", "5.000 - 10.000€", "€10,000 - €25,000"...) →
     // opp.monetaryValue (no es un custom field). Promedio del rango si tiene 2 números.
+    // Acepta tanto "." (ES) como "," (EN) como separador de miles.
     const parseBudget = (s) => {
-      const nums = (String(s || '').match(/\d[\d.]*/g) || [])
-        .map(x => parseInt(x.replace(/\./g, ''), 10))
+      const nums = (String(s || '').match(/\d[\d.,]*/g) || [])
+        .map(x => parseInt(x.replace(/[.,]/g, ''), 10))
         .filter(Boolean);
       if (!nums.length) return 0;
       if (nums.length === 1) return nums[0];
