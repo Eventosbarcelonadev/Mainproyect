@@ -57,23 +57,36 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
-    // Aceptar variantes: opportunityId / opportunity_id / id / opportunityID
-    // Si GHL workflow manda el campo anidado (opportunity.id), también lo soportamos.
+    // GHL workflow webhook default payload trae info del contact en top-level
+    // y mete el custom data del workflow en `customData`. Buscar también ahí.
+    const cd = body.customData || {};
+    const td = body.triggerData || {};
     const opportunityId =
       body.opportunityId ||
       body.opportunity_id ||
       body.opportunityID ||
       body.id ||
       body.opportunity?.id ||
+      cd.opportunityId ||
+      cd.opportunity_id ||
+      cd.id ||
+      td.opportunityId ||
+      td.opportunity_id ||
+      td.id ||
       req.query?.opportunityId ||
       req.query?.id;
 
     if (!opportunityId) {
-      console.error('init-opp-proposal: missing opportunityId. Body keys:', Object.keys(body), 'raw:', JSON.stringify(body).slice(0, 500));
+      console.error('init-opp-proposal: missing opportunityId.',
+        'Body keys:', Object.keys(body),
+        '  customData:', JSON.stringify(cd).slice(0, 300),
+        '  triggerData:', JSON.stringify(td).slice(0, 300));
       return res.status(400).json({
         error: 'opportunityId required',
-        hint: 'Send JSON body { "opportunityId": "<id>" } or query string ?opportunityId=<id>',
-        receivedKeys: Object.keys(body)
+        hint: 'En GHL Workflow Webhook activa "Custom Data" y pega { "opportunityId": "{{opportunity.id}}" }',
+        receivedKeys: Object.keys(body),
+        customDataKeys: Object.keys(cd),
+        triggerDataKeys: Object.keys(td)
       });
     }
 
