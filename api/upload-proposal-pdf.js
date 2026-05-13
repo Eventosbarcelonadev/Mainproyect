@@ -8,7 +8,9 @@
 // 3. Patchea pdf_url en proposals (auditoría).
 
 const SUPABASE_BUCKET = 'propuestas-pdf';
-const URL_PROPUESTA_PDF_FIELD_ID = 'kAvVxvoHfKmTvZgshppS';
+// IDs custom fields (regenerados 2026-05-13 — ver memoria project_ghl_spec)
+const CONTACT_URL_PROPUESTA_PDF = 'Ksk2gVtDGy8Ftc9Bu1cC';
+const OPP_URL_PROPUESTA_PDF     = '65bFezateOokNxACijCW';
 
 export const config = {
   api: { bodyParser: { sizeLimit: '12mb' } }
@@ -31,21 +33,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { proposalId, contactId: contactIdInput, pdfBase64 } = req.body || {};
+    const { proposalId, contactId: contactIdInput, opportunityId: oppIdInput, pdfBase64 } = req.body || {};
     if (!pdfBase64) return res.status(400).json({ error: 'pdfBase64 required' });
     if (!proposalId && !contactIdInput) {
       return res.status(400).json({ error: 'proposalId or contactId required' });
     }
 
-    // Resolver contactId desde la propuesta si no viene en body
+    // Resolver contactId/opportunityId desde la propuesta si no vienen en body
     let contactId = contactIdInput || null;
-    if (!contactId && proposalId) {
+    let opportunityId = oppIdInput || null;
+    if ((!contactId || !opportunityId) && proposalId) {
       const r = await fetch(
-        `${SB_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=ghl_contact_id&limit=1`,
+        `${SB_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=ghl_contact_id,ghl_opportunity_id&limit=1`,
         { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
       );
       const rows = await r.json();
-      contactId = rows[0]?.ghl_contact_id || null;
+      contactId = contactId || rows[0]?.ghl_contact_id || null;
+      opportunityId = opportunityId || rows[0]?.ghl_opportunity_id || null;
     }
 
     // 1. Decodificar y subir a Supabase Storage
@@ -71,20 +75,20 @@ export default async function handler(req, res) {
     }
     const publicUrl = `${SB_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
 
-    // 2. Escribir url_propuesta_pdf en contact + nota con el enlace (timeline)
+    // 2. Escribir url_propuesta_pdf en contact + opp + nota timeline
     let ghlSync = { ok: false, reason: 'no_contact_id' };
+    const ghlHeaders = {
+      Authorization: `Bearer ${GHL_TOKEN}`,
+      Version: '2021-07-28',
+      'Content-Type': 'application/json'
+    };
     if (contactId) {
-      const ghlHeaders = {
-        Authorization: `Bearer ${GHL_TOKEN}`,
-        Version: '2021-07-28',
-        'Content-Type': 'application/json'
-      };
-      const [fieldRes, noteRes] = await Promise.all([
+      const ops = [
         fetch(`${GHL_API}/contacts/${contactId}`, {
           method: 'PUT',
           headers: ghlHeaders,
           body: JSON.stringify({
-            customFields: [{ id: URL_PROPUESTA_PDF_FIELD_ID, field_value: publicUrl }]
+            customFields: [{ id: CONTACT_URL_PROPUESTA_PDF, field_value: publicUrl }]
           })
         }),
         fetch(`${GHL_API}/contacts/${contactId}/notes`, {
@@ -94,11 +98,22 @@ export default async function handler(req, res) {
             body: `Propuesta PDF generada: ${publicUrl}\nArchivo: ${path}`
           })
         })
-      ]);
+      ];
+      if (opportunityId) {
+        ops.push(fetch(`${GHL_API}/opportunities/${opportunityId}`, {
+          method: 'PUT',
+          headers: ghlHeaders,
+          body: JSON.stringify({
+            customFields: [{ id: OPP_URL_PROPUESTA_PDF, field_value: publicUrl }]
+          })
+        }));
+      }
+      const results = await Promise.all(ops);
       ghlSync = {
-        ok: fieldRes.ok && noteRes.ok,
-        fieldStatus: fieldRes.status,
-        noteStatus: noteRes.status
+        ok: results.every(r => r.ok),
+        contactFieldStatus: results[0].status,
+        noteStatus: results[1].status,
+        oppFieldStatus: opportunityId ? results[2].status : null
       };
     }
 

@@ -2564,9 +2564,17 @@
           proposalState.proposalId = result.id;
           const clientUrl = `${window.location.origin}/propuesta.html?id=${result.id}`;
 
-          // Tras guardar, llamar validate-proposal para setear opp.validar_propuesta
-          // ("validada por Xavi"), tag `proposal` y monetaryValue. Eso dispara los
-          // workflows GHL (W2-Proposal's approval, W4-Sending proposal to lead).
+          // Generar PDF + subirlo al contacto (escribe url_propuesta_pdf + nota
+          // timeline). Después llamar validate-proposal para setear
+          // opp.validar_propuesta ("validada por Xavi"), tag `proposal` y
+          // monetaryValue. validate-proposal dispara los workflows GHL.
+          showToast('Generando PDF…');
+          try {
+            await generateAndUploadProposalPdf(result.id, proposalState.ghlContactId);
+          } catch (pdfErr) {
+            console.error('PDF generation failed (non-blocking):', pdfErr);
+          }
+
           fetch('/api/validate-proposal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2706,7 +2714,12 @@
       const r = await fetch('/api/upload-proposal-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proposalId, contactId, pdfBase64: base64 })
+        body: JSON.stringify({
+          proposalId,
+          contactId,
+          opportunityId: proposalState.ghlOpportunityId || null,
+          pdfBase64: base64
+        })
       });
       const data = await r.json();
       if (!r.ok || !data.success) throw new Error(data.error || `upload ${r.status}`);

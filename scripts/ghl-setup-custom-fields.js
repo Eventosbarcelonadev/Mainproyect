@@ -124,13 +124,23 @@ async function deleteCustomField(id) {
     console.log(`✓ no hay custom field "id" huérfano`);
   }
 
-  // -- 3. Crear como_nos_conocio en opportunity --
+  // -- 3. Crear como_nos_conocio + url_propuesta_pdf en opportunity --
   // Spec 2026-05-12: presupuesto ya no es custom field (se mapea a opp.monetaryValue).
+  // Spec 2026-05-13: url_propuesta_pdf también en opp para visibilidad directa.
   const oppFieldsToCreate = [
     {
       key: 'como_nos_conocio',
       payload: {
         name: 'Como nos conocio',
+        dataType: 'TEXT',
+        position: 0,
+        model: 'opportunity'
+      }
+    },
+    {
+      key: 'url_propuesta_pdf',
+      payload: {
+        name: 'URL Propuesta PDF',
         dataType: 'TEXT',
         position: 0,
         model: 'opportunity'
