@@ -56,8 +56,26 @@ export default async function handler(req, res) {
   };
 
   try {
-    const opportunityId = req.body?.opportunityId || req.body?.opportunity_id;
-    if (!opportunityId) return res.status(400).json({ error: 'opportunityId required' });
+    const body = req.body || {};
+    // Aceptar variantes: opportunityId / opportunity_id / id / opportunityID
+    // Si GHL workflow manda el campo anidado (opportunity.id), también lo soportamos.
+    const opportunityId =
+      body.opportunityId ||
+      body.opportunity_id ||
+      body.opportunityID ||
+      body.id ||
+      body.opportunity?.id ||
+      req.query?.opportunityId ||
+      req.query?.id;
+
+    if (!opportunityId) {
+      console.error('init-opp-proposal: missing opportunityId. Body keys:', Object.keys(body), 'raw:', JSON.stringify(body).slice(0, 500));
+      return res.status(400).json({
+        error: 'opportunityId required',
+        hint: 'Send JSON body { "opportunityId": "<id>" } or query string ?opportunityId=<id>',
+        receivedKeys: Object.keys(body)
+      });
+    }
 
     // 1. Read opportunity
     const oppRes = await fetch(`${GHL_API}/opportunities/${opportunityId}`, { headers: GH });
