@@ -202,6 +202,25 @@ export default async function handler(req, res) {
     // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
     if (isExistingContact) await triggerNotifyXavi(contactId);
 
+    // Guardrail: si el contacto ya existía y NO es inscripción, forzar PUT
+    // explícito de contact_type=Cliente. GHL upsert a veces no propaga
+    // customFields cuando el contacto ya tenía otro valor (caso: lead que
+    // primero entró como Artista y luego vuelve por /contacto/).
+    if (isExistingContact && !isInscripcion) {
+      try {
+        await fetch(`${API}/contacts/${contactId}`, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({
+            customFields: [
+              { key: 'contact_type', field_value: 'Cliente' },
+              { key: 'contact_origen', field_value: 'form' }
+            ]
+          })
+        });
+      } catch (e) { console.error('Force PUT contact_type error:', e.message); }
+    }
+
     // 2. Create opportunity en pipeline Clientes — solo si NO es inscripción
     // (los flows de artistas/proveedores crean su propia opp en su pipeline).
     // Nombre: "{nombre} - {teléfono}" (Ramiro 2026-05-08).

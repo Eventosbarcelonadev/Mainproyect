@@ -209,6 +209,24 @@ export default async function handler(req, res) {
     // Spec: si contacto ya existía, notificar a Xavi (workflow GHL)
     if (isExistingContact) await triggerNotifyXavi(contactId);
 
+    // Guardrail: si el contacto ya existía, forzar PUT explícito de contact_type
+    // a Cliente. Cubre el caso en que el lead había llegado antes como Artista
+    // o Proveedor y GHL no propaga el override via upsert.
+    if (isExistingContact) {
+      try {
+        await fetch(`${API}/contacts/${contactId}`, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({
+            customFields: [
+              { key: 'contact_type', field_value: 'Cliente' },
+              { key: 'contact_origen', field_value: 'form' }
+            ]
+          })
+        });
+      } catch (e) { console.error('Force PUT contact_type=Cliente error:', e.message); }
+    }
+
 
     // 2. Find existing open opportunity for this contact (created by partial submit
     //    o reintento). Si existe, actualizar en lugar de crear duplicada.

@@ -140,6 +140,24 @@ export default async function handler(req, res) {
     // No notificar cuando es auto-update del artista actualizando su propio perfil (isUpdate)
     if (isExistingContact && !isUpdate) await triggerNotifyXavi(contactId);
 
+    // Guardrail: si el contacto ya existía, forzar PUT explícito de contact_type
+    // al tipo correcto (Artista/Proveedor). Cubre el caso en que el upsert no
+    // propaga el override si el contacto venía como Cliente.
+    if (isExistingContact && !isUpdate) {
+      try {
+        await fetch(`${API}/contacts/${contactId}`, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({
+            customFields: [
+              { key: 'contact_type', field_value: tipoContacto },
+              { key: 'contact_origen', field_value: 'form' }
+            ]
+          })
+        });
+      } catch (e) { console.error('Force PUT contact_type error:', e.message); }
+    }
+
 
     // 1b. Pivot from Cliente pipeline if this contact came from the cliente form
     //     (partial submit creates them as Cliente with info_incompleta tag).
