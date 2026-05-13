@@ -15,7 +15,16 @@
 // → Webhook POST a este endpoint con body `{ "opportunityId": "{{opportunity.id}}" }`.
 
 const GHL_API = 'https://services.leadconnectorhq.com';
+// IDs custom fields opportunity (GHL GET devuelve solo {id, fieldValue} — sin key)
 const OPP_URL_GENERADOR_PROPUESTA = 'LJMLhmfJN6W9xHZFXVpB';
+const OPP_TIPO_EVENTO            = 'kM1ru1CRbgMCq7rLbCGt';
+const OPP_FECHA_EVENTO           = 'vNUbgACM4fzO9te0pdyU';
+const OPP_NUMERO_ASISTENTES      = 'zN0Dx77QRdTYZ9MqEKQs';
+const OPP_CIUDAD_EVENTO          = 'kERM4ww6ih27aj4aNySH';
+const OPP_FORMATO_ESPECTACULO    = 'myX4ePJw0hkrrGi8aTHY';
+const OPP_ESTILOS_ARTISTICOS     = 'Y3CacQG4d9rl8T9l0zmS';
+// ID custom field contact
+const CONTACT_IDIOMA             = 'sz3cgYEWMZ0ysmmFxffE';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -60,20 +69,25 @@ export default async function handler(req, res) {
     const contactId = opp.contactId || opp.contact?.id;
     if (!contactId) return res.status(400).json({ error: 'Opportunity has no contact' });
 
-    // 2. Extraer custom fields conocidos
+    // 2. Extraer custom fields conocidos (GHL devuelve {id, fieldValue})
     const cf = (opp.customFields || []);
-    const getCf = (key, fieldId) =>
-      cf.find(f => f.fieldKey === `opportunity.${key}` || f.key === key || f.id === fieldId)?.fieldValue
-        ?? cf.find(f => f.fieldKey === `opportunity.${key}` || f.key === key || f.id === fieldId)?.field_value
-        ?? '';
-
-    const alreadyHasUrl = getCf('url_generador_propuesta', OPP_URL_GENERADOR_PROPUESTA);
+    const cfById = (id) => {
+      const f = cf.find(x => x.id === id);
+      return f?.fieldValue ?? f?.field_value ?? '';
+    };
+    const alreadyHasUrl = cfById(OPP_URL_GENERADOR_PROPUESTA);
+    const tipoEventoArr = cfById(OPP_TIPO_EVENTO);
+    const tipoEvento    = Array.isArray(tipoEventoArr) ? tipoEventoArr[0] : (tipoEventoArr || '');
+    const fechaEvento   = cfById(OPP_FECHA_EVENTO);
+    const numAsistentes = cfById(OPP_NUMERO_ASISTENTES);
+    const ciudadEvento  = cfById(OPP_CIUDAD_EVENTO);
 
     // 3. Read contact for lang/name/email/phone
     const cRes = await fetch(`${GHL_API}/contacts/${contactId}`, { headers: GH });
     const cJson = await cRes.json();
     const contact = cJson.contact || {};
-    const lang = (contact.customFields || []).find(f => f.id === 'sz3cgYEWMZ0ysmmFxffE')?.value === 'English' ? 'en' : 'es';
+    const idiomaVal = (contact.customFields || []).find(f => f.id === CONTACT_IDIOMA)?.value;
+    const lang = idiomaVal === 'English' ? 'en' : 'es';
 
     // 4. Buscar proposal existente para esta opp (idempotencia)
     let proposalId = null;
@@ -89,15 +103,15 @@ export default async function handler(req, res) {
       const proposalRow = {
         status: 'revision',
         lang,
-        client_name: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),
+        client_name: `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || contact.firstName || '',
         client_company: contact.companyName || '',
         client_email: contact.email || '',
         client_phone: contact.phone || '',
-        event_name: `${getCf('tipo_de_evento')[0] || 'Evento'} — ${contact.companyName || contact.firstName || 'Cliente'}`,
-        event_type: Array.isArray(getCf('tipo_de_evento')) ? getCf('tipo_de_evento')[0] : (getCf('tipo_de_evento') || ''),
-        event_date: getCf('fecha_evento') || '',
-        event_guests: parseInt(getCf('numero_asistentes'), 10) || 0,
-        event_location: getCf('ciudad_evento') || '',
+        event_name: `${tipoEvento || 'Evento'} — ${contact.companyName || contact.firstName || 'Cliente'}`,
+        event_type: tipoEvento,
+        event_date: fechaEvento || '',
+        event_guests: parseInt(numAsistentes, 10) || 0,
+        event_location: ciudadEvento || '',
         category: 'shows',
         concept_title: '',
         concept_text: '',
