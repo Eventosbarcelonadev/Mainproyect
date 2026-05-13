@@ -23,7 +23,8 @@ export default async function handler(req, res) {
     const fields = [
       'id', 'name', 'category', 'subcategory', 'description', 'base_price',
       'price_note', 'video_url', 'image_url', 'name_en', 'description_en',
-      'subcategory_en', 'price_note_en'
+      'subcategory_en', 'price_note_en', 'is_favorite', 'artista_id',
+      'artista:artista_id(id,nombre,nombre_artistico,compania,fotos_urls)'
     ].join(',');
     const url = `${SB_URL}/rest/v1/shows?status=eq.active&select=${fields}&order=name`;
 
@@ -39,6 +40,9 @@ export default async function handler(req, res) {
     // Shape compatible con SHOW_CATALOG[id] del propuesta.html (camelCase keys)
     const catalog = {};
     for (const row of rows) {
+      const a = row.artista || null;
+      const artistaNombre = a ? (a.nombre_artistico || a.compania || a.nombre || '') : '';
+      const artistaFotos = (a && Array.isArray(a.fotos_urls)) ? a.fotos_urls : [];
       catalog[row.id] = {
         name: row.name,
         category: row.category,
@@ -51,7 +55,11 @@ export default async function handler(req, res) {
         nameEn: row.name_en || row.name,
         descriptionEn: row.description_en || row.description || '',
         subcategoryEn: row.subcategory_en || row.subcategory,
-        priceNoteEn: row.price_note_en || row.price_note || ''
+        priceNoteEn: row.price_note_en || row.price_note || '',
+        artistaId: row.artista_id || null,
+        artistaNombre,
+        artistaFotos,
+        isFavorite: !!row.is_favorite
       };
     }
 

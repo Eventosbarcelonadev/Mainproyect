@@ -357,10 +357,28 @@
       color: var(--gray);
       padding: 4px 8px;
     }
+    .picker-search {
+      padding: 14px 24px 0;
+    }
+    .picker-search input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .picker-search input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
     .picker-tabs {
       display: flex;
       gap: 6px;
-      padding: 16px 24px 0;
+      padding: 12px 24px 0;
       flex-wrap: wrap;
     }
     .picker-tab {
@@ -378,11 +396,79 @@
     .picker-tab:hover { border-color: var(--accent); color: var(--accent); }
     .picker-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .picker-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 16px 24px 24px;
+      overflow-y: auto;
+    }
+    .picker-artist-section {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .picker-artist-section:first-child { border-top: none; padding-top: 0; }
+    .picker-artist-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .picker-artist-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-gray);
+      background-size: cover;
+      background-position: center;
+      border: 1.5px solid var(--border);
+      flex: 0 0 40px;
+    }
+    .picker-artist-avatar--initial {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .picker-artist-avatar--star {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #b88a00;
+      background: #ffd84d;
+      border-color: #ffd84d;
+    }
+    .picker-fav-star {
+      color: #d6a800;
+      margin-right: 4px;
+      font-size: 0.95em;
+    }
+    .picker-artist-meta { display: flex; flex-direction: column; gap: 2px; }
+    .picker-artist-meta h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.2;
+    }
+    .picker-artist-meta span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .picker-artist-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 12px;
-      padding: 16px 24px 24px;
-      overflow-y: auto;
     }
     .picker-card {
       border: 1.5px solid var(--border);
@@ -1556,6 +1642,9 @@
         <h3>Agregar show a la propuesta</h3>
         <button class="picker-close" onclick="closePicker()">&times;</button>
       </div>
+      <div class="picker-search">
+        <input type="search" id="pickerSearch" placeholder="Buscar por artista, show o disciplina…" autocomplete="off">
+      </div>
       <div class="picker-tabs" id="pickerTabs"></div>
       <div class="picker-grid" id="pickerGrid"></div>
     </div>
@@ -2324,12 +2413,23 @@
     // SHOW PICKER — add shows in admin mode
     // =============================================
     let pickerFilter = 'all';
+    let pickerQuery = '';
 
     function openPicker() {
       pickerFilter = 'all';
+      pickerQuery = '';
+      const searchEl = document.getElementById('pickerSearch');
+      if (searchEl) {
+        searchEl.value = '';
+        searchEl.oninput = (e) => {
+          pickerQuery = (e.target.value || '').trim().toLowerCase();
+          renderPickerGrid();
+        };
+      }
       renderPickerTabs();
       renderPickerGrid();
       document.getElementById('pickerOverlay').classList.add('open');
+      if (searchEl) setTimeout(() => searchEl.focus(), 50);
     }
 
     function closePicker() {
@@ -2350,24 +2450,130 @@
       renderPickerGrid();
     }
 
+    function _pickerEscape(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function renderPickerGrid() {
       const grid = document.getElementById('pickerGrid');
       const currentIds = proposalState.shows.map(s => s.id);
       const catLabels = { danza: 'Danza', musica: 'Musica', circo: 'Circo', wow: 'WOW' };
+      const PLACEHOLDER_IMG = 'https://via.placeholder.com/400x200?text=Sin+imagen';
+
+      const q = pickerQuery;
+      const groups = new Map();
+      const favorites = [];
+      Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
+        if (!show) return;
+        if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
+        if (q) {
+          const hay = [
+            show.name, show.nameEn, show.subcategory, show.subcategoryEn, show.category,
+            catLabels[show.category], show.artistaNombre,
+            show.description, show.descriptionEn
+          ].filter(Boolean).join(' ').toLowerCase();
+          if (!hay.includes(q)) return;
+        }
+        if (show.isFavorite) favorites.push({ id, show });
+        const key = show.artistaId || '__none__';
+        if (!groups.has(key)) {
+          groups.set(key, {
+            artistaId: show.artistaId || null,
+            artistaNombre: show.artistaNombre || '',
+            artistaFotos: Array.isArray(show.artistaFotos) ? show.artistaFotos : [],
+            shows: []
+          });
+        }
+        groups.get(key).shows.push({ id, show });
+      });
+
+      if (groups.size === 0) {
+        const msg = pickerQuery
+          ? `Sin resultados para "${_pickerEscape(pickerQuery)}".`
+          : 'No hay shows disponibles en esta categoria.';
+        grid.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray);font-family:Inter,sans-serif;">${msg}</div>`;
+        return;
+      }
+
+      const orderedKeys = Array.from(groups.keys()).sort((a, b) => {
+        if (a === '__none__') return 1;
+        if (b === '__none__') return -1;
+        const na = (groups.get(a).artistaNombre || '').toLowerCase();
+        const nb = (groups.get(b).artistaNombre || '').toLowerCase();
+        return na.localeCompare(nb);
+      });
+
+      const renderShowCard = (id, show) => {
+        const already = currentIds.includes(id);
+        const safeId = _pickerEscape(id);
+        const name = show.name || '(sin nombre)';
+        const cat = catLabels[show.category] || show.category || '';
+        const sub = show.subcategory || '';
+        const meta = [cat, sub].filter(Boolean).join(' · ');
+        const img = show.imageUrl || PLACEHOLDER_IMG;
+        const star = show.isFavorite ? '<span class="picker-fav-star" title="Favorito">★</span>' : '';
+        return `
+          <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : `addShowFromPicker('${safeId}')`}">
+            <img src="${_pickerEscape(img)}" alt="${_pickerEscape(name)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';">
+            <div class="picker-card-body">
+              <small>${_pickerEscape(meta)}</small>
+              <h4>${star}${_pickerEscape(name)}${already ? ' (agregado)' : ''}</h4>
+            </div>
+          </div>`;
+      };
 
       let html = '';
-      Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
-        if (pickerFilter !== 'all' && show.category !== pickerFilter) return;
-        const already = currentIds.includes(id);
+
+      if (favorites.length) {
+        const favCards = favorites.map(({ id, show }) => renderShowCard(id, show)).join('');
         html += `
-          <div class="picker-card ${already ? 'already-added' : ''}" onclick="${already ? '' : 'addShowFromPicker(\'' + id + '\')'}">
-            <img src="${show.imageUrl || 'https://via.placeholder.com/400x200?text=Sin+imagen'}" alt="${show.name}" loading="lazy">
-            <div class="picker-card-body">
-              <small>${catLabels[show.category] || show.category} · ${show.subcategory}</small>
-              <h4>${show.name}${already ? ' (agregado)' : ''}</h4>
-            </div>
-          </div>
-        `;
+          <section class="picker-artist-section picker-favorites-section">
+            <header class="picker-artist-header">
+              <div class="picker-artist-avatar picker-artist-avatar--star">★</div>
+              <div class="picker-artist-meta">
+                <h3>Favoritos</h3>
+                <span>${favorites.length} show${favorites.length === 1 ? '' : 's'}</span>
+              </div>
+            </header>
+            <div class="picker-artist-grid">${favCards}</div>
+          </section>`;
+      }
+
+      orderedKeys.forEach(key => {
+        const g = groups.get(key);
+        const artistLabel = key === '__none__'
+          ? 'Sin artista asignado'
+          : (g.artistaNombre || 'Artista sin nombre');
+        const photo = (g.artistaFotos && g.artistaFotos[0]) ? g.artistaFotos[0] : '';
+        const initial = (artistLabel.trim()[0] || '?').toUpperCase();
+        const avatar = photo
+          ? `<div class="picker-artist-avatar" style="background-image:url('${_pickerEscape(photo)}')"></div>`
+          : `<div class="picker-artist-avatar picker-artist-avatar--initial">${_pickerEscape(initial)}</div>`;
+
+        const sortedShows = [...g.shows].sort((a, b) => {
+          const fa = a.show.isFavorite ? 1 : 0;
+          const fb = b.show.isFavorite ? 1 : 0;
+          if (fa !== fb) return fb - fa;
+          return (a.show.name || '').localeCompare(b.show.name || '');
+        });
+        const cards = sortedShows.map(({ id, show }) => renderShowCard(id, show)).join('');
+
+        html += `
+          <section class="picker-artist-section">
+            <header class="picker-artist-header">
+              ${avatar}
+              <div class="picker-artist-meta">
+                <h3>${_pickerEscape(artistLabel)}</h3>
+                <span>${g.shows.length} show${g.shows.length === 1 ? '' : 's'}</span>
+              </div>
+            </header>
+            <div class="picker-artist-grid">${cards}</div>
+          </section>`;
       });
       grid.innerHTML = html;
     }
