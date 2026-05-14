@@ -216,7 +216,29 @@ export default async function handler(req, res) {
       }
       const formatoNorm = FORMATO_EN_TO_ES[data.formatoShow] || data.formatoShow;
       if (formatoNorm) oppCustomFields.push({ key: 'formato_espectaculo', field_value: formatoNorm });
-      if (data.bioShow) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: data.bioShow });
+
+      const resumenLines = [
+        (data.nombreArtistico || data.compania) ? `Nombre artístico/Compañía: ${data.nombreArtistico || data.compania}` : '',
+        data.nombre ? `Contacto: ${data.nombre}` : '',
+        data.email ? `Email: ${data.email}` : '',
+        data.telefono ? `Teléfono: ${data.telefono}` : '',
+        data.ciudad ? `Ciudad: ${data.ciudad}` : '',
+        disciplinas.length ? `${isProveedor ? 'Categoría proveedor' : 'Disciplinas'}: ${disciplinas.join(', ')}` : '',
+        (Array.isArray(data.subcategorias) && data.subcategorias.length) ? `Subcategorías: ${data.subcategorias.join(', ')}` : '',
+        formatoNorm ? `Formato: ${formatoNorm}` : '',
+        data.bioShow ? `Bio/Descripción: ${data.bioShow}` : '',
+        data.duracionShow ? `Duración: ${data.duracionShow}` : '',
+        data.numArtistas ? `Nº artistas: ${data.numArtistas}` : '',
+        data.rangoCache ? `Rango caché: ${data.rangoCache}` : '',
+        data.video1 ? `Vídeo 1: ${data.video1}` : '',
+        data.video2 ? `Vídeo 2: ${data.video2}` : '',
+        data.webRrss ? `Web/RRSS: ${data.webRrss}` : '',
+        data.riderTecnico ? `Rider técnico: ${data.riderTecnico}` : '',
+        (Array.isArray(data.fotosUrls) && data.fotosUrls.length) ? `Fotos: ${data.fotosUrls.length} subida(s)` : '',
+        (Array.isArray(data.showUnico) && data.showUnico.length) ? `Show único: ${data.showUnico.join(', ')}` : ''
+      ].filter(Boolean);
+      const resumen = resumenLines.join('\n');
+      if (resumen) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: resumen });
 
       const oppBody = {
         locationId: LOC,
