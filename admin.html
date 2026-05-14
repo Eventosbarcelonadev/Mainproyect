@@ -413,6 +413,7 @@
     <section id="tab-shows" class="tab-panel hidden">
       <div class="subtabs" id="shows-subtabs">
         <button class="subtab" data-substatus="active">Active</button>
+        <button class="subtab" data-substatus="no_image">Sin imagen</button>
         <button class="subtab" data-substatus="orphans">Sin artista asignado</button>
         <button class="subtab" data-substatus="archived">Archived</button>
         <button class="subtab" data-substatus="pending_review">Pending review</button>
@@ -1050,9 +1051,8 @@
 
       try {
         let url;
-        if (state.shows.substatus === 'orphans') {
-          // Use shows-pending with status=active and filter client-side for null artista
-          // Better: do active + archived and filter. Simplest: active.
+        if (state.shows.substatus === 'orphans' || state.shows.substatus === 'no_image') {
+          // Cargan active y filtran client-side (mismo patrón que orphans)
           url = '/api/admin?action=shows-pending&status=active';
         } else {
           url = `/api/admin?action=shows-pending&status=${encodeURIComponent(state.shows.substatus)}`;
@@ -1066,6 +1066,9 @@
 
         if (state.shows.substatus === 'orphans') {
           items = items.filter(s => !s.artista_id);
+        }
+        if (state.shows.substatus === 'no_image') {
+          items = items.filter(s => !s.image_url || !String(s.image_url).trim());
         }
 
         // Apply artista filter from URL query
@@ -1261,7 +1264,7 @@
       $('edit-modal-backdrop').classList.remove('open');
       // If the URL points to a single show, reset back to the substatus tab
       const cur = parseHash();
-      const allowed = ['pending_review', 'active', 'archived', 'orphans'];
+      const allowed = ['pending_review', 'active', 'archived', 'orphans', 'no_image'];
       if (cur.tab === 'shows' && cur.sub && !allowed.includes(cur.sub)) {
         setHash('shows', state.shows.substatus, {});
       }
@@ -1667,7 +1670,7 @@
         if (sub) openArtistaDetail(sub);
         else closeDrawer();
       } else if (tab === 'shows') {
-        const allowed = ['pending_review', 'active', 'archived', 'orphans'];
+        const allowed = ['pending_review', 'active', 'archived', 'orphans', 'no_image'];
         let openShowId = null;
         let sub2;
         if (sub && !allowed.includes(sub)) {
