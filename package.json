@@ -1,6 +1,9 @@
 {
   "name": "eventos-barcelona",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@sparticuz/chromium-min": "^131.0.1",
     "puppeteer-core": "^23.11.1"

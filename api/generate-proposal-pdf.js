@@ -14,7 +14,6 @@
 //      + nota en el timeline del contacto.
 //   5. Patchea pdf_url / pdf_path en la fila de proposals.
 
-import chromium from '@sparticuz/chromium-min';
 import puppeteer from 'puppeteer-core';
 
 const SUPABASE_BUCKET = 'propuestas-pdf';
@@ -41,6 +40,14 @@ async function launchBrowser() {
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
   }
+  // @sparticuz/chromium-min sólo extrae las librerías del sistema (libnss3.so,
+  // etc.) si detecta un entorno AWS Lambda vía AWS_EXECUTION_ENV. Vercel corre
+  // sobre Lambda pero no expone esa variable, así que la fijamos nosotros
+  // ANTES de importar el paquete (su detección corre en el import).
+  if (!process.env.AWS_EXECUTION_ENV) {
+    process.env.AWS_EXECUTION_ENV = 'AWS_Lambda_nodejs22.x';
+  }
+  const chromium = (await import('@sparticuz/chromium-min')).default;
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 1240, height: 1754, deviceScaleFactor: 2 },
