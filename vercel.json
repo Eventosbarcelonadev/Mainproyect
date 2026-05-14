@@ -1,4 +1,10 @@
 {
+  "functions": {
+    "api/generate-proposal-pdf.js": {
+      "includeFiles": "node_modules/@sparticuz/chromium/**",
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     { "source": "/formulario-cliente", "destination": "/formulario-inteligente.html" },
     { "source": "/formulario-artista", "destination": "/formulario-artistas.html" },

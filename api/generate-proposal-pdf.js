@@ -22,7 +22,7 @@ const SUPABASE_BUCKET = 'propuestas-pdf';
 const CONTACT_URL_PROPUESTA_PDF = 'Ksk2gVtDGy8Ftc9Bu1cC';
 const OPP_URL_PROPUESTA_PDF     = '65bFezateOokNxACijCW';
 
-export const config = { maxDuration: 60 };
+// maxDuration / includeFiles se configuran en vercel.json (functions).
 
 async function launchBrowser() {
   // En local se puede apuntar a un Chrome instalado vía env var.
