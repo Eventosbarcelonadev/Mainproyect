@@ -326,6 +326,19 @@
     .edit-modal .btn-cancel { background: #fff; border: 1.5px solid var(--border); padding: 10px 20px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; }
     .edit-modal .btn-save { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; }
     .edit-modal .btn-save:disabled { opacity: 0.5; cursor: progress; }
+    .img-edit-row { display: flex; gap: 12px; align-items: flex-start; }
+    .img-edit-preview {
+      width: 120px; height: 90px; flex: 0 0 120px; border-radius: 8px;
+      background-size: cover; background-position: center; border: 1.5px solid var(--border);
+      background-color: #f4f4f5;
+    }
+    .img-edit-preview.placeholder {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .img-edit-controls { flex: 1; min-width: 0; }
+    .img-edit-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .img-edit-status { font-size: 12px; color: var(--gray); }
 
     .hidden { display: none !important; }
   </style>
@@ -553,8 +566,18 @@
           </div>
         </div>
       </div>
-      <label>URL imagen</label>
-      <input type="url" id="edit-image-url" placeholder="https://...">
+      <label>Imagen del show</label>
+      <div class="img-edit-row">
+        <div class="img-edit-preview placeholder" id="edit-image-preview">sin imagen</div>
+        <div class="img-edit-controls">
+          <input type="url" id="edit-image-url" placeholder="https://... o subí un archivo">
+          <div class="img-edit-actions">
+            <input type="file" id="edit-image-file" accept="image/*" hidden>
+            <button type="button" class="btn" id="edit-image-upload-btn">Subir imagen…</button>
+            <span class="img-edit-status" id="edit-image-status"></span>
+          </div>
+        </div>
+      </div>
       <label>URL video (YouTube embed o similar)</label>
       <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/embed/...">
       <div class="actions">
@@ -1191,7 +1214,47 @@
       $('edit-price-note-en').value = s.price_note_en || '';
       $('edit-image-url').value = s.image_url || '';
       $('edit-video-url').value = s.video_url || '';
+      renderEditImagePreview(s.image_url || '');
+      $('edit-image-status').textContent = '';
       $('edit-modal-backdrop').classList.add('open');
+    }
+    function renderEditImagePreview(url) {
+      const el = $('edit-image-preview');
+      if (url && url.trim()) {
+        el.style.backgroundImage = `url('${url.trim().replace(/'/g, '%27')}')`;
+        el.classList.remove('placeholder');
+        el.textContent = '';
+      } else {
+        el.style.backgroundImage = '';
+        el.classList.add('placeholder');
+        el.textContent = 'sin imagen';
+      }
+    }
+    // Reduce la imagen client-side antes de subir: payload chico y calidad pareja.
+    function resizeImageFile(file, maxDim, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Archivo de imagen inválido'));
+          img.onload = () => {
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              const scale = maxDim / Math.max(width, height);
+              width = Math.round(width * scale);
+              height = Math.round(height * scale);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
     }
     function closeEditShowModal() {
       _editingShow = null;
@@ -1239,6 +1302,38 @@
       if (e.target === $('edit-modal-backdrop')) closeEditShowModal();
     });
     $('edit-save').addEventListener('click', saveEditShow);
+    $('edit-image-url').addEventListener('input', (e) => renderEditImagePreview(e.target.value));
+    $('edit-image-upload-btn').addEventListener('click', () => $('edit-image-file').click());
+    $('edit-image-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file || !_editingShow) return;
+      const status = $('edit-image-status');
+      const btn = $('edit-image-upload-btn');
+      btn.disabled = true;
+      status.textContent = 'Procesando…';
+      try {
+        const dataUrl = await resizeImageFile(file, 1600, 0.85);
+        status.textContent = 'Subiendo…';
+        const r = await fetch('/api/admin?action=upload-show-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: _editingShow.id, dataUrl })
+        });
+        const d = await r.json();
+        if (!r.ok) { status.textContent = ''; showError(d.error || 'Error al subir'); return; }
+        $('edit-image-url').value = d.url;
+        renderEditImagePreview(d.url);
+        if (_editingShow) _editingShow.image_url = d.url;
+        status.textContent = 'Imagen actualizada ✓';
+        loadShows();
+      } catch (err) {
+        status.textContent = '';
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && $('edit-modal-backdrop').classList.contains('open')) closeEditShowModal();
     });

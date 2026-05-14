@@ -8,6 +8,7 @@
 // GET  /api/admin?action=shows-pending&status=pending_review|active|archived
 // POST /api/admin?action=review-show  body: {id, action: approve|archive|edit, patch?}
 // POST /api/admin?action=edit-show  body: {id, patch: {name?, description?, ...}}
+// POST /api/admin?action=upload-show-image  body: {id, dataUrl} -> sube a Storage + setea image_url
 // POST /api/admin?action=toggle-favorite  body: {id, is_favorite: bool}
 // POST /api/admin?action=add-artista  body: {nombre, nombre_artistico?, compania?, email?, telefono?, ciudad?, tipo, disciplinas?[], bio_show?}
 // POST /api/admin?action=edit-artista  body: {id, patch: {nombre?, ...}}
@@ -392,6 +393,55 @@ async function editShow(req, res, env) {
   return res.status(200).json({ success: true, show: rows[0] });
 }
 
+// Sube una imagen (data URL base64) al bucket artist-assets y setea shows.image_url.
+// A diferencia del backfill masivo, acá SÍ se permite pisar una imagen existente:
+// el panel /admin existe justamente para corregir/cambiar fotos.
+async function uploadShowImage(req, res, env) {
+  const { id, dataUrl } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!dataUrl || typeof dataUrl !== 'string') return res.status(400).json({ error: 'Missing dataUrl' });
+
+  const m = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(dataUrl);
+  if (!m) return res.status(400).json({ error: 'dataUrl debe ser image/jpeg|png|webp|gif en base64' });
+  const mime = m[1];
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[mime];
+  const buf = Buffer.from(m[2], 'base64');
+  if (buf.length > 15 * 1024 * 1024) return res.status(413).json({ error: 'Imagen supera 15MB' });
+
+  // sufijo timestamp: al reemplazar una foto, la URL cambia y evita cache CDN vieja
+  const objectPath = `shows/${encodeURIComponent(id)}-${Date.now()}.${ext}`;
+  const up = await fetch(`${env.SUPABASE_URL}/storage/v1/object/artist-assets/${objectPath}`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': mime,
+      'x-upsert': 'true'
+    },
+    body: buf
+  });
+  if (!up.ok) return res.status(up.status).json({ error: 'storage: ' + (await up.text()).slice(0, 200) });
+
+  const publicUrl = `${env.SUPABASE_URL}/storage/v1/object/public/artist-assets/${objectPath}`;
+  const patch = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify({ image_url: publicUrl })
+    }
+  );
+  if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
+  const rows = await patch.json();
+  if (!rows.length) return res.status(404).json({ error: 'Show not found' });
+  return res.status(200).json({ success: true, url: publicUrl, show: rows[0] });
+}
+
 async function toggleFavorite(req, res, env) {
   const { id, is_favorite } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -489,13 +539,14 @@ export default async function handler(req, res) {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
       if (action === 'review-show') return reviewShow(req, res, env);
       if (action === 'edit-show') return editShow(req, res, env);
+      if (action === 'upload-show-image') return uploadShowImage(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
       if (action === 'add-artista') return addArtista(req, res, env);
       if (action === 'edit-artista') return editArtista(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|toggle-favorite|add-artista|edit-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|upload-show-image|toggle-favorite|add-artista|edit-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
