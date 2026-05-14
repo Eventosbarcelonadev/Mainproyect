@@ -77,7 +77,7 @@ async function listProposals(req, res, env) {
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
   const params = [
-    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at',
+    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path',
     'order=created_at.desc'
   ];
 
@@ -213,12 +213,10 @@ async function addArtista(req, res, env) {
     return res.status(400).json({ error: 'Debe haber al menos nombre, nombre_artistico o compania' });
   }
   const tipoSafe = ['artista', 'proveedor', 'venue'].includes(tipo) ? tipo : 'artista';
-  const tipoTag = `tipo:${tipoSafe}`;
 
   // 1. Create GHL contact (upsert: dedupe by email if provided)
   let ghlContactId = null;
   try {
-    const fullName = [nombre, nombre_artistico].filter(Boolean).join(' / ').trim();
     const ghlBody = {
       firstName: nombre || nombre_artistico || compania || '',
       lastName: '',
@@ -226,7 +224,11 @@ async function addArtista(req, res, env) {
       email: email || '',
       phone: telefono || '',
       city: ciudad || '',
-      tags: [tipoTag, 'follow_up', 'origen:admin']
+      tags: [],
+      customFields: [
+        { key: 'tipo', field_value: tipoSafe.charAt(0).toUpperCase() + tipoSafe.slice(1) },
+        { key: 'origen', field_value: 'Admin' }
+      ]
     };
     if (!email) delete ghlBody.email;
     ghlContactId = await ghlUpsertContact(env, ghlBody);
@@ -323,9 +325,12 @@ async function editArtista(req, res, env) {
 
     if ('tipo' in update && update.tipo !== cur.tipo) {
       try {
+        await ghlPutContact(env, cur.ghl_contact_id, {
+          customFields: [{ key: 'tipo', field_value: update.tipo.charAt(0).toUpperCase() + update.tipo.slice(1) }]
+        });
+        // Limpieza pasiva: borrar tag legacy tipo:* si existe en el contacto
         await ghlDelTag(env, cur.ghl_contact_id, `tipo:${cur.tipo}`);
-        await ghlAddTag(env, cur.ghl_contact_id, `tipo:${update.tipo}`);
-      } catch (e) { ghlErrors.push('tipo-tag: ' + e.message); }
+      } catch (e) { ghlErrors.push('tipo-field: ' + e.message); }
     }
   }
 

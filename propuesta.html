@@ -12,7 +12,6 @@
   <meta property="og:description" content="Propuesta personalizada para tu evento.">
   <meta name="twitter:card" content="summary_large_image">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* =============================================
        CSS VARIABLES — Category themes override these
@@ -1476,23 +1475,31 @@
       .chat-overlay { width: calc(100% - 32px); right: 16px; bottom: 16px; }
     }
 
-    /* === PDF EXPORT STYLES === */
+    /* === SERVER-SIDE PDF (Puppeteer, ?print=1) === */
+    @page { size: A4; margin: 0; }
     @media print {
       .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content { display: none !important; }
-      .hero { min-height: auto; padding: 60px 40px; }
-      .block { page-break-inside: avoid; }
     }
-    body.exporting-pdf .admin-bar,
-    body.exporting-pdf .chat-overlay,
-    body.exporting-pdf .toast,
-    body.exporting-pdf .modal-overlay,
-    body.exporting-pdf .modal-content,
-    body.exporting-pdf .picker-overlay,
-    body.exporting-pdf .block-remove,
-    body.exporting-pdf .summary-remove,
-    body.exporting-pdf .add-show-block,
-    body.exporting-pdf .margin-control { display: none !important; }
-    body.exporting-pdf .editable-text { outline: none !important; background: transparent !important; }
+    body.print-mode .admin-bar,
+    body.print-mode .chat-overlay,
+    body.print-mode .toast,
+    body.print-mode .modal-overlay,
+    body.print-mode .modal-content,
+    body.print-mode .picker-overlay,
+    body.print-mode .block-remove,
+    body.print-mode .summary-remove,
+    body.print-mode .add-show-block,
+    body.print-mode .margin-control { display: none !important; }
+    body.print-mode {
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body.print-mode .editable-text { outline: none !important; background: transparent !important; }
+    body.print-mode .hero { page-break-after: always; break-after: page; }
+    body.print-mode .block,
+    body.print-mode .summary-section,
+    body.print-mode .footer { page-break-inside: avoid; break-inside: avoid; }
   </style>
 </head>
 <body>
@@ -2770,13 +2777,13 @@
           proposalState.proposalId = result.id;
           const clientUrl = `${window.location.origin}/propuesta.html?id=${result.id}`;
 
-          // Generar PDF + subirlo al contacto (escribe url_propuesta_pdf + nota
+          // Generar PDF en el servidor (escribe url_propuesta_pdf + nota
           // timeline). Después llamar validate-proposal para setear
           // opp.validar_propuesta ("validada por Xavi"), tag `proposal` y
           // monetaryValue. validate-proposal dispara los workflows GHL.
           showToast('Generando PDF…');
           try {
-            await generateAndUploadProposalPdf(result.id, proposalState.ghlContactId);
+            await generateProposalPdf(result.id);
           } catch (pdfErr) {
             console.error('PDF generation failed (non-blocking):', pdfErr);
           }
@@ -2849,117 +2856,36 @@
     }
 
     // =============================================
-    // PDF EXPORT
+    // PDF EXPORT (server-side, Puppeteer)
     // =============================================
-    function exportPDF() {
-      showToast('Generando PDF...');
-
-      const element = document.getElementById('proposalContent');
-      const { event } = proposalState;
-
-      const opt = {
-        margin: 0,
-        filename: `propuesta-${event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait'
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      document.body.classList.add('exporting-pdf');
-      html2pdf().set(opt).from(element).save()
-        .then(() => {
-          document.body.classList.remove('exporting-pdf');
-          showToast('PDF descargado', 'success');
-        })
-        .catch(err => {
-          document.body.classList.remove('exporting-pdf');
-          console.error('PDF export error:', err);
-          showToast('Error generando PDF', 'error');
-        });
-    }
-
-    // =============================================
-    // PDF VALIDATE FLOW (?validate=1)
-    // =============================================
-    // Generar PDF cliente-side del bloque #proposalContent y subirlo via
-    // /api/upload-proposal-pdf, que también escribe url_propuesta_pdf en
-    // el contacto GHL. Después dispara /api/validate-proposal para marcar
-    // la propuesta como aprobada (mismo efecto que el botón Validar de /admin).
-    async function generateAndUploadProposalPdf(proposalId, contactId) {
-      const element = document.getElementById('proposalContent');
-      if (!element) throw new Error('proposalContent no encontrado');
-
-      const opt = {
-        margin: 0,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      document.body.classList.add('exporting-pdf');
-      const blob = await html2pdf().set(opt).from(element).outputPdf('blob');
-      document.body.classList.remove('exporting-pdf');
-
-      const reader = new FileReader();
-      const base64 = await new Promise((resolve, reject) => {
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(blob);
-      });
-
-      const r = await fetch('/api/upload-proposal-pdf', {
+    // El PDF se genera en /api/generate-proposal-pdf: Chromium headless
+    // navega a esta misma página con ?print=1, captura A4 y lo sube a
+    // Supabase Storage + GHL. Devuelve la URL pública del PDF.
+    async function generateProposalPdf(proposalId) {
+      const r = await fetch('/api/generate-proposal-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          proposalId,
-          contactId,
-          opportunityId: proposalState.ghlOpportunityId || null,
-          pdfBase64: base64
-        })
+        body: JSON.stringify({ proposalId })
       });
       const data = await r.json();
-      if (!r.ok || !data.success) throw new Error(data.error || `upload ${r.status}`);
+      if (!r.ok || !data.success) throw new Error(data.error || `pdf ${r.status}`);
       return data;
     }
 
-    async function runValidateFlow() {
-      const params = new URLSearchParams(window.location.search);
-      const proposalId = params.get('id');
-      if (!proposalId) { showToast('Falta proposalId', 'error'); return; }
-
-      showToast('Generando PDF…');
-      let pdfData;
-      try {
-        pdfData = await generateAndUploadProposalPdf(proposalId, null);
-      } catch (e) {
-        console.error(e);
-        showToast('Error generando/subiendo PDF: ' + e.message, 'error');
+    async function exportPDF() {
+      const proposalId = proposalState.proposalId;
+      if (!proposalId) {
+        showToast('Guarda la propuesta antes de exportar el PDF', 'error');
         return;
       }
-      showToast('PDF subido. Validando propuesta…');
-
+      showToast('Generando PDF en el servidor…');
       try {
-        const r = await fetch('/api/validate-proposal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ proposalId })
-        });
-        const data = await r.json();
-        if (!r.ok || !data.success) throw new Error(data.error || `validate ${r.status}`);
-        showToast('Propuesta validada y PDF adjunto en GHL ✓', 'success');
+        const data = await generateProposalPdf(proposalId);
+        showToast('PDF generado ✓', 'success');
+        window.open(data.url, '_blank');
       } catch (e) {
-        console.error(e);
-        showToast('PDF subido, pero falló la validación: ' + e.message, 'error');
+        console.error('exportPDF error:', e);
+        showToast('Error generando PDF: ' + e.message, 'error');
       }
     }
 
@@ -3230,9 +3156,41 @@
     // =============================================
     // BOOT
     // =============================================
+    // =============================================
+    // SEÑAL PARA PUPPETEER (?print=1)
+    // =============================================
+    // El backend (/api/generate-proposal-pdf) navega a esta página con
+    // ?print=1 y espera a window.__pdfReady antes de capturar el PDF.
+    // Esperamos a que la propuesta esté renderizada y todas las imágenes
+    // (incl. background-image de shows/hero) estén cargadas.
+    async function signalPdfReady() {
+      for (let i = 0; i < 150; i++) {
+        if (document.querySelector('#proposalContent .hero')) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      const urls = [];
+      document.querySelectorAll('#proposalContent img').forEach(img => {
+        if (img.src) urls.push(img.src);
+      });
+      document.querySelectorAll('#proposalContent [style*="background-image"]').forEach(el => {
+        const m = (el.style.backgroundImage || '').match(/url\(['"]?(.*?)['"]?\)/);
+        if (m && m[1]) urls.push(m[1]);
+      });
+      await Promise.all(urls.map(u => new Promise(res => {
+        const im = new Image();
+        im.onload = im.onerror = () => res();
+        im.src = u;
+      })));
+      await new Promise(r => setTimeout(r, 400));
+      window.__pdfReady = true;
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
-      await loadShowCatalogFromSupabase();
       const params = new URLSearchParams(window.location.search);
+      const isPrint = params.get('print') === '1';
+      if (isPrint) document.body.classList.add('print-mode');
+
+      await loadShowCatalogFromSupabase();
       const mode = params.get('mode');
       if (mode === 'builder') {
         initBuilder();
@@ -3242,12 +3200,11 @@
         await init();
       }
 
-      // ?validate=1 → tras renderizar la propuesta, generar PDF + validar.
-      // Útil cuando se abre desde el botón "Validar" de /admin: la página
-      // se ocupa del PDF gracias a html2pdf que ya tiene cargado.
-      if (params.get('validate') === '1') {
-        // Pequeño delay para que el render termine (imágenes, etc.)
-        setTimeout(() => { runValidateFlow().catch(console.error); }, 1500);
+      if (isPrint) {
+        signalPdfReady().catch(err => {
+          console.error('signalPdfReady error:', err);
+          window.__pdfReady = true; // no bloquear la captura
+        });
       }
     });
   </script>

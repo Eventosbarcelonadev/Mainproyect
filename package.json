@@ -1,0 +1,8 @@
+{
+  "name": "eventos-barcelona",
+  "private": true,
+  "dependencies": {
+    "@sparticuz/chromium": "^131.0.0",
+    "puppeteer-core": "^23.11.1"
+  }
+}

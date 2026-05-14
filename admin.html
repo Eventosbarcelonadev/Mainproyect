@@ -399,10 +399,10 @@
     <!-- TAB: SHOWS -->
     <section id="tab-shows" class="tab-panel hidden">
       <div class="subtabs" id="shows-subtabs">
-        <button class="subtab" data-substatus="pending_review">Pending review</button>
         <button class="subtab" data-substatus="active">Active</button>
-        <button class="subtab" data-substatus="archived">Archived</button>
         <button class="subtab" data-substatus="orphans">Sin artista asignado</button>
+        <button class="subtab" data-substatus="archived">Archived</button>
+        <button class="subtab" data-substatus="pending_review">Pending review</button>
       </div>
       <div class="toolbar">
         <span id="shows-filter-info" style="color: var(--gray); font-size: 13px;"></span>
@@ -640,7 +640,7 @@
     const state = {
       currentTab: null,
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
-      shows: { substatus: 'pending_review', artistaFilter: null, items: [] },
+      shows: { substatus: 'active', artistaFilter: null, items: [] },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
     };
@@ -1441,7 +1441,12 @@
               <td style="white-space:nowrap;">
                 <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
                 <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
-                ${p.status !== 'approved' ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>` : ''}
+                ${p.status !== 'approved'
+                  ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>`
+                  : (p.pdf_url
+                      ? `<a class="btn btn-secondary" href="${escapeHtml(p.pdf_url)}" target="_blank">Descargar PDF</a>
+                         <button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Regenerar PDF</button>`
+                      : `<button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Generar PDF</button>`)}
               </td>
             </tr>
           `;
@@ -1465,16 +1470,60 @@
           });
         });
 
-        $('propuestas-table-wrap').querySelectorAll('[data-validate]').forEach(b => {
-          b.addEventListener('click', (e) => {
+        // Generar/Regenerar PDF (server-side): Chromium headless renderiza
+        // la propuesta, sube el PDF a Supabase + GHL y devuelve la URL.
+        async function generatePdf(proposalId) {
+          const r = await fetch('/api/generate-proposal-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proposalId })
+          });
+          const data = await r.json();
+          if (!r.ok || !data.success) throw new Error(data.error || `pdf ${r.status}`);
+          return data;
+        }
+
+        $('propuestas-table-wrap').querySelectorAll('[data-gen-pdf]').forEach(b => {
+          b.addEventListener('click', async (e) => {
             e.stopPropagation();
-            if (!confirm('Validar propuesta? Se abrirá la propuesta en una nueva pestaña, generará el PDF, lo subirá a GHL y marcará la propuesta como aprobada. Espera a ver el toast verde antes de cerrar la pestaña.')) return;
+            const proposalId = b.dataset.genPdf;
+            const original = b.textContent;
+            b.disabled = true;
+            b.textContent = 'Generando PDF…';
+            try {
+              await generatePdf(proposalId);
+              loadPropuestas();
+            } catch (err) {
+              b.disabled = false;
+              b.textContent = original;
+              showError('Error generando PDF: ' + err.message);
+            }
+          });
+        });
+
+        $('propuestas-table-wrap').querySelectorAll('[data-validate]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm('Validar propuesta? Se generará el PDF en el servidor, se subirá a GHL y la propuesta quedará marcada como aprobada.')) return;
             const proposalId = b.dataset.validate;
-            const url = `/propuesta.html?id=${encodeURIComponent(proposalId)}&admin=1&validate=1`;
-            window.open(url, '_blank');
-            // No esperamos a que termine — la pestaña hijo se ocupa.
-            // Refrescar la lista en 8s para mostrar el cambio de status.
-            setTimeout(() => loadPropuestas(), 8000);
+            b.disabled = true;
+            b.textContent = 'Generando PDF…';
+            try {
+              await generatePdf(proposalId);
+              b.textContent = 'Validando…';
+              const r = await fetch('/api/validate-proposal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ proposalId })
+              });
+              const data = await r.json();
+              if (!r.ok || !data.success) throw new Error(data.error || `validate ${r.status}`);
+              loadPropuestas();
+            } catch (err) {
+              b.disabled = false;
+              b.textContent = 'Validar';
+              showError('Error validando propuesta: ' + err.message);
+            }
           });
         });
       } catch (err) {
@@ -1550,11 +1599,16 @@
     window.addEventListener('hashchange', applyHash);
 
     // Deep link from GHL: ?artista=<uuid> abre la ficha del artista directamente.
+    // ?show=<show_id> abre el modal del show directamente (cualquier status).
     // Se reescribe a la ruta de hash existente para reusar el router.
     {
-      const __qsArtista = new URLSearchParams(location.search).get('artista');
+      const __qs = new URLSearchParams(location.search);
+      const __qsArtista = __qs.get('artista');
+      const __qsShow = __qs.get('show');
       if (__qsArtista) {
         history.replaceState(null, '', location.pathname + '#artistas/' + encodeURIComponent(__qsArtista));
+      } else if (__qsShow) {
+        history.replaceState(null, '', location.pathname + '#shows/' + encodeURIComponent(__qsShow));
       }
     }
 
