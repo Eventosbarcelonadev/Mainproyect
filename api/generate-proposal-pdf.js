@@ -14,7 +14,7 @@
 //      + nota en el timeline del contacto.
 //   5. Patchea pdf_url / pdf_path en la fila de proposals.
 
-import chromium from '@sparticuz/chromium';
+import chromium from '@sparticuz/chromium-min';
 import puppeteer from 'puppeteer-core';
 
 const SUPABASE_BUCKET = 'propuestas-pdf';
@@ -22,7 +22,14 @@ const SUPABASE_BUCKET = 'propuestas-pdf';
 const CONTACT_URL_PROPUESTA_PDF = 'Ksk2gVtDGy8Ftc9Bu1cC';
 const OPP_URL_PROPUESTA_PDF     = '65bFezateOokNxACijCW';
 
-// maxDuration / includeFiles se configuran en vercel.json (functions).
+// @sparticuz/chromium-min no trae el binario en el paquete npm (Vercel no
+// lo empaquetaría bien). En su lugar descarga este pack en runtime → /tmp.
+// La versión del pack debe coincidir con la de @sparticuz/chromium-min.
+const CHROMIUM_PACK_URL =
+  process.env.CHROMIUM_PACK_URL ||
+  'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar';
+
+// maxDuration se configura en vercel.json (functions).
 
 async function launchBrowser() {
   // En local se puede apuntar a un Chrome instalado vía env var.
@@ -37,7 +44,7 @@ async function launchBrowser() {
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 1240, height: 1754, deviceScaleFactor: 2 },
-    executablePath: await chromium.executablePath(),
+    executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
     headless: chromium.headless
   });
 }

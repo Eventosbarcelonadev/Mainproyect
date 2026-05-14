@@ -1,7 +1,6 @@
 {
   "functions": {
     "api/generate-proposal-pdf.js": {
-      "includeFiles": "node_modules/@sparticuz/chromium/**",
       "maxDuration": 60
     }
   },
