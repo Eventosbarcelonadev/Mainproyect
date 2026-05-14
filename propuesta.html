@@ -2209,7 +2209,7 @@
       }).filter(Boolean);
 
       const catConfig = CATEGORY_CONFIG[data.category] || CATEGORY_CONFIG.shows;
-      document.body.className = catConfig.theme;
+      applyBodyTheme(catConfig.theme);
       document.getElementById('pageTitle').textContent = data.event.name + ' — Eventos Barcelona';
 
       renderProposal();
@@ -2872,14 +2872,47 @@
       return data;
     }
 
+    // Guarda la propuesta actual (borrador) y devuelve su id. El PDF
+    // server-side se renderiza desde la BD, así que necesita una fila en
+    // `proposals` — en modo builder/auto la propuesta aún no existe.
+    async function saveProposalDraft() {
+      const payload = {
+        id: proposalState.proposalId || null,
+        status: proposalState.status || 'revision',
+        client: proposalState.client,
+        event: proposalState.event,
+        category: proposalState.category,
+        concept: proposalState.concept,
+        shows: proposalState.shows.map(s => ({
+          id: s.id,
+          currentPrice: s.currentPrice,
+          contextLabel: s.contextLabel,
+          base_price: s.basePrice
+        })),
+        globalMargin: proposalState.globalMargin,
+        hideSummary: proposalState.hideSummary,
+        ghlContactId: proposalState.ghlContactId || null,
+        ghlOpportunityId: proposalState.ghlOpportunityId || null
+      };
+      const r = await fetch('/api/save-proposal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json();
+      if (!data.success || !data.id) throw new Error(data.error || 'Error al guardar la propuesta');
+      proposalState.proposalId = data.id;
+      return data.id;
+    }
+
     async function exportPDF() {
-      const proposalId = proposalState.proposalId;
-      if (!proposalId) {
-        showToast('Guarda la propuesta antes de exportar el PDF', 'error');
-        return;
-      }
-      showToast('Generando PDF en el servidor…');
       try {
+        let proposalId = proposalState.proposalId;
+        if (!proposalId) {
+          showToast('Guardando propuesta…');
+          proposalId = await saveProposalDraft();
+        }
+        showToast('Generando PDF en el servidor…');
         const data = await generateProposalPdf(proposalId);
         showToast('PDF generado ✓', 'success');
         window.open(data.url, '_blank');
@@ -2994,7 +3027,7 @@
         contextLabel: SHOW_CATALOG[id].subcategory
       }));
 
-      document.body.className = catConfig.theme;
+      applyBodyTheme(catConfig.theme);
       document.getElementById('pageTitle').textContent = proposalState.event.name + ' — Eventos Barcelona';
 
       renderProposal();
@@ -3141,7 +3174,7 @@
       }));
 
       const catConfig = CATEGORY_CONFIG[data.category] || CATEGORY_CONFIG.shows;
-      document.body.className = catConfig.theme;
+      applyBodyTheme(catConfig.theme);
       document.getElementById('pageTitle').textContent = data.event.name + ' — Eventos Barcelona';
 
       renderProposal();
@@ -3156,6 +3189,15 @@
     // =============================================
     // BOOT
     // =============================================
+    // Aplica el tema de categoría al body sin perder la clase print-mode
+    // (las funciones de render hacen body.className = tema, que la borraría).
+    function applyBodyTheme(theme) {
+      document.body.className = theme;
+      if (new URLSearchParams(window.location.search).get('print') === '1') {
+        document.body.classList.add('print-mode');
+      }
+    }
+
     // =============================================
     // SEÑAL PARA PUPPETEER (?print=1)
     // =============================================
