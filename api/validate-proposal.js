@@ -63,13 +63,33 @@ export default async function handler(req, res) {
     if (clientConfirm) {
       if (!proposalId) return res.status(400).json({ error: 'proposalId required for clientConfirm' });
       const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=id,ghl_contact_id,ghl_opportunity_id&limit=1`,
+        `${SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=id,ghl_contact_id,ghl_opportunity_id,client_email&limit=1`,
         { headers: sbHeaders }
       );
       const p = (await r.json())[0];
       if (!p) return res.status(404).json({ error: 'Proposal not found', proposalId });
-      const cId = p.ghl_contact_id;
-      if (!cId) return res.status(400).json({ error: 'Proposal has no GHL contact' });
+
+      // Si no hay ghl_contact_id, intentar resolverlo por email en GHL
+      // (backfill: propuestas creadas antes de tener el FK guardado).
+      let cId = p.ghl_contact_id;
+      if (!cId && p.client_email) {
+        try {
+          const s = await fetch(
+            `${GHL_API}/contacts/search/duplicate?locationId=${LOC}&email=${encodeURIComponent(p.client_email)}`,
+            { headers: HEADERS }
+          );
+          const sd = await s.json();
+          cId = sd.contact?.id || null;
+          if (cId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${p.id}`, {
+              method: 'PATCH',
+              headers: sbHeaders,
+              body: JSON.stringify({ ghl_contact_id: cId, updated_at: new Date().toISOString() })
+            });
+          }
+        } catch (e) { console.error('clientConfirm: contact lookup failed', e.message); }
+      }
+      if (!cId) return res.status(400).json({ error: 'No contact match for client email', email: p.client_email || null });
 
       const tagRes = await fetch(`${GHL_API}/contacts/${cId}/tags`, {
         method: 'POST',
