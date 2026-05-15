@@ -526,18 +526,6 @@
       color: var(--accent);
     }
 
-    .block-price.editable::after {
-      content: '\\270E';
-      font-size: 16px;
-      margin-left: 4px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .block-price.editable:hover::after {
-      opacity: 1;
-    }
-
     .price-input {
       font-family: 'DM Serif Display', Georgia, serif;
       font-size: 28px;
@@ -885,11 +873,14 @@
       font-size: 15px;
       font-weight: 600;
       text-decoration: none;
+      border: none;
       border-radius: 24px;
+      cursor: pointer;
       transition: background 0.3s;
     }
 
     .btn-accent:hover { background: var(--accent-hover); }
+    .btn-accent:disabled { opacity: 0.6; cursor: default; }
 
     /* === FOOTER === */
     .footer {
@@ -1649,14 +1640,14 @@
           'Pago: 100% a la aceptacion salvo acuerdo previo con Eventos Barcelona'
         ],
         ctaSub: 'Acepta esta propuesta o cuentanos que necesitas para tu evento',
-        ctaAccept: 'Aceptar por WhatsApp',
-        ctaOther: 'Solicitar otro presupuesto',
+        ctaConfirm: 'Confirmar propuesta por correo',
+        ctaConfirmed: 'Propuesta confirmada',
+        ctaConfirmError: 'No se pudo confirmar. Intenta de nuevo en unos minutos.',
         footerTitle: 'Tu equipo de gestion de eventos',
         roleDirector: 'Director de Eventos y Co-Fundador',
         roleManager: 'Event Manager',
         btnVideo: 'Ver video',
         addedSuffix: ' (agregado)',
-        waText: (eventName, eventDate, total) => `Hola, me gustaria confirmar la propuesta para ${eventName} del ${eventDate}. Total: ${total}€`,
         formLink: 'formulario-inteligente.html'
       },
       en: {
@@ -1684,14 +1675,14 @@
           'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona'
         ],
         ctaSub: 'Accept this proposal or tell us what you need for your event',
-        ctaAccept: 'Accept via WhatsApp',
-        ctaOther: 'Request another quote',
+        ctaConfirm: 'Confirm proposal by email',
+        ctaConfirmed: 'Proposal confirmed',
+        ctaConfirmError: 'Could not confirm. Please try again in a few minutes.',
         footerTitle: 'Your event management team',
         roleDirector: 'Head of Events & Co-Founder',
         roleManager: 'Event Manager',
         btnVideo: 'Watch video',
         addedSuffix: ' (added)',
-        waText: (eventName, eventDate, total) => `Hi, I\'d like to confirm the proposal for ${eventName} on ${eventDate}. Total: ${total}€`,
         formLink: 'formulario-inteligente-en.html'
       }
     };
@@ -1804,7 +1795,6 @@
     let proposalState = {
       status: 'revision', // revision | approved | sent
       isAdmin: false,
-      priceEditMode: false,
       globalMargin: 0,
       hideSummary: false,
       // These get populated from proposal data
@@ -2132,10 +2122,6 @@
         `;
       });
 
-      // WhatsApp CTA URL
-      const waText = encodeURIComponent(T.waText(event.name, event.date, formatPrice(total)));
-      const waUrl = `https://wa.me/34653979329?text=${waText}`;
-
       // Full HTML
       const html = `
         <!-- HERO -->
@@ -2240,8 +2226,7 @@
           <h2>${catConfig.ctaTitle}</h2>
           <p>${T.ctaSub}</p>
           <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <a href="${waUrl}" target="_blank" class="btn-accent">${T.ctaAccept}</a>
-            <a href="${T.formLink}" class="btn-accent" style="background: transparent; border: 1.5px solid #fff;">${T.ctaOther}</a>
+            <button id="ctaConfirmBtn" class="btn-accent" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>
           </div>
         </div>
 
@@ -2570,6 +2555,41 @@
       }
 
       meta.textContent = `${client.company} \u2014 ${event.type} \u2014 ${event.date}`;
+    }
+
+    // =============================================
+    // CLIENT CONFIRMATION (público)
+    // =============================================
+    async function confirmProposalByEmail() {
+      const btn = document.getElementById('ctaConfirmBtn');
+      if (!btn || btn.disabled) return;
+
+      if (!proposalState.proposalId) {
+        showToast(T.ctaConfirmError || 'Error', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = '...';
+
+      try {
+        const r = await fetch('/api/confirm-proposal-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proposalId: proposalState.proposalId })
+        });
+        const data = await r.json();
+        if (!r.ok || !data.success) throw new Error(data.error || `confirm ${r.status}`);
+
+        btn.textContent = T.ctaConfirmed;
+        showToast(T.ctaConfirmed, 'success');
+      } catch (err) {
+        console.error('confirm error:', err);
+        btn.disabled = false;
+        btn.textContent = original;
+        showToast(T.ctaConfirmError, 'error');
+      }
     }
 
     // =============================================
