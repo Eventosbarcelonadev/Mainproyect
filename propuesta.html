@@ -1236,14 +1236,6 @@
 
     .btn-approve:hover { background: #27ae60; }
 
-    .btn-modify {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-
-    .btn-modify:hover { background: rgba(255,255,255,0.2); }
-
     .btn-pdf {
       background: rgba(255,255,255,0.12);
       color: #fff;
@@ -1251,115 +1243,6 @@
     }
 
     .btn-pdf:hover { background: rgba(255,255,255,0.2); }
-
-    .btn-prices {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-
-    .btn-prices:hover { background: rgba(255,255,255,0.2); }
-
-    /* === CHAT PANEL === */
-    .chat-overlay {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 400px;
-      max-height: 520px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-      z-index: 300;
-      flex-direction: column;
-      overflow: hidden;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .chat-overlay.open { display: flex; }
-
-    .chat-header {
-      background: #1a1a2e;
-      color: #fff;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .chat-header-title { font-size: 14px; font-weight: 600; }
-
-    .chat-close {
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 350px;
-    }
-
-    .chat-msg {
-      max-width: 85%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .chat-msg.bot {
-      background: var(--light-gray);
-      color: var(--text);
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-    }
-
-    .chat-msg.user {
-      background: #1a1a2e;
-      color: #fff;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
-    }
-
-    .chat-input-area {
-      display: flex;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      gap: 8px;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .chat-input:focus { border-color: var(--accent); }
-
-    .chat-send {
-      padding: 10px 18px;
-      background: #1a1a2e;
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
 
     /* === TOAST === */
     .toast {
@@ -1472,16 +1355,14 @@
       .about-section { padding: 60px 24px; }
       .about-section h2 { font-size: 24px; }
       .admin-bar { flex-direction: column; gap: 10px; padding: 12px 16px; }
-      .chat-overlay { width: calc(100% - 32px); right: 16px; bottom: 16px; }
     }
 
     /* === SERVER-SIDE PDF (Puppeteer, ?print=1) === */
     @page { size: A4; margin: 0; }
     @media print {
-      .admin-bar, .chat-overlay, .toast, .modal-overlay, .modal-content { display: none !important; }
+      .admin-bar, .toast, .modal-overlay, .modal-content { display: none !important; }
     }
     body.print-mode .admin-bar,
-    body.print-mode .chat-overlay,
     body.print-mode .toast,
     body.print-mode .modal-overlay,
     body.print-mode .modal-content,
@@ -1620,25 +1501,8 @@
       </div>
     </div>
     <div class="admin-bar-right">
-      <button class="btn-admin btn-prices" onclick="togglePriceEdit()">Editar precios</button>
       <button class="btn-admin btn-pdf" onclick="exportPDF()">Exportar PDF</button>
-      <button class="btn-admin btn-modify" onclick="openChat()">Modificar</button>
       <button class="btn-admin btn-approve" onclick="showApproveModal()">Aprobar y enviar</button>
-    </div>
-  </div>
-
-  <!-- CHAT PANEL -->
-  <div class="chat-overlay" id="chatPanel">
-    <div class="chat-header">
-      <div class="chat-header-title">Modificar propuesta</div>
-      <button class="chat-close" onclick="closeChat()">&times;</button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-msg bot">Que quieres cambiar de esta propuesta?</div>
-    </div>
-    <div class="chat-input-area">
-      <input class="chat-input" id="chatInput" type="text" placeholder="Ej: Quita el violin y pon los Alien Businessmen..." onkeypress="if(event.key==='Enter')sendChatMessage()">
-      <button class="chat-send" onclick="sendChatMessage()">Enviar</button>
     </div>
   </div>
 
@@ -2345,7 +2209,7 @@
 
             <!-- MARGIN CONTROL (admin only) -->
             ${isAdmin ? `
-            <div class="margin-control ${proposalState.priceEditMode ? 'visible' : ''}" id="marginControl">
+            <div class="margin-control visible" id="marginControl">
               <label>${T.marginLabel}</label>
               <div class="margin-slider-row">
                 <input type="range" class="margin-slider" id="marginSlider" min="-20" max="50" value="${proposalState.globalMargin}" oninput="updateGlobalMargin(this.value)">
@@ -2634,21 +2498,6 @@
       showToast(proposalState.hideSummary ? 'Resumen de presupuesto ocultado' : 'Resumen de presupuesto visible');
     }
 
-    function togglePriceEdit() {
-      proposalState.priceEditMode = !proposalState.priceEditMode;
-      const marginControl = document.getElementById('marginControl');
-      if (marginControl) {
-        marginControl.classList.toggle('visible', proposalState.priceEditMode);
-      }
-
-      // Toggle editable class on prices
-      document.querySelectorAll('.block-price').forEach(el => {
-        el.classList.toggle('editable', proposalState.priceEditMode);
-      });
-
-      showToast(proposalState.priceEditMode ? 'Modo edicion de precios activado' : 'Modo edicion desactivado');
-    }
-
     function startPriceEdit(el, index) {
       if (!proposalState.isAdmin) return;
 
@@ -2820,42 +2669,6 @@
     }
 
     // =============================================
-    // CHAT
-    // =============================================
-    function openChat() {
-      document.getElementById('chatPanel').classList.add('open');
-    }
-
-    function closeChat() {
-      document.getElementById('chatPanel').classList.remove('open');
-    }
-
-    function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const msg = input.value.trim();
-      if (!msg) return;
-
-      const messages = document.getElementById('chatMessages');
-
-      // User message
-      const userDiv = document.createElement('div');
-      userDiv.className = 'chat-msg user';
-      userDiv.textContent = msg;
-      messages.appendChild(userDiv);
-
-      input.value = '';
-
-      // Bot response (simulated — in production this calls AI API)
-      setTimeout(() => {
-        const botDiv = document.createElement('div');
-        botDiv.className = 'chat-msg bot';
-        botDiv.textContent = 'Entendido. Voy a actualizar la propuesta con esos cambios. Dame un momento...';
-        messages.appendChild(botDiv);
-        messages.scrollTop = messages.scrollHeight;
-      }, 800);
-    }
-
-    // =============================================
     // PDF EXPORT (server-side, Puppeteer)
     // =============================================
     // El PDF se genera en /api/generate-proposal-pdf: Chromium headless
@@ -2907,11 +2720,11 @@
 
     async function exportPDF() {
       try {
-        let proposalId = proposalState.proposalId;
-        if (!proposalId) {
-          showToast('Guardando propuesta…');
-          proposalId = await saveProposalDraft();
-        }
+        // Siempre persistir antes de generar: el PDF se renderiza desde
+        // /api/get-proposal (BD), así que cualquier edición local (precios,
+        // shows, márgenes) tiene que estar guardada o el PDF saldrá viejo.
+        showToast('Guardando propuesta…');
+        const proposalId = await saveProposalDraft();
         showToast('Generando PDF en el servidor…');
         const data = await generateProposalPdf(proposalId);
         showToast('PDF generado ✓', 'success');
