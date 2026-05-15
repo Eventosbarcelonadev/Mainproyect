@@ -2597,10 +2597,10 @@
       btns.forEach(b => { b.disabled = true; b.textContent = '...'; });
 
       try {
-        const r = await fetch('/api/confirm-proposal-email', {
+        const r = await fetch('/api/validate-proposal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ proposalId: proposalState.proposalId })
+          body: JSON.stringify({ proposalId: proposalState.proposalId, clientConfirm: true })
         });
         const data = await r.json();
         if (!r.ok || !data.success) throw new Error(data.error || `confirm ${r.status}`);

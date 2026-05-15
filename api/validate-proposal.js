@@ -2,8 +2,11 @@
 //   - Workflow GHL cuando Xavi marca opportunity.validar_propuesta="validada por Xavi"
 //     → body: { opportunityId } o { contactId } (legacy)
 //   - Botón "Validar" en /admin (panel interno) → body: { proposalId }
+//   - Botón "Aprobar presupuesto" en vista cliente de la propuesta
+//     → body: { proposalId, clientConfirm: true } → solo añade tag `Won`
+//       al contacto y devuelve (sin tocar opp, status ni tag `proposal`).
 //
-// Efectos:
+// Efectos (modo normal):
 //   1. Marca la propuesta como `approved` en Supabase
 //   2. Copia opportunity.url_generador_propuesta → opportunity.url_propuesta_validada
 //   3. Setea opportunity.validar_propuesta = "validada por Xavi" (idempotente)
@@ -50,9 +53,40 @@ export default async function handler(req, res) {
     let contactId = req.body?.contactId || req.body?.contact_id || null;
     let opportunityId = req.body?.opportunityId || req.body?.opportunity_id || null;
     const proposalId = req.body?.proposalId || req.body?.proposal_id || null;
+    const clientConfirm = !!req.body?.clientConfirm;
 
     if (!contactId && !opportunityId && !proposalId) {
       return res.status(400).json({ error: 'opportunityId, contactId or proposalId required' });
+    }
+
+    // Modo "cliente aprueba": solo añadir tag `Won` al contacto de la propuesta.
+    if (clientConfirm) {
+      if (!proposalId) return res.status(400).json({ error: 'proposalId required for clientConfirm' });
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=id,ghl_contact_id,ghl_opportunity_id&limit=1`,
+        { headers: sbHeaders }
+      );
+      const p = (await r.json())[0];
+      if (!p) return res.status(404).json({ error: 'Proposal not found', proposalId });
+      const cId = p.ghl_contact_id;
+      if (!cId) return res.status(400).json({ error: 'Proposal has no GHL contact' });
+
+      const tagRes = await fetch(`${GHL_API}/contacts/${cId}/tags`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ tags: ['Won'] })
+      });
+      if (!tagRes.ok) {
+        const text = await tagRes.text();
+        return res.status(502).json({ error: 'GHL tag failed', status: tagRes.status, detail: text.slice(0, 300) });
+      }
+      return res.status(200).json({
+        success: true,
+        clientConfirm: true,
+        proposalId: p.id,
+        contactId: cId,
+        opportunityId: p.ghl_opportunity_id || null
+      });
     }
 
     // 1. Resolver propuesta
