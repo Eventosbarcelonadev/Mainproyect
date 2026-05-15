@@ -60,6 +60,23 @@ export default async function handler(req, res) {
   const baseUrl = process.env.PROPUESTA_BASE_URL
     || (req.headers.host ? `https://${req.headers.host}` : '');
 
+  // Reintenta un write a Supabase eliminando la columna si Postgres responde
+  // "column X does not exist" (mientras la migración aún no haya corrido).
+  async function sbWriteWithFallback(url, method, headers, row) {
+    let body = { ...row };
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+      if (res.ok) return res;
+      const text = await res.clone().text();
+      const m = text.match(/column "?([a-zA-Z_]+)"? does not exist/i)
+            || text.match(/Could not find the '([a-zA-Z_]+)' column/i);
+      if (!m || !(m[1] in body)) return res;
+      console.warn(`save-proposal: drop "${m[1]}" (column missing)`);
+      delete body[m[1]];
+    }
+    return await fetch(url, { method, headers, body: JSON.stringify(body) });
+  }
+
   try {
     const data = req.body;
 
@@ -81,8 +98,7 @@ export default async function handler(req, res) {
       hero_sub: data.heroSub || '',
       shows: JSON.stringify(data.shows || []),
       global_margin: data.globalMargin || 0,
-      // hide_summary: pendiente migración Supabase (columna no existe).
-      // Se guarda solo en proposalState frontend hasta que se cree la columna.
+      hide_summary: !!data.hideSummary,
       ghl_contact_id: data.ghlContactId || null,
       ghl_opportunity_id: data.ghlOpportunityId || null
     };
@@ -95,18 +111,16 @@ export default async function handler(req, res) {
         row.approved_by = 'admin';
       }
 
-      const updateRes = await fetch(
+      const updateRes = await sbWriteWithFallback(
         `${SUPABASE_URL}/rest/v1/proposals?id=eq.${data.id}`,
+        'PATCH',
         {
-          method: 'PATCH',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify(row)
-        }
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        row
       );
       const updated = await updateRes.json();
 
@@ -120,18 +134,16 @@ export default async function handler(req, res) {
     }
 
     // Create new proposal
-    const createRes = await fetch(
+    const createRes = await sbWriteWithFallback(
       `${SUPABASE_URL}/rest/v1/proposals`,
+      'POST',
       {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(row)
-      }
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      row
     );
     const created = await createRes.json();
 

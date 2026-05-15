@@ -96,6 +96,28 @@
 
     .btn-contact:hover { background: #fff; color: var(--dark); }
 
+    .btn-approve-client {
+      display: inline-block;
+      padding: 10px 24px;
+      background: #2ecc71;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-approve-client:hover { background: #27ae60; }
+    .btn-approve-client:disabled { opacity: 0.7; cursor: default; }
+
+    .btn-approve-client.large {
+      padding: 16px 48px;
+      font-size: 15px;
+    }
+
     /* === HERO === */
     .hero {
       min-height: 100vh;
@@ -1640,9 +1662,9 @@
           'Pago: 100% a la aceptacion salvo acuerdo previo con Eventos Barcelona'
         ],
         ctaSub: 'Acepta esta propuesta o cuentanos que necesitas para tu evento',
-        ctaConfirm: 'Confirmar propuesta por correo',
-        ctaConfirmed: 'Propuesta confirmada',
-        ctaConfirmError: 'No se pudo confirmar. Intenta de nuevo en unos minutos.',
+        ctaConfirm: 'Aprobar presupuesto',
+        ctaConfirmed: 'Presupuesto aprobado',
+        ctaConfirmError: 'No se pudo aprobar. Intenta de nuevo en unos minutos.',
         footerTitle: 'Tu equipo de gestion de eventos',
         roleDirector: 'Director de Eventos y Co-Fundador',
         roleManager: 'Event Manager',
@@ -1675,9 +1697,9 @@
           'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona'
         ],
         ctaSub: 'Accept this proposal or tell us what you need for your event',
-        ctaConfirm: 'Confirm proposal by email',
-        ctaConfirmed: 'Proposal confirmed',
-        ctaConfirmError: 'Could not confirm. Please try again in a few minutes.',
+        ctaConfirm: 'Approve budget',
+        ctaConfirmed: 'Budget approved',
+        ctaConfirmError: 'Could not approve. Please try again in a few minutes.',
         footerTitle: 'Your event management team',
         roleDirector: 'Head of Events & Co-Founder',
         roleManager: 'Event Manager',
@@ -2132,7 +2154,7 @@
               <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
             </div>
             <div class="nav-right">
-              <a href="${T.formLink}" class="btn-contact">${T.navCta}</a>
+              ${isAdmin ? '' : `<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
             </div>
           </div>
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
@@ -2226,7 +2248,7 @@
           <h2>${catConfig.ctaTitle}</h2>
           <p>${T.ctaSub}</p>
           <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <button id="ctaConfirmBtn" class="btn-accent" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>
+            <button id="ctaConfirmBtn" class="btn-approve-client large" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>
           </div>
         </div>
 
@@ -2561,17 +2583,18 @@
     // CLIENT CONFIRMATION (público)
     // =============================================
     async function confirmProposalByEmail() {
-      const btn = document.getElementById('ctaConfirmBtn');
-      if (!btn || btn.disabled) return;
+      const btns = ['ctaConfirmBtn', 'ctaConfirmBtnTop']
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+      if (btns.some(b => b.disabled)) return;
 
       if (!proposalState.proposalId) {
         showToast(T.ctaConfirmError || 'Error', 'error');
         return;
       }
 
-      btn.disabled = true;
-      const original = btn.textContent;
-      btn.textContent = '...';
+      const originals = btns.map(b => b.textContent);
+      btns.forEach(b => { b.disabled = true; b.textContent = '...'; });
 
       try {
         const r = await fetch('/api/confirm-proposal-email', {
@@ -2582,12 +2605,11 @@
         const data = await r.json();
         if (!r.ok || !data.success) throw new Error(data.error || `confirm ${r.status}`);
 
-        btn.textContent = T.ctaConfirmed;
+        btns.forEach(b => { b.textContent = T.ctaConfirmed; });
         showToast(T.ctaConfirmed, 'success');
       } catch (err) {
         console.error('confirm error:', err);
-        btn.disabled = false;
-        btn.textContent = original;
+        btns.forEach((b, i) => { b.disabled = false; b.textContent = originals[i]; });
         showToast(T.ctaConfirmError, 'error');
       }
     }
