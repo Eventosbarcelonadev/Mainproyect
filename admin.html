@@ -1216,8 +1216,6 @@
               <span class="chip-removable chip-artista" data-art-id="${escapeHtml(a.id)}" title="#${i + 1}${i === 0 ? ' (principal)' : ''}${a.ghl_contact_id ? '' : ' · sin GHL'}">
                 <span class="pos">#${i + 1}</span>
                 <span>${escapeHtml(artistaDisplayName(a))}</span>
-                ${i > 0 ? `<button class="chip-move" data-move-left title="Subir posición">◀</button>` : ''}
-                ${i < artistasList.length - 1 ? `<button class="chip-move" data-move-right title="Bajar posición">▶</button>` : ''}
                 <button data-remove-art title="Quitar">×</button>
               </span>`).join('')}
             ${artistasList.length < 3 ? `<div class="picker">
@@ -1242,7 +1240,7 @@
       if (artistLink) {
         artistLink.addEventListener('click', () => setHash('artistas', artistLink.dataset.artistaId, {}));
       }
-      // Chips: quitar / reordenar
+      // Chips: quitar
       card.querySelectorAll('.chip-artista').forEach((chip, idx) => {
         const removeBtn = chip.querySelector('[data-remove-art]');
         if (removeBtn) {
@@ -1250,24 +1248,6 @@
             e.stopPropagation();
             if (!confirm('Quitar este artista del show?')) return;
             const next = artistasList.filter((_, i) => i !== idx);
-            await setShowArtistas(s.id, next);
-          });
-        }
-        const moveLeft = chip.querySelector('[data-move-left]');
-        if (moveLeft) {
-          moveLeft.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const next = artistasList.slice();
-            [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
-            await setShowArtistas(s.id, next);
-          });
-        }
-        const moveRight = chip.querySelector('[data-move-right]');
-        if (moveRight) {
-          moveRight.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const next = artistasList.slice();
-            [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
             await setShowArtistas(s.id, next);
           });
         }
@@ -1778,8 +1758,6 @@
           <span class="chip-removable chip-artista" data-art-id="${escapeHtml(a.id)}" title="#${i + 1}${i === 0 ? ' (principal)' : ''}${a.ghl_contact_id ? '' : ' · sin GHL'}">
             <span class="pos">#${i + 1}</span>
             <span>${escapeHtml(artistaDisplayName(a))}</span>
-            ${i > 0 ? `<button class="chip-move" data-em-left="${i}" title="Subir">◀</button>` : ''}
-            ${i < list.length - 1 ? `<button class="chip-move" data-em-right="${i}" title="Bajar">▶</button>` : ''}
             <button data-em-remove="${i}" title="Quitar">×</button>
           </span>`).join('')
         : '<small style="color:var(--gray);">Ningún artista vinculado todavía. Buscalo abajo o crealo nuevo.</small>';
@@ -1790,24 +1768,6 @@
           if (!confirm('Quitar este artista del show?')) return;
           const i = parseInt(btn.dataset.emRemove, 10);
           const next = list.filter((_, idx) => idx !== i);
-          await mutateEditShowArtistas(show.id, next);
-        });
-      });
-      wrap.querySelectorAll('[data-em-left]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const i = parseInt(btn.dataset.emLeft, 10);
-          const next = list.slice();
-          [next[i - 1], next[i]] = [next[i], next[i - 1]];
-          await mutateEditShowArtistas(show.id, next);
-        });
-      });
-      wrap.querySelectorAll('[data-em-right]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const i = parseInt(btn.dataset.emRight, 10);
-          const next = list.slice();
-          [next[i], next[i + 1]] = [next[i + 1], next[i]];
           await mutateEditShowArtistas(show.id, next);
         });
       });
