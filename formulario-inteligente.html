@@ -877,7 +877,7 @@
 
     <div class="form-header">
       <h1>Solicita un presupuesto</h1>
-      <p>Cuentanos sobre tu evento y te preparamos una propuesta personalizada en menos de 24 horas.</p>
+      <p>Cuéntanos sobre tu evento y te preparamos una propuesta personalizada en menos de 24 horas.</p>
     </div>
 
     <!-- PROGRESS BAR -->
@@ -905,7 +905,7 @@
 
     <div class="form-card">
 
-      <!-- PASO 1: Datos basicos -->
+      <!-- PASO 1: Datos básicos -->
       <div class="step active" id="step-1">
         <h2 class="step-title">Tus datos de contacto</h2>
         <p class="step-subtitle">Para poder enviarte la propuesta personalizada.</p>
@@ -922,11 +922,11 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Correo electronico</label>
+            <label>Correo electrónico</label>
             <input type="email" id="f-email" placeholder="tu@empresa.com">
           </div>
           <div class="form-group">
-            <label>Telefono</label>
+            <label>Teléfono</label>
             <div style="display: flex; gap: 8px;">
               <select id="f-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
                 <option value="+34" selected>&#127466;&#127480; +34</option>
@@ -950,7 +950,7 @@
             <input type="url" id="f-web" placeholder="https://tuempresa.com">
           </div>
           <div class="form-group">
-            <label>Cargo / posicion <span style="font-weight: 400; color: var(--gray);">(opcional)</span></label>
+            <label>Cargo / posición <span style="font-weight: 400; color: var(--gray);">(opcional)</span></label>
             <input type="text" id="f-cargo" placeholder="Ej: Marketing Director, CEO, Event Manager">
           </div>
         </div>
@@ -963,14 +963,14 @@
 
       <!-- PASO 2: Tipo de evento -->
       <div class="step" id="step-2">
-        <h2 class="step-title">¿Que tipo de evento estas organizando?</h2>
+        <h2 class="step-title">¿Qué tipo de evento estás organizando?</h2>
         <p class="step-subtitle">Selecciona el que mejor describa tu evento.</p>
 
         <div class="artist-switch">
           <div class="artist-switch-icon">&#127913;</div>
           <div class="artist-switch-text">
-            <strong>¿Eres artista, grupo o compania?</strong><br>
-            Este formulario es para contratar shows. Si quieres unirte a nuestro catalogo, pasa al formulario de artistas.
+            <strong>¿Eres artista, grupo o compañía?</strong><br>
+            Este formulario es para contratar shows. Si quieres unirte a nuestro catálogo, pasa al formulario de artistas.
           </div>
           <button type="button" class="artist-switch-btn" onclick="switchToArtista()">Soy artista &rarr;</button>
         </div>
@@ -990,7 +990,7 @@
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#127979;</span>
-            <span class="option-label">Convencion / Congreso</span>
+            <span class="option-label">Convención / Congreso</span>
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#127942;</span>
@@ -1002,7 +1002,7 @@
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#127881;</span>
-            <span class="option-label">Fiesta tematica</span>
+            <span class="option-label">Fiesta temática</span>
           </div>
           <div class="option-card" onclick="selectOption(this, 'event-type')">
             <span class="option-icon">&#127867;</span>
@@ -1015,17 +1015,17 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(1)">Atras</button>
+          <button class="btn-back" onclick="goToStep(1)">Atrás</button>
           <button class="btn-next" onclick="validateAndGo(2, 3)">Siguiente</button>
         </div>
       </div>
 
       <!-- PASO 3: Tipo de show -->
       <div class="step" id="step-3">
-        <h2 class="step-title">¿Que tipo de entretenimiento buscas?</h2>
-        <p class="step-subtitle">Selecciona el formato y la categoria que te interese. Puedes marcar varios.</p>
+        <h2 class="step-title">¿Qué tipo de entretenimiento buscas?</h2>
+        <p class="step-subtitle">Selecciona el formato y la categoría que te interese. Puedes marcar varios.</p>
 
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Formato del espectaculo</label>
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Formato del espectáculo</label>
         <div class="option-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 24px;">
           <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
             <span class="option-icon">&#127917;</span>
@@ -1041,7 +1041,7 @@
           </div>
         </div>
 
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Estilos artisticos</label>
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Estilos artísticos</label>
         <div class="eb-select" id="ms-categoria">
           <div class="eb-select-control" onclick="toggleEbSelect('ms-categoria', event)">
             <span class="eb-select-placeholder" id="ms-categoria-placeholder">Selecciona los estilos que te interesan...</span>
@@ -1052,27 +1052,27 @@
             <div class="eb-select-section">
               <div class="eb-select-section-title">&#129665; Danza</div>
               <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="Danza" data-val="Contemporanea" onclick="toggleMsChip(this, 'ms-categoria')">Contemporanea</span>
-                <span class="eb-chip-option" data-cat="Danza" data-val="Clasica" onclick="toggleMsChip(this, 'ms-categoria')">Clasica</span>
+                <span class="eb-chip-option" data-cat="Danza" data-val="Contemporánea" onclick="toggleMsChip(this, 'ms-categoria')">Contemporánea</span>
+                <span class="eb-chip-option" data-cat="Danza" data-val="Clásica" onclick="toggleMsChip(this, 'ms-categoria')">Clásica</span>
                 <span class="eb-chip-option" data-cat="Danza" data-val="Cabaret" onclick="toggleMsChip(this, 'ms-categoria')">Cabaret</span>
                 <span class="eb-chip-option" data-cat="Danza" data-val="Flamenco" onclick="toggleMsChip(this, 'ms-categoria')">Flamenco</span>
-                <span class="eb-chip-option" data-cat="Danza" data-val="Anos 20" onclick="toggleMsChip(this, 'ms-categoria')">Anos 20</span>
+                <span class="eb-chip-option" data-cat="Danza" data-val="Años 20" onclick="toggleMsChip(this, 'ms-categoria')">Años 20</span>
                 <span class="eb-chip-option" data-cat="Danza" data-val="Hip-hop" onclick="toggleMsChip(this, 'ms-categoria')">Hip-hop</span>
                 <span class="eb-chip-option" data-cat="Danza" data-val="Salsa" onclick="toggleMsChip(this, 'ms-categoria')">Salsa</span>
-                <span class="eb-chip-option" data-cat="Danza" data-val="Tematica" onclick="toggleMsChip(this, 'ms-categoria')">Tematica</span>
+                <span class="eb-chip-option" data-cat="Danza" data-val="Temática" onclick="toggleMsChip(this, 'ms-categoria')">Temática</span>
               </div>
             </div>
             <div class="eb-select-section">
-              <div class="eb-select-section-title">&#127925; Musica</div>
+              <div class="eb-select-section-title">&#127925; Música</div>
               <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="Musica" data-val="Live bands" onclick="toggleMsChip(this, 'ms-categoria')">Live bands</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Clasica" onclick="toggleMsChip(this, 'ms-categoria')">Clasica</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Solistas" onclick="toggleMsChip(this, 'ms-categoria')">Solistas</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Cantantes" onclick="toggleMsChip(this, 'ms-categoria')">Cantantes</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Jazz" onclick="toggleMsChip(this, 'ms-categoria')">Jazz</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="DJ" onclick="toggleMsChip(this, 'ms-categoria')">DJ</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Rumba" onclick="toggleMsChip(this, 'ms-categoria')">Rumba</span>
-                <span class="eb-chip-option" data-cat="Musica" data-val="Percusionistas" onclick="toggleMsChip(this, 'ms-categoria')">Percusionistas</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Live bands" onclick="toggleMsChip(this, 'ms-categoria')">Live bands</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Clásica" onclick="toggleMsChip(this, 'ms-categoria')">Clásica</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Solistas" onclick="toggleMsChip(this, 'ms-categoria')">Solistas</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Cantantes" onclick="toggleMsChip(this, 'ms-categoria')">Cantantes</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Jazz" onclick="toggleMsChip(this, 'ms-categoria')">Jazz</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="DJ" onclick="toggleMsChip(this, 'ms-categoria')">DJ</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Rumba" onclick="toggleMsChip(this, 'ms-categoria')">Rumba</span>
+                <span class="eb-chip-option" data-cat="Música" data-val="Percusionistas" onclick="toggleMsChip(this, 'ms-categoria')">Percusionistas</span>
               </div>
             </div>
             <div class="eb-select-section">
@@ -1080,8 +1080,8 @@
               <div class="eb-select-section-chips">
                 <span class="eb-chip-option" data-cat="Circo" data-val="Malabares LED" onclick="toggleMsChip(this, 'ms-categoria')">Malabares LED</span>
                 <span class="eb-chip-option" data-cat="Circo" data-val="Equilibrista" onclick="toggleMsChip(this, 'ms-categoria')">Equilibrista</span>
-                <span class="eb-chip-option" data-cat="Circo" data-val="Acrobatas" onclick="toggleMsChip(this, 'ms-categoria')">Acrobatas</span>
-                <span class="eb-chip-option" data-cat="Circo" data-val="Aereos" onclick="toggleMsChip(this, 'ms-categoria')">Aereos</span>
+                <span class="eb-chip-option" data-cat="Circo" data-val="Acróbatas" onclick="toggleMsChip(this, 'ms-categoria')">Acróbatas</span>
+                <span class="eb-chip-option" data-cat="Circo" data-val="Aéreos" onclick="toggleMsChip(this, 'ms-categoria')">Aéreos</span>
                 <span class="eb-chip-option" data-cat="Circo" data-val="Zancudos" onclick="toggleMsChip(this, 'ms-categoria')">Zancudos</span>
                 <span class="eb-chip-option" data-cat="Circo" data-val="Fuego" onclick="toggleMsChip(this, 'ms-categoria')">Fuego</span>
                 <span class="eb-chip-option" data-cat="Circo" data-val="Personajes singulares" onclick="toggleMsChip(this, 'ms-categoria')">Personajes singulares</span>
@@ -1103,19 +1103,19 @@
         </div>
 
         <div id="no-sure-card" onclick="toggleNoSure(this)" style="margin-top: 14px; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; text-align: center; transition: all 0.2s; background: var(--white);">
-          <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 2px;">No estoy seguro, quiero que me aconsejeis</div>
-          <div style="font-size: 12px; color: var(--gray);">Nuestro equipo te recomendara los mejores espectaculos</div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 2px;">No estoy seguro, quiero que me aconsejéis</div>
+          <div style="font-size: 12px; color: var(--gray);">Nuestro equipo te recomendará los mejores espectáculos</div>
         </div>
 
         <div style="margin-top: 8px; padding: 20px; background: var(--light-gray); border-radius: 12px; border-left: 3px solid var(--accent);">
           <label class="checkbox-group" style="margin-bottom: 0; padding: 0; background: none;">
             <input type="checkbox" id="produccion-check">
-            <span class="checkbox-label" style="font-size: 14px;"><strong>¿Necesitas produccion tecnica?</strong><br><span style="color: var(--gray); font-size: 13px;">Sonido, iluminacion, escenarios, pantallas LED... Te preparamos una propuesta integral.</span></span>
+            <span class="checkbox-label" style="font-size: 14px;"><strong>¿Necesitas producción técnica?</strong><br><span style="color: var(--gray); font-size: 13px;">Sonido, iluminación, escenarios, pantallas LED... Te preparamos una propuesta integral.</span></span>
           </label>
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(2)">Atras</button>
+          <button class="btn-back" onclick="goToStep(2)">Atrás</button>
           <button class="btn-next" onclick="goToStep(4)">Siguiente</button>
         </div>
       </div>
@@ -1123,7 +1123,7 @@
       <!-- PASO 4: Detalles del evento -->
       <div class="step" id="step-4">
         <h2 class="step-title">Detalles de tu evento</h2>
-        <p class="step-subtitle">Cuanta mas informacion nos des, mejor sera la propuesta.</p>
+        <p class="step-subtitle">Cuanta más información nos des, mejor será la propuesta.</p>
 
         <div class="form-row">
           <div class="form-group">
@@ -1131,13 +1131,13 @@
             <input type="date" id="f-fecha">
           </div>
           <div class="form-group">
-            <label>Numero de asistentes</label>
+            <label>Número de asistentes</label>
             <input type="number" id="f-asistentes" placeholder="Ej: 200">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Ciudad / Ubicacion</label>
+          <label>Ciudad / Ubicación</label>
           <input type="text" id="f-ubicacion" placeholder="Ej: Barcelona, Hotel W">
         </div>
 
@@ -1158,32 +1158,32 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(3)">Atras</button>
+          <button class="btn-back" onclick="goToStep(3)">Atrás</button>
           <button class="btn-next" onclick="goToStep(5)">Siguiente</button>
         </div>
       </div>
 
       <!-- PASO 5: Comentarios -->
       <div class="step" id="step-5">
-        <h2 class="step-title">¿Algo mas que debamos saber?</h2>
-        <p class="step-subtitle">Cuentanos cualquier detalle adicional sobre tu evento. Este paso es opcional.</p>
+        <h2 class="step-title">¿Algo más que debamos saber?</h2>
+        <p class="step-subtitle">Cuéntanos cualquier detalle adicional sobre tu evento. Este paso es opcional.</p>
 
         <div class="form-group">
           <label>Comentarios adicionales</label>
-          <textarea id="f-comentarios" placeholder="Ej: Queremos una tematica espacial, necesitamos que los artistas interactuen con los invitados durante la cena..."></textarea>
+          <textarea id="f-comentarios" placeholder="Ej: Queremos una temática espacial, necesitamos que los artistas interactúen con los invitados durante la cena..."></textarea>
         </div>
 
         <div class="form-group">
-          <label>¿Como nos has conocido?</label>
+          <label>¿Cómo nos has conocido?</label>
           <div class="eb-select" id="sel-conocido">
             <div class="eb-select-control" onclick="toggleEbSelect('sel-conocido', event)">
-              <span class="eb-select-value placeholder" id="sel-conocido-value">Selecciona una opcion</span>
+              <span class="eb-select-value placeholder" id="sel-conocido-value">Selecciona una opción</span>
               <span class="eb-select-caret">&#9662;</span>
             </div>
             <div class="eb-select-panel">
               <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Web', this)">Web</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Busqueda en Google', this)">Busqueda en Google</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Recomendacion', this)">Recomendacion</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Búsqueda en Google', this)">Búsqueda en Google</div>
+              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Recomendación', this)">Recomendación</div>
               <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Redes sociales', this)">Redes sociales</div>
               <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Evento anterior', this)">Evento anterior</div>
               <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Otro', this)">Otro</div>
@@ -1193,7 +1193,7 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(4)">Atras</button>
+          <button class="btn-back" onclick="goToStep(4)">Atrás</button>
           <button class="btn-submit" onclick="submitForm()">Enviar solicitud</button>
         </div>
       </div>
@@ -1204,18 +1204,18 @@
         <div class="success-body">
           <div class="success-icon">&#10003;</div>
           <h2>¡Solicitud recibida!</h2>
-          <p>Nuestro equipo revisara los detalles de tu evento y te enviara una propuesta personalizada en menos de 24 horas.</p>
-          <p style="font-size:14px;margin-top:8px;">Mientras tanto, echa un vistazo a nuestro catalogo.</p>
+          <p>Nuestro equipo revisará los detalles de tu evento y te enviará una propuesta personalizada en menos de 24 horas.</p>
+          <p style="font-size:14px;margin-top:8px;">Mientras tanto, echa un vistazo a nuestro catálogo.</p>
 
           <div class="success-meta">
             <div>&#128338; <span><strong>&lt; 24h</strong> para tu propuesta</span></div>
             <div>&#128231; <span>Te avisamos por <strong>email</strong></span></div>
-            <div>&#127881; <span>+200 eventos al ano</span></div>
+            <div>&#127881; <span>+200 eventos al año</span></div>
           </div>
 
           <div style="margin-top: 36px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://www.eventosbarcelona.com/artistas-y-espectaculos/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Ver el catalogo</a>
-            <a href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Siguenos en Instagram</a>
+            <a href="https://www.eventosbarcelona.com/artistas-y-espectaculos/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">Ver el catálogo</a>
+            <a href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Síguenos en Instagram</a>
           </div>
         </div>
       </div>
@@ -1237,9 +1237,9 @@
 
         if (!nombre.value.trim()) errors.push({ el: nombre, msg: 'El nombre es obligatorio' });
         if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
-          errors.push({ el: email, msg: 'Introduce un email valido' });
+          errors.push({ el: email, msg: 'Introduce un email válido' });
         }
-        if (!phone.value.trim()) errors.push({ el: phone, msg: 'El telefono es obligatorio' });
+        if (!phone.value.trim()) errors.push({ el: phone, msg: 'El teléfono es obligatorio' });
       }
 
       if (from === 2) {

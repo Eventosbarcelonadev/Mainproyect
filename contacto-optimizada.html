@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto | Eventos Barcelona</title>
+  <meta name="description" content="Comparte los detalles de tu evento y disenaremos una propuesta a medida. Especialistas en eventos corporativos, gala dinners y entretenimiento premium en Barcelona.">
+  <link rel="canonical" href="https://www.eventosbarcelona.com/contacto/" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #cc3366;
+      --accent-hover: #b02d59;
+      --accent-light: #fdf0f4;
+      --dark: #1a1a1a;
+      --text: #333;
+      --gray: #666;
+      --light-gray: #f7f7f7;
+      --border: #e0e0e0;
+      --white: #fff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background: var(--white);
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); }
+
+    /* === HEADER / NAV === */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 80px;
+      background: var(--dark);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo img { height: 36px; width: auto; }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-btn {
+      padding: 8px 20px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: var(--accent); color: #fff; }
+    .nav-flags { display: flex; gap: 10px; align-items: center; }
+    .nav-flags img { width: 24px; height: 16px; object-fit: cover; border-radius: 2px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+    .nav-flags img:hover, .nav-flags img.active { opacity: 1; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 1px; }
+
+    /* === HERO === */
+    .hero {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 80px 24px 100px;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.75);
+      max-width: 640px;
+      margin: 0 auto 16px;
+      line-height: 1.7;
+    }
+    .hero .hero-tag {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 6px 16px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.5px;
+    }
+    .hero-shape {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      line-height: 0;
+    }
+    .hero-shape svg { width: calc(100% + 1.3px); display: block; }
+    .hero-shape .shape-fill { fill: var(--white); }
+
+    /* === SECTIONS === */
+    .section { padding: 80px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-center { text-align: center; }
+
+    /* === INTRO === */
+    .intro { background: var(--white); }
+    .intro p {
+      font-size: 18px;
+      color: var(--gray);
+      max-width: 760px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* === FORM SECTION === */
+    .form-section {
+      background: var(--light-gray);
+      padding: 80px 24px;
+    }
+    .form-section .section-inner { max-width: 800px; }
+    .form-section h2 {
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .form-section .form-subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 16px;
+      max-width: 580px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .form-embed {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+    .form-embed p.selector-label {
+      color: var(--gray);
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .profile-cards { display: flex; flex-direction: column; gap: 16px; }
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+    .profile-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(204,51,102,0.12);
+      color: var(--text);
+    }
+    .profile-card .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .profile-card .label { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+    .profile-card .sublabel { font-size: 14px; color: var(--gray); }
+    .profile-card .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* === VALUE / WHAT WE DO === */
+    .value-section { background: var(--white); }
+    .value-section h2 {
+      font-size: 36px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .value-section .value-subtitle {
+      font-size: 18px;
+      color: var(--gray);
+      font-style: italic;
+    }
+
+    /* === TRUST / CONFIANZA === */
+    .trust-section { background: var(--light-gray); }
+    .trust-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .trust-text h2 {
+      font-size: 28px;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+    .trust-text p {
+      font-size: 16px;
+      color: var(--gray);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .trust-checks { list-style: none; }
+    .trust-checks li {
+      padding: 8px 0;
+      font-size: 15px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .trust-checks li::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* === CLIENT LOGOS === */
+    .logos-section {
+      background: var(--white);
+      padding: 60px 24px;
+      text-align: center;
+    }
+    .logos-section h3 {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--gray);
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+    .logos-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .logos-grid img {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+      filter: grayscale(100%);
+      opacity: 0.6;
+      transition: all 0.3s;
+    }
+    .logos-grid img:hover {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+
+    /* === CTA CIERRE === */
+    .cta-section {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 60px 24px;
+    }
+    .cta-section h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+    .cta-section p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 24px;
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 14px 36px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .cta-btn:hover { background: var(--accent-hover); color: #fff; }
+
+    /* === CONTACT INFO + MAP === */
+    .contact-info-section { background: var(--white); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .contact-details h2 {
+      font-size: 28px;
+      color: var(--dark);
+      margin-bottom: 32px;
+    }
+    .contact-item {
+      margin-bottom: 24px;
+    }
+    .contact-item h5 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .contact-item p, .contact-item a {
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .contact-item a:hover { color: var(--accent); }
+    .map-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+    .map-wrapper a { display: block; }
+    .map-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* === FOOTER === */
+    .footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.6);
+      padding: 60px 24px 32px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 48px;
+    }
+    .footer-brand img { height: 60px; margin-bottom: 16px; }
+    .footer-brand p { font-size: 14px; line-height: 1.7; }
+    .footer h4 {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .footer ul { list-style: none; }
+    .footer ul li { margin-bottom: 8px; }
+    .footer ul li a { color: rgba(255,255,255,0.6); font-size: 14px; transition: color 0.2s; }
+    .footer ul li a:hover { color: #fff; }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .footer-social { display: flex; gap: 16px; }
+    .footer-social a {
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .footer-social a:hover { color: #fff; }
+    .footer-social svg { width: 20px; height: 20px; fill: currentColor; }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .nav { padding: 14px 20px; }
+      .nav-btn { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero { padding: 60px 20px 80px; }
+      .hero h1 { font-size: 32px; }
+      .hero p { font-size: 16px; }
+      .section { padding: 48px 20px; }
+      .form-section { padding: 48px 20px; }
+      .form-embed { padding: 24px; }
+      .trust-grid { grid-template-columns: 1fr; gap: 32px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .profile-card .badge { display: none; }
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .logos-grid { gap: 24px; }
+      .logos-grid img { height: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAV ==================== -->
+  <nav class="nav">
+    <a href="https://www.eventosbarcelona.com" class="nav-logo">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+    </a>
+    <div class="nav-right">
+      <a href="https://www.eventosbarcelona.com/contacto/" class="nav-btn">Contacta</a>
+      <div class="nav-flags">
+        <a href="https://www.eventosbarcelona.com/en/contact/"><img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.svg" alt="English"></a>
+        <a href="https://www.eventosbarcelona.com/contacto/"><img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.svg" alt="Espanol" class="active"></a>
+      </div>
+      <div class="nav-hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== 1. HERO ==================== -->
+  <section class="hero">
+    <h1>Let's create an unforgettable event</h1>
+    <p>Comparte los detalles de tu evento y diseñaremos una propuesta a medida, alineada con tus objetivos, estilo y audiencia.</p>
+    <span class="hero-tag">Especialistas en eventos corporativos, gala dinners y entretenimiento premium en Barcelona</span>
+    <div class="hero-shape">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+        <path class="shape-fill" d="M0,0c0,0,0,6,0,6.7c0,18,240.2,93.6,615.2,92.6C989.8,98.5,1000,25,1000,6.7c0-0.7,0-6.7,0-6.7H0z"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ==================== 2. INTRO ==================== -->
+  <section class="section intro section-center">
+    <div class="section-inner">
+      <p>Diseñamos y producimos experiencias únicas para empresas internacionales, agencias y marcas que buscan impacto, creatividad y excelencia técnica. Desde conferencias y convenciones hasta gala dinners y espectáculos en vivo, cada proyecto se desarrolla de forma totalmente personalizada.</p>
+    </div>
+  </section>
+
+  <!-- ==================== 3 + 4. FORMULARIO ==================== -->
+  <section class="form-section" id="formulario">
+    <div class="section-inner">
+      <h2>Solicita tu propuesta personalizada</h2>
+      <p class="form-subtitle">
+        En el siguiente paso podrás definir tu evento, seleccionar el tipo de experiencias y personalizar todos los detalles. Nuestro equipo revisará tu solicitud y te enviará una propuesta a medida en menos de 24h.
+      </p>
+      <div class="form-embed">
+        <p class="selector-label">Selecciona tu perfil para ofrecerte la mejor experiencia:</p>
+        <div class="profile-cards">
+          <a href="https://eventos-barcelona.vercel.app/formulario-inteligente.html" class="profile-card">
+            <div class="icon">🏢</div>
+            <div>
+              <div class="label">Busco un espectáculo para mi evento</div>
+              <div class="sublabel">Empresa, agencia o particular</div>
+            </div>
+            <div class="badge">Presupuesto</div>
+          </a>
+          <a href="https://eventos-barcelona.vercel.app/formulario-artistas.html" class="profile-card">
+            <div class="icon">🎭</div>
+            <div>
+              <div class="label">Soy artista y quiero unirme</div>
+              <div class="sublabel">Artista, grupo o compañía</div>
+            </div>
+            <div class="badge">Portfolio</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. WHAT WE DO ==================== -->
+  <section class="section value-section section-center">
+    <div class="section-inner">
+      <h2>What we do</h2>
+      <p class="value-subtitle">We turn every event into a story worth telling.</p>
+    </div>
+  </section>
+
+  <!-- ==================== 6. BLOQUE DE CONFIANZA ==================== -->
+  <section class="section trust-section">
+    <div class="section-inner">
+      <div class="trust-grid">
+        <div class="trust-text">
+          <h2>Producción integral para eventos que dejan huella</h2>
+          <p>Trabajamos con empresas y agencias de todo el mundo, ofreciendo soluciones integrales que combinan producción técnica, dirección artística y entretenimiento de alto nivel.</p>
+          <ul class="trust-checks">
+            <li>Propuestas personalizadas</li>
+            <li>Artistas y shows exclusivos</li>
+            <li>Producción técnica integral</li>
+            <li>Experiencia en eventos internacionales</li>
+          </ul>
+        </div>
+        <div class="trust-visual" style="background: var(--accent-light); border-radius: 16px; padding: 48px; text-align: center;">
+          <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-neon-EB-eventos-barcelona.webp" alt="Eventos Barcelona" style="max-width: 200px; margin: 0 auto;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== LOGOS CLIENTES ==================== -->
+  <section class="logos-section">
+    <h3>Estos son algunos de los clientes que han confiado en nosotros</h3>
+    <div class="logos-grid">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_01.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_02.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_03.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_04.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_05.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_06.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_07.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_08.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_09.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_10.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_11.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_12.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_13.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_14.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_15.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_16.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_17.gif" alt="Cliente">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_18.gif" alt="Cliente">
+    </div>
+  </section>
+
+  <!-- ==================== 7. CTA CIERRE ==================== -->
+  <section class="cta-section">
+    <div class="section-inner">
+      <h2>Nuestro equipo te responderá en menos de 24h</h2>
+      <p>con una propuesta adaptada a tu evento</p>
+      <a href="#formulario" class="cta-btn">Solicitar propuesta</a>
+    </div>
+  </section>
+
+  <!-- ==================== 8. DATOS DE CONTACTO + MAPA ==================== -->
+  <section class="section contact-info-section">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div class="contact-details">
+          <h2>Datos de contacto</h2>
+          <div class="contact-item">
+            <h5>Dirección</h5>
+            <p><a href="https://maps.app.goo.gl/2iXPqXdCpms2p6bi7" target="_blank">General Mitre 126, 6a planta<br>08021 Barcelona</a></p>
+          </div>
+          <div class="contact-item">
+            <h5>Horario</h5>
+            <p>9:30 a 14:00 hrs.<br>16:00 a 19:00 hrs.</p>
+          </div>
+          <div class="contact-item">
+            <h5>Teléfono</h5>
+            <p><a href="tel:+34931980265">+34 931 98 02 65</a></p>
+          </div>
+          <div class="contact-item">
+            <h5>Mail</h5>
+            <p><a href="mailto:info@eventosbarcelona.com">info@eventosbarcelona.com</a></p>
+          </div>
+        </div>
+        <div class="map-wrapper">
+          <a href="https://maps.app.goo.gl/kgJ5peBCxYcQrzJX7" target="_blank">
+            <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/10/mapa-localizacion-eventos-barcelona-2webp.webp" alt="Ubicación Eventos Barcelona">
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-neon-EB-eventos-barcelona.webp" alt="Eventos Barcelona">
+        <p>Agencia de organización y producción de eventos</p>
+      </div>
+      <div>
+        <h4>Sobre nosotros</h4>
+        <ul>
+          <li><a href="https://www.eventosbarcelona.com/artistas-y-espectaculos/">Artistas y espectáculos</a></li>
+          <li><a href="https://www.eventosbarcelona.com/casos-exito/">Casos de éxito</a></li>
+          <li><a href="https://www.eventosbarcelona.com/produccion-tecnica-para-eventos/">Producción técnica</a></li>
+          <li><a href="https://www.eventosbarcelona.com/quienes-somos/">Sobre nosotros</a></li>
+          <li><a href="https://www.eventosbarcelona.com/blog/">EB Blog</a></li>
+          <li><a href="https://www.eventosbarcelona.com/contacto/">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Redes sociales</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/eventosbarcelona" target="_blank">Instagram</a></li>
+          <li><a href="https://www.youtube.com/user/EventosBarcelona7" target="_blank">Youtube</a></li>
+          <li><a href="https://www.linkedin.com/company/2282793/" target="_blank">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Eventos Barcelona. Todos los derechos reservados.</span>
+      <a href="https://www.eventosbarcelona.com/politica-de-privacidad/" style="color: rgba(255,255,255,0.5);">Politica de privacidad</a>
+    </div>
+  </footer>
+
+</body>
+</html>
