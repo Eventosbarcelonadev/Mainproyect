@@ -633,6 +633,13 @@
         <button type="button" class="btn" id="edit-image-url-add">Añadir URL</button>
         <span class="img-edit-status" id="edit-image-status"></span>
       </div>
+      <label id="edit-artistas-label">Artistas asignados <small style="font-weight:normal;color:var(--gray);">(máx 3; el primero = principal)</small></label>
+      <div id="edit-artistas-empty-info" class="hidden" style="font-size:12px;color:var(--gray);margin-bottom:8px;">Podrás asignar artistas después de guardar el nuevo show.</div>
+      <div id="edit-artistas-wrap" class="artistas-list" style="margin-bottom:8px;min-height:30px;"></div>
+      <div id="edit-artistas-picker" class="picker" style="position:relative;margin-bottom:16px;">
+        <input type="search" id="edit-artistas-input" placeholder="Buscar artista por nombre, compañía o email…" style="width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;">
+        <div class="picker-results empty" id="edit-artistas-results"></div>
+      </div>
       <label>URL video (YouTube embed o similar)</label>
       <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/embed/...">
       <div class="actions">
@@ -1309,6 +1316,7 @@
     let _addingShow = false; // true = modal en modo "crear nuevo show"
     let _editingImages = []; // array local de URLs visibles en la galería
     let _pendingNewImage = null; // { kind: 'url'|'dataUrl', value: string } | null — buffer en modo crear
+    let _artistaCreateContext = null; // { showId, query } cuando se abre add-artista desde el picker del modal show
     function openAddShowModal() {
       _addingShow = true;
       _editingShow = null;
@@ -1330,6 +1338,11 @@
       $('edit-video-url').value = '';
       $('edit-image-status').textContent = '';
       renderGallery();
+      // Sección artistas: ocultar picker, mostrar info (no se puede asignar
+      // hasta que el show exista en SB)
+      $('edit-artistas-wrap').innerHTML = '';
+      $('edit-artistas-picker').style.display = 'none';
+      $('edit-artistas-empty-info').classList.remove('hidden');
       $('edit-modal-backdrop').classList.add('open');
     }
     function openEditShowModal(s) {
@@ -1355,6 +1368,10 @@
       _editingImages = arr.length ? arr.slice() : (s.image_url ? [s.image_url] : []);
       renderGallery();
       $('edit-image-status').textContent = '';
+      // Sección artistas: mostrar picker + lista actual
+      $('edit-artistas-empty-info').classList.add('hidden');
+      $('edit-artistas-picker').style.display = '';
+      renderEditArtistas(s);
       $('edit-modal-backdrop').classList.add('open');
     }
     function renderGallery() {
@@ -1652,6 +1669,14 @@
     function closeArtistaModal() {
       _editingArtista = null;
       $('art-modal-backdrop').classList.remove('open');
+      // Si se cierra/cancela viniendo del picker del modal show, reabrir el
+      // modal show donde estaba el usuario (sin vincular nada).
+      if (_artistaCreateContext) {
+        const ctx = _artistaCreateContext;
+        _artistaCreateContext = null;
+        const showRow = state.shows.items.find(s => s.id === ctx.showId);
+        if (showRow) openEditShowModal(showRow);
+      }
     }
     async function saveArtistaModal() {
       const btn = $('art-save');
@@ -1680,6 +1705,43 @@
         const d = await r.json();
         if (!r.ok) { showError(d.error || d.hint || 'Error'); btn.disabled = false; return; }
         closeArtistaModal();
+        // Si veníamos del picker del modal Editar show: auto-vincular el
+        // artista recién creado y reabrir el modal del show.
+        if (_artistaCreateContext && d.artista) {
+          const ctx = _artistaCreateContext;
+          _artistaCreateContext = null;
+          // Refrescar el caché del picker
+          allArtistasCache = null;
+          // Buscar el show en state (puede estar desactualizado pero alcanza
+          // para reconstruir la lista actual)
+          const showRow = state.shows.items.find(s => s.id === ctx.showId);
+          const curList = showRow ? showArtistasList(showRow) : [];
+          if (curList.length < 3) {
+            const nextList = [...curList, d.artista];
+            const ssa = await fetch('/api/admin?action=set-show-artistas', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                showId: ctx.showId,
+                artistas: nextList.map((a, i) => ({ artistaId: a.id, posicion: i + 1 }))
+              })
+            });
+            const ssaD = await ssa.json();
+            if (ssa.ok && ssaD.show) {
+              await loadShows();
+              openEditShowModal(ssaD.show);
+            } else {
+              showError('Artista creado pero falló vincularlo al show: ' + (ssaD.error || ''));
+              await loadShows();
+              if (showRow) openEditShowModal(showRow);
+            }
+          } else {
+            showError('El show ya tiene 3 artistas. El nuevo quedó disponible para asignar manualmente.');
+            await loadShows();
+            if (showRow) openEditShowModal(showRow);
+          }
+          return;
+        }
         // Refresh whichever tab is active
         const tab = state.currentTab;
         if (tab === 'artistas') loadArtistas();
@@ -1695,6 +1757,163 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && $('art-modal-backdrop').classList.contains('open')) closeArtistaModal();
     });
+
+    // ---------- Artistas dentro del modal Editar show ----------
+    function showArtistasList(show) {
+      if (Array.isArray(show.show_artistas) && show.show_artistas.length) {
+        return show.show_artistas
+          .slice()
+          .sort((a, b) => (a.posicion || 99) - (b.posicion || 99))
+          .map(sa => sa.artista)
+          .filter(Boolean);
+      }
+      if (show.artista) return [show.artista];
+      return [];
+    }
+    function renderEditArtistas(show) {
+      const wrap = $('edit-artistas-wrap');
+      const list = showArtistasList(show);
+      wrap.innerHTML = list.length
+        ? list.map((a, i) => `
+          <span class="chip-removable chip-artista" data-art-id="${escapeHtml(a.id)}" title="#${i + 1}${i === 0 ? ' (principal)' : ''}${a.ghl_contact_id ? '' : ' · sin GHL'}">
+            <span class="pos">#${i + 1}</span>
+            <span>${escapeHtml(artistaDisplayName(a))}</span>
+            ${i > 0 ? `<button class="chip-move" data-em-left="${i}" title="Subir">◀</button>` : ''}
+            ${i < list.length - 1 ? `<button class="chip-move" data-em-right="${i}" title="Bajar">▶</button>` : ''}
+            <button data-em-remove="${i}" title="Quitar">×</button>
+          </span>`).join('')
+        : '<small style="color:var(--gray);">Ningún artista vinculado todavía. Buscalo abajo o crealo nuevo.</small>';
+
+      wrap.querySelectorAll('[data-em-remove]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm('Quitar este artista del show?')) return;
+          const i = parseInt(btn.dataset.emRemove, 10);
+          const next = list.filter((_, idx) => idx !== i);
+          await mutateEditShowArtistas(show.id, next);
+        });
+      });
+      wrap.querySelectorAll('[data-em-left]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const i = parseInt(btn.dataset.emLeft, 10);
+          const next = list.slice();
+          [next[i - 1], next[i]] = [next[i], next[i - 1]];
+          await mutateEditShowArtistas(show.id, next);
+        });
+      });
+      wrap.querySelectorAll('[data-em-right]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const i = parseInt(btn.dataset.emRight, 10);
+          const next = list.slice();
+          [next[i], next[i + 1]] = [next[i + 1], next[i]];
+          await mutateEditShowArtistas(show.id, next);
+        });
+      });
+
+      // Picker: ocultarlo si ya hay 3
+      const picker = $('edit-artistas-picker');
+      const input = $('edit-artistas-input');
+      const results = $('edit-artistas-results');
+      if (list.length >= 3) {
+        picker.style.display = 'none';
+      } else {
+        picker.style.display = '';
+        input.value = '';
+        results.classList.add('empty');
+        results.innerHTML = '';
+        wireEditArtistasPicker(show, list);
+      }
+    }
+    function wireEditArtistasPicker(show, currentList) {
+      const oldInput = $('edit-artistas-input');
+      if (!oldInput) return;
+      // Clonar para limpiar handlers anteriores
+      const input = oldInput.cloneNode(true);
+      oldInput.parentNode.replaceChild(input, oldInput);
+      const results = $('edit-artistas-results');
+      const existingIds = new Set(currentList.map(a => a.id));
+      const onInput = debounce(async () => {
+        const q = input.value.trim();
+        if (!q) { results.classList.add('empty'); results.innerHTML = ''; return; }
+        const all = await loadAllArtistasForPicker();
+        const ql = q.toLowerCase();
+        const matches = all.filter(a => {
+          if (existingIds.has(a.id)) return false;
+          const hay = [a.nombre, a.nombre_artistico, a.compania, a.email].map(x => (x || '').toLowerCase()).join(' ');
+          return hay.includes(ql);
+        }).slice(0, 12);
+        results.classList.remove('empty');
+        const createCta = `<div class="picker-result" data-create-artista="1" style="color:var(--accent); font-weight:600; cursor:pointer;">+ Crear "${escapeHtml(q)}" como artista nuevo</div>`;
+        if (!matches.length) {
+          results.innerHTML = `<div class="picker-result" style="color:var(--gray);">Sin resultados</div>${createCta}`;
+        } else {
+          results.innerHTML = matches.map(a => `
+            <div class="picker-result" data-pick="${escapeHtml(a.id)}">
+              ${escapeHtml(artistaDisplayName(a))}
+              <small>${escapeHtml(a.compania || '')}${a.email && !isPlaceholderEmail(a.email) ? ' · ' + escapeHtml(shortEmail(a.email, 40)) : ''}</small>
+            </div>
+          `).join('') + createCta;
+        }
+        results.querySelectorAll('[data-pick]').forEach(el => {
+          el.addEventListener('mousedown', async (e) => {
+            e.preventDefault();
+            results.classList.add('empty');
+            const picked = all.find(x => x.id === el.dataset.pick);
+            if (!picked) return;
+            const next = [...currentList, picked];
+            await mutateEditShowArtistas(show.id, next);
+          });
+        });
+        const createBtn = results.querySelector('[data-create-artista]');
+        if (createBtn) {
+          createBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            _artistaCreateContext = { showId: show.id, query: q };
+            // Cerrar el modal show (sin reset completo — saveArtistaModal lo reabrirá)
+            $('edit-modal-backdrop').classList.remove('open');
+            openAddArtistaModal('artista');
+            // Pre-llenar nombre con la query del usuario
+            $('art-nombre').value = q;
+          });
+        }
+      }, 200);
+      input.addEventListener('input', onInput);
+      input.addEventListener('blur', () => setTimeout(() => results.classList.add('empty'), 200));
+      input.addEventListener('focus', () => { if (input.value) onInput(); });
+    }
+    async function mutateEditShowArtistas(showId, nextList) {
+      try {
+        const payload = {
+          showId,
+          artistas: nextList.map((a, i) => ({ artistaId: a.id, posicion: i + 1 }))
+        };
+        const r = await fetch('/api/admin?action=set-show-artistas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || 'Error vinculando'); return; }
+        if (d.ghl_sync) {
+          const g = d.ghl_sync;
+          if (g.errors?.length) {
+            showError(`GHL: ${g.errors.length} error(es) al sincronizar. Ver consola.`);
+            console.warn('GHL sync errors:', g.errors);
+          } else if (g.skipped_reason === 'show_has_no_ghl_show_id') {
+            showError('Guardado en SB. GHL: este show no existe aún en GHL (correr sync-shows-and-associations-to-ghl --apply).');
+          }
+        }
+        if (d.show) {
+          _editingShow = d.show;
+          renderEditArtistas(d.show);
+        }
+        loadShows();
+      } catch (err) {
+        showError(err.message);
+      }
+    }
 
     function wirePicker(card, show, currentArtistas) {
       const input = card.querySelector('[data-picker-input]');
