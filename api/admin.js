@@ -59,10 +59,15 @@ async function listArtistas(req, res, env) {
   const q = (req.query.q || '').trim();
   const disciplina = (req.query.disciplina || '').trim();
   const tipo = (req.query.tipo || '').trim();
+  const includeArchived = String(req.query.archived || '').toLowerCase() === 'true';
   const limit = clampInt(req.query.limit, 50, 1, 200);
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
   const params = ['select=*,shows(count)', 'order=created_at.desc'];
+  if (!includeArchived) {
+    // Hide archived rows by default (legacy performers replaced by new model 2026-05-18).
+    params.push('or=(archived.is.null,archived.eq.false)');
+  }
 
   if (q) {
     const safe = q.replace(/[(),]/g, ' ').trim();
