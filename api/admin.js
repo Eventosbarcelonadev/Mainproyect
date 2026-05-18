@@ -24,6 +24,102 @@ const GHL_SHOWS_OBJECT_KEY = 'custom_objects.shows';
 const GHL_SHOW_CONTACT_ASSOCIATION_ID = '6a018a66c4c95715fde952f9';
 const GHL_API = 'https://services.leadconnectorhq.com';
 
+// IDs de custom fields GHL (sync admin↔GHL en cada CRUD). Spec en memoria
+// project_ghl_spec.md. Si añades un campo nuevo, actualiza también ese memo.
+const GHL_CF = {
+  // CONTACT
+  contact_type: '0LBySc0XI7qKiPQVrQs9',         // SINGLE_OPTIONS: Cliente|Artista|Proveedor
+  nombre_artista: 'v69mW7YhrDNMoAx8fw8h',       // TEXT
+  categoria_artista: 'O4u824Z7LAxSwSMm0YqE',    // TEXT
+  subcategoria_artista: 'A8CeeHJRdvK7YEakH6bV', // TEXT
+  shows_vinculados: 'uBESZ2L5JmBqFB9UXyZA',     // LARGE_TEXT
+  url_supabase: 'bd9b4HubsMstnWZMfa0G',         // TEXT (link a /admin.html?artista=<id>)
+  // custom_objects.shows
+  url_admin_show: '2b1BxWzhWb1ucxz1eNnn'        // TEXT (link a /admin.html?show=<slug>)
+};
+
+function siteUrl(env) {
+  return (env.SITE_URL || process.env.SITE_URL || 'https://propuestas.eventosbarcelona.com').replace(/\/$/, '');
+}
+function adminUrlArtista(env, artistaId) { return `${siteUrl(env)}/admin.html?artista=${artistaId}`; }
+function adminUrlShow(env, showSlug) { return `${siteUrl(env)}/admin.html?show=${showSlug}`; }
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function uniq(arr) { return [...new Set(arr.filter(Boolean))]; }
+
+// Carga los shows vinculados a un artista desde Supabase (vía show_artistas)
+// y devuelve {macros, subs, shows_text} listo para customFields GHL.
+async function getArtistaShowsForGhl(env, artistaId) {
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(artistaId)}`
+    + `&select=show:show_id(id,name,category,subcategory)`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return { macros: '', subs: '', shows_text: '' };
+  const rows = await r.json();
+  const shows = rows.map(x => x.show).filter(Boolean);
+  const macros = uniq(shows.map(s => capitalize(s.category))).sort().join(', ');
+  const subs = uniq(shows.map(s => s.subcategory)).sort().join(', ');
+  const shows_text = shows.map(s => `[${(s.category || '').toUpperCase()}] ${s.name}`).join('\n');
+  return { macros, subs, shows_text };
+}
+
+// Sincroniza un artista a GHL: pisa todos los custom fields (contact_type,
+// nombre_artista, categoria, subcategoria, shows_vinculados, url_supabase) y
+// añade tag artista_ok. Idempotente. Llamada en add/edit/setShowArtistas.
+async function syncArtistaToGhlFull(env, artista) {
+  if (!env.GHL_TOKEN || !env.GHL_LOC) return { skipped: 'missing_ghl_config' };
+  if (!artista || !artista.ghl_contact_id) return { skipped: 'no_ghl_contact_id' };
+
+  const { macros, subs, shows_text } = await getArtistaShowsForGhl(env, artista.id);
+  const nombreLabel = artista.nombre || artista.nombre_artistico || artista.compania || '';
+  const tipoLabel = capitalize(artista.tipo || 'artista');
+  const customFields = [
+    { id: GHL_CF.contact_type, key: 'contact_type', field_value: tipoLabel },
+    { id: GHL_CF.nombre_artista, key: 'nombre_artista', field_value: nombreLabel },
+    { id: GHL_CF.categoria_artista, key: 'categoria_artista', field_value: macros },
+    { id: GHL_CF.subcategoria_artista, key: 'subcategoria_artista', field_value: subs },
+    { id: GHL_CF.shows_vinculados, key: 'shows_vinculados', field_value: shows_text },
+    { id: GHL_CF.url_supabase, key: 'url_supabase', field_value: adminUrlArtista(env, artista.id) }
+  ];
+  try {
+    await ghlPutContact(env, artista.ghl_contact_id, { customFields });
+    if (tipoLabel === 'Artista') await ghlAddTag(env, artista.ghl_contact_id, 'artista_ok');
+    else if (tipoLabel === 'Proveedor') await ghlAddTag(env, artista.ghl_contact_id, 'proveedor_ok');
+    return { ok: true, shows_count: shows_text ? shows_text.split('\n').length : 0 };
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// Re-sync un set de artistas (usado tras setShowArtistas: afectados = prev ∪ next).
+async function syncArtistasToGhlBulk(env, artistaIds) {
+  const ids = [...new Set(artistaIds)].filter(Boolean);
+  if (!ids.length) return [];
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=in.(${ids.map(encodeURIComponent).join(',')})`
+    + `&select=id,nombre,nombre_artistico,compania,tipo,ghl_contact_id`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return [];
+  const arts = await r.json();
+  const results = [];
+  for (const a of arts) {
+    results.push({ artista_id: a.id, nombre: a.nombre, ...(await syncArtistaToGhlFull(env, a)) });
+  }
+  return results;
+}
+
+// Sincroniza url_admin del record custom_objects.shows. Idempotente.
+async function syncShowAdminUrl(env, show) {
+  if (!env.GHL_TOKEN || !env.GHL_LOC) return { skipped: 'missing_ghl_config' };
+  if (!show || !show.ghl_show_id) return { skipped: 'no_ghl_show_id' };
+  const props = { url_admin: adminUrlShow(env, show.id) };
+  const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
+    locationId: env.GHL_LOC, properties: props
+  });
+  return g.ok ? { ok: true } : { error: `GHL ${g.status}: ${g.body.slice(0, 160)}` };
+}
+
 async function ghlFetch(method, path, env, body) {
   if (!env.GHL_TOKEN || !env.GHL_LOC) {
     return { ok: false, status: 0, body: '', skipped: 'missing_ghl_config' };
@@ -290,7 +386,16 @@ async function setShowArtistas(req, res, env) {
 
   const ghlSync = await syncShowAssociationsToGhl(env, show, toAdd, toRemove);
 
-  return res.status(200).json({ success: true, show: updated, ghl_sync: ghlSync });
+  // Re-sync custom field shows_vinculados de TODOS los artistas afectados
+  // (prev ∪ next). Sin esto, el contacto GHL del artista quedaría con un
+  // shows_vinculados desactualizado tras cambiar su asignación a un show.
+  const affectedIds = uniq([
+    ...Array.from(prevArtistaIds),
+    ...artistas.map(a => a.artistaId)
+  ]);
+  const ghlContactSync = await syncArtistasToGhlBulk(env, affectedIds);
+
+  return res.status(200).json({ success: true, show: updated, ghl_sync: ghlSync, ghl_contact_sync: ghlContactSync });
 }
 
 // Crea / borra associations GHL contact ↔ custom_objects.shows.
@@ -455,7 +560,11 @@ async function addArtista(req, res, env) {
   if (!sbRes.ok) return res.status(sbRes.status).json({ error: await sbRes.text() });
   const created = await sbRes.json();
   const artista = Array.isArray(created) ? created[0] : created;
-  return res.status(200).json({ success: true, artista });
+
+  // Sync completo a GHL: custom fields + url_supabase + tag artista_ok/proveedor_ok.
+  // Best-effort: no bloquea la respuesta si falla.
+  const ghlSync = await syncArtistaToGhlFull(env, artista);
+  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync });
 }
 
 async function editArtista(req, res, env) {
@@ -526,7 +635,10 @@ async function editArtista(req, res, env) {
     }
   }
 
-  return res.status(200).json({ success: true, artista, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
+  // Sync completo: re-popula custom fields (categoria_artista, shows_vinculados,
+  // url_supabase, tipo, nombre) desde estado Supabase actual. Idempotente.
+  const ghlSync = await syncArtistaToGhlFull(env, artista);
+  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
 }
 
 async function showsPending(req, res, env) {
@@ -614,7 +726,9 @@ async function editShow(req, res, env) {
     if (!env.GHL_TOKEN || !env.GHL_LOC) {
       ghlResult.skipped = 'missing_ghl_config';
     } else {
-      const props = {};
+      // Siempre incluir url_admin (idempotente, garantiza que el link al panel
+      // nunca quede vacío incluso si alguien lo limpió en GHL).
+      const props = { url_admin: adminUrlShow(env, show.id) };
       if ('name' in update) props.nombre_show = show.name || '';
       if ('description' in update) props.descripcion_show = show.description || '';
       if ('video_url' in update) props.url_video = show.video_url || '';
@@ -681,7 +795,10 @@ async function addShow(req, res, env) {
   // GHL: crear record en custom_objects.shows
   const ghlResult = { created: false };
   if (env.GHL_TOKEN && env.GHL_LOC) {
-    const props = { nombre_show: show.name };
+    const props = {
+      nombre_show: show.name,
+      url_admin: adminUrlShow(env, show.id)
+    };
     if (show.description) props.descripcion_show = show.description;
     if (show.video_url) props.url_video = show.video_url;
     if (show.image_url) props.url_imagen = show.image_url;
@@ -842,7 +959,7 @@ async function toggleFavorite(req, res, env) {
   if (typeof is_favorite !== 'boolean') return res.status(400).json({ error: 'is_favorite must be boolean' });
 
   const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=id,is_favorite`,
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=id,is_favorite,ghl_show_id`,
     {
       method: 'PATCH',
       headers: {
@@ -866,6 +983,9 @@ async function toggleFavorite(req, res, env) {
   }
   const rows = await r.json();
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
+  // TODO sync a GHL: necesita custom field custom_objects.shows.es_favorito.
+  // Crearlo manualmente en GHL UI (Settings → Custom Fields → custom_objects.shows
+  // → Add field "Favorito" CHECKBOX) y añadir aquí ghlFetch PUT con props.es_favorito.
   return res.status(200).json({ success: true, show: rows[0] });
 }
 
@@ -900,7 +1020,25 @@ async function reviewShow(req, res, env) {
   );
   if (!r.ok) return res.status(r.status).json({ error: await r.text() });
   const rows = await r.json();
-  return res.status(200).json({ success: true, show: rows[0] });
+  const show = rows[0];
+
+  // GHL sync best-effort: si tocamos campos que viajan a custom_objects.shows
+  // (edit), actualizamos el record. estado_show NO se sincroniza todavía:
+  // requiere crear custom field SINGLE_OPTIONS custom_objects.shows.estado_show
+  // en GHL UI primero (active/pending_review/archived). TODO próxima iteración.
+  let ghl = null;
+  if (action === 'edit' && show && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+    const props = { url_admin: adminUrlShow(env, show.id) };
+    if ('name' in update) props.nombre_show = show.name || '';
+    if ('description' in update) props.descripcion_show = show.description || '';
+    if ('video_url' in update) props.url_video = show.video_url || '';
+    if ('image_url' in update) props.url_imagen = show.image_url || '';
+    const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
+      locationId: env.GHL_LOC, properties: props
+    });
+    ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0,200)}` };
+  }
+  return res.status(200).json({ success: true, show, ghl });
 }
 
 export default async function handler(req, res) {
