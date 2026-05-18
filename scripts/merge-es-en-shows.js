@@ -50,7 +50,13 @@ async function sbPatch(path, body) {
 }
 async function ghl(method, path, body) {
   if (!GHL_TOKEN || !GHL_LOC) return { ok: false, skipped: 'missing_ghl_config' };
-  const r = await fetch(`${GHL_API}${path}`, {
+  // Para PUT/GET/DELETE de custom_objects records: locationId va como query param.
+  // Para POST de associations: va en body. Detectamos heurísticamente:
+  const needsQueryLocation = /^\/objects\//.test(path) && method !== 'POST';
+  const url = needsQueryLocation && !path.includes('locationId=')
+    ? `${GHL_API}${path}${path.includes('?') ? '&' : '?'}locationId=${encodeURIComponent(GHL_LOC)}`
+    : `${GHL_API}${path}`;
+  const r = await fetch(url, {
     method, headers: ghlHeaders, body: body ? JSON.stringify(body) : undefined
   });
   const txt = await r.text();
