@@ -155,8 +155,22 @@
       background: rgba(255,255,255,0.3); border: none; color: #fff;
       width: 16px; height: 16px; border-radius: 50%; cursor: pointer;
       font-size: 11px; line-height: 1; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .chip-removable button:hover { background: rgba(255,255,255,0.55); }
+    .chip-artista .pos {
+      background: rgba(0,0,0,0.22); color: #fff;
+      font-size: 9px; font-weight: 700;
+      padding: 1px 5px; border-radius: 999px;
+      letter-spacing: 0.03em;
+    }
+    .chip-artista[title*="principal"] { box-shadow: 0 0 0 2px #fff inset, 0 0 0 3px var(--accent); }
+    .chip-artista[title*="sin GHL"] {
+      background: #b87a4e; /* aviso visible: artista sin contacto GHL → no se asocia */
     }
     .chip-warning { background: #fff4f0; color: #a33; }
+    .artistas-list { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
+    .artistas-list .picker { flex: 1; min-width: 180px; position: relative; }
     .card-footer {
       padding: 12px 16px;
       border-top: 1px solid var(--border);
@@ -340,6 +354,48 @@
     .img-edit-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
     .img-edit-status { font-size: 12px; color: var(--gray); }
 
+    /* Multi-imagen: galería del show editor */
+    .gallery {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px; margin-top: 4px;
+    }
+    .gallery-tile {
+      position: relative; aspect-ratio: 4 / 3; border-radius: 8px;
+      background-size: cover; background-position: center;
+      border: 1.5px solid var(--border); background-color: #f4f4f5;
+      overflow: hidden;
+    }
+    .gallery-tile.primary { border-color: var(--accent); border-width: 2px; }
+    .gallery-tile .primary-tag {
+      position: absolute; top: 4px; left: 4px;
+      background: var(--accent); color: #fff; font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .gallery-actions {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 6px; background: linear-gradient(0deg, rgba(0,0,0,0.75), transparent);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .gallery-tile:hover .gallery-actions { opacity: 1; }
+    .gallery-actions button {
+      background: rgba(255,255,255,0.18); color: #fff; border: none;
+      width: 22px; height: 22px; border-radius: 4px; cursor: pointer;
+      font-size: 12px; line-height: 1; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .gallery-actions button:hover { background: rgba(255,255,255,0.35); }
+    .gallery-actions .delete:hover { background: #e74c3c; }
+    .gallery-add {
+      aspect-ratio: 4 / 3; border-radius: 8px; border: 1.5px dashed var(--border);
+      background: #fafafa; color: var(--gray); cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; font-size: 12px; transition: all 0.15s;
+    }
+    .gallery-add:hover { border-color: var(--accent); color: var(--accent); background: #fff5f3; }
+    .gallery-add .plus { font-size: 22px; line-height: 1; }
+    .gallery-add.uploading { pointer-events: none; opacity: 0.55; }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -419,6 +475,7 @@
         <button class="subtab" data-substatus="pending_review">Pending review</button>
       </div>
       <div class="toolbar">
+        <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
         <span id="shows-filter-info" style="color: var(--gray); font-size: 13px;"></span>
         <button id="shows-clear-filter" class="btn btn-secondary hidden">Limpiar filtro</button>
       </div>
@@ -519,7 +576,7 @@
   <!-- Edit show modal -->
   <div class="edit-modal-backdrop" id="edit-modal-backdrop">
     <div class="edit-modal">
-      <h2>Editar show</h2>
+      <h2 id="edit-modal-title">Editar show</h2>
       <div class="show-id" id="edit-show-id"></div>
       <div class="row">
         <div>
@@ -567,17 +624,13 @@
           </div>
         </div>
       </div>
-      <label>Imagen del show</label>
-      <div class="img-edit-row">
-        <div class="img-edit-preview placeholder" id="edit-image-preview">sin imagen</div>
-        <div class="img-edit-controls">
-          <input type="url" id="edit-image-url" placeholder="https://... o subí un archivo">
-          <div class="img-edit-actions">
-            <input type="file" id="edit-image-file" accept="image/*" hidden>
-            <button type="button" class="btn" id="edit-image-upload-btn">Subir imagen…</button>
-            <span class="img-edit-status" id="edit-image-status"></span>
-          </div>
-        </div>
+      <label>Imágenes del show <small style="font-weight:normal;color:var(--gray);">(la primera = principal; arrastrá ◀ ▶ para reordenar)</small></label>
+      <div class="gallery" id="edit-gallery"></div>
+      <input type="file" id="edit-image-file" accept="image/*" hidden>
+      <div class="img-edit-actions" style="margin-top:8px;">
+        <input type="url" id="edit-image-url" placeholder="o pegá una URL externa…" style="flex:1;">
+        <button type="button" class="btn" id="edit-image-url-add">Añadir URL</button>
+        <span class="img-edit-status" id="edit-image-status"></span>
       </div>
       <label>URL video (YouTube embed o similar)</label>
       <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/embed/...">
@@ -1108,8 +1161,20 @@
     function renderShowCard(s) {
       const card = document.createElement('div');
       card.className = 'card';
-      const artist = s.artista;
-      const artistName = artistaDisplayName(artist);
+      // Lista N:M: si show_artistas tiene filas las usamos (ordenadas por
+      // posicion). Si no, fallback al artista 1:1 legacy (s.artista).
+      let artistasList = [];
+      if (Array.isArray(s.show_artistas) && s.show_artistas.length) {
+        artistasList = s.show_artistas
+          .slice()
+          .sort((a, b) => (a.posicion || 99) - (b.posicion || 99))
+          .map(sa => sa.artista)
+          .filter(Boolean);
+      } else if (s.artista) {
+        artistasList = [s.artista];
+      }
+      const primary = artistasList[0] || null;
+      const artistName = artistaDisplayName(primary);
 
       const favClass = s.is_favorite ? 'is-favorite' : 'fav';
       card.innerHTML = `
@@ -1120,7 +1185,9 @@
           </div>
         </div>
         <div class="card-body">
-          ${artistName ? `<div class="artist" data-artista-id="${escapeHtml(artist.id)}">por ${escapeHtml(artistName)} →</div>` : '<div class="artist" style="color:#aaa; cursor:default;">sin artista asignado</div>'}
+          ${artistName
+            ? `<div class="artist" data-artista-id="${escapeHtml(primary.id)}">por ${escapeHtml(artistName)}${artistasList.length > 1 ? ` <span style="color:var(--gray);">+${artistasList.length - 1}</span>` : ''} →</div>`
+            : '<div class="artist" style="color:#aaa; cursor:default;">sin artista asignado</div>'}
           <h3>${escapeHtml(s.name || s.id)}</h3>
           <div class="meta">
             <span>${escapeHtml(s.category || '—')}${s.subcategory ? ' · ' + escapeHtml(s.subcategory) : ''}</span>
@@ -1128,14 +1195,22 @@
           </div>
           <p>${escapeHtml(s.description || '')}</p>
         </div>
-        <div class="assign-row">
-          <label>Artista:</label>
-          ${artist
-            ? `<span class="chip-removable" data-show-id="${escapeHtml(s.id)}">${escapeHtml(artistName)} <button data-unlink="${escapeHtml(s.id)}" title="Desvincular">×</button></span>`
-            : `<div class="picker">
-                 <input type="search" placeholder="Buscar artista para asignar…" data-picker-input="${escapeHtml(s.id)}">
-                 <div class="picker-results empty" data-picker-results="${escapeHtml(s.id)}"></div>
-               </div>`}
+        <div class="assign-row multi" data-show-id="${escapeHtml(s.id)}">
+          <label>Artistas:</label>
+          <div class="artistas-list">
+            ${artistasList.map((a, i) => `
+              <span class="chip-removable chip-artista" data-art-id="${escapeHtml(a.id)}" title="#${i + 1}${i === 0 ? ' (principal)' : ''}${a.ghl_contact_id ? '' : ' · sin GHL'}">
+                <span class="pos">#${i + 1}</span>
+                <span>${escapeHtml(artistaDisplayName(a))}</span>
+                ${i > 0 ? `<button class="chip-move" data-move-left title="Subir posición">◀</button>` : ''}
+                ${i < artistasList.length - 1 ? `<button class="chip-move" data-move-right title="Bajar posición">▶</button>` : ''}
+                <button data-remove-art title="Quitar">×</button>
+              </span>`).join('')}
+            ${artistasList.length < 3 ? `<div class="picker">
+              <input type="search" placeholder="${artistasList.length === 0 ? 'Buscar artista…' : '+ añadir artista'}" data-picker-input="${escapeHtml(s.id)}">
+              <div class="picker-results empty" data-picker-results="${escapeHtml(s.id)}"></div>
+            </div>` : ''}
+          </div>
         </div>
         <div class="card-footer">
           ${state.shows.substatus === 'pending_review'
@@ -1153,16 +1228,38 @@
       if (artistLink) {
         artistLink.addEventListener('click', () => setHash('artistas', artistLink.dataset.artistaId, {}));
       }
-      const unlinkBtn = card.querySelector('[data-unlink]');
-      if (unlinkBtn) {
-        unlinkBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          if (!confirm('Desvincular este artista del show?')) return;
-          await linkShow(s.id, null);
-        });
-      }
+      // Chips: quitar / reordenar
+      card.querySelectorAll('.chip-artista').forEach((chip, idx) => {
+        const removeBtn = chip.querySelector('[data-remove-art]');
+        if (removeBtn) {
+          removeBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm('Quitar este artista del show?')) return;
+            const next = artistasList.filter((_, i) => i !== idx);
+            await setShowArtistas(s.id, next);
+          });
+        }
+        const moveLeft = chip.querySelector('[data-move-left]');
+        if (moveLeft) {
+          moveLeft.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const next = artistasList.slice();
+            [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+            await setShowArtistas(s.id, next);
+          });
+        }
+        const moveRight = chip.querySelector('[data-move-right]');
+        if (moveRight) {
+          moveRight.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const next = artistasList.slice();
+            [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+            await setShowArtistas(s.id, next);
+          });
+        }
+      });
       const pickerInput = card.querySelector('[data-picker-input]');
-      if (pickerInput) wirePicker(card, s);
+      if (pickerInput) wirePicker(card, s, artistasList);
 
       card.querySelectorAll('[data-action]').forEach(b => {
         b.addEventListener('click', () => reviewShow(b.dataset.id, b.dataset.action));
@@ -1202,8 +1299,48 @@
     }
 
     let _editingShow = null;
+    let _addingShow = false; // true = modal en modo "crear nuevo show"
+    let _editingImages = []; // array local de URLs visibles en la galería
+    function openAddShowModal() {
+      _addingShow = true;
+      _editingShow = null;
+      _editingImages = [];
+      $('edit-modal-title').textContent = 'Nuevo show';
+      $('edit-show-id').textContent = 'Se creará en Supabase y en GHL (custom_objects.shows). Después podrás añadir imágenes y artistas.';
+      $('edit-name').value = '';
+      $('edit-name-en').value = '';
+      $('edit-category').value = '';
+      $('edit-subcategory').value = '';
+      $('edit-subcategory-en').value = '';
+      $('edit-description').value = '';
+      $('edit-description-en').value = '';
+      $('edit-base-price').value = '';
+      $('edit-price-note').value = '';
+      $('edit-price-note-en').value = '';
+      $('edit-image-url').value = '';
+      $('edit-video-url').value = '';
+      // En modo crear, ocultamos la galería (las imágenes requieren show.id ya
+      // creado; se suben editando el show después de guardar).
+      const galleryLabel = $('edit-gallery').previousElementSibling;
+      if (galleryLabel && galleryLabel.tagName === 'LABEL') galleryLabel.style.display = 'none';
+      $('edit-gallery').style.display = 'none';
+      $('edit-gallery').nextElementSibling.style.display = 'none'; // botón file
+      const galleryActions = $('edit-image-url').parentElement;
+      if (galleryActions) galleryActions.style.display = 'none';
+      $('edit-image-status').textContent = '';
+      $('edit-modal-backdrop').classList.add('open');
+    }
     function openEditShowModal(s) {
+      _addingShow = false;
       _editingShow = s;
+      $('edit-modal-title').textContent = 'Editar show';
+      // Restaurar la galería si venía oculta del modo "nuevo"
+      const galleryLabel = $('edit-gallery').previousElementSibling;
+      if (galleryLabel && galleryLabel.tagName === 'LABEL') galleryLabel.style.display = '';
+      $('edit-gallery').style.display = '';
+      $('edit-gallery').nextElementSibling.style.display = '';
+      const galleryActions = $('edit-image-url').parentElement;
+      if (galleryActions) galleryActions.style.display = '';
       $('edit-show-id').textContent = `id: ${s.id}`;
       $('edit-name').value = s.name || '';
       $('edit-name-en').value = s.name_en || '';
@@ -1215,23 +1352,83 @@
       $('edit-base-price').value = s.base_price || '';
       $('edit-price-note').value = s.price_note || '';
       $('edit-price-note-en').value = s.price_note_en || '';
-      $('edit-image-url').value = s.image_url || '';
+      $('edit-image-url').value = '';
       $('edit-video-url').value = s.video_url || '';
-      renderEditImagePreview(s.image_url || '');
+      // Inicializar galería: usar image_urls si existe, fallback a image_url
+      const arr = Array.isArray(s.image_urls) ? s.image_urls.filter(Boolean) : [];
+      _editingImages = arr.length ? arr.slice() : (s.image_url ? [s.image_url] : []);
+      renderGallery();
       $('edit-image-status').textContent = '';
       $('edit-modal-backdrop').classList.add('open');
     }
-    function renderEditImagePreview(url) {
-      const el = $('edit-image-preview');
-      if (url && url.trim()) {
-        el.style.backgroundImage = `url('${url.trim().replace(/'/g, '%27')}')`;
-        el.classList.remove('placeholder');
-        el.textContent = '';
-      } else {
-        el.style.backgroundImage = '';
-        el.classList.add('placeholder');
-        el.textContent = 'sin imagen';
+    function renderGallery() {
+      const grid = $('edit-gallery');
+      const tiles = _editingImages.map((url, i) => {
+        const safe = url.replace(/'/g, '%27');
+        const isPrimary = i === 0;
+        return `<div class="gallery-tile ${isPrimary ? 'primary' : ''}" style="background-image:url('${escapeHtml(safe)}')">
+          ${isPrimary ? '<span class="primary-tag">Principal</span>' : ''}
+          <div class="gallery-actions">
+            <button type="button" title="Mover izquierda" onclick="moveImage(${i}, -1)" ${i === 0 ? 'disabled style="opacity:0.35;"' : ''}>◀</button>
+            <button type="button" class="delete" title="Eliminar" onclick="removeImage(${i})">×</button>
+            <button type="button" title="Mover derecha" onclick="moveImage(${i}, 1)" ${i === _editingImages.length - 1 ? 'disabled style="opacity:0.35;"' : ''}>▶</button>
+          </div>
+        </div>`;
+      }).join('');
+      const add = `<div class="gallery-add" id="gallery-add-tile" onclick="document.getElementById('edit-image-file').click()">
+        <div class="plus">+</div>
+        <div>Añadir imagen</div>
+      </div>`;
+      grid.innerHTML = tiles + add;
+    }
+    function moveImage(i, dir) {
+      const j = i + dir;
+      if (j < 0 || j >= _editingImages.length) return;
+      const arr = _editingImages.slice();
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+      _editingImages = arr;
+      renderGallery();
+      persistImages();
+    }
+    function removeImage(i) {
+      if (!_editingImages[i]) return;
+      if (!confirm('¿Eliminar esta imagen del show?')) return;
+      _editingImages.splice(i, 1);
+      renderGallery();
+      persistImages();
+    }
+    async function persistImages() {
+      if (!_editingShow) return;
+      const status = $('edit-image-status');
+      status.textContent = 'Guardando…';
+      try {
+        const r = await fetch('/api/admin?action=set-show-images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: _editingShow.id, image_urls: _editingImages })
+        });
+        const d = await r.json();
+        if (!r.ok) { status.textContent = ''; showError(d.error || 'Error'); return; }
+        if (_editingShow) {
+          _editingShow.image_urls = d.image_urls;
+          _editingShow.image_url = d.image_urls[0] || null;
+        }
+        status.textContent = 'Galería actualizada ✓';
+        loadShows();
+      } catch (err) {
+        status.textContent = '';
+        showError(err.message);
       }
+    }
+    function addImageFromUrl() {
+      const url = $('edit-image-url').value.trim();
+      if (!url) return;
+      if (!/^https?:\/\//i.test(url)) { showError('URL inválida'); return; }
+      if (_editingImages.includes(url)) { showError('Esa imagen ya está en la galería'); return; }
+      _editingImages.push(url);
+      $('edit-image-url').value = '';
+      renderGallery();
+      persistImages();
     }
     // Reduce la imagen client-side antes de subir: payload chico y calidad pareja.
     function resizeImageFile(file, maxDim, quality) {
@@ -1261,6 +1458,7 @@
     }
     function closeEditShowModal() {
       _editingShow = null;
+      _addingShow = false;
       $('edit-modal-backdrop').classList.remove('open');
       // If the URL points to a single show, reset back to the substatus tab
       const cur = parseHash();
@@ -1270,10 +1468,10 @@
       }
     }
     async function saveEditShow() {
-      if (!_editingShow) return;
+      if (!_editingShow && !_addingShow) return;
       const btn = $('edit-save');
       btn.disabled = true;
-      const patch = {
+      const fields = {
         name: $('edit-name').value.trim(),
         name_en: $('edit-name-en').value.trim(),
         category: $('edit-category').value || null,
@@ -1284,14 +1482,32 @@
         base_price: $('edit-base-price').value ? parseInt($('edit-base-price').value, 10) : null,
         price_note: $('edit-price-note').value.trim(),
         price_note_en: $('edit-price-note-en').value.trim(),
-        image_url: $('edit-image-url').value.trim(),
         video_url: $('edit-video-url').value.trim()
       };
       try {
+        if (_addingShow) {
+          if (!fields.name) { showError('El nombre del show es requerido'); btn.disabled = false; return; }
+          const r = await fetch('/api/admin?action=add-show', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fields)
+          });
+          const d = await r.json();
+          if (!r.ok) { showError(d.error || 'Error creando show'); btn.disabled = false; return; }
+          closeEditShowModal();
+          await loadShows();
+          if (d.ghl && d.ghl.error) showError('Show creado, pero GHL falló: ' + d.ghl.error);
+          else if (d.ghl && d.ghl.skipped) showError('Show creado (GHL skipped: ' + d.ghl.skipped + ')');
+          // Reabrir en modo editar para subir imágenes y asignar artistas
+          if (d.show) openEditShowModal(d.show);
+          return;
+        }
+        // image_urls + image_url se persisten via /set-show-images en cada
+        // mutación de galería; acá sólo guardamos los demás campos textuales.
         const r = await fetch('/api/admin?action=edit-show', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: _editingShow.id, patch })
+          body: JSON.stringify({ id: _editingShow.id, patch: fields })
         });
         const d = await r.json();
         if (!r.ok) { showError(d.error || 'Error'); btn.disabled = false; return; }
@@ -1305,15 +1521,17 @@
       if (e.target === $('edit-modal-backdrop')) closeEditShowModal();
     });
     $('edit-save').addEventListener('click', saveEditShow);
-    $('edit-image-url').addEventListener('input', (e) => renderEditImagePreview(e.target.value));
-    $('edit-image-upload-btn').addEventListener('click', () => $('edit-image-file').click());
+    $('edit-image-url-add').addEventListener('click', addImageFromUrl);
+    $('edit-image-url').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); addImageFromUrl(); }
+    });
     $('edit-image-file').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       e.target.value = '';
       if (!file || !_editingShow) return;
       const status = $('edit-image-status');
-      const btn = $('edit-image-upload-btn');
-      btn.disabled = true;
+      const addTile = document.getElementById('gallery-add-tile');
+      if (addTile) addTile.classList.add('uploading');
       status.textContent = 'Procesando…';
       try {
         const dataUrl = await resizeImageFile(file, 1600, 0.85);
@@ -1325,16 +1543,21 @@
         });
         const d = await r.json();
         if (!r.ok) { status.textContent = ''; showError(d.error || 'Error al subir'); return; }
-        $('edit-image-url').value = d.url;
-        renderEditImagePreview(d.url);
-        if (_editingShow) _editingShow.image_url = d.url;
-        status.textContent = 'Imagen actualizada ✓';
+        // El endpoint appends al array y devuelve image_urls completo.
+        _editingImages = Array.isArray(d.image_urls) ? d.image_urls : (d.url ? [..._editingImages, d.url] : _editingImages);
+        if (_editingShow) {
+          _editingShow.image_urls = _editingImages;
+          _editingShow.image_url = _editingImages[0] || null;
+        }
+        renderGallery();
+        status.textContent = 'Imagen añadida ✓';
         loadShows();
       } catch (err) {
         status.textContent = '';
         showError(err.message);
       } finally {
-        btn.disabled = false;
+        const addTile2 = document.getElementById('gallery-add-tile');
+        if (addTile2) addTile2.classList.remove('uploading');
       }
     });
     document.addEventListener('keydown', (e) => {
@@ -1417,14 +1640,17 @@
       if (e.key === 'Escape' && $('art-modal-backdrop').classList.contains('open')) closeArtistaModal();
     });
 
-    function wirePicker(card, show) {
+    function wirePicker(card, show, currentArtistas) {
       const input = card.querySelector('[data-picker-input]');
       const results = card.querySelector('[data-picker-results]');
+      if (!input || !results) return;
+      const existingIds = new Set((currentArtistas || []).map(a => a.id));
       const onInput = debounce(async () => {
         const q = input.value.trim().toLowerCase();
         if (!q) { results.classList.add('empty'); results.innerHTML = ''; return; }
         const all = await loadAllArtistasForPicker();
         const matches = all.filter(a => {
+          if (existingIds.has(a.id)) return false; // ya vinculado
           const hay = [a.nombre, a.nombre_artistico, a.compania, a.email].map(x => (x || '').toLowerCase()).join(' ');
           return hay.includes(q);
         }).slice(0, 12);
@@ -1443,7 +1669,10 @@
         results.querySelectorAll('[data-pick]').forEach(el => {
           el.addEventListener('click', async () => {
             results.classList.add('empty');
-            await linkShow(show.id, el.dataset.pick);
+            const picked = all.find(x => x.id === el.dataset.pick);
+            if (!picked) return;
+            const next = [...(currentArtistas || []), picked];
+            await setShowArtistas(show.id, next);
           });
         });
       }, 200);
@@ -1452,15 +1681,30 @@
       input.addEventListener('focus', () => { if (input.value) onInput(); });
     }
 
-    async function linkShow(showId, artistaId) {
+    async function setShowArtistas(showId, artistasList) {
       try {
-        const r = await fetch('/api/admin?action=link-show-to-artista', {
+        const payload = {
+          showId,
+          artistas: artistasList.map((a, i) => ({ artistaId: a.id, posicion: i + 1 }))
+        };
+        const r = await fetch('/api/admin?action=set-show-artistas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ showId, artistaId })
+          body: JSON.stringify(payload)
         });
         const d = await r.json();
         if (!r.ok) { showError(d.error || 'Error vinculando'); return; }
+        if (d.ghl_sync) {
+          const g = d.ghl_sync;
+          if (g.errors?.length) {
+            showError(`GHL: ${g.errors.length} error(es) al sincronizar. Ver consola.`);
+            console.warn('GHL sync errors:', g.errors);
+          } else if (g.skipped_reason === 'show_has_no_ghl_show_id') {
+            showError('Guardado en Supabase. GHL: este show no existe aún en GHL (correr script sync-shows-and-associations-to-ghl --apply para crearlo).');
+          } else if (g.skipped_no_contact_id) {
+            console.warn(`GHL: ${g.skipped_no_contact_id} artista(s) sin ghl_contact_id — association saltada.`);
+          }
+        }
         loadShows();
       } catch (err) {
         showError(err.message);

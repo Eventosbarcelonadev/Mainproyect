@@ -4,16 +4,43 @@
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
 // GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
-// POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}
+// POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
+// POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
 // GET  /api/admin?action=shows-pending&status=pending_review|active|archived
 // POST /api/admin?action=review-show  body: {id, action: approve|archive|edit, patch?}
 // POST /api/admin?action=edit-show  body: {id, patch: {name?, description?, ...}}
-// POST /api/admin?action=upload-show-image  body: {id, dataUrl} -> sube a Storage + setea image_url
+// POST /api/admin?action=add-show   body: {name, name_en?, category?, subcategory?, description?, base_price?, price_note?, video_url?, ...} -> crea show + record GHL custom_objects.shows
+// POST /api/admin?action=upload-show-image  body: {id, dataUrl} -> sube a Storage + APPEND a image_urls (y sincroniza image_url = image_urls[0])
+// POST /api/admin?action=set-show-images    body: {id, image_urls: string[]} -> reemplaza el array entero (reorder/delete); sincroniza image_url
 // POST /api/admin?action=toggle-favorite  body: {id, is_favorite: bool}
 // POST /api/admin?action=add-artista  body: {nombre, nombre_artistico?, compania?, email?, telefono?, ciudad?, tipo, disciplinas?[], bio_show?}
 // POST /api/admin?action=edit-artista  body: {id, patch: {nombre?, ...}}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// GHL custom_objects.shows + associación show↔contact (ver
+// scripts/sync-shows-and-associations-to-ghl.js).
+const GHL_SHOWS_OBJECT_KEY = 'custom_objects.shows';
+const GHL_SHOW_CONTACT_ASSOCIATION_ID = '6a018a66c4c95715fde952f9';
+const GHL_API = 'https://services.leadconnectorhq.com';
+
+async function ghlFetch(method, path, env, body) {
+  if (!env.GHL_TOKEN || !env.GHL_LOC) {
+    return { ok: false, status: 0, body: '', skipped: 'missing_ghl_config' };
+  }
+  const r = await fetch(`${GHL_API}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${env.GHL_TOKEN}`,
+      Version: '2021-07-28',
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const txt = await r.text();
+  return { ok: r.ok, status: r.status, body: txt };
+}
 
 function clampInt(raw, def, min, max) {
   const n = parseInt(raw, 10);
@@ -122,9 +149,46 @@ async function getArtistaDetail(req, res, env) {
   return res.status(200).json({ success: true, artista: rows[0] });
 }
 
+// Legacy: vincula 1:1. Delega en setShowArtistas pasando 0 o 1 artista.
 async function linkShowToArtista(req, res, env) {
   const { showId, artistaId } = req.body || {};
   if (!showId) return res.status(400).json({ error: 'Missing showId' });
+  if (artistaId && !UUID_RE.test(artistaId)) {
+    return res.status(400).json({ error: 'artistaId must be a UUID' });
+  }
+  req.body = {
+    showId,
+    artistas: artistaId ? [{ artistaId, posicion: 1 }] : []
+  };
+  return setShowArtistas(req, res, env);
+}
+
+// Setea el array completo de artistas de un show (N:M):
+//   body: { showId, artistas: [{ artistaId, posicion? }, ...] }  // máx 3
+// Idempotente. Sincroniza:
+//   - show_artistas: borra todo y reinserta en el orden dado (posicion = 1..N)
+//   - shows.artista_id: cache de artistas[0].artistaId (compat con el resto)
+//   - GHL: crea associations contact↔show para los nuevos, borra las que ya no estén.
+//     GHL es best-effort: si falta config o ids, devuelve `ghl_sync.skipped`.
+async function setShowArtistas(req, res, env) {
+  const { showId } = req.body || {};
+  let { artistas } = req.body || {};
+  if (!showId) return res.status(400).json({ error: 'Missing showId' });
+  if (!Array.isArray(artistas)) return res.status(400).json({ error: 'artistas debe ser array' });
+  if (artistas.length > 3) return res.status(400).json({ error: 'Máximo 3 artistas por show' });
+
+  // Normalizar + dedupe + validar UUIDs
+  const seen = new Set();
+  const clean = [];
+  for (const a of artistas) {
+    const id = a && a.artistaId;
+    if (!id) continue;
+    if (!UUID_RE.test(id)) return res.status(400).json({ error: `artistaId inválido: ${id}` });
+    if (seen.has(id)) continue;
+    seen.add(id);
+    clean.push({ artistaId: id, posicion: clean.length + 1 });
+  }
+  artistas = clean;
 
   const headers = {
     apikey: env.SUPABASE_KEY,
@@ -132,35 +196,157 @@ async function linkShowToArtista(req, res, env) {
     'Content-Type': 'application/json'
   };
 
-  if (artistaId) {
-    if (!UUID_RE.test(artistaId)) {
-      return res.status(400).json({ error: 'artistaId must be a UUID' });
-    }
+  // 1) Validar que todos los artistas existen y traer sus ghl_contact_id
+  let artistasFull = [];
+  if (artistas.length) {
+    const ids = artistas.map(a => a.artistaId).map(encodeURIComponent).join(',');
     const ar = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(artistaId)}&select=id`,
+      `${env.SUPABASE_URL}/rest/v1/artistas?id=in.(${ids})&select=id,nombre,ghl_contact_id`,
       { headers }
     );
     if (!ar.ok) return res.status(ar.status).json({ error: await ar.text() });
-    const arRows = await ar.json();
-    if (!arRows.length) return res.status(400).json({ error: 'Artista not found', hint: artistaId });
+    artistasFull = await ar.json();
+    if (artistasFull.length !== artistas.length) {
+      const missing = artistas.map(a => a.artistaId).filter(id => !artistasFull.find(x => x.id === id));
+      return res.status(400).json({ error: 'Artistas no encontrados', hint: missing });
+    }
   }
 
-  const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(showId)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`,
+  // 2) Estado actual: traer show + show_artistas para diffear contra GHL
+  const cur = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(showId)}`
+    + `&select=id,name,ghl_show_id,show_artistas(artista_id,posicion,artista:artista_id(id,ghl_contact_id))`,
+    { headers }
+  );
+  if (!cur.ok) return res.status(cur.status).json({ error: await cur.text() });
+  const curRows = await cur.json();
+  if (!curRows.length) return res.status(404).json({ error: 'Show not found', hint: showId });
+  const show = curRows[0];
+  const prevArtistaIds = new Set((show.show_artistas || []).map(sa => sa.artista_id));
+  const prevByArtId = new Map((show.show_artistas || []).map(sa => [sa.artista_id, sa]));
+  const nextArtistaIds = new Set(artistas.map(a => a.artistaId));
+
+  // 3) Wipe + reinsert show_artistas (transaccional via 2 requests; postgrest no
+  //    tiene tx multi-statement, así que aceptamos la pequeña ventana de
+  //    inconsistencia. Si el segundo falla, intentamos restaurar.)
+  const delRes = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(showId)}`,
+    { method: 'DELETE', headers }
+  );
+  if (!delRes.ok) {
+    const txt = await delRes.text();
+    if (/show_artistas/i.test(txt) && /relation|not exist|could not find/i.test(txt)) {
+      return res.status(409).json({
+        error: 'Tabla show_artistas no existe',
+        hint: 'Aplicar migración supabase/migrations/20260513_show_artistas_join.sql'
+      });
+    }
+    return res.status(delRes.status).json({ error: txt });
+  }
+  if (artistas.length) {
+    const insertRows = artistas.map(a => ({
+      show_id: showId, artista_id: a.artistaId, posicion: a.posicion, source: 'admin-ui'
+    }));
+    const insRes = await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas`, {
+      method: 'POST',
+      headers: { ...headers, Prefer: 'return=minimal' },
+      body: JSON.stringify(insertRows)
+    });
+    if (!insRes.ok) return res.status(insRes.status).json({ error: await insRes.text() });
+  }
+
+  // 4) shows.artista_id = primer artista (cache para queries 1:1)
+  const primaryId = artistas[0]?.artistaId || null;
+  const showSelect = '*'
+    + ',artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls,ghl_contact_id)'
+    + ',show_artistas(posicion,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls,ghl_contact_id))';
+  const patch = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(showId)}&select=${showSelect}`,
     {
       method: 'PATCH',
       headers: { ...headers, Prefer: 'return=representation' },
-      body: JSON.stringify({ artista_id: artistaId || null })
+      body: JSON.stringify({ artista_id: primaryId })
     }
   );
-  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
-  const rows = await r.json();
-  if (!rows.length) return res.status(404).json({ error: 'Show not found', hint: showId });
-  return res.status(200).json({ success: true, show: rows[0] });
+  if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
+  const updatedRows = await patch.json();
+  const updated = updatedRows[0];
+  if (updated.show_artistas) {
+    updated.show_artistas.sort((a, b) => (a.posicion || 99) - (b.posicion || 99));
+  }
+
+  // 5) Sync a GHL: añadir associations nuevas, borrar las que ya no existen.
+  const ghlByArt = new Map(artistasFull.map(a => [a.id, a]));
+  const toAdd = artistas
+    .map(a => ghlByArt.get(a.artistaId))
+    .filter(a => a && a.ghl_contact_id && !prevArtistaIds.has(a.id));
+  const toRemove = (show.show_artistas || [])
+    .filter(sa => !nextArtistaIds.has(sa.artista_id) && sa.artista?.ghl_contact_id);
+
+  const ghlSync = await syncShowAssociationsToGhl(env, show, toAdd, toRemove);
+
+  return res.status(200).json({ success: true, show: updated, ghl_sync: ghlSync });
+}
+
+// Crea / borra associations GHL contact ↔ custom_objects.shows.
+// Best-effort: si falta ghl_show_id o ghl_contact_id, se loguea y skipea.
+async function syncShowAssociationsToGhl(env, show, toAdd, toRemove) {
+  const result = { added: 0, removed: 0, skipped_no_show_id: 0, skipped_no_contact_id: 0, errors: [] };
+  if (!env.GHL_TOKEN || !env.GHL_LOC) {
+    result.skipped_reason = 'missing_ghl_config';
+    return result;
+  }
+  if (!show.ghl_show_id) {
+    result.skipped_no_show_id = (toAdd?.length || 0) + (toRemove?.length || 0);
+    result.skipped_reason = 'show_has_no_ghl_show_id';
+    return result;
+  }
+
+  // Add
+  for (const a of toAdd) {
+    if (!a.ghl_contact_id) { result.skipped_no_contact_id++; continue; }
+    const r = await ghlFetch('POST', '/associations/relations', env, {
+      locationId: env.GHL_LOC,
+      associationId: GHL_SHOW_CONTACT_ASSOCIATION_ID,
+      firstRecordId: a.ghl_contact_id,
+      secondRecordId: show.ghl_show_id
+    });
+    if (r.ok) {
+      result.added++;
+    } else if (r.status === 400 && /duplicate relation/i.test(r.body)) {
+      result.added++; // ya existía → tratamos como ok
+    } else {
+      result.errors.push({ op: 'add', artista: a.nombre, status: r.status, body: r.body.slice(0, 160) });
+    }
+  }
+
+  // Remove: GHL no expone "delete by pair" directo. Listamos relations del
+  // record show y borramos las que matcheen contactIds a remover.
+  if (toRemove.length) {
+    const list = await ghlFetch('GET',
+      `/associations/relations/${GHL_SHOW_CONTACT_ASSOCIATION_ID}/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+      env);
+    if (!list.ok) {
+      result.errors.push({ op: 'list', status: list.status, body: list.body.slice(0, 160) });
+    } else {
+      let relations = [];
+      try { relations = JSON.parse(list.body).relations || []; } catch {}
+      const contactsToRemove = new Set(toRemove.map(sa => sa.artista.ghl_contact_id));
+      for (const rel of relations) {
+        const cid = rel.firstRecordId === show.ghl_show_id ? rel.secondRecordId : rel.firstRecordId;
+        if (!contactsToRemove.has(cid)) continue;
+        const del = await ghlFetch('DELETE', `/associations/relations/${encodeURIComponent(rel.id)}`, env);
+        if (del.ok) result.removed++;
+        else result.errors.push({ op: 'remove', relationId: rel.id, status: del.status, body: del.body.slice(0, 160) });
+      }
+    }
+  }
+
+  return result;
 }
 
 // ---- artistas ADD/EDIT ----
-const GHL_API = 'https://services.leadconnectorhq.com';
+// GHL_API ya está declarado arriba.
 function ghlHeaders(env) {
   return {
     Authorization: `Bearer ${env.GHL_TOKEN}`,
@@ -340,13 +526,29 @@ async function editArtista(req, res, env) {
 
 async function showsPending(req, res, env) {
   const status = req.query.status || 'pending_review';
+  // show_artistas (N:M) viene como array embebido y ordenado por posicion.
+  // Legacy artista_id se mantiene como cache de posicion=1 para compat con
+  // queries antiguas que aún hacen JOIN directo.
+  const select = '*'
+    + ',artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls,ghl_contact_id)'
+    + ',show_artistas(posicion,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls,ghl_contact_id))';
   const url = `${env.SUPABASE_URL}/rest/v1/shows?status=eq.${encodeURIComponent(status)}`
-    + `&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`
+    + `&select=${select}`
     + `&order=submitted_at.desc.nullslast`;
 
-  const r = await fetch(url, {
+  let r = await fetch(url, {
     headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` }
   });
+  // Fallback si el join show_artistas falla (tabla no creada en este entorno)
+  if (!r.ok) {
+    const txt = await r.clone().text();
+    if (/show_artistas/i.test(txt) && /relation|not exist|could not find/i.test(txt)) {
+      const fallbackSel = select.replace(/,show_artistas\([^)]+\)/, '');
+      r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows?status=eq.${encodeURIComponent(status)}&select=${fallbackSel}&order=submitted_at.desc.nullslast`, {
+        headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` }
+      });
+    }
+  }
   if (!r.ok) {
     const txt = await r.text();
     if (/column.*does not exist/i.test(txt)) {
@@ -358,6 +560,12 @@ async function showsPending(req, res, env) {
     return res.status(r.status).json({ error: txt });
   }
   const rows = await r.json();
+  // Normaliza: ordena show_artistas por posicion para que el front no se preocupe
+  for (const row of rows) {
+    if (Array.isArray(row.show_artistas)) {
+      row.show_artistas.sort((a, b) => (a.posicion || 99) - (b.posicion || 99));
+    }
+  }
   return res.status(200).json({ success: true, count: rows.length, shows: rows });
 }
 
@@ -367,7 +575,7 @@ async function editShow(req, res, env) {
   if (!patch || typeof patch !== 'object') return res.status(400).json({ error: 'Missing patch' });
 
   const allowed = [
-    'name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url',
+    'name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url', 'image_urls',
     'name_en', 'description_en', 'subcategory_en', 'price_note_en'
   ];
   const update = {};
@@ -393,9 +601,101 @@ async function editShow(req, res, env) {
   return res.status(200).json({ success: true, show: rows[0] });
 }
 
-// Sube una imagen (data URL base64) al bucket artist-assets y setea shows.image_url.
-// A diferencia del backfill masivo, acá SÍ se permite pisar una imagen existente:
-// el panel /admin existe justamente para corregir/cambiar fotos.
+// Crea un nuevo show: 1) inserta en Supabase, 2) crea record en GHL
+// custom_objects.shows, 3) persiste ghl_show_id en la fila SB. GHL es
+// best-effort: si falla, el show queda creado en SB y se reporta el error.
+async function addShow(req, res, env) {
+  const body = req.body || {};
+  const name = (body.name || '').trim();
+  if (!name) return res.status(400).json({ error: 'Nombre del show es requerido' });
+
+  const row = {
+    name,
+    name_en: (body.name_en || '').trim() || null,
+    category: body.category || null,
+    subcategory: (body.subcategory || '').trim() || null,
+    subcategory_en: (body.subcategory_en || '').trim() || null,
+    description: (body.description || '').trim() || null,
+    description_en: (body.description_en || '').trim() || null,
+    base_price: body.base_price != null && body.base_price !== '' ? parseInt(body.base_price, 10) : null,
+    price_note: (body.price_note || '').trim() || null,
+    price_note_en: (body.price_note_en || '').trim() || null,
+    video_url: (body.video_url || '').trim() || null,
+    status: 'active',
+    origen: 'admin-create',
+    submitted_at: new Date().toISOString()
+  };
+
+  const ins = await fetch(`${env.SUPABASE_URL}/rest/v1/shows`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
+    },
+    body: JSON.stringify(row)
+  });
+  if (!ins.ok) return res.status(ins.status).json({ error: await ins.text() });
+  const created = await ins.json();
+  const show = Array.isArray(created) ? created[0] : created;
+
+  // GHL: crear record en custom_objects.shows
+  const ghlResult = { created: false };
+  if (env.GHL_TOKEN && env.GHL_LOC) {
+    const props = { nombre_show: show.name };
+    if (show.description) props.descripcion_show = show.description;
+    if (show.video_url) props.url_video = show.video_url;
+    const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
+      locationId: env.GHL_LOC, properties: props
+    });
+    if (g.ok) {
+      let ghlShowId = null;
+      try {
+        const parsed = JSON.parse(g.body);
+        ghlShowId = parsed.record?.id || parsed.id || null;
+      } catch {}
+      if (ghlShowId) {
+        const upd = await fetch(
+          `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(show.id)}&select=*`,
+          {
+            method: 'PATCH',
+            headers: {
+              apikey: env.SUPABASE_KEY,
+              Authorization: `Bearer ${env.SUPABASE_KEY}`,
+              'Content-Type': 'application/json',
+              Prefer: 'return=representation'
+            },
+            body: JSON.stringify({ ghl_show_id: ghlShowId })
+          }
+        );
+        if (upd.ok) {
+          const updRows = await upd.json();
+          if (updRows.length) Object.assign(show, updRows[0]);
+          ghlResult.created = true;
+          ghlResult.ghl_show_id = ghlShowId;
+        } else {
+          ghlResult.error = 'persist ghl_show_id failed: ' + (await upd.text()).slice(0, 160);
+        }
+      } else {
+        ghlResult.error = 'GHL response missing record id';
+      }
+    } else {
+      ghlResult.error = `GHL ${g.status}: ${g.body.slice(0, 160)}`;
+    }
+  } else {
+    ghlResult.skipped = 'missing_ghl_config';
+  }
+
+  return res.status(200).json({ success: true, show, ghl: ghlResult });
+}
+
+// Sube una imagen (data URL base64) al bucket artist-assets y la APPENDS al
+// array shows.image_urls del show. La primera del array se sincroniza también
+// como shows.image_url para compatibilidad con queries que aún leen la columna
+// vieja (admin listings, etc).
+//
+// Si querés reemplazar imágenes existentes (reorder/delete), usá set-show-images.
 async function uploadShowImage(req, res, env) {
   const { id, dataUrl } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -408,7 +708,20 @@ async function uploadShowImage(req, res, env) {
   const buf = Buffer.from(m[2], 'base64');
   if (buf.length > 15 * 1024 * 1024) return res.status(413).json({ error: 'Imagen supera 15MB' });
 
-  // sufijo timestamp: al reemplazar una foto, la URL cambia y evita cache CDN vieja
+  // Trae el array actual para append. Si la columna no existe (migración no
+  // corrida), trata el row como single-image (sólo image_url).
+  const cur = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=image_url,image_urls`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!cur.ok) return res.status(cur.status).json({ error: await cur.text() });
+  const curRows = await cur.json();
+  if (!curRows.length) return res.status(404).json({ error: 'Show not found' });
+  const existing = Array.isArray(curRows[0].image_urls) ? curRows[0].image_urls.filter(Boolean) : [];
+  const legacy = curRows[0].image_url && !existing.includes(curRows[0].image_url) ? [curRows[0].image_url] : [];
+  const baseArray = existing.length ? existing : legacy;
+
+  // sufijo timestamp: cada upload genera URL única (evita cache CDN viejo)
   const objectPath = `shows/${encodeURIComponent(id)}-${Date.now()}.${ext}`;
   const up = await fetch(`${env.SUPABASE_URL}/storage/v1/object/artist-assets/${objectPath}`, {
     method: 'POST',
@@ -423,23 +736,46 @@ async function uploadShowImage(req, res, env) {
   if (!up.ok) return res.status(up.status).json({ error: 'storage: ' + (await up.text()).slice(0, 200) });
 
   const publicUrl = `${env.SUPABASE_URL}/storage/v1/object/public/artist-assets/${objectPath}`;
-  const patch = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`,
-    {
-      method: 'PATCH',
-      headers: {
-        apikey: env.SUPABASE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation'
-      },
-      body: JSON.stringify({ image_url: publicUrl })
+  const nextArray = [...baseArray, publicUrl];
+
+  return await patchShowImages(env, id, nextArray, res, publicUrl);
+}
+
+// Reemplaza el array completo de imágenes (reorder/delete desde el admin).
+async function setShowImages(req, res, env) {
+  const { id, image_urls } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!Array.isArray(image_urls)) return res.status(400).json({ error: 'image_urls debe ser array' });
+  const clean = image_urls.filter(u => typeof u === 'string' && u.trim()).map(u => u.trim());
+  return await patchShowImages(env, id, clean, res);
+}
+
+// PATCH compartido por upload-show-image y set-show-images.
+// Si la columna image_urls no existe todavía (migración pendiente), reintenta
+// sólo con image_url para no fallar — la galería se degrada a single-image.
+async function patchShowImages(env, id, arr, res, uploadedUrl) {
+  const primary = arr[0] || null;
+  const body = { image_urls: arr, image_url: primary };
+  const url = `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`;
+  const headers = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation'
+  };
+
+  let patch = await fetch(url, { method: 'PATCH', headers, body: JSON.stringify(body) });
+  if (!patch.ok) {
+    const txt = await patch.clone().text();
+    if (/column "?image_urls"?.*does not exist/i.test(txt) || /Could not find the 'image_urls' column/i.test(txt)) {
+      // Fallback: migración aún no corrida → sólo escribir image_url
+      patch = await fetch(url, { method: 'PATCH', headers, body: JSON.stringify({ image_url: primary }) });
     }
-  );
+  }
   if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
   const rows = await patch.json();
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
-  return res.status(200).json({ success: true, url: publicUrl, show: rows[0] });
+  return res.status(200).json({ success: true, url: uploadedUrl, image_urls: arr, show: rows[0] });
 }
 
 async function toggleFavorite(req, res, env) {
@@ -537,16 +873,19 @@ export default async function handler(req, res) {
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
+      if (action === 'set-show-artistas') return setShowArtistas(req, res, env);
       if (action === 'review-show') return reviewShow(req, res, env);
       if (action === 'edit-show') return editShow(req, res, env);
+      if (action === 'add-show') return addShow(req, res, env);
       if (action === 'upload-show-image') return uploadShowImage(req, res, env);
+      if (action === 'set-show-images') return setShowImages(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
       if (action === 'add-artista') return addArtista(req, res, env);
       if (action === 'edit-artista') return editArtista(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|review-show|edit-show|upload-show-image|toggle-favorite|add-artista|edit-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|upload-show-image|set-show-images|toggle-favorite|add-artista|edit-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
