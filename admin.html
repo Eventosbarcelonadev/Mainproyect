@@ -476,6 +476,7 @@
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
+        <input id="shows-q" type="search" placeholder="Buscar show por nombre…" style="flex:1;max-width:300px;">
         <span id="shows-filter-info" style="color: var(--gray); font-size: 13px;"></span>
         <button id="shows-clear-filter" class="btn btn-secondary hidden">Limpiar filtro</button>
       </div>
@@ -717,7 +718,7 @@
     const state = {
       currentTab: null,
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
-      shows: { substatus: 'active', artistaFilter: null, items: [] },
+      shows: { substatus: 'active', artistaFilter: null, items: [], q: '' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
     };
@@ -1132,6 +1133,12 @@
         if (state.shows.showFilter) {
           items = items.filter(s => s.id === state.shows.showFilter);
         }
+        // Apply search query (client-side, normalized lower + strip acentos)
+        if (state.shows.q) {
+          const stripAccents = (s) => String(s || '').toLowerCase().normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '');
+          const needle = stripAccents(state.shows.q);
+          items = items.filter(s => stripAccents(s.name).includes(needle));
+        }
 
         state.shows.items = items;
 
@@ -1301,12 +1308,14 @@
     let _editingShow = null;
     let _addingShow = false; // true = modal en modo "crear nuevo show"
     let _editingImages = []; // array local de URLs visibles en la galería
+    let _pendingNewImage = null; // { kind: 'url'|'dataUrl', value: string } | null — buffer en modo crear
     function openAddShowModal() {
       _addingShow = true;
       _editingShow = null;
       _editingImages = [];
+      _pendingNewImage = null;
       $('edit-modal-title').textContent = 'Nuevo show';
-      $('edit-show-id').textContent = 'Se creará en Supabase y en GHL (custom_objects.shows). Después podrás añadir imágenes y artistas.';
+      $('edit-show-id').textContent = 'Se creará en Supabase y en GHL (custom_objects.shows). Podés subir una imagen ahora; el resto de artistas e imágenes adicionales se asignan al editarlo.';
       $('edit-name').value = '';
       $('edit-name-en').value = '';
       $('edit-category').value = '';
@@ -1319,28 +1328,15 @@
       $('edit-price-note-en').value = '';
       $('edit-image-url').value = '';
       $('edit-video-url').value = '';
-      // En modo crear, ocultamos la galería (las imágenes requieren show.id ya
-      // creado; se suben editando el show después de guardar).
-      const galleryLabel = $('edit-gallery').previousElementSibling;
-      if (galleryLabel && galleryLabel.tagName === 'LABEL') galleryLabel.style.display = 'none';
-      $('edit-gallery').style.display = 'none';
-      $('edit-gallery').nextElementSibling.style.display = 'none'; // botón file
-      const galleryActions = $('edit-image-url').parentElement;
-      if (galleryActions) galleryActions.style.display = 'none';
       $('edit-image-status').textContent = '';
+      renderGallery();
       $('edit-modal-backdrop').classList.add('open');
     }
     function openEditShowModal(s) {
       _addingShow = false;
       _editingShow = s;
+      _pendingNewImage = null;
       $('edit-modal-title').textContent = 'Editar show';
-      // Restaurar la galería si venía oculta del modo "nuevo"
-      const galleryLabel = $('edit-gallery').previousElementSibling;
-      if (galleryLabel && galleryLabel.tagName === 'LABEL') galleryLabel.style.display = '';
-      $('edit-gallery').style.display = '';
-      $('edit-gallery').nextElementSibling.style.display = '';
-      const galleryActions = $('edit-image-url').parentElement;
-      if (galleryActions) galleryActions.style.display = '';
       $('edit-show-id').textContent = `id: ${s.id}`;
       $('edit-name').value = s.name || '';
       $('edit-name-en').value = s.name_en || '';
@@ -1363,6 +1359,25 @@
     }
     function renderGallery() {
       const grid = $('edit-gallery');
+      // Modo crear: 1 slot único con la imagen pendiente (URL o dataUrl)
+      if (_addingShow) {
+        let html = '';
+        if (_pendingNewImage) {
+          const safe = _pendingNewImage.value.replace(/'/g, '%27');
+          html = `<div class="gallery-tile primary" style="background-image:url('${escapeHtml(safe)}')">
+            <span class="primary-tag">Principal</span>
+            <div class="gallery-actions">
+              <button type="button" class="delete" title="Eliminar" onclick="removeImage(0)">×</button>
+            </div>
+          </div>`;
+        }
+        const add = _pendingNewImage ? '' : `<div class="gallery-add" id="gallery-add-tile" onclick="document.getElementById('edit-image-file').click()">
+          <div class="plus">+</div>
+          <div>Subir imagen</div>
+        </div>`;
+        grid.innerHTML = html + add;
+        return;
+      }
       const tiles = _editingImages.map((url, i) => {
         const safe = url.replace(/'/g, '%27');
         const isPrimary = i === 0;
@@ -1382,6 +1397,7 @@
       grid.innerHTML = tiles + add;
     }
     function moveImage(i, dir) {
+      if (_addingShow) return; // modo crear: solo 1 imagen, no hay reorder
       const j = i + dir;
       if (j < 0 || j >= _editingImages.length) return;
       const arr = _editingImages.slice();
@@ -1391,6 +1407,12 @@
       persistImages();
     }
     function removeImage(i) {
+      if (_addingShow) {
+        if (!confirm('¿Quitar la imagen del nuevo show?')) return;
+        _pendingNewImage = null;
+        renderGallery();
+        return;
+      }
       if (!_editingImages[i]) return;
       if (!confirm('¿Eliminar esta imagen del show?')) return;
       _editingImages.splice(i, 1);
@@ -1424,6 +1446,12 @@
       const url = $('edit-image-url').value.trim();
       if (!url) return;
       if (!/^https?:\/\//i.test(url)) { showError('URL inválida'); return; }
+      if (_addingShow) {
+        _pendingNewImage = { kind: 'url', value: url };
+        $('edit-image-url').value = '';
+        renderGallery();
+        return;
+      }
       if (_editingImages.includes(url)) { showError('Esa imagen ya está en la galería'); return; }
       _editingImages.push(url);
       $('edit-image-url').value = '';
@@ -1459,6 +1487,7 @@
     function closeEditShowModal() {
       _editingShow = null;
       _addingShow = false;
+      _pendingNewImage = null;
       $('edit-modal-backdrop').classList.remove('open');
       // If the URL points to a single show, reset back to the substatus tab
       const cur = parseHash();
@@ -1487,18 +1516,36 @@
       try {
         if (_addingShow) {
           if (!fields.name) { showError('El nombre del show es requerido'); btn.disabled = false; return; }
+          // Si la imagen pendiente es URL externa, viaja directo en el create
+          // (un solo round-trip, queda en SB + GHL.url_imagen en el insert).
+          const payload = { ...fields };
+          if (_pendingNewImage && _pendingNewImage.kind === 'url') {
+            payload.image_url = _pendingNewImage.value;
+          }
           const r = await fetch('/api/admin?action=add-show', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(fields)
+            body: JSON.stringify(payload)
           });
           const d = await r.json();
           if (!r.ok) { showError(d.error || 'Error creando show'); btn.disabled = false; return; }
+          // Si la imagen pendiente es dataUrl, subir ahora con el show.id
+          // recién creado. patchShowImages sincroniza url_imagen a GHL.
+          if (_pendingNewImage && _pendingNewImage.kind === 'dataUrl' && d.show) {
+            const up = await fetch('/api/admin?action=upload-show-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: d.show.id, dataUrl: _pendingNewImage.value })
+            });
+            const upd = await up.json();
+            if (!up.ok) showError('Show creado, pero falló la subida de imagen: ' + (upd.error || 'error'));
+            else if (upd.show) d.show = upd.show;
+          }
           closeEditShowModal();
           await loadShows();
           if (d.ghl && d.ghl.error) showError('Show creado, pero GHL falló: ' + d.ghl.error);
           else if (d.ghl && d.ghl.skipped) showError('Show creado (GHL skipped: ' + d.ghl.skipped + ')');
-          // Reabrir en modo editar para subir imágenes y asignar artistas
+          // Reabrir en modo editar para asignar artistas y subir más imágenes
           if (d.show) openEditShowModal(d.show);
           return;
         }
@@ -1529,13 +1576,21 @@
     $('edit-image-file').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       e.target.value = '';
-      if (!file || !_editingShow) return;
+      if (!file) return;
+      if (!_editingShow && !_addingShow) return;
       const status = $('edit-image-status');
       const addTile = document.getElementById('gallery-add-tile');
       if (addTile) addTile.classList.add('uploading');
       status.textContent = 'Procesando…';
       try {
         const dataUrl = await resizeImageFile(file, 1600, 0.85);
+        if (_addingShow) {
+          // Modo crear: solo guardamos el dataUrl en buffer; se sube tras add-show
+          _pendingNewImage = { kind: 'dataUrl', value: dataUrl };
+          renderGallery();
+          status.textContent = 'Imagen lista — se subirá al guardar';
+          return;
+        }
         status.textContent = 'Subiendo…';
         const r = await fetch('/api/admin?action=upload-show-image', {
           method: 'POST',
@@ -1740,6 +1795,10 @@
       state.shows.showFilter = null;
       setHash('shows', state.shows.substatus, {});
     });
+    $('shows-q').addEventListener('input', debounce(() => {
+      state.shows.q = $('shows-q').value.trim();
+      loadShows();
+    }, 250));
 
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {

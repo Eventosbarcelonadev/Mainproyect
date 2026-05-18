@@ -609,7 +609,7 @@ async function editShow(req, res, env) {
   // GHL (name → nombre_show, description → descripcion_show, video_url →
   // url_video), actualizamos el record. Best-effort.
   const ghlResult = { updated: false };
-  const touchesGhl = ('name' in update) || ('description' in update) || ('video_url' in update);
+  const touchesGhl = ('name' in update) || ('description' in update) || ('video_url' in update) || ('image_url' in update);
   if (touchesGhl && show.ghl_show_id) {
     if (!env.GHL_TOKEN || !env.GHL_LOC) {
       ghlResult.skipped = 'missing_ghl_config';
@@ -618,6 +618,7 @@ async function editShow(req, res, env) {
       if ('name' in update) props.nombre_show = show.name || '';
       if ('description' in update) props.descripcion_show = show.description || '';
       if ('video_url' in update) props.url_video = show.video_url || '';
+      if ('image_url' in update) props.url_imagen = show.image_url || '';
       const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
         locationId: env.GHL_LOC, properties: props
       });
@@ -642,6 +643,7 @@ async function addShow(req, res, env) {
   const body = req.body || {};
   const name = (body.name || '').trim();
   if (!name) return res.status(400).json({ error: 'Nombre del show es requerido' });
+  const initialImageUrl = (body.image_url || '').trim() || null;
 
   const row = {
     name,
@@ -655,6 +657,8 @@ async function addShow(req, res, env) {
     price_note: (body.price_note || '').trim() || null,
     price_note_en: (body.price_note_en || '').trim() || null,
     video_url: (body.video_url || '').trim() || null,
+    image_url: initialImageUrl,
+    image_urls: initialImageUrl ? [initialImageUrl] : null,
     status: 'active',
     origen: 'admin-create',
     submitted_at: new Date().toISOString()
@@ -680,6 +684,7 @@ async function addShow(req, res, env) {
     const props = { nombre_show: show.name };
     if (show.description) props.descripcion_show = show.description;
     if (show.video_url) props.url_video = show.video_url;
+    if (show.image_url) props.url_imagen = show.image_url;
     const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
       locationId: env.GHL_LOC, properties: props
     });
@@ -809,7 +814,26 @@ async function patchShowImages(env, id, arr, res, uploadedUrl) {
   if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
   const rows = await patch.json();
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
-  return res.status(200).json({ success: true, url: uploadedUrl, image_urls: arr, show: rows[0] });
+  const show = rows[0];
+
+  // GHL sync: el campo url_imagen del custom_objects.shows refleja la primary
+  // de la galería. Cubre upload/reorder/delete. Best-effort.
+  const ghlImg = { updated: false };
+  if (show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+    const g = await ghlFetch('PUT',
+      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`,
+      env,
+      { locationId: env.GHL_LOC, properties: { url_imagen: primary || '' } }
+    );
+    if (g.ok) ghlImg.updated = true;
+    else ghlImg.error = `GHL ${g.status}: ${g.body.slice(0, 160)}`;
+  } else if (!show.ghl_show_id) {
+    ghlImg.skipped = 'no_ghl_show_id';
+  } else {
+    ghlImg.skipped = 'missing_ghl_config';
+  }
+
+  return res.status(200).json({ success: true, url: uploadedUrl, image_urls: arr, show, ghl_image_sync: ghlImg });
 }
 
 async function toggleFavorite(req, res, env) {
