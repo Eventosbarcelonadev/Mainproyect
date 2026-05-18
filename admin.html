@@ -1812,17 +1812,22 @@
         });
       });
 
-      // Picker: ocultarlo si ya hay 3
+      // Picker: siempre visible. Si ya hay 3, deshabilitar input + mostrar aviso.
       const picker = $('edit-artistas-picker');
       const input = $('edit-artistas-input');
       const results = $('edit-artistas-results');
+      picker.style.display = '';
+      input.value = '';
+      results.classList.add('empty');
+      results.innerHTML = '';
       if (list.length >= 3) {
-        picker.style.display = 'none';
+        input.disabled = true;
+        input.placeholder = 'Máximo 3 artistas — quitá uno con × antes de agregar otro';
+        input.style.opacity = '0.6';
       } else {
-        picker.style.display = '';
-        input.value = '';
-        results.classList.add('empty');
-        results.innerHTML = '';
+        input.disabled = false;
+        input.placeholder = 'Buscar artista por nombre, compañía o email…';
+        input.style.opacity = '';
         wireEditArtistasPicker(show, list);
       }
     }
