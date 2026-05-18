@@ -35,7 +35,9 @@ const GHL_CF = {
   shows_vinculados: 'uBESZ2L5JmBqFB9UXyZA',     // LARGE_TEXT
   url_supabase: 'bd9b4HubsMstnWZMfa0G',         // TEXT (link a /admin.html?artista=<id>)
   // custom_objects.shows
-  url_admin_show: '2b1BxWzhWb1ucxz1eNnn'        // TEXT (link a /admin.html?show=<slug>)
+  url_admin_show: '2b1BxWzhWb1ucxz1eNnn',       // TEXT (link a /admin.html?show=<slug>)
+  estado_show: 'soD73QnfLAvZhaqDFrNu',          // SINGLE_OPTIONS: active|pending_review|archived
+  es_favorito: 'gvJdAYNsNPKetTjixmDr'           // CHECKBOX
 };
 
 function siteUrl(env) {
@@ -114,8 +116,8 @@ async function syncShowAdminUrl(env, show) {
   if (!env.GHL_TOKEN || !env.GHL_LOC) return { skipped: 'missing_ghl_config' };
   if (!show || !show.ghl_show_id) return { skipped: 'no_ghl_show_id' };
   const props = { url_admin: adminUrlShow(env, show.id) };
-  const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
-    locationId: env.GHL_LOC, properties: props
+  const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
+    properties: props
   });
   return g.ok ? { ok: true } : { error: `GHL ${g.status}: ${g.body.slice(0, 160)}` };
 }
@@ -733,8 +735,8 @@ async function editShow(req, res, env) {
       if ('description' in update) props.descripcion_show = show.description || '';
       if ('video_url' in update) props.url_video = show.video_url || '';
       if ('image_url' in update) props.url_imagen = show.image_url || '';
-      const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
-        locationId: env.GHL_LOC, properties: props
+      const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
+        properties: props
       });
       if (g.ok) {
         ghlResult.updated = true;
@@ -797,7 +799,8 @@ async function addShow(req, res, env) {
   if (env.GHL_TOKEN && env.GHL_LOC) {
     const props = {
       nombre_show: show.name,
-      url_admin: adminUrlShow(env, show.id)
+      url_admin: adminUrlShow(env, show.id),
+      estado_show: show.status || 'active'
     };
     if (show.description) props.descripcion_show = show.description;
     if (show.video_url) props.url_video = show.video_url;
@@ -938,9 +941,9 @@ async function patchShowImages(env, id, arr, res, uploadedUrl) {
   const ghlImg = { updated: false };
   if (show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
     const g = await ghlFetch('PUT',
-      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`,
+      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
       env,
-      { locationId: env.GHL_LOC, properties: { url_imagen: primary || '' } }
+      { properties: { url_imagen: primary || '' } }
     );
     if (g.ok) ghlImg.updated = true;
     else ghlImg.error = `GHL ${g.status}: ${g.body.slice(0, 160)}`;
@@ -983,10 +986,17 @@ async function toggleFavorite(req, res, env) {
   }
   const rows = await r.json();
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
-  // TODO sync a GHL: necesita custom field custom_objects.shows.es_favorito.
-  // Crearlo manualmente en GHL UI (Settings → Custom Fields → custom_objects.shows
-  // → Add field "Favorito" CHECKBOX) y añadir aquí ghlFetch PUT con props.es_favorito.
-  return res.status(200).json({ success: true, show: rows[0] });
+  const show = rows[0];
+
+  // Sync es_favorito al record GHL custom_objects.shows.
+  let ghl = null;
+  if (show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+    const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
+      properties: { es_favorito: is_favorite }
+    });
+    ghl = g.ok ? { updated: true } : { error: `GHL ${g.status}: ${g.body.slice(0,160)}` };
+  }
+  return res.status(200).json({ success: true, show, ghl });
 }
 
 async function reviewShow(req, res, env) {
@@ -1022,19 +1032,20 @@ async function reviewShow(req, res, env) {
   const rows = await r.json();
   const show = rows[0];
 
-  // GHL sync best-effort: si tocamos campos que viajan a custom_objects.shows
-  // (edit), actualizamos el record. estado_show NO se sincroniza todavía:
-  // requiere crear custom field SINGLE_OPTIONS custom_objects.shows.estado_show
-  // en GHL UI primero (active/pending_review/archived). TODO próxima iteración.
+  // GHL sync best-effort: propaga estado_show siempre (approve/archive cambian
+  // status) y, en action=edit, también los campos del custom_object.
   let ghl = null;
-  if (action === 'edit' && show && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+  if (show && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
     const props = { url_admin: adminUrlShow(env, show.id) };
-    if ('name' in update) props.nombre_show = show.name || '';
-    if ('description' in update) props.descripcion_show = show.description || '';
-    if ('video_url' in update) props.url_video = show.video_url || '';
-    if ('image_url' in update) props.url_imagen = show.image_url || '';
-    const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
-      locationId: env.GHL_LOC, properties: props
+    if (update.status) props.estado_show = update.status;
+    if (action === 'edit') {
+      if ('name' in update) props.nombre_show = show.name || '';
+      if ('description' in update) props.descripcion_show = show.description || '';
+      if ('video_url' in update) props.url_video = show.video_url || '';
+      if ('image_url' in update) props.url_imagen = show.image_url || '';
+    }
+    const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
+      properties: props
     });
     ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0,200)}` };
   }
