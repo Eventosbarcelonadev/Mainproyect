@@ -155,17 +155,60 @@
     }
     .hero-image-change:hover { background: rgba(255,255,255,0.22); }
 
+    .hero-picker-container { max-width: 1100px !important; }
     .hero-image-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 14px;
-      padding: 16px 24px 24px;
+      padding: 8px 24px 24px;
       overflow-y: auto;
+    }
+    .hero-section {
+      margin-top: 18px;
+    }
+    .hero-section:first-of-type { margin-top: 6px; }
+    .hero-section-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      padding: 6px 0 10px;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 2;
+    }
+    .hero-show-group {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+    }
+    .hero-show-group:first-child { border-top: none; padding-top: 4px; }
+    .hero-show-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      align-self: center;
+      padding-right: 8px;
+    }
+    .hero-show-name small {
+      display: block;
+      font-size: 10px;
+      color: var(--gray);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    .hero-show-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
     }
     .hero-image-tile {
       position: relative;
       aspect-ratio: 16 / 10;
-      border-radius: 10px;
+      border-radius: 8px;
       background-size: cover;
       background-position: center;
       cursor: pointer;
@@ -1646,10 +1689,13 @@
 
   <!-- HERO IMAGE PICKER -->
   <div class="picker-overlay" id="heroImagePickerOverlay">
-    <div class="picker-container">
+    <div class="picker-container hero-picker-container">
       <div class="picker-header">
         <h3>Elegir imagen de cabecera</h3>
         <button class="picker-close" onclick="closeHeroImagePicker()">&times;</button>
+      </div>
+      <div class="picker-search">
+        <input type="search" id="heroImageSearch" placeholder="Buscar por nombre de show…" autocomplete="off">
       </div>
       <div class="hero-image-grid" id="heroImageGrid"></div>
     </div>
@@ -2720,37 +2766,33 @@
     // =============================================
     // HERO IMAGE PICKER
     // =============================================
-    // Aplana todas las imágenes de TODO el catálogo activo (no sólo los shows
-    // de esta propuesta) — admin puede elegir cualquier foto disponible para
-    // la cabecera. Pone primero las imágenes de los shows incluidos en la
-    // propuesta (más relevantes) y después el resto.
-    function _heroPickerCandidates() {
+    // Agrupa imágenes del catálogo por SHOW para que el picker no sea un
+    // dump caótico. Devuelve { inProposal: [groups], rest: [groups] } donde
+    // cada group = { showName, category?, urls: [...] } sin URLs duplicadas
+    // entre grupos.
+    function _heroPickerGroups() {
       const inProposalIds = new Set(proposalState.shows.map(s => s.id));
       const seen = new Set();
       const inProposal = [];
       const rest = [];
-      const pushFrom = (show, id, bucket) => {
+      const makeGroup = (show, id) => {
         const urls = Array.isArray(show.imageUrls) && show.imageUrls.length
           ? show.imageUrls
           : (show.imageUrl ? [show.imageUrl] : []);
-        urls.forEach((url, k) => {
-          if (!url || seen.has(url)) return;
-          seen.add(url);
-          bucket.push({
-            url,
-            label: (show.name || id) + (urls.length > 1 ? ` · ${k + 1}` : ''),
-            inProposal: inProposalIds.has(id)
-          });
-        });
+        const fresh = urls.filter(u => u && !seen.has(u));
+        fresh.forEach(u => seen.add(u));
+        if (!fresh.length) return null;
+        return { showName: show.name || id, category: show.category || '', subcategory: show.subcategory || '', urls: fresh };
       };
-      // Primero los shows de la propuesta (con su nombre tal como está en
-      // proposalState para mantener orden visible).
-      proposalState.shows.forEach(show => pushFrom(show, show.id, inProposal));
-      // Después el resto del catálogo.
+      proposalState.shows.forEach(show => {
+        const g = makeGroup(show, show.id);
+        if (g) inProposal.push(g);
+      });
       if (typeof SHOW_CATALOG === 'object' && SHOW_CATALOG) {
         Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
           if (inProposalIds.has(id)) return;
-          pushFrom(show, id, rest);
+          const g = makeGroup(show, id);
+          if (g) rest.push(g);
         });
       }
       return { inProposal, rest };
@@ -2758,35 +2800,67 @@
 
     function openHeroImagePicker() {
       if (!proposalState.isAdmin) return;
-      const grid = document.getElementById('heroImageGrid');
+      const groups = _heroPickerGroups();
+      // Aplanado paralelo a la vista: cada tile guarda su índice global aquí
+      // para que selectHeroImageByIndex pueda recuperar la URL sin DOM-walking.
+      const flat = [];
+      groups.inProposal.forEach(g => g.urls.forEach(u => flat.push(u)));
+      groups.rest.forEach(g => g.urls.forEach(u => flat.push(u)));
+      proposalState._heroPickerCandidates = flat.map(url => ({ url }));
+      proposalState._heroPickerGroups = groups;
+      _renderHeroPicker('');
+      const search = document.getElementById('heroImageSearch');
+      if (search) {
+        search.value = '';
+        search.oninput = (e) => _renderHeroPicker(e.target.value);
+      }
+      document.getElementById('heroImagePickerOverlay').classList.add('open');
+    }
+
+    function _renderHeroPicker(query) {
+      const q = (query || '').trim().toLowerCase();
+      const groups = proposalState._heroPickerGroups || { inProposal: [], rest: [] };
       const current = proposalState.heroImageUrl;
-      const { inProposal, rest } = _heroPickerCandidates();
-      const all = inProposal.concat(rest);
-      const renderTile = (c, idx) => {
-        const selected = c.url === current ? 'selected' : '';
-        return `<div class="hero-image-tile ${selected}" style="background-image:url('${c.url}')" onclick="selectHeroImageByIndex(${idx})">
-          <div class="tile-label">${c.label}</div>
-        </div>`;
+      const flat = proposalState._heroPickerCandidates || [];
+
+      // Filtro por nombre de show / subcategoría
+      const matches = (g) => !q
+        || g.showName.toLowerCase().includes(q)
+        || (g.subcategory || '').toLowerCase().includes(q)
+        || (g.category || '').toLowerCase().includes(q);
+      const inProp = groups.inProposal.filter(matches);
+      const rest = groups.rest.filter(matches);
+
+      const tileIdx = (url) => flat.findIndex(c => c.url === url);
+      const renderTile = (url) => {
+        const idx = tileIdx(url);
+        const selected = url === current ? 'selected' : '';
+        return `<div class="hero-image-tile ${selected}" style="background-image:url('${url}')" onclick="selectHeroImageByIndex(${idx})"></div>`;
       };
+      const renderGroup = (g) => `<div class="hero-show-group">
+        <div class="hero-show-name">${g.showName}${g.subcategory ? `<small>${g.subcategory}</small>` : ''}</div>
+        <div class="hero-show-tiles">${g.urls.map(renderTile).join('')}</div>
+      </div>`;
+
       let html = '';
-      if (all.length === 0) {
-        html = '<p style="grid-column:1/-1;text-align:center;color:var(--gray);padding:20px;">Ningún show del catálogo tiene imágenes todavía.</p>';
+      if (!inProp.length && !rest.length) {
+        html = `<p style="text-align:center;color:var(--gray);padding:30px;">${q ? 'Sin resultados para "' + query + '"' : 'Ningún show del catálogo tiene imágenes todavía.'}</p>`;
       } else {
-        if (inProposal.length) {
-          html += `<div style="grid-column:1/-1;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);padding:6px 2px;">Shows de esta propuesta</div>`;
-          html += inProposal.map((c, i) => renderTile(c, i)).join('');
+        if (inProp.length) {
+          html += `<div class="hero-section"><div class="hero-section-title">Shows de esta propuesta</div>`;
+          html += inProp.map(renderGroup).join('');
+          html += `</div>`;
         }
         if (rest.length) {
-          html += `<div style="grid-column:1/-1;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);padding:14px 2px 6px;border-top:1px solid var(--border);margin-top:8px;">Resto del catálogo</div>`;
-          html += rest.map((c, i) => renderTile(c, inProposal.length + i)).join('');
+          html += `<div class="hero-section"><div class="hero-section-title">Resto del catálogo (${rest.length})</div>`;
+          html += rest.map(renderGroup).join('');
+          html += `</div>`;
         }
       }
       if (current) {
-        html += `<button class="hero-image-reset" onclick="selectHeroImageByIndex(-1)">Volver al valor por defecto (primera imagen del primer show)</button>`;
+        html += `<button class="hero-image-reset" style="margin-top:14px;" onclick="selectHeroImageByIndex(-1)">Volver al valor por defecto (primera imagen del primer show)</button>`;
       }
-      grid.innerHTML = html;
-      proposalState._heroPickerCandidates = all;
-      document.getElementById('heroImagePickerOverlay').classList.add('open');
+      document.getElementById('heroImageGrid').innerHTML = html;
     }
 
     function closeHeroImagePicker() {
