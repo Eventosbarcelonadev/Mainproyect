@@ -96,6 +96,7 @@ export default async function handler(req, res) {
       concept_title: data.concept?.title || '',
       concept_text: data.concept?.text || '',
       hero_sub: data.heroSub || '',
+      hero_image_url: data.heroImageUrl || null,
       shows: JSON.stringify(data.shows || []),
       global_margin: data.globalMargin || 0,
       hide_summary: !!data.hideSummary,

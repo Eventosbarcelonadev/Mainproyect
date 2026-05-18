@@ -139,6 +139,79 @@
       opacity: 0.3;
     }
 
+    .hero-image-change {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: background 0.2s;
+      backdrop-filter: blur(6px);
+    }
+    .hero-image-change:hover { background: rgba(255,255,255,0.22); }
+
+    .hero-image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      padding: 16px 24px 24px;
+      overflow-y: auto;
+    }
+    .hero-image-tile {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      border-radius: 10px;
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s, transform 0.15s;
+      overflow: hidden;
+    }
+    .hero-image-tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .hero-image-tile.selected { border-color: var(--accent); }
+    .hero-image-tile .tile-label {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);
+      color: #fff;
+      padding: 18px 10px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .hero-image-tile.placeholder {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.45);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-align: center;
+      padding: 12px;
+    }
+    .hero-image-reset {
+      grid-column: 1 / -1;
+      padding: 10px 14px;
+      border: 1.5px dashed var(--border);
+      background: transparent;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .hero-image-reset:hover { color: var(--accent); border-color: var(--accent); }
+
     .hero h1 {
       font-size: clamp(48px, 7vw, 90px);
       line-height: 1.05;
@@ -220,6 +293,43 @@
       justify-content: center;
       color: rgba(255,255,255,0.35);
     }
+
+    /* === CAROUSEL (multi-imagen por show) === */
+    .block-carousel { position: relative; overflow: hidden; }
+    .carousel-slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    .carousel-slide.active { opacity: 1; }
+    .carousel-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(0,0,0,0.45); color: #fff; border: none;
+      font-size: 22px; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s, background 0.2s;
+      z-index: 2;
+    }
+    .block-carousel:hover .carousel-arrow { opacity: 1; }
+    .carousel-arrow:hover { background: rgba(0,0,0,0.75); }
+    .carousel-arrow.prev { left: 12px; }
+    .carousel-arrow.next { right: 12px; }
+    .carousel-dots {
+      position: absolute; bottom: 14px; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 6px;
+      z-index: 2;
+    }
+    .carousel-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.45); border: none; cursor: pointer;
+      padding: 0; transition: background 0.2s, transform 0.2s;
+    }
+    .carousel-dot.active { background: #fff; transform: scale(1.3); }
+    body.print-mode .carousel-arrow,
+    body.print-mode .carousel-dots { display: none !important; }
+    body.print-mode .carousel-slide { opacity: 0; }
+    body.print-mode .carousel-slide:first-child { opacity: 1; }
     .block-image--placeholder::after {
       content: "";
       width: 64px;
@@ -1534,6 +1644,17 @@
     </div>
   </div>
 
+  <!-- HERO IMAGE PICKER -->
+  <div class="picker-overlay" id="heroImagePickerOverlay">
+    <div class="picker-container">
+      <div class="picker-header">
+        <h3>Elegir imagen de cabecera</h3>
+        <button class="picker-close" onclick="closeHeroImagePicker()">&times;</button>
+      </div>
+      <div class="hero-image-grid" id="heroImageGrid"></div>
+    </div>
+  </div>
+
   <!-- APPROVE MODAL -->
   <div class="modal-overlay" id="modalOverlay"></div>
   <div class="modal-content" id="approveModal">
@@ -1819,6 +1940,7 @@
       isAdmin: false,
       globalMargin: 0,
       hideSummary: false,
+      heroImageUrl: null, // override admin: imagen elegida entre los shows
       // These get populated from proposal data
       client: {},
       event: {},
@@ -2048,13 +2170,16 @@
 
         proposalState.globalMargin = p.globalMargin || 0;
         proposalState.hideSummary = !!p.hideSummary;
+        proposalState.heroImageUrl = p.heroImageUrl || null;
         loadProposal(showsData, isAdmin);
 
-        // Restore custom prices if saved
+        // Restore custom prices and per-proposal priceNote overrides if saved.
+        // priceNote vive en el catalogo, pero admin puede sobreescribirlo por
+        // propuesta (ej. "4 artistas" → "3 artistas + DJ").
         p.shows.forEach((s, i) => {
-          if (s.currentPrice && proposalState.shows[i]) {
-            proposalState.shows[i].currentPrice = s.currentPrice;
-          }
+          if (!proposalState.shows[i]) return;
+          if (s.currentPrice) proposalState.shows[i].currentPrice = s.currentPrice;
+          if (s.priceNote) proposalState.shows[i].priceNote = s.priceNote;
         });
         renderProposal();
         if (isAdmin) {
@@ -2111,17 +2236,32 @@
         const priceWithMargin = getAdjustedPrice(show.currentPrice);
         const priceFormatted = formatPrice(priceWithMargin);
 
+        const imgs = Array.isArray(show.imageUrls) && show.imageUrls.length ? show.imageUrls : (show.imageUrl ? [show.imageUrl] : []);
+        const hasCarousel = imgs.length > 1;
+        const blockImageHTML = imgs.length === 0
+          ? `<div class="block-image block-image--placeholder"></div>`
+          : hasCarousel
+            ? `<div class="block-image block-carousel" data-carousel-index="${i}">
+                ${imgs.map((u, k) => `<div class="carousel-slide ${k === 0 ? 'active' : ''}" style="background-image:url('${u}')"></div>`).join('')}
+                <button class="carousel-arrow prev" onclick="carouselStep(${i}, -1)" aria-label="Anterior">‹</button>
+                <button class="carousel-arrow next" onclick="carouselStep(${i}, 1)" aria-label="Siguiente">›</button>
+                <div class="carousel-dots">
+                  ${imgs.map((_, k) => `<button class="carousel-dot ${k === 0 ? 'active' : ''}" onclick="carouselGoto(${i}, ${k})" aria-label="Imagen ${k + 1}"></button>`).join('')}
+                </div>
+               </div>`
+            : `<div class="block-image" style="background-image: url('${imgs[0]}')"></div>`;
+
         showBlocksHTML += `
           <div class="block ${reversed ? 'block--reversed' : ''} ${isAdmin ? 'admin-mode' : ''}" data-show="${show.id}" data-index="${i}">
             ${isAdmin ? `<button class="block-remove" onclick="removeShow(${i})" title="Eliminar show">&times;</button>` : ''}
-            <div class="block-image ${show.imageUrl ? '' : 'block-image--placeholder'}" ${show.imageUrl ? `style="background-image: url('${show.imageUrl}')"` : ''}></div>
+            ${blockImageHTML}
             <div class="block-content">
               <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? 'contenteditable="true"' : ''}>${show.contextLabel}</div>
               <h2 ${isAdmin ? 'class="editable-text" contenteditable="true"' : ''}>${show.name}</h2>
               <p ${isAdmin ? 'class="editable-text" contenteditable="true"' : ''}>${show.description}</p>
               <div class="block-footer">
                 <div class="block-price ${isAdmin ? 'editable' : ''}" data-price="${priceWithMargin}" data-index="${i}" ${isAdmin ? 'onclick="startPriceEdit(this, ' + i + ')"' : ''}>
-                  ${priceFormatted}&euro;<small>${show.priceNote}</small>
+                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" onclick="event.stopPropagation()" onblur="updatePriceNote(${i}, this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"` : ''}>${show.priceNote}</small>
                 </div>
                 ${show.videoUrl ? `<a href="${show.videoUrl.replace('/embed/', '/watch?v=')}" target="_blank" class="btn-dark">${T.btnVideo}</a>` : ''}
               </div>
@@ -2148,13 +2288,15 @@
       const html = `
         <!-- HERO -->
         <div class="hero">
-          <div class="hero-bg-image" style="background-image: url('${(shows[0] && shows[0].imageUrl) || catConfig.defaultImage}')"></div>
+          <div class="hero-bg-image" style="background-image: url('${proposalState.heroImageUrl || (shows[0] && shows[0].imageUrl) || catConfig.defaultImage}')"></div>
           <div class="nav">
             <div class="nav-logo">
               <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
             </div>
             <div class="nav-right">
-              ${isAdmin ? '' : `<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
+              ${isAdmin
+                ? `<button class="hero-image-change" onclick="openHeroImagePicker()">Cambiar imagen</button>`
+                : `<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
             </div>
           </div>
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
@@ -2271,6 +2413,7 @@
       `;
 
       document.getElementById('proposalContent').innerHTML = html;
+      initCarousels();
     }
 
     // =============================================
@@ -2505,6 +2648,133 @@
       showToast(proposalState.hideSummary ? 'Resumen de presupuesto ocultado' : 'Resumen de presupuesto visible');
     }
 
+    // =============================================
+    // CAROUSEL (multi-imagen por show)
+    // =============================================
+    const _carouselTimers = new Map(); // blockIndex -> setInterval id
+    const _carouselState = new Map();  // blockIndex -> { current, total }
+
+    function carouselGoto(blockIndex, slideIndex) {
+      const root = document.querySelector(`[data-carousel-index="${blockIndex}"]`);
+      if (!root) return;
+      const slides = root.querySelectorAll('.carousel-slide');
+      const dots = root.querySelectorAll('.carousel-dot');
+      if (!slides.length) return;
+      const next = ((slideIndex % slides.length) + slides.length) % slides.length;
+      slides.forEach((s, k) => s.classList.toggle('active', k === next));
+      dots.forEach((d, k) => d.classList.toggle('active', k === next));
+      _carouselState.set(blockIndex, { current: next, total: slides.length });
+    }
+
+    function carouselStep(blockIndex, dir) {
+      const st = _carouselState.get(blockIndex) || { current: 0 };
+      carouselGoto(blockIndex, st.current + dir);
+      // Reinicia el timer cuando el usuario interactúa — evita salto inmediato.
+      startCarouselAutoplay(blockIndex);
+    }
+
+    function startCarouselAutoplay(blockIndex) {
+      const prev = _carouselTimers.get(blockIndex);
+      if (prev) clearInterval(prev);
+      const root = document.querySelector(`[data-carousel-index="${blockIndex}"]`);
+      if (!root) return;
+      const total = root.querySelectorAll('.carousel-slide').length;
+      if (total < 2) return;
+      const id = setInterval(() => {
+        const st = _carouselState.get(blockIndex) || { current: 0 };
+        carouselGoto(blockIndex, st.current + 1);
+      }, 5000);
+      _carouselTimers.set(blockIndex, id);
+    }
+
+    function initCarousels() {
+      // Limpia timers viejos al re-renderizar la propuesta.
+      _carouselTimers.forEach(id => clearInterval(id));
+      _carouselTimers.clear();
+      _carouselState.clear();
+      document.querySelectorAll('[data-carousel-index]').forEach(root => {
+        const idx = parseInt(root.dataset.carouselIndex, 10);
+        const total = root.querySelectorAll('.carousel-slide').length;
+        _carouselState.set(idx, { current: 0, total });
+        startCarouselAutoplay(idx);
+      });
+    }
+
+    // =============================================
+    // PRICE NOTE EDIT (inline)
+    // =============================================
+    function updatePriceNote(index, el) {
+      if (!proposalState.isAdmin) return;
+      const show = proposalState.shows[index];
+      if (!show) return;
+      const next = (el.textContent || '').trim();
+      if (next === (show.priceNote || '').trim()) return;
+      show.priceNote = next;
+      // Re-render solo el summary (los bloques ya muestran el texto nuevo);
+      // un renderProposal completo descartaría el foco si el usuario
+      // siguiera escribiendo, pero ya hicimos blur así que es seguro.
+      renderProposal();
+      showToast('Detalle de precio actualizado');
+    }
+
+    // =============================================
+    // HERO IMAGE PICKER
+    // =============================================
+    // Aplana todas las imágenes de todos los shows en la propuesta para el
+    // picker — admin puede elegir cualquier foto del catálogo, no sólo la
+    // principal de cada show.
+    function _heroPickerCandidates() {
+      const out = [];
+      proposalState.shows.forEach(show => {
+        const urls = Array.isArray(show.imageUrls) && show.imageUrls.length
+          ? show.imageUrls
+          : (show.imageUrl ? [show.imageUrl] : []);
+        urls.forEach((url, k) => {
+          out.push({ url, label: show.name + (urls.length > 1 ? ` · ${k + 1}` : ''), showName: show.name });
+        });
+      });
+      return out;
+    }
+
+    function openHeroImagePicker() {
+      if (!proposalState.isAdmin) return;
+      const grid = document.getElementById('heroImageGrid');
+      const current = proposalState.heroImageUrl;
+      const candidates = _heroPickerCandidates();
+      const tiles = candidates.length === 0
+        ? '<p style="grid-column:1/-1;text-align:center;color:var(--gray);padding:20px;">Ningún show tiene imágenes todavía.</p>'
+        : candidates.map((c, i) => {
+            const selected = c.url === current ? 'selected' : '';
+            return `<div class="hero-image-tile ${selected}" style="background-image:url('${c.url}')" onclick="selectHeroImageByIndex(${i})">
+              <div class="tile-label">${c.label}</div>
+            </div>`;
+          }).join('');
+      const reset = current
+        ? `<button class="hero-image-reset" onclick="selectHeroImageByIndex(-1)">Volver al valor por defecto (primera imagen del primer show)</button>`
+        : '';
+      grid.innerHTML = tiles + reset;
+      // Guardar candidatos para el handler de click
+      proposalState._heroPickerCandidates = candidates;
+      document.getElementById('heroImagePickerOverlay').classList.add('open');
+    }
+
+    function closeHeroImagePicker() {
+      document.getElementById('heroImagePickerOverlay').classList.remove('open');
+    }
+
+    function selectHeroImageByIndex(idx) {
+      const candidates = proposalState._heroPickerCandidates || [];
+      const url = idx < 0 ? null : (candidates[idx]?.url || null);
+      proposalState.heroImageUrl = url;
+      closeHeroImagePicker();
+      renderProposal();
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+      }
+      showToast(url ? 'Imagen de cabecera actualizada' : 'Imagen de cabecera restablecida');
+    }
+
     function startPriceEdit(el, index) {
       if (!proposalState.isAdmin) return;
 
@@ -2648,10 +2918,12 @@
           id: s.id,
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel,
+          priceNote: s.priceNote,
           base_price: s.basePrice
         })),
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
+        heroImageUrl: proposalState.heroImageUrl || null,
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };
@@ -2742,10 +3014,12 @@
           id: s.id,
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel,
+          priceNote: s.priceNote,
           base_price: s.basePrice
         })),
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
+        heroImageUrl: proposalState.heroImageUrl || null,
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };

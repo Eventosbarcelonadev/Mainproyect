@@ -22,15 +22,25 @@ export default async function handler(req, res) {
   try {
     const fields = [
       'id', 'name', 'category', 'subcategory', 'description', 'base_price',
-      'price_note', 'video_url', 'image_url', 'name_en', 'description_en',
+      'price_note', 'video_url', 'image_url', 'image_urls', 'name_en', 'description_en',
       'subcategory_en', 'price_note_en', 'is_favorite', 'artista_id',
       'artista:artista_id(id,nombre,nombre_artistico,compania,fotos_urls)'
     ].join(',');
     const url = `${SB_URL}/rest/v1/shows?status=eq.active&select=${fields}&order=name`;
 
-    const r = await fetch(url, {
+    let r = await fetch(url, {
       headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
     });
+    // Fallback si la migración de image_urls aún no corrió en este entorno.
+    if (!r.ok) {
+      const txt = await r.clone().text();
+      if (/image_urls/i.test(txt) && /does not exist|not find/i.test(txt)) {
+        const fallback = fields.replace(',image_urls', '');
+        r = await fetch(`${SB_URL}/rest/v1/shows?status=eq.active&select=${fallback}&order=name`, {
+          headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+        });
+      }
+    }
     if (!r.ok) {
       const txt = await r.text();
       return res.status(500).json({ error: `Supabase ${r.status}`, details: txt.slice(0, 200) });
@@ -43,6 +53,12 @@ export default async function handler(req, res) {
       const a = row.artista || null;
       const artistaNombre = a ? (a.nombre_artistico || a.compania || a.nombre || '') : '';
       const artistaFotos = (a && Array.isArray(a.fotos_urls)) ? a.fotos_urls : [];
+      // image_urls = array completo de la galería (orden visible).
+      // imageUrl   = primera del array (o image_url legacy si la columna nueva
+      //              no existe / el row es viejo). Mantiene compat con código
+      //              que aún lee SHOW_CATALOG[id].imageUrl como string único.
+      const imageUrls = Array.isArray(row.image_urls) ? row.image_urls.filter(Boolean) : [];
+      const primary = imageUrls[0] || row.image_url || '';
       catalog[row.id] = {
         name: row.name,
         category: row.category,
@@ -51,7 +67,8 @@ export default async function handler(req, res) {
         basePrice: row.base_price || 0,
         priceNote: row.price_note || '',
         videoUrl: row.video_url || '',
-        imageUrl: row.image_url || '',
+        imageUrl: primary,
+        imageUrls: imageUrls.length ? imageUrls : (primary ? [primary] : []),
         nameEn: row.name_en || row.name,
         descriptionEn: row.description_en || row.description || '',
         subcategoryEn: row.subcategory_en || row.subcategory,
