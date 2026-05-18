@@ -397,6 +397,22 @@
     .gallery-add.uploading { pointer-events: none; opacity: 0.55; }
 
     .hidden { display: none !important; }
+    .lang-toggle {
+      display: inline-flex; border: 1.5px solid var(--border); border-radius: 999px; overflow: hidden;
+      background: #fff;
+    }
+    .lang-toggle .lang-btn {
+      background: transparent; border: none; padding: 6px 14px;
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      cursor: pointer; color: var(--gray); letter-spacing: 0.05em;
+    }
+    .lang-toggle .lang-btn.active { background: var(--accent); color: #fff; }
+    .lang-toggle .lang-btn:hover:not(.active) { background: var(--light); color: var(--text); }
+    .lang-missing-badge {
+      display: inline-block; padding: 1px 6px; border-radius: 999px;
+      background: #fff4e5; color: #a3691e; font-size: 9px; font-weight: 700;
+      margin-left: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -477,6 +493,10 @@
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
         <input id="shows-q" type="search" placeholder="Buscar show por nombre…" style="flex:1;max-width:300px;">
+        <div id="shows-lang-toggle" class="lang-toggle">
+          <button type="button" class="lang-btn active" data-lang="es">ES</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
         <span id="shows-filter-info" style="color: var(--gray); font-size: 13px;"></span>
         <button id="shows-clear-filter" class="btn btn-secondary hidden">Limpiar filtro</button>
       </div>
@@ -725,7 +745,7 @@
     const state = {
       currentTab: null,
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
-      shows: { substatus: 'active', artistaFilter: null, items: [], q: '' },
+      shows: { substatus: 'active', artistaFilter: null, items: [], q: '', lang: 'es' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
     };
@@ -1140,11 +1160,12 @@
         if (state.shows.showFilter) {
           items = items.filter(s => s.id === state.shows.showFilter);
         }
-        // Apply search query (client-side, normalized lower + strip acentos)
+        // Apply search query (client-side, normalized lower + strip acentos).
+        // Busca en ES y EN para que el resultado sea coherente entre toggles.
         if (state.shows.q) {
           const stripAccents = (s) => String(s || '').toLowerCase().normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '');
           const needle = stripAccents(state.shows.q);
-          items = items.filter(s => stripAccents(s.name).includes(needle));
+          items = items.filter(s => stripAccents(s.name).includes(needle) || stripAccents(s.name_en || '').includes(needle));
         }
 
         state.shows.items = items;
@@ -1172,9 +1193,32 @@
       }
     }
 
+    // Devuelve los campos localizados según state.shows.lang. En EN, hace
+    // fallback al ES cuando el campo _en está vacío y marca missing=true para
+    // que la UI muestre badge "sin traducción".
+    function localizeShow(s) {
+      const lang = state.shows.lang;
+      if (lang === 'en') {
+        return {
+          name: s.name_en || s.name || s.id,
+          subcategory: s.subcategory_en || s.subcategory || '',
+          description: s.description_en || s.description || '',
+          price_note: s.price_note_en || s.price_note || '',
+          missing: !s.name_en && !s.description_en
+        };
+      }
+      return {
+        name: s.name || s.id,
+        subcategory: s.subcategory || '',
+        description: s.description || '',
+        price_note: s.price_note || '',
+        missing: false
+      };
+    }
     function renderShowCard(s) {
       const card = document.createElement('div');
       card.className = 'card';
+      const loc = localizeShow(s);
       // Lista N:M: si show_artistas tiene filas las usamos (ordenadas por
       // posicion). Si no, fallback al artista 1:1 legacy (s.artista).
       let artistasList = [];
@@ -1202,12 +1246,12 @@
           ${artistName
             ? `<div class="artist" data-artista-id="${escapeHtml(primary.id)}">por ${escapeHtml(artistName)}${artistasList.length > 1 ? ` <span style="color:var(--gray);">+${artistasList.length - 1}</span>` : ''} →</div>`
             : '<div class="artist" style="color:#aaa; cursor:default;">sin artista asignado</div>'}
-          <h3>${escapeHtml(s.name || s.id)}</h3>
+          <h3>${escapeHtml(loc.name)}${loc.missing ? '<span class="lang-missing-badge" title="Sin traducción EN — se muestra ES como fallback">sin EN</span>' : ''}</h3>
           <div class="meta">
-            <span>${escapeHtml(s.category || '—')}${s.subcategory ? ' · ' + escapeHtml(s.subcategory) : ''}</span>
-            ${s.base_price ? `<span>${s.base_price}€ ${escapeHtml(s.price_note || '')}</span>` : ''}
+            <span>${escapeHtml(s.category || '—')}${loc.subcategory ? ' · ' + escapeHtml(loc.subcategory) : ''}</span>
+            ${s.base_price ? `<span>${s.base_price}€ ${escapeHtml(loc.price_note)}</span>` : ''}
           </div>
-          <p>${escapeHtml(s.description || '')}</p>
+          <p>${escapeHtml(loc.description)}</p>
         </div>
         <div class="assign-row multi" data-show-id="${escapeHtml(s.id)}">
           <label>Artistas:</label>
@@ -1983,6 +2027,14 @@
       state.shows.q = $('shows-q').value.trim();
       loadShows();
     }, 250));
+    document.querySelectorAll('#shows-lang-toggle .lang-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        state.shows.lang = b.dataset.lang;
+        document.querySelectorAll('#shows-lang-toggle .lang-btn').forEach(x =>
+          x.classList.toggle('active', x.dataset.lang === state.shows.lang));
+        loadShows();
+      });
+    });
 
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {
