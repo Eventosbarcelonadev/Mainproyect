@@ -329,34 +329,45 @@ async function setShowArtistas(req, res, env) {
   const prevByArtId = new Map((show.show_artistas || []).map(sa => [sa.artista_id, sa]));
   const nextArtistaIds = new Set(artistas.map(a => a.artistaId));
 
-  // 3) Wipe + reinsert show_artistas (transaccional via 2 requests; postgrest no
-  //    tiene tx multi-statement, así que aceptamos la pequeña ventana de
-  //    inconsistencia. Si el segundo falla, intentamos restaurar.)
-  const delRes = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(showId)}`,
-    { method: 'DELETE', headers }
-  );
-  if (!delRes.ok) {
-    const txt = await delRes.text();
-    if (/show_artistas/i.test(txt) && /relation|not exist|could not find/i.test(txt)) {
-      return res.status(409).json({
-        error: 'Tabla show_artistas no existe',
-        hint: 'Aplicar migración supabase/migrations/20260513_show_artistas_join.sql'
-      });
+  // 3) Wipe + reinsert show_artistas. PostgREST no tiene tx multi-statement,
+  //    así que dos requests concurrentes (doble click, dos pestañas) pueden
+  //    chocar en las constraints UNIQUE (show_id, artista_id) y (show_id, posicion).
+  //    Estrategia: retry hasta 3 veces con backoff. Cada retry vuelve a hacer
+  //    DELETE + INSERT desde cero, así si la primera concurrente ya completó,
+  //    la segunda termina con el mismo resultado idempotente.
+  const insertRows = artistas.map(a => ({
+    show_id: showId, artista_id: a.artistaId, posicion: a.posicion, source: 'admin-ui'
+  }));
+  let lastErr = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const delRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(showId)}`,
+      { method: 'DELETE', headers }
+    );
+    if (!delRes.ok) {
+      const txt = await delRes.text();
+      if (/show_artistas/i.test(txt) && /relation|not exist|could not find/i.test(txt)) {
+        return res.status(409).json({
+          error: 'Tabla show_artistas no existe',
+          hint: 'Aplicar migración supabase/migrations/20260513_show_artistas_join.sql'
+        });
+      }
+      return res.status(delRes.status).json({ error: txt });
     }
-    return res.status(delRes.status).json({ error: txt });
-  }
-  if (artistas.length) {
-    const insertRows = artistas.map(a => ({
-      show_id: showId, artista_id: a.artistaId, posicion: a.posicion, source: 'admin-ui'
-    }));
+    if (!insertRows.length) { lastErr = null; break; }
     const insRes = await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas`, {
       method: 'POST',
       headers: { ...headers, Prefer: 'return=minimal' },
       body: JSON.stringify(insertRows)
     });
-    if (!insRes.ok) return res.status(insRes.status).json({ error: await insRes.text() });
+    if (insRes.ok) { lastErr = null; break; }
+    const errTxt = await insRes.text();
+    lastErr = { status: insRes.status, body: errTxt };
+    // Solo retry en duplicate-key (23505) — race condition real.
+    if (insRes.status !== 409 || !/23505/.test(errTxt)) break;
+    await new Promise(r => setTimeout(r, 100 * attempt));
   }
+  if (lastErr) return res.status(lastErr.status).json({ error: lastErr.body });
 
   // 4) shows.artista_id = primer artista (cache para queries 1:1)
   const primaryId = artistas[0]?.artistaId || null;
