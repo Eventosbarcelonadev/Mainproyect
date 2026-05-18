@@ -2720,41 +2720,72 @@
     // =============================================
     // HERO IMAGE PICKER
     // =============================================
-    // Aplana todas las imágenes de todos los shows en la propuesta para el
-    // picker — admin puede elegir cualquier foto del catálogo, no sólo la
-    // principal de cada show.
+    // Aplana todas las imágenes de TODO el catálogo activo (no sólo los shows
+    // de esta propuesta) — admin puede elegir cualquier foto disponible para
+    // la cabecera. Pone primero las imágenes de los shows incluidos en la
+    // propuesta (más relevantes) y después el resto.
     function _heroPickerCandidates() {
-      const out = [];
-      proposalState.shows.forEach(show => {
+      const inProposalIds = new Set(proposalState.shows.map(s => s.id));
+      const seen = new Set();
+      const inProposal = [];
+      const rest = [];
+      const pushFrom = (show, id, bucket) => {
         const urls = Array.isArray(show.imageUrls) && show.imageUrls.length
           ? show.imageUrls
           : (show.imageUrl ? [show.imageUrl] : []);
         urls.forEach((url, k) => {
-          out.push({ url, label: show.name + (urls.length > 1 ? ` · ${k + 1}` : ''), showName: show.name });
+          if (!url || seen.has(url)) return;
+          seen.add(url);
+          bucket.push({
+            url,
+            label: (show.name || id) + (urls.length > 1 ? ` · ${k + 1}` : ''),
+            inProposal: inProposalIds.has(id)
+          });
         });
-      });
-      return out;
+      };
+      // Primero los shows de la propuesta (con su nombre tal como está en
+      // proposalState para mantener orden visible).
+      proposalState.shows.forEach(show => pushFrom(show, show.id, inProposal));
+      // Después el resto del catálogo.
+      if (typeof SHOW_CATALOG === 'object' && SHOW_CATALOG) {
+        Object.entries(SHOW_CATALOG).forEach(([id, show]) => {
+          if (inProposalIds.has(id)) return;
+          pushFrom(show, id, rest);
+        });
+      }
+      return { inProposal, rest };
     }
 
     function openHeroImagePicker() {
       if (!proposalState.isAdmin) return;
       const grid = document.getElementById('heroImageGrid');
       const current = proposalState.heroImageUrl;
-      const candidates = _heroPickerCandidates();
-      const tiles = candidates.length === 0
-        ? '<p style="grid-column:1/-1;text-align:center;color:var(--gray);padding:20px;">Ningún show tiene imágenes todavía.</p>'
-        : candidates.map((c, i) => {
-            const selected = c.url === current ? 'selected' : '';
-            return `<div class="hero-image-tile ${selected}" style="background-image:url('${c.url}')" onclick="selectHeroImageByIndex(${i})">
-              <div class="tile-label">${c.label}</div>
-            </div>`;
-          }).join('');
-      const reset = current
-        ? `<button class="hero-image-reset" onclick="selectHeroImageByIndex(-1)">Volver al valor por defecto (primera imagen del primer show)</button>`
-        : '';
-      grid.innerHTML = tiles + reset;
-      // Guardar candidatos para el handler de click
-      proposalState._heroPickerCandidates = candidates;
+      const { inProposal, rest } = _heroPickerCandidates();
+      const all = inProposal.concat(rest);
+      const renderTile = (c, idx) => {
+        const selected = c.url === current ? 'selected' : '';
+        return `<div class="hero-image-tile ${selected}" style="background-image:url('${c.url}')" onclick="selectHeroImageByIndex(${idx})">
+          <div class="tile-label">${c.label}</div>
+        </div>`;
+      };
+      let html = '';
+      if (all.length === 0) {
+        html = '<p style="grid-column:1/-1;text-align:center;color:var(--gray);padding:20px;">Ningún show del catálogo tiene imágenes todavía.</p>';
+      } else {
+        if (inProposal.length) {
+          html += `<div style="grid-column:1/-1;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);padding:6px 2px;">Shows de esta propuesta</div>`;
+          html += inProposal.map((c, i) => renderTile(c, i)).join('');
+        }
+        if (rest.length) {
+          html += `<div style="grid-column:1/-1;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);padding:14px 2px 6px;border-top:1px solid var(--border);margin-top:8px;">Resto del catálogo</div>`;
+          html += rest.map((c, i) => renderTile(c, inProposal.length + i)).join('');
+        }
+      }
+      if (current) {
+        html += `<button class="hero-image-reset" onclick="selectHeroImageByIndex(-1)">Volver al valor por defecto (primera imagen del primer show)</button>`;
+      }
+      grid.innerHTML = html;
+      proposalState._heroPickerCandidates = all;
       document.getElementById('heroImagePickerOverlay').classList.add('open');
     }
 
