@@ -598,7 +598,36 @@ async function editShow(req, res, env) {
   if (!r.ok) return res.status(r.status).json({ error: await r.text() });
   const rows = await r.json();
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
-  return res.status(200).json({ success: true, show: rows[0] });
+  const show = rows[0];
+
+  // GHL sync: si el show tiene ghl_show_id y se tocó algún campo que viaja a
+  // GHL (name → nombre_show, description → descripcion_show, video_url →
+  // url_video), actualizamos el record. Best-effort.
+  const ghlResult = { updated: false };
+  const touchesGhl = ('name' in update) || ('description' in update) || ('video_url' in update);
+  if (touchesGhl && show.ghl_show_id) {
+    if (!env.GHL_TOKEN || !env.GHL_LOC) {
+      ghlResult.skipped = 'missing_ghl_config';
+    } else {
+      const props = {};
+      if ('name' in update) props.nombre_show = show.name || '';
+      if ('description' in update) props.descripcion_show = show.description || '';
+      if ('video_url' in update) props.url_video = show.video_url || '';
+      const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}`, env, {
+        locationId: env.GHL_LOC, properties: props
+      });
+      if (g.ok) {
+        ghlResult.updated = true;
+        ghlResult.fields = Object.keys(props);
+      } else {
+        ghlResult.error = `GHL ${g.status}: ${g.body.slice(0, 200)}`;
+      }
+    }
+  } else if (touchesGhl && !show.ghl_show_id) {
+    ghlResult.skipped = 'no_ghl_show_id';
+  }
+
+  return res.status(200).json({ success: true, show, ghl: ghlResult });
 }
 
 // Crea un nuevo show: 1) inserta en Supabase, 2) crea record en GHL

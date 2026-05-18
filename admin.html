@@ -1511,6 +1511,7 @@
         });
         const d = await r.json();
         if (!r.ok) { showError(d.error || 'Error'); btn.disabled = false; return; }
+        if (d.ghl && d.ghl.error) showError('Guardado en SB, pero GHL falló: ' + d.ghl.error);
         closeEditShowModal();
         loadShows();
       } catch (err) { showError(err.message); }
