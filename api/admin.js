@@ -447,18 +447,23 @@ async function syncShowAssociationsToGhl(env, show, toAdd, toRemove) {
   // record show y borramos las que matcheen contactIds a remover.
   if (toRemove.length) {
     const list = await ghlFetch('GET',
-      `/associations/relations/${GHL_SHOW_CONTACT_ASSOCIATION_ID}/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+      `/associations/relations/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
       env);
     if (!list.ok) {
       result.errors.push({ op: 'list', status: list.status, body: list.body.slice(0, 160) });
     } else {
       let relations = [];
       try { relations = JSON.parse(list.body).relations || []; } catch {}
+      // Filtrar solo associations contact↔show de nuestro associationId
+      // (el record puede tener otros tipos de relations).
+      relations = relations.filter(r => r.associationId === GHL_SHOW_CONTACT_ASSOCIATION_ID);
       const contactsToRemove = new Set(toRemove.map(sa => sa.artista.ghl_contact_id));
       for (const rel of relations) {
         const cid = rel.firstRecordId === show.ghl_show_id ? rel.secondRecordId : rel.firstRecordId;
         if (!contactsToRemove.has(cid)) continue;
-        const del = await ghlFetch('DELETE', `/associations/relations/${encodeURIComponent(rel.id)}`, env);
+        const del = await ghlFetch('DELETE',
+          `/associations/relations/${encodeURIComponent(rel.id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+          env);
         if (del.ok) result.removed++;
         else result.errors.push({ op: 'remove', relationId: rel.id, status: del.status, body: del.body.slice(0, 160) });
       }
