@@ -2086,6 +2086,7 @@
       globalMargin: 0,
       hideSummary: false,
       heroImageUrl: null, // override admin: imagen elegida entre los shows
+      heroSub: null,      // override admin del subtítulo del hero (default: catConfig)
       // These get populated from proposal data
       client: {},
       event: {},
@@ -2377,7 +2378,24 @@
     // =============================================
     // RENDER PROPOSAL
     // =============================================
+    function flushPendingEditableEdits() {
+      // Vuelca a proposalState cualquier edición inline aún no persistida.
+      // Defensa contra "edito el título y cambio el margen" — el blur del
+      // título no se dispara si el slider gana el foco vía click.
+      document.querySelectorAll('#proposalContent [contenteditable]').forEach(el => {
+        if (!el.dataset) return;
+        if (el.dataset.field || el.dataset.showField) {
+          if (typeof persistEditableField === 'function') persistEditableField(el);
+        } else if (el.dataset.condIndex !== undefined) {
+          const i = parseInt(el.dataset.condIndex, 10);
+          if (Number.isFinite(i) && typeof updateCondition === 'function') {
+            updateCondition(i, el);
+          }
+        }
+      });
+    }
     function renderProposal() {
+      flushPendingEditableEdits();
       const { client, event, shows, concept, category } = proposalState;
       const catConfig = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.shows;
       const isAdmin = proposalState.isAdmin;
@@ -2437,12 +2455,12 @@
             ${isAdmin ? `<button class="block-remove" onclick="removeShow(${i})" title="Eliminar show">&times;</button>` : ''}
             ${blockImageHTML}
             <div class="block-content">
-              <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? 'contenteditable="true"' : ''}>${show.contextLabel}</div>
-              <h2 ${isAdmin ? 'class="editable-text" contenteditable="true"' : ''}>${show.name}</h2>
-              <p ${isAdmin ? 'class="editable-text" contenteditable="true"' : ''}>${show.description}</p>
+              <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-show-field="contextLabel" data-show-index="${i}"` : ''}>${show.contextLabel}</div>
+              <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="name" data-show-index="${i}"` : ''}>${show.name}</h2>
+              <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="description" data-show-index="${i}"` : ''}>${show.description}</p>
               <div class="block-footer">
                 <div class="block-price ${isAdmin ? 'editable' : ''}" data-price="${priceWithMargin}" data-index="${i}" ${isAdmin ? 'onclick="startPriceEdit(this, ' + i + ')"' : ''}>
-                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" onclick="event.stopPropagation()" onblur="updatePriceNote(${i}, this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"` : ''}>${show.priceNote}</small>
+                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="priceNote" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${show.priceNote}</small>
                 </div>
                 ${show.videoUrl ? `<a href="${show.videoUrl.replace('/embed/', '/watch?v=')}" target="_blank" class="btn-dark">${T.btnVideo}</a>` : ''}
               </div>
@@ -2493,7 +2511,7 @@
             </div>
           </div>
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
-          <p class="hero-sub ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? 'contenteditable="true" data-field="heroSub"' : ''}>${catConfig.heroSub}</p>
+          <p class="hero-sub ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? 'contenteditable="true" data-field="heroSub"' : ''}>${proposalState.heroSub != null ? proposalState.heroSub : catConfig.heroSub}</p>
           <p class="hero-detail">${event.date} &middot; ${event.type}</p>
         </div>
 
@@ -3264,6 +3282,7 @@
     async function confirmApproval() {
       closeModal();
       proposalState.status = 'approved';
+      flushPendingEditableEdits(); // capturar ediciones inline antes de serializar
       updateAdminBar();
       showToast('Guardando propuesta...', '');
 
@@ -3366,6 +3385,7 @@
     // server-side se renderiza desde la BD, así que necesita una fila en
     // `proposals` — en modo builder/auto la propuesta aún no existe.
     async function saveProposalDraft() {
+      flushPendingEditableEdits(); // capturar ediciones inline antes de serializar
       const payload = {
         id: proposalState.proposalId || null,
         status: proposalState.status || 'revision',
@@ -3720,6 +3740,68 @@
       await new Promise(r => setTimeout(r, 400));
       window.__pdfReady = true;
     }
+
+    // Listener global para persistir ediciones inline antes de cualquier
+    // re-render. Cubre fields con `data-field` (dotted path en proposalState
+    // — event.name, concept.title, heroSub, etc.) y `data-show-field` (con
+    // `data-show-index` para resolver el show afectado). Sin esto, cualquier
+    // renderProposal() llamado tras editar (ej. cambiar precio, añadir extra,
+    // mover slider de margen) borraba lo que se acababa de tipear. Bug
+    // reportado por Xavi 2026-05-19.
+    //
+    // Usamos focusout en vez de blur porque blur no burbujea y necesitamos
+    // delegation desde document.
+    function persistEditableField(el) {
+      if (!el || !el.matches) return;
+      const text = (el.innerText || el.textContent || '').replace(/ /g, ' ').trim();
+      // data-field: path dotted en proposalState (event.name, concept.title, heroSub...)
+      const fieldPath = el.dataset && el.dataset.field;
+      if (fieldPath) {
+        const parts = fieldPath.split('.');
+        let obj = proposalState;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (obj[parts[i]] == null || typeof obj[parts[i]] !== 'object') obj[parts[i]] = {};
+          obj = obj[parts[i]];
+        }
+        obj[parts[parts.length - 1]] = text;
+        if (proposalState.isAdmin && typeof updateAdminBar === 'function') {
+          const bar = document.getElementById('adminBar');
+          if (bar) bar.classList.add('visible');
+          updateAdminBar();
+        }
+        return;
+      }
+      // data-show-field: campo de un show puntual (name, description, contextLabel)
+      const showField = el.dataset && el.dataset.showField;
+      if (showField) {
+        const idx = parseInt(el.dataset.showIndex, 10);
+        if (Number.isFinite(idx) && proposalState.shows && proposalState.shows[idx]) {
+          proposalState.shows[idx][showField] = text;
+          if (proposalState.isAdmin && typeof updateAdminBar === 'function') {
+            const bar = document.getElementById('adminBar');
+            if (bar) bar.classList.add('visible');
+            updateAdminBar();
+          }
+        }
+      }
+    }
+    document.addEventListener('focusout', function(e) {
+      const t = e.target;
+      if (!t || !t.getAttribute || !t.getAttribute('contenteditable')) return;
+      if (t.dataset && (t.dataset.field || t.dataset.showField)) {
+        persistEditableField(t);
+      }
+    }, true);
+    // Enter sin shift = blur (acaba la edición). Evita que se inyecte un <br>.
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Enter' || e.shiftKey) return;
+      const t = e.target;
+      if (!t || !t.getAttribute || !t.getAttribute('contenteditable')) return;
+      if (t.dataset && (t.dataset.field || t.dataset.showField)) {
+        e.preventDefault();
+        t.blur();
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', async function() {
       const params = new URLSearchParams(window.location.search);
