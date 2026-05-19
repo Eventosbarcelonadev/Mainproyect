@@ -1277,7 +1277,8 @@
           email: document.getElementById('f-email')?.value || '',
           telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
           webEmpresa: document.getElementById('f-web')?.value || '',
-          cargo: document.getElementById('f-cargo')?.value || ''
+          cargo: document.getElementById('f-cargo')?.value || '',
+          origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
         };
         fetch('/api/lead-cliente', {
           method: 'POST',
@@ -1437,7 +1438,8 @@
         presupuesto,
         necesitaProduccion: document.getElementById('produccion-check')?.checked || false,
         comentarios: document.getElementById('f-comentarios')?.value || '',
-        comoNosConocio: document.getElementById('f-conocido')?.value || ''
+        comoNosConocio: document.getElementById('f-conocido')?.value || '',
+        origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
       };
 
       try {
@@ -1479,6 +1481,49 @@
         goToStep(2);
       }
     })();
+
+    // Captura de origen: referrer + UTMs + landing URL al cargar.
+    // Persistido en sessionStorage para sobrevivir navegación interna.
+    // Lo lee submitForm() y lo manda al backend para popular contact.source.
+    function captureOriginInfo() {
+      const KEY = 'eb_origin_info_v1';
+      const stored = sessionStorage.getItem(KEY);
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+      const params = new URLSearchParams(window.location.search);
+      const referrer = document.referrer || '';
+      let referrerSlug = '';
+      let referrerHost = '';
+      if (referrer) {
+        try {
+          const u = new URL(referrer);
+          referrerHost = u.hostname;
+          // De /danza/flamenco/ → "danza/flamenco". De /jazz/ → "jazz".
+          if (u.hostname.includes('eventosbarcelona.com')) {
+            referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
+          }
+        } catch (e) {}
+      }
+      const info = {
+        referrer,
+        referrerHost,
+        referrerSlug,
+        landingUrl: window.location.href,
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+        // ?from=rumba / ?origin=jazz / ?genero=Musica son links que el equipo
+        // pondría manualmente en la web para enriquecer el origen sin depender
+        // del referrer (que algunas políticas bloquean).
+        fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
+      };
+      try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
+      return info;
+    }
+    captureOriginInfo();
   </script>
 
 </body>

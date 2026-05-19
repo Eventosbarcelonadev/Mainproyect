@@ -31,6 +31,57 @@ export default async function handler(req, res) {
     } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
+  // De `origen` (referrer/UTM/fromParam capturado en el form) → slug corto
+  // legible para popular contact.source y un tag. Replica el comportamiento del
+  // form viejo (Elementor + WP) que identificaba la página por formName.
+  const buildOriginLabel = (origen) => {
+    if (!origen || typeof origen !== 'object') return '';
+    if (origen.fromParam) return String(origen.fromParam).trim();
+    if (origen.referrerSlug) {
+      const last = origen.referrerSlug.split('/').filter(Boolean).pop();
+      if (last) return last;
+    }
+    if (origen.utm_campaign) return String(origen.utm_campaign).trim();
+    if (origen.utm_source) return String(origen.utm_source).trim();
+    return '';
+  };
+  const buildSource = (origen, baseLabel) => {
+    const slug = buildOriginLabel(origen);
+    return slug ? `${baseLabel} · ${slug}` : baseLabel;
+  };
+  const buildOriginNote = (origen) => {
+    if (!origen || typeof origen !== 'object') return '';
+    const lines = ['📍 Origen del lead'];
+    if (origen.referrer) lines.push(`Referrer: ${origen.referrer}`);
+    if (origen.referrerSlug) lines.push(`Página: ${origen.referrerSlug}`);
+    if (origen.landingUrl) lines.push(`Landing: ${origen.landingUrl}`);
+    const utms = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
+      .filter(k => origen[k]).map(k => `${k}=${origen[k]}`);
+    if (utms.length) lines.push(`UTM: ${utms.join(', ')}`);
+    if (origen.fromParam) lines.push(`From: ${origen.fromParam}`);
+    return lines.length > 1 ? lines.join('\n') : '';
+  };
+  const postContactNote = async (contactId, body) => {
+    if (!contactId || !body) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/notes`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ body })
+      });
+    } catch (e) { console.error('Note post error:', e.message); }
+  };
+  const addContactTag = async (contactId, tag) => {
+    if (!contactId || !tag) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/tags`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ tags: [tag] })
+      });
+    } catch (e) { console.error('Tag add error:', e.message); }
+  };
+
   // Heurística para clasificar artistas/proveedores en High/Mid/Low por completitud
   // y profesionalidad del perfil. Reemplazable por LLM más adelante.
   const computeArtistaScore = (data) => {
@@ -94,9 +145,13 @@ export default async function handler(req, res) {
 
     // Tag por tipo: new_artist o new_supplier (brief 2026-05-08).
     // En isUpdate (artista actualiza su perfil) no añadir tags nuevos.
+    const originSlug = buildOriginLabel(data.origen);
+    const baseSourceLabel = tipoContacto === 'Proveedor' ? 'Form Proveedor' : 'Form Artista';
+    const sourceLabel = buildSource(data.origen, baseSourceLabel);
     const tags = isUpdate
       ? [`lang:${lang}`]
       : [tipoContacto === 'Proveedor' ? 'new_supplier' : 'new_artist', `lang:${lang}`];
+    if (!isUpdate && originSlug) tags.push(`pagina:${originSlug}`);
     const score = computeArtistaScore(data);
 
     // 1. Create/update contact
@@ -108,7 +163,7 @@ export default async function handler(req, res) {
       phone: data.telefono || '',
       city: data.ciudad || '',
       tags: tags,
-      source: tipoContacto === 'Proveedor' ? 'Form Proveedor' : 'Form Artista',
+      source: sourceLabel,
       customFields: [
         { key: 'contact_type', field_value: tipoContacto },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
@@ -151,13 +206,22 @@ export default async function handler(req, res) {
           method: 'PUT',
           headers: HEADERS,
           body: JSON.stringify({
-            source: tipoContacto === 'Proveedor' ? 'Form Proveedor' : 'Form Artista',
+            source: sourceLabel,
             customFields: [
               { key: 'contact_type', field_value: tipoContacto }
             ]
           })
         });
       } catch (e) { console.error('Force PUT contact_type error:', e.message); }
+    }
+
+    // Tag pagina:<slug> + nota timeline con origen completo (solo en submits nuevos,
+    // no en updates del propio artista). Permite a Xavi ver de qué página vino el
+    // lead sin tener que preguntar — replica el comportamiento del form WP viejo.
+    if (!isUpdate) {
+      if (originSlug) await addContactTag(contactId, `pagina:${originSlug}`);
+      const originNote = buildOriginNote(data.origen);
+      if (originNote) await postContactNote(contactId, originNote);
     }
 
 
@@ -248,7 +312,7 @@ export default async function handler(req, res) {
         name: `${data.nombreArtistico || data.compania || data.nombre || tipoContacto} — ${disciplinas.join(', ')}`,
         status: 'open',
         monetaryValue: 0,
-        source: isProveedor ? 'Form Proveedor' : 'Form Artista',
+        source: sourceLabel,
         customFields: oppCustomFields
       };
 

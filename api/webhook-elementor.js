@@ -25,6 +25,38 @@ export default async function handler(req, res) {
     } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
+  // De pageUrl/formName a slug corto legible (ej. "/danza/flamenco/" → "flamenco").
+  // Igual que en lead-cliente/artista: Xavi necesita saber de qué página vino el
+  // lead sin tener que preguntar al cliente. Antes (Elementor) lo veía por formName.
+  const extractPageSlug = (pageUrl) => {
+    if (!pageUrl) return '';
+    try {
+      const u = new URL(pageUrl);
+      const last = u.pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean).pop();
+      return last || '';
+    } catch { return ''; }
+  };
+  const postContactNote = async (contactId, body) => {
+    if (!contactId || !body) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/notes`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ body })
+      });
+    } catch (e) { console.error('Note post error:', e.message); }
+  };
+  const addContactTag = async (contactId, tag) => {
+    if (!contactId || !tag) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/tags`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ tags: [tag] })
+      });
+    } catch (e) { console.error('Tag add error:', e.message); }
+  };
+
   try {
     const raw = req.body;
     console.log('Webhook received:', JSON.stringify(raw));
@@ -158,7 +190,11 @@ export default async function handler(req, res) {
     // Spec Ramiro 2026-05-08: solo 3 tags válidos (new_lead/new_artist/new_supplier).
     // El estado "incompleto" se infiere de que los custom fields del opportunity
     // estén vacíos — no se etiqueta con tag.
+    const pageSlug = extractPageSlug(pageUrl);
+    const sourceSuffix = pageSlug || formName;
+    const sourceLabel = sourceSuffix ? `Web Elementor · ${sourceSuffix}` : 'Web Elementor';
     const tags = isInscripcion ? [`lang:${lang}`] : ['new_lead', `lang:${lang}`];
+    if (pageSlug) tags.push(`pagina:${pageSlug}`);
 
     // 1. Create/update contact in GHL
     const contactBody = {
@@ -168,7 +204,7 @@ export default async function handler(req, res) {
       phone: phoneValue,
       companyName: empresa,
       tags: tags,
-      source: `Web Elementor - ${formName}`,
+      source: sourceLabel,
       customFields: [
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         // contact_type y contact_score se setean en el flow correspondiente
@@ -211,13 +247,25 @@ export default async function handler(req, res) {
           method: 'PUT',
           headers: HEADERS,
           body: JSON.stringify({
-            source: `Web Elementor - ${formName}`,
+            source: sourceLabel,
             customFields: [
               { key: 'contact_type', field_value: 'Cliente' }
             ]
           })
         });
       } catch (e) { console.error('Force PUT contact_type error:', e.message); }
+    }
+
+    // Tag pagina:<slug> + nota timeline con la URL completa para que Xavi
+    // vea exactamente de qué página vino el lead (replica el comportamiento
+    // histórico cuando formName ya lo identificaba).
+    if (pageSlug) await addContactTag(contactId, `pagina:${pageSlug}`);
+    if (pageUrl || formName) {
+      const noteLines = ['📍 Origen del lead'];
+      if (pageUrl) noteLines.push(`Página: ${pageUrl}`);
+      if (formName) noteLines.push(`Form: ${formName}`);
+      if (mensaje) noteLines.push(`Mensaje del cliente: ${mensaje}`);
+      await postContactNote(contactId, noteLines.join('\n'));
     }
 
     // 2. Create opportunity en pipeline Clientes — solo si NO es inscripción
@@ -239,7 +287,7 @@ export default async function handler(req, res) {
         name: oppName,
         status: 'open',
         monetaryValue: 0,
-        source: `Web Elementor - ${formName}`
+        source: sourceLabel
       };
 
       const oppRes = await fetch(`${API}/opportunities/`, {

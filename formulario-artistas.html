@@ -2292,7 +2292,8 @@
         showsAdicionales: '',
         aceptoPrivacidad: document.getElementById('privacy-check')?.checked || false,
         aceptoVisibilidad: document.getElementById('visibility-check')?.checked || false,
-        comentarios: document.getElementById('a-comentarios')?.value || ''
+        comentarios: document.getElementById('a-comentarios')?.value || '',
+        origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
       };
 
       try {
@@ -2329,6 +2330,44 @@
         if (line) line.classList.add('active');
       }
     }
+
+    // Captura de origen del lead (referrer + UTMs). Mismo patrón que formulario
+    // cliente — el backend lead-artista.js lo usa para popular contact.source.
+    function captureOriginInfo() {
+      const KEY = 'eb_origin_info_v1';
+      const stored = sessionStorage.getItem(KEY);
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+      const params = new URLSearchParams(window.location.search);
+      const referrer = document.referrer || '';
+      let referrerSlug = '';
+      let referrerHost = '';
+      if (referrer) {
+        try {
+          const u = new URL(referrer);
+          referrerHost = u.hostname;
+          if (u.hostname.includes('eventosbarcelona.com')) {
+            referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
+          }
+        } catch (e) {}
+      }
+      const info = {
+        referrer,
+        referrerHost,
+        referrerSlug,
+        landingUrl: window.location.href,
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+        fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
+      };
+      try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
+      return info;
+    }
+    captureOriginInfo();
   </script>
 
 </body>

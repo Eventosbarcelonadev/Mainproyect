@@ -28,6 +28,60 @@ export default async function handler(req, res) {
     } catch (e) { console.error('Notify Xavi workflow error:', e.message); }
   };
 
+  // De `origen` (referrer/UTM/fromParam) → slug corto legible para popular
+  // contact.source y tag GHL. Ej. "danza/flamenco" → "flamenco".
+  // Sirve para que Xavi vea de qué página de la web vino el lead sin tener
+  // que pedir info al cliente. Replica el comportamiento del form viejo
+  // (Elementor + WP) donde el formName ya identificaba la página.
+  const buildOriginLabel = (origen) => {
+    if (!origen || typeof origen !== 'object') return '';
+    // Prioridad: fromParam explícito > último slug del path del referrer > utm_campaign > utm_source
+    if (origen.fromParam) return String(origen.fromParam).trim();
+    if (origen.referrerSlug) {
+      const last = origen.referrerSlug.split('/').filter(Boolean).pop();
+      if (last) return last;
+    }
+    if (origen.utm_campaign) return String(origen.utm_campaign).trim();
+    if (origen.utm_source) return String(origen.utm_source).trim();
+    return '';
+  };
+  const buildSource = (origen, baseLabel) => {
+    const slug = buildOriginLabel(origen);
+    return slug ? `${baseLabel} · ${slug}` : baseLabel;
+  };
+  const buildOriginNote = (origen) => {
+    if (!origen || typeof origen !== 'object') return '';
+    const lines = ['📍 Origen del lead'];
+    if (origen.referrer) lines.push(`Referrer: ${origen.referrer}`);
+    if (origen.referrerSlug) lines.push(`Página: ${origen.referrerSlug}`);
+    if (origen.landingUrl) lines.push(`Landing: ${origen.landingUrl}`);
+    const utms = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
+      .filter(k => origen[k]).map(k => `${k}=${origen[k]}`);
+    if (utms.length) lines.push(`UTM: ${utms.join(', ')}`);
+    if (origen.fromParam) lines.push(`From: ${origen.fromParam}`);
+    return lines.length > 1 ? lines.join('\n') : '';
+  };
+  const postContactNote = async (contactId, body) => {
+    if (!contactId || !body) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/notes`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ body })
+      });
+    } catch (e) { console.error('Note post error:', e.message); }
+  };
+  const addContactTag = async (contactId, tag) => {
+    if (!contactId || !tag) return;
+    try {
+      await fetch(`${API}/contacts/${contactId}/tags`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ tags: [tag] })
+      });
+    } catch (e) { console.error('Tag add error:', e.message); }
+  };
+
   // Heurística para clasificar leads cliente en High/Mid/Low.
   // Señales: presupuesto, nº asistentes, dominio email, empresa, cargo decision-maker.
   // Reemplazable por LLM más adelante si compensa el coste por lead.
@@ -56,6 +110,10 @@ export default async function handler(req, res) {
 
     // Partial submit: lead abandonó el form tras el paso 1 (datos de contacto)
     if (isPartial) {
+      const originSlug = buildOriginLabel(data.origen);
+      const partialSourceLabel = buildSource(data.origen, 'Form Cliente - Partial');
+      const partialTags = ['new_lead', `lang:${lang}`];
+      if (originSlug) partialTags.push(`pagina:${originSlug}`);
       const contactBody = {
         locationId: LOC,
         firstName: data.nombre || '',
@@ -63,8 +121,8 @@ export default async function handler(req, res) {
         phone: data.telefono || '',
         companyName: data.empresa || '',
         website: data.webEmpresa || '',
-        tags: ['new_lead', `lang:${lang}`],
-        source: 'Form Cliente - Partial',
+        tags: partialTags,
+        source: partialSourceLabel,
         customFields: [
           { key: 'contact_type', field_value: 'Cliente' },
           { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
@@ -101,7 +159,7 @@ export default async function handler(req, res) {
           name: data.empresa || data.nombre || 'Lead',
           status: 'open',
           monetaryValue: 0,
-          source: 'Form Cliente - Partial'
+          source: partialSourceLabel
         };
 
         const oppRes = await fetch(`${API}/opportunities/`, {
@@ -113,6 +171,11 @@ export default async function handler(req, res) {
         oppId = oppData.opportunity?.id || null;
       }
 
+      // Nota timeline con el origen completo (referrer + UTMs) para que Xavi
+      // pueda ver de qué página vino el lead sin tener que preguntar.
+      const noteBody = buildOriginNote(data.origen);
+      if (noteBody) await postContactNote(contactId, noteBody);
+
       return res.status(200).json({
         success: true,
         partial: true,
@@ -121,7 +184,10 @@ export default async function handler(req, res) {
       });
     }
 
+    const originSlug = buildOriginLabel(data.origen);
+    const sourceLabel = buildSource(data.origen, 'Form Cliente');
     const tags = ['new_lead', `lang:${lang}`];
+    if (originSlug) tags.push(`pagina:${originSlug}`);
     const score = computeClienteScore(data);
 
     // 1. Create/update contact
@@ -134,7 +200,7 @@ export default async function handler(req, res) {
       companyName: data.empresa || '',
       website: data.webEmpresa || '',
       tags: tags,
-      source: 'Form Cliente',
+      source: sourceLabel,
       customFields: [
         { key: 'contact_type', field_value: 'Cliente' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
@@ -219,7 +285,7 @@ export default async function handler(req, res) {
           method: 'PUT',
           headers: HEADERS,
           body: JSON.stringify({
-            source: 'Form Cliente',
+            source: sourceLabel,
             customFields: [
               { key: 'contact_type', field_value: 'Cliente' }
             ]
@@ -227,6 +293,14 @@ export default async function handler(req, res) {
         });
       } catch (e) { console.error('Force PUT contact_type=Cliente error:', e.message); }
     }
+
+    // Tag pagina:<slug> (idempotente — GHL ignora duplicados de tag).
+    if (originSlug) await addContactTag(contactId, `pagina:${originSlug}`);
+
+    // Nota timeline con el origen completo. Aparece en el feed del contacto
+    // para que Xavi vea de qué página vino el lead sin tener que preguntar.
+    const originNote = buildOriginNote(data.origen);
+    if (originNote) await postContactNote(contactId, originNote);
 
 
     // 2. Find existing open opportunity for this contact (created by partial submit
@@ -306,7 +380,7 @@ export default async function handler(req, res) {
       name: oppName,
       status: 'open',
       monetaryValue: monetaryValue,
-      source: 'Form Cliente',
+      source: sourceLabel,
       customFields: oppCustomFields
     };
     const oppBodyPut = {
