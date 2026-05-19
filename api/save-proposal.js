@@ -100,6 +100,8 @@ export default async function handler(req, res) {
       shows: JSON.stringify(data.shows || []),
       global_margin: data.globalMargin || 0,
       hide_summary: !!data.hideSummary,
+      // null = usar defaults del I18N. Array = condiciones custom editadas por Xavi.
+      conditions: Array.isArray(data.conditions) ? data.conditions : null,
       ghl_contact_id: data.ghlContactId || null,
       ghl_opportunity_id: data.ghlOpportunityId || null
     };

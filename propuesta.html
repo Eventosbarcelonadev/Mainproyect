@@ -1067,6 +1067,55 @@
       background: var(--border);
     }
 
+    .conditions-section li.editable-li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding-right: 32px;
+    }
+
+    .conditions-section li.editable-li > span {
+      flex: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .conditions-section li.editable-li > span:hover,
+    .conditions-section li.editable-li > span:focus {
+      background: var(--light-gray, #f4f4f4);
+    }
+
+    .conditions-section .cond-remove {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--gray);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 2px 6px;
+      margin-top: 4px;
+    }
+    .conditions-section .cond-remove:hover { color: var(--accent); }
+
+    .conditions-section .cond-add {
+      margin-top: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--accent);
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+    }
+    .conditions-section .cond-add:hover { background: var(--light-gray, #f4f4f4); }
+
+    /* En modo print el botón × no debe aparecer aunque el HTML esté presente */
+    body.print-mode .conditions-section .cond-remove,
+    body.print-mode .conditions-section .cond-add { display: none; }
+
     /* === ABOUT === */
     .about-section {
       padding: 100px 80px;
@@ -2042,7 +2091,10 @@
       event: {},
       shows: [],
       concept: {},
-      category: 'shows'
+      category: 'shows',
+      // Condiciones generales: null = usar default del I18N. Si el admin las
+      // edita (Xavi adapta por cliente) se persisten como array de strings.
+      conditions: null
     };
 
     // =============================================
@@ -2267,6 +2319,9 @@
         proposalState.globalMargin = p.globalMargin || 0;
         proposalState.hideSummary = !!p.hideSummary;
         proposalState.heroImageUrl = p.heroImageUrl || null;
+        // Condiciones custom: si la propuesta las tiene editadas, las usamos.
+        // Si no, el render cae al default de T.conditions automáticamente.
+        proposalState.conditions = Array.isArray(p.conditions) ? p.conditions : null;
         loadProposal(showsData, isAdmin);
 
         // Restore custom prices and per-proposal priceNote overrides if saved.
@@ -2518,9 +2573,15 @@
         <!-- CONDICIONES -->
         <div class="conditions-section">
           <div class="section-label">${T.conditionsLabel}</div>
-          <ul>
-            ${T.conditions.map(c => `<li>${c}</li>`).join('')}
+          <ul id="conditionsList">
+            ${getActiveConditions().map((c, i) => `
+              <li${isAdmin ? ' class="editable-li"' : ''}>
+                <span ${isAdmin ? 'class="editable-text" contenteditable="true" data-cond-index="' + i + '" onblur="updateCondition(' + i + ', this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur();}"' : ''}>${escapeHtmlText(c)}</span>
+                ${isAdmin ? `<button class="cond-remove" onclick="removeCondition(${i})" title="Eliminar condición">&times;</button>` : ''}
+              </li>
+            `).join('')}
           </ul>
+          ${isAdmin ? `<button class="cond-add" onclick="addCondition()">+ Añadir condición</button>` : ''}
         </div>
 
         <!-- CTA FINAL -->
@@ -2783,6 +2844,65 @@
         updateAdminBar();
       }
       showToast(proposalState.hideSummary ? 'Resumen de presupuesto ocultado' : 'Resumen de presupuesto visible');
+    }
+
+    // =============================================
+    // CONDICIONES editables (admin mode)
+    // =============================================
+    // Si la propuesta tiene `conditions` custom, las usa; si no, default del I18N.
+    // Xavi adapta texto/orden/cantidad por cliente. Se persisten en save-proposal.
+    function getActiveConditions() {
+      return Array.isArray(proposalState.conditions) ? proposalState.conditions : T.conditions;
+    }
+    function escapeHtmlText(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function ensureConditionsArr() {
+      if (!Array.isArray(proposalState.conditions)) {
+        proposalState.conditions = [...T.conditions];
+      }
+    }
+    function updateCondition(i, el) {
+      ensureConditionsArr();
+      const txt = (el.innerText || el.textContent || '').trim();
+      proposalState.conditions[i] = txt;
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+      }
+    }
+    function removeCondition(i) {
+      ensureConditionsArr();
+      proposalState.conditions.splice(i, 1);
+      renderProposal();
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+      }
+    }
+    function addCondition() {
+      ensureConditionsArr();
+      proposalState.conditions.push('Nueva condición — haz click para editar');
+      renderProposal();
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+        // Focus en la nueva
+        setTimeout(() => {
+          const items = document.querySelectorAll('#conditionsList [contenteditable]');
+          const last = items[items.length - 1];
+          if (last) {
+            last.focus();
+            const range = document.createRange();
+            range.selectNodeContents(last);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }, 30);
+      }
     }
 
     // =============================================
@@ -3166,6 +3286,7 @@
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
         heroImageUrl: proposalState.heroImageUrl || null,
+        conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };
@@ -3263,6 +3384,7 @@
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
         heroImageUrl: proposalState.heroImageUrl || null,
+        conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };

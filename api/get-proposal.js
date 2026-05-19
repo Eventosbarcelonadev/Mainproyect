@@ -62,6 +62,7 @@ export default async function handler(req, res) {
       shows: typeof p.shows === 'string' ? JSON.parse(p.shows) : p.shows,
       globalMargin: p.global_margin,
       hideSummary: !!p.hide_summary,
+      conditions: Array.isArray(p.conditions) ? p.conditions : null,
       createdAt: p.created_at,
       approvedAt: p.approved_at,
       ghl_contact_id: p.ghl_contact_id,
