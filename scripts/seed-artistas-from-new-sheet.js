@@ -197,7 +197,7 @@ async function fetchAllArtistas(includeArchived) {
       if (cands.length === 1) { sbRow = cands[0]; strategy = 'name'; }
     }
 
-    const placeholderEmail = `artista-${(a.nombre || 'sin-nombre').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'')}-${(ghlId || randomUUID()).slice(0, 8)}@placeholder.eventosbarcelona.com`;
+    const placeholderEmail = `artista-${(a.nombre || 'sin-nombre').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'')}-${(ghlId || randomUUID()).slice(0, 8)}@placeholder.eventosbarcelona.local`;
     const payload = {
       nombre: a.nombre,
       email: a.email || placeholderEmail,

@@ -1316,7 +1316,7 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn-back" onclick="goToStep('shows')">Atrás</button>
+          <button class="btn-back" onclick="goToStep(profileType === 'proveedor' ? 2 : 'shows')">Atrás</button>
           <button class="btn-submit" onclick="submitForm()">Enviar mi perfil</button>
         </div>
       </div>
@@ -1396,6 +1396,36 @@
       document.getElementById('price-label').textContent = isProveedor ? 'Rango de precios por servicio' : 'Rango de caché por actuación';
       document.getElementById('team-label').textContent = isProveedor ? 'Personas en el equipo' : 'Número de artistas en el show';
       document.getElementById('duracion-group').style.display = isProveedor ? 'none' : '';
+
+      // Step 4: descripciones de price-cards según perfil
+      const priceDescs = isProveedor
+        ? ['Servicio puntual / pequeño', 'Servicio estándar', 'Servicio amplio / multi-evento', 'Gran producción / empresa completa']
+        : ['Artista individual / show corto', 'Show estándar', 'Show con varios artistas', 'Gran producción / compañía'];
+      document.querySelectorAll('#step-4 .price-card .price-desc').forEach((el, i) => {
+        if (priceDescs[i]) el.textContent = priceDescs[i];
+      });
+
+      // Step 4: placeholder de comentarios según perfil
+      const comentariosEl = document.getElementById('a-comentarios');
+      if (comentariosEl) {
+        comentariosEl.placeholder = isProveedor
+          ? 'Ej: Zonas de cobertura, particularidades del servicio, idiomas, certificaciones...'
+          : 'Ej: Disponibilidad solo fines de semana, posibilidad de adaptar el show a temáticas, idiomas disponibles...';
+      }
+
+      // Step 4: el checkbox de "subir material a web/RRSS" solo aplica a artistas
+      const visibilityRow = document.getElementById('visibility-check')?.closest('.checkbox-group');
+      if (visibilityRow) visibilityRow.style.display = isProveedor ? 'none' : '';
+
+      // Progress bar: proveedor solo usa pasos 1, 2, 4 (skipea portfolio + shows).
+      // Ocultamos dot-3 y line-3 y renombramos dot-4 → 3 cuando es proveedor.
+      const dot3 = document.getElementById('dot-3');
+      const line3 = document.getElementById('line-3');
+      const dot4 = document.getElementById('dot-4');
+      if (dot3) dot3.parentElement.style.display = isProveedor ? 'none' : '';
+      if (line3) line3.style.display = isProveedor ? 'none' : '';
+      if (dot4 && dot4.dataset.origLabel === undefined) dot4.dataset.origLabel = dot4.textContent;
+      if (dot4) dot4.textContent = isProveedor ? '3' : (dot4.dataset.origLabel || '4');
 
       // Submit button
       document.querySelector('.btn-submit').textContent = isProveedor ? 'Enviar mi ficha' : 'Enviar mi perfil';
@@ -1615,6 +1645,12 @@
       document.querySelectorAll('.field-error').forEach(el => el.remove());
       document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
 
+      // Proveedor skip: tras step 2 saltamos portfolio (3) y registrar shows
+      // directamente al step 4 (precios). El proveedor no tiene portfolio ni shows.
+      if (profileType === 'proveedor' && from === 2 && to === 3) {
+        to = 4;
+      }
+
       const errors = [];
 
       if (from === 1) {
@@ -1724,19 +1760,22 @@
 
       // The "shows" extension keeps the progress bar at dot 3 (it's a sub-step
       // of "portfolio"). Numeric steps drive the dot states normally.
+      // Para proveedor, dot-3 (portfolio) está oculto y dot-4 muestra "3".
+      const isProv = profileType === 'proveedor';
       const dotN = (n === 'shows') ? 3 : n;
       for (let i = 1; i <= totalSteps; i++) {
         const dot = document.getElementById('dot-' + i);
         const line = document.getElementById('line-' + (i - 1));
+        const displayLabel = (isProv && i === 4) ? 3 : i;
         dot.classList.remove('active', 'completed');
         if (i < dotN) {
           dot.classList.add('completed');
           dot.innerHTML = '&#10003;';
         } else if (i === dotN) {
           dot.classList.add('active');
-          dot.innerHTML = i;
+          dot.innerHTML = displayLabel;
         } else {
-          dot.innerHTML = i;
+          dot.innerHTML = displayLabel;
         }
         if (line) {
           line.classList.toggle('active', i < dotN);

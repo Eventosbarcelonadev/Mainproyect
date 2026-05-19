@@ -198,6 +198,38 @@ async function listArtistas(req, res, env) {
 
   const rows = await r.json();
   const total = parseTotal(r.headers.get('content-range'), rows.length);
+
+  // El select=*,shows(count) cuenta solo vía FK legacy shows.artista_id (artista primario).
+  // Añadimos un segundo count vía show_artistas para artistas vinculados N:M (no primarios)
+  // y devolvemos el total unión sin duplicar.
+  if (rows.length) {
+    const ids = rows.map(a => a.id).filter(Boolean);
+    if (ids.length) {
+      const jr = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=in.(${ids.map(encodeURIComponent).join(',')})&select=artista_id,show_id`,
+        { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      if (jr.ok) {
+        const joinRows = await jr.json();
+        const showsByArt = new Map(); // artista_id -> Set<show_id>
+        for (const x of joinRows) {
+          if (!showsByArt.has(x.artista_id)) showsByArt.set(x.artista_id, new Set());
+          showsByArt.get(x.artista_id).add(x.show_id);
+        }
+        for (const a of rows) {
+          const legacyCount = Array.isArray(a.shows) && a.shows[0] && typeof a.shows[0].count === 'number'
+            ? a.shows[0].count : 0;
+          const nmCount = showsByArt.has(a.id) ? showsByArt.get(a.id).size : 0;
+          // Best-effort: el count "real" es la unión, y como la migración inserta en
+          // show_artistas TODOS los vínculos (incl. el primario), el N:M es authoritative
+          // cuando hay valor. Si N:M está vacío, caemos al legacy (compat con shows que
+          // no han pasado por setShowArtistas todavía).
+          a.shows = [{ count: nmCount > 0 ? nmCount : legacyCount }];
+        }
+      }
+    }
+  }
+
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, artistas: rows });
 }
 
@@ -242,14 +274,32 @@ async function getArtistaDetail(req, res, env) {
   if (!id) return res.status(400).json({ error: 'Missing id' });
   if (!UUID_RE.test(id)) return res.status(400).json({ error: 'id must be a UUID' });
 
-  const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=*,shows(*)`,
-    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
-  );
-  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
-  const rows = await r.json();
+  const sbHeaders = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+
+  // Shows legacy (FK shows.artista_id) + shows N:M (show_artistas), unidos sin duplicar.
+  // El legacy queda como fallback hasta que se migren todos los shows a join table.
+  const [artistaRes, joinRes] = await Promise.all([
+    fetch(`${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=*,shows(*)`, { headers: sbHeaders }),
+    fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(id)}&select=posicion,show:show_id(*)`, { headers: sbHeaders })
+  ]);
+  if (!artistaRes.ok) return res.status(artistaRes.status).json({ error: await artistaRes.text() });
+  const rows = await artistaRes.json();
   if (!rows.length) return res.status(404).json({ error: 'Artista not found' });
-  return res.status(200).json({ success: true, artista: rows[0] });
+
+  const artista = rows[0];
+  const legacyShows = Array.isArray(artista.shows) ? artista.shows : [];
+  let joinShows = [];
+  if (joinRes.ok) {
+    const joinRows = await joinRes.json();
+    joinShows = joinRows.map(x => x.show).filter(Boolean);
+  }
+  const byId = new Map();
+  for (const s of [...legacyShows, ...joinShows]) {
+    if (s && s.id && !byId.has(s.id)) byId.set(s.id, s);
+  }
+  artista.shows = [...byId.values()];
+
+  return res.status(200).json({ success: true, artista });
 }
 
 // Legacy: vincula 1:1. Delega en setShowArtistas pasando 0 o 1 artista.
@@ -636,7 +686,7 @@ async function editArtista(req, res, env) {
       const ghlBody = {};
       if ('nombre' in update) ghlBody.firstName = update.nombre || '';
       if ('compania' in update) ghlBody.companyName = update.compania || '';
-      if ('email' in update && update.email && !update.email.endsWith('@placeholder.eventosbarcelona.local')) ghlBody.email = update.email;
+      if ('email' in update && update.email && !/@placeholder\.eventosbarcelona\.(local|com)\b/i.test(update.email)) ghlBody.email = update.email;
       if ('telefono' in update) ghlBody.phone = update.telefono || '';
       if ('ciudad' in update) ghlBody.city = update.ciudad || '';
       if (Object.keys(ghlBody).length) await ghlPutContact(env, cur.ghl_contact_id, ghlBody);

@@ -678,7 +678,7 @@
       }[c]));
     }
     function isPlaceholderEmail(e) {
-      return typeof e === 'string' && e.includes('@placeholder.eventosbarcelona.local');
+      return typeof e === 'string' && /@placeholder\.eventosbarcelona\.(local|com)\b/i.test(e);
     }
     function shortEmail(e, max = 28) {
       if (!e) return '';
@@ -858,9 +858,11 @@
           ${a.compania && a.compania !== display ? `<div class="meta"><span>${escapeHtml(a.compania)}</span></div>` : ''}
           ${disciplinas.length ? `<div class="chips">${disciplinas.map(d => `<span class="chip">${escapeHtml(d)}</span>`).join('')}</div>` : '<div class="chips"><span class="chip" style="color:#aaa;">sin disciplina</span></div>'}
           <div class="meta" style="margin-top:6px;">
-            <span>${showsCount} show${showsCount === 1 ? '' : 's'}</span>
-            ${a.ciudad ? `<span>· ${escapeHtml(a.ciudad)}</span>` : ''}
-            <span>· ${tipoLabel}</span>
+            ${[
+              a.tipo === 'proveedor' ? null : `${showsCount} show${showsCount === 1 ? '' : 's'}`,
+              a.ciudad ? escapeHtml(a.ciudad) : null,
+              tipoLabel
+            ].filter(Boolean).map(s => `<span>${s}</span>`).join(' · ')}
           </div>
           <div class="meta ${ph ? '' : ''}" title="${escapeHtml(a.email || '')}">
             ${ph ? `<span class="chip chip-warning" style="font-size:10px;">email placeholder</span>` : `<span>${escapeHtml(shortEmail(a.email))}</span>`}
@@ -967,10 +969,11 @@
         </div></div>
         ${fotos.length ? `<div class="field-row"><label>Fotos</label><div class="photos">${fotos.map(p => `<img src="${escapeHtml(p)}" alt="">`).join('')}</div></div>` : ''}
         ${a.ghl_contact_id ? `<div class="field-row"><label>GHL contact</label><div class="value"><code style="font-size:11px;">${escapeHtml(a.ghl_contact_id)}</code></div></div>` : ''}
+        ${a.tipo === 'proveedor' ? '' : `
         <div class="drawer-section">
           <h3>Shows (${shows.length})</h3>
           ${showsHtml}
-        </div>
+        </div>`}
       `;
       $('drawer-body').querySelectorAll('.show-mini').forEach(el => {
         el.addEventListener('click', () => {
@@ -1673,7 +1676,7 @@
       $('art-nombre-artistico').value = a.nombre_artistico || '';
       $('art-compania').value = a.compania || '';
       $('art-tipo').value = a.tipo || 'artista';
-      $('art-email').value = (a.email || '').endsWith('@placeholder.eventosbarcelona.local') ? '' : (a.email || '');
+      $('art-email').value = isPlaceholderEmail(a.email) ? '' : (a.email || '');
       $('art-telefono').value = a.telefono || '';
       $('art-ciudad').value = a.ciudad || '';
       $('art-disciplinas').value = (Array.isArray(a.disciplinas) ? a.disciplinas : []).join(', ');
