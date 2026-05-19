@@ -2320,18 +2320,24 @@
         proposalState.globalMargin = p.globalMargin || 0;
         proposalState.hideSummary = !!p.hideSummary;
         proposalState.heroImageUrl = p.heroImageUrl || null;
+        // heroSub: si Xavi lo editó en admin, lo guardamos como override.
+        // El render lee proposalState.heroSub || catConfig.heroSub.
+        proposalState.heroSub = (p.heroSub && p.heroSub.trim()) ? p.heroSub : null;
         // Condiciones custom: si la propuesta las tiene editadas, las usamos.
         // Si no, el render cae al default de T.conditions automáticamente.
         proposalState.conditions = Array.isArray(p.conditions) ? p.conditions : null;
         loadProposal(showsData, isAdmin);
 
-        // Restore custom prices and per-proposal priceNote overrides if saved.
-        // priceNote vive en el catalogo, pero admin puede sobreescribirlo por
-        // propuesta (ej. "4 artistas" → "3 artistas + DJ").
+        // Restore custom prices y overrides admin (name/description/priceNote/
+        // contextLabel/extras). priceNote/name/description viven en el catalogo
+        // pero admin puede sobreescribirlos por propuesta (ej. "4 artistas" →
+        // "3 artistas + DJ"). Sin esto el PDF saldría con el texto del catálogo.
         p.shows.forEach((s, i) => {
           if (!proposalState.shows[i]) return;
           if (s.currentPrice) proposalState.shows[i].currentPrice = s.currentPrice;
           if (s.priceNote) proposalState.shows[i].priceNote = s.priceNote;
+          if (s.name) proposalState.shows[i].name = s.name;
+          if (s.description) proposalState.shows[i].description = s.description;
           if (Array.isArray(s.extras)) proposalState.shows[i].extras = s.extras;
         });
         renderProposal();
@@ -3294,8 +3300,11 @@
         event: proposalState.event,
         category: proposalState.category,
         concept: proposalState.concept,
+        heroSub: proposalState.heroSub,
         shows: proposalState.shows.map(s => ({
           id: s.id,
+          name: s.name,                // override admin del nombre del show
+          description: s.description,  // override admin de la descripción
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel,
           priceNote: s.priceNote,
@@ -3393,8 +3402,11 @@
         event: proposalState.event,
         category: proposalState.category,
         concept: proposalState.concept,
+        heroSub: proposalState.heroSub,
         shows: proposalState.shows.map(s => ({
           id: s.id,
+          name: s.name,
+          description: s.description,
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel,
           priceNote: s.priceNote,
