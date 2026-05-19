@@ -535,6 +535,7 @@
       .kpi-grid, .roadmap { grid-template-columns: repeat(2, 1fr); }
       .two-col, .targets { grid-template-columns: 1fr; }
       .target-row { grid-template-columns: 1fr 1fr; }
+      .diagnostico-grid, .promesa-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
       main { padding: 24px; }
     }
     @media (max-width: 640px) {
@@ -558,24 +559,62 @@
 
   <main>
 
-    <!-- ================== HERO KPI: LEADS ================== -->
+    <!-- ================== HERO NARRATIVO ================== -->
     <section class="section">
       <div class="hero-kpi">
         <div class="hero-kpi-left">
-          <div class="label">Métrica que importa</div>
-          <div class="big" id="leadsHero">~1</div>
-          <div class="unit">leads cualificados / día (estimado actual)</div>
+          <div class="label">El recorrido a 6 meses</div>
+          <div class="big" style="font-size: 64px; letter-spacing: -1px;">De 1 a 2 leads<br>cualificados / día</div>
+          <div class="unit" style="margin-top: 18px; max-width: 480px;">Sin cambiar los canales que ya funcionan. Solo arreglando lo que la web tiene roto, posicionando lo que ya rankea casi top3, y publicando lo que el mercado busca y no encontramos.</div>
         </div>
         <div class="hero-kpi-right">
-          <div class="target-label">Objetivo M6 (octubre 2026)</div>
-          <div class="target-value">2 / día</div>
-          <div class="progress">
-            <div class="progress-fill" id="leadsProgress" style="width: 50%;"></div>
+          <div class="target-label">Cómo se compone el salto</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+              <div>
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase;">Quick wins</div>
+                <div style="font-size: 13px; margin-top: 2px;">10 páginas reescritas · 12-15 h</div>
+              </div>
+              <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">+12<span style="font-size: 13px; opacity: 0.6; margin-left: 4px;">/mes</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+              <div>
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase;">Top3 en keywords</div>
+                <div style="font-size: 13px; margin-top: 2px;">5 búsquedas Tier 1 · 25-30 h</div>
+              </div>
+              <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">+15<span style="font-size: 13px; opacity: 0.6; margin-left: 4px;">/mes</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+              <div>
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase;">Artículos nuevos</div>
+                <div style="font-size: 13px; margin-top: 2px;">8 piezas + 15 casos · 30-40 h</div>
+              </div>
+              <div style="font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent);">+17<span style="font-size: 13px; opacity: 0.6; margin-left: 4px;">/mes</span></div>
+            </div>
           </div>
-          <div class="progress-meta">
-            <span>Hoy: <strong>~1/día</strong></span>
-            <span><strong>50 %</strong> del objetivo</span>
-            <span>Stretch: 3/día</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== DIAGNÓSTICO NARRATIVO ================== -->
+    <section class="section">
+      <div style="background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 40px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;" class="diagnostico-grid">
+        <div>
+          <div class="section-label">Lo que está pasando</div>
+          <h2 style="font-family: 'DM Serif Display', serif; font-size: 30px; margin: 4px 0 18px; line-height: 1.15;">2.600 personas/día buscan eventos y nos ven en Google. Solo 22 entran.</h2>
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7;">
+            El problema no es que falte tráfico — Google ya nos muestra a la audiencia correcta. <strong style="color: var(--dark);">El problema es que cuando aparecemos, los títulos no enganchan</strong>: en algunas páginas, 1 de cada 600 personas hace click. El benchmark del sector es 1 de cada 40.
+          </p>
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin-bottom: 0;">
+            Cuando recuperamos ese gap, lo que hoy son <strong style="color: var(--dark);">22 clics/día se vuelven 60+</strong> — y nada de eso requiere campañas pagadas, posicionamiento nuevo, ni esperar 6 meses. Es arreglar lo que ya está construido.
+          </p>
+        </div>
+        <div style="background: var(--light); border-radius: 16px; padding: 28px;">
+          <div class="section-label">El número que duele</div>
+          <div style="font-family: 'DM Serif Display', serif; font-size: 56px; line-height: 1; margin: 8px 0 4px;">~390</div>
+          <div style="color: var(--gray); font-size: 13px; margin-bottom: 18px;">clics por mes que estamos dejando en la mesa <em>solo</em> por title + meta description sin optimizar.</div>
+          <div style="border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; color: var(--gray); line-height: 1.7;">
+            Asumiendo <strong style="color: var(--dark);">1 lead cualificado por cada 30 clics orgánicos</strong> (a validar con GHL), eso son <strong style="color: var(--accent); font-family: 'DM Serif Display', serif; font-size: 18px;">13 leads/mes</strong> que se pierden todos los meses por <em>copy</em>, no por SEO técnico.
           </div>
         </div>
       </div>
@@ -751,8 +790,11 @@
 
       <!-- Panel 1: IMPROVE -->
       <div class="plan-panel active" id="panel-improve">
-        <div class="plan-intro">
-          <strong>Foco:</strong> páginas con muchas impresiones y CTR ≪ benchmark de su posición. Solo título + meta + schema + FAQ — sin tocar contenido troncal. <strong>Esfuerzo total ~12-15 h.</strong> Impacto medible en GSC a 3-4 semanas.
+        <div style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;">
+          <h3 style="font-family: 'DM Serif Display', serif; font-size: 22px; margin: 0 0 8px; line-height: 1.25;">Hay 153.000 personas viendo nuestras 10 páginas top — y entran menos de 1.000.</h3>
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin: 0;">
+            Cada fila es una página que Google ya elige para mostrarle a la audiencia correcta. <strong style="color: var(--dark);">Lo único que falla es el escaparate</strong>: un title genérico, una meta sin emoción, sin estrellas de reviews, sin precio "desde". Reescribir 10 páginas son <strong style="color: var(--dark);">12-15 horas de trabajo</strong> que recuperan <strong style="color: var(--accent);">~12 leads/mes</strong> sin mover una sola posición.
+          </p>
         </div>
         <div class="table-wrap">
           <table>
@@ -792,8 +834,11 @@
 
       <!-- Panel 2: RANK -->
       <div class="plan-panel" id="panel-rank">
-        <div class="plan-intro">
-          <strong>Foco:</strong> mover 5 keywords Tier 1 de página 1 → top3. Internal linking + backlinks editoriales + auditoría/disavow de backlinks tóxicos de Rodanet (prerrequisito). <strong>Esfuerzo ~25-30 h.</strong> Plazo 2-4 meses para efecto completo.
+        <div style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;">
+          <h3 style="font-family: 'DM Serif Display', serif; font-size: 22px; margin: 0 0 8px; line-height: 1.25;">Estamos en la página 1 de Google, pero no en el podio.</h3>
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin: 0;">
+            En "eventos barcelona" salimos posición 7. En "agencia eventos barcelona" posición 5. Las 3 primeras posiciones se llevan <strong style="color: var(--dark);">~25 % de los clics</strong> vs ~5 % de la posición 5-8 — la misma búsqueda, <strong style="color: var(--dark);">4-5x más leads</strong>. Para subir hay que (a) limpiar los backlinks tóxicos que Rodanet dejó como herencia y (b) ganar autoridad real con medios sectoriales. <strong style="color: var(--accent);">~+15 leads/mes</strong> sostenidos al llegar a top3 en 5 keywords.
+          </p>
         </div>
         <div class="table-wrap">
           <table>
@@ -829,8 +874,14 @@
 
       <!-- Panel 3: CREATE -->
       <div class="plan-panel" id="panel-create">
-        <div class="plan-intro">
-          <strong>Foco:</strong> 8 artículos sobre keywords donde EB no aparece. <strong>~3-4 h por artículo</strong> (research + redacción + schema + imágenes) = ~30-35 h total + 10 h del hub de casos de éxito. Rampa: 30 % del lift al M3, 75 % al M6, 100 % al M9.
+        <div style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;">
+          <h3 style="font-family: 'DM Serif Display', serif; font-size: 22px; margin: 0 0 8px; line-height: 1.25;">Hay queries con miles de búsquedas mensuales donde Google ni siquiera nos considera.</h3>
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin: 0;">
+            "Team building Barcelona empresas" (720/mes), "family day corporativo" (320/mes), "cómo organizar evento corporativo" (480/mes). El tráfico está ahí <em>esperándonos</em>. Cada artículo bien hecho (research + redacción + schema + imágenes ≈ <strong style="color: var(--dark);">3-4 h</strong>) captura un trozo de ese mercado <strong style="color: var(--dark);">durante años</strong>. La rampa es lenta — Google tarda 3-6 meses en rankear contenido nuevo — pero al M6 ya suma <strong style="color: var(--accent);">~+17 leads/mes</strong>, y al M9 son <strong style="color: var(--accent);">~+23/mes</strong>.
+          </p>
+          <p style="color: var(--gray); font-size: 13px; line-height: 1.7; margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border);">
+            <strong style="color: var(--dark);">Bonus estratégico:</strong> el hub <code>/casos-de-exito/</code> usa los 15 casos que Xavi ya tiene documentados (anonimizando SpaceX/F1 por NDA). No solo posiciona — es la <em>prueba social</em> que cierra propuestas.
+          </p>
         </div>
         <div class="table-wrap">
           <table>
@@ -890,6 +941,46 @@
         </div>
         <div style="font-size: 12px; color: var(--gray); margin-top: 16px; line-height: 1.6;">
           <strong style="color: var(--dark);">Upside no contabilizado:</strong> GEO/IA recommendations, outbound a event planners, partnerships MPI/ICCA/Sortlist, casos de éxito como contenido shareable en LinkedIn, optimización mobile-first (CTR mobile 1,09 % vs desktop 0,75 %).
+        </div>
+      </div>
+
+      <!-- Promesa / compromiso -->
+      <div style="margin-top: 32px; background: var(--dark); color: #fff; border-radius: 24px; padding: 40px;">
+        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center;" class="promesa-grid">
+          <div>
+            <div style="font-size: 11px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; font-weight: 600; margin-bottom: 12px;">Lo que esto significa para Eventos Barcelona</div>
+            <h3 style="font-family: 'DM Serif Display', serif; font-size: 32px; margin: 0 0 16px; line-height: 1.15; font-weight: 400;">Un cliente cualificado al mes ya cubre el retainer.</h3>
+            <p style="color: rgba(255,255,255,0.75); font-size: 14px; line-height: 1.7; margin: 0;">
+              A precios actuales (ejemplo: caricaturista 1.500 € con 50 % margen = 750 €), <strong style="color: #fff;">un solo cliente al mes</strong> ya paga el coste de la estrategia. Cada lead adicional que cierre es margen puro.
+            </p>
+            <p style="color: rgba(255,255,255,0.75); font-size: 14px; line-height: 1.7; margin: 12px 0 0;">
+              El plan no promete magia. Promete <strong style="color: #fff;">trabajo concreto sobre activos que ya existen</strong>: 10 títulos reescritos, 5 keywords trabajadas, 8 artículos publicados, 15 casos puestos en valor.
+            </p>
+          </div>
+          <div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div style="background: rgba(255,255,255,0.06); border-radius: 14px; padding: 20px;">
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600;">Hoy</div>
+                <div style="font-family: 'DM Serif Display', serif; font-size: 38px; margin: 6px 0 4px;">~30</div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.55);">leads / mes (~1/día)</div>
+              </div>
+              <div style="background: rgba(232,116,97,0.15); border: 1px solid rgba(232,116,97,0.3); border-radius: 14px; padding: 20px;">
+                <div style="font-size: 11px; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; font-weight: 600;">M6 · objetivo</div>
+                <div style="font-family: 'DM Serif Display', serif; font-size: 38px; margin: 6px 0 4px; color: var(--accent);">~74</div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">leads / mes (~2,5/día)</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.06); border-radius: 14px; padding: 20px;">
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600;">Esfuerzo total</div>
+                <div style="font-family: 'DM Serif Display', serif; font-size: 38px; margin: 6px 0 4px;">~75 h</div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.55);">repartidas en 10 semanas</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.06); border-radius: 14px; padding: 20px;">
+                <div style="font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600;">Revisión</div>
+                <div style="font-family: 'DM Serif Display', serif; font-size: 38px; margin: 6px 0 4px;">M6</div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.55);">Métricas medibles vs hoy</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
