@@ -1124,61 +1124,41 @@
     .footer {
       padding: 60px 80px;
       background: var(--light-gray);
-    }
-
-    .footer-team {
       text-align: center;
-      margin-bottom: 24px;
     }
 
-    .footer-team h4 {
-      font-family: 'Inter', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text);
-      margin-bottom: 24px;
+    .footer-logo img {
+      height: 56px;
+      width: auto;
+      filter: brightness(0);
     }
 
-    .footer-roles {
+    .footer-address {
+      font-size: 14px;
+      color: var(--gray);
+      margin-top: 24px;
+    }
+
+    .footer-social {
+      margin-top: 24px;
       display: flex;
-      gap: 48px;
+      gap: 28px;
       justify-content: center;
       flex-wrap: wrap;
     }
 
-    .footer-role strong {
-      display: block;
-      font-size: 15px;
-      color: var(--dark);
-      font-weight: 600;
-    }
-
-    .footer-role span {
+    .footer-social a {
+      font-family: 'Inter', sans-serif;
       font-size: 12px;
-      color: var(--gray);
+      font-weight: 600;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
     }
 
-    .footer-address {
-      text-align: center;
-      font-size: 14px;
-      color: var(--gray);
-      margin-top: 20px;
-    }
-
-    .footer-contact {
-      text-align: center;
-      font-size: 14px;
-      color: var(--gray);
-      margin-top: 16px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-
-    .footer-contact a { color: var(--accent); text-decoration: none; }
+    .footer-social a:hover { color: var(--accent); }
 
     /* === BUILDER MODE === */
     .builder-container {
@@ -1585,7 +1565,7 @@
       .cta-section { padding: 60px 24px; }
       .cta-banner { padding: 40px 24px; }
       .footer { padding: 40px 24px; }
-      .footer-roles { flex-direction: column; gap: 16px; }
+      .footer-social { gap: 20px; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
       .stat-number { font-size: 48px; }
       .about-section { padding: 60px 24px; }
@@ -2554,17 +2534,16 @@
 
         <!-- FOOTER -->
         <div class="footer">
-          <div class="footer-team">
-            <h4>${T.footerTitle}</h4>
-            <div class="footer-roles">
-              <div class="footer-role"><strong>Xavier Rojas Pascual</strong><span>${T.roleDirector}</span></div>
-            </div>
-            <div class="footer-address">General Mitre 126, 6ª planta &middot; 08021 Barcelona</div>
+          <div class="footer-logo">
+            <a href="https://www.eventosbarcelona.com" target="_blank" rel="noopener">
+              <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+            </a>
           </div>
-          <div class="footer-contact">
-            <a href="tel:+34931980265">+34 931 98 02 65</a> &middot;
-            <a href="mailto:info@eventosbarcelona.com">info@eventosbarcelona.com</a> &middot;
-            <a href="https://www.eventosbarcelona.com">eventosbarcelona.com</a>
+          <div class="footer-address">General Mitre 126, 6ª planta &middot; 08021 Barcelona</div>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/eventosbarcelona" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.linkedin.com/company/2282793/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://www.youtube.com/user/EventosBarcelona7" target="_blank" rel="noopener">YouTube</a>
           </div>
         </div>
       `;
