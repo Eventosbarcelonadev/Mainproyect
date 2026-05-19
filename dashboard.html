@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — Eventos Barcelona × Growth4U</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --accent: #e87461;
+      --accent-soft: rgba(232, 116, 97, 0.12);
+      --dark: #111;
+      --gray: #6b6b66;
+      --gray-soft: #98968f;
+      --light: #f7f7f5;
+      --border: #e9e7e1;
+      --green: #2ecc71;
+      --red: #e74c3c;
+      --amber: #f39c12;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .topbar {
+      background: var(--dark);
+      color: #fff;
+      padding: 22px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .topbar-left h1 {
+      margin: 0;
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+    }
+    .topbar-left .sub {
+      font-size: 12px;
+      opacity: 0.6;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+    .topbar-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 34px;
+      font-weight: 400;
+      margin: 0 0 24px;
+      line-height: 1.1;
+    }
+    .section-sub {
+      color: var(--gray);
+      font-size: 15px;
+      margin: -16px 0 28px;
+    }
+
+    /* === HERO KPI === */
+    .hero-kpi {
+      background: var(--dark);
+      color: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-kpi-left .label {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero-kpi-left .big {
+      font-family: 'DM Serif Display', serif;
+      font-size: 96px;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .hero-kpi-left .unit {
+      color: rgba(255,255,255,0.5);
+      font-size: 16px;
+      margin-top: 12px;
+    }
+    .hero-kpi-right .target-label {
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero-kpi-right .target-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .hero-kpi-right .progress {
+      background: rgba(255,255,255,0.12);
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-kpi-right .progress-fill {
+      background: var(--accent);
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .hero-kpi-right .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 10px;
+      color: rgba(255,255,255,0.55);
+    }
+    .hero-kpi-right .progress-meta strong {
+      color: #fff;
+    }
+
+    /* === KPI GRID === */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .kpi {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .kpi .label {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .kpi .value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 38px;
+      line-height: 1;
+      margin: 6px 0 4px;
+      letter-spacing: -0.5px;
+    }
+    .kpi .delta {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kpi .delta.up { color: var(--green); }
+    .kpi .delta.down { color: var(--red); }
+    .kpi .delta.flat { color: var(--gray); }
+    .kpi .target {
+      font-size: 11px;
+      color: var(--gray-soft);
+      margin-top: 4px;
+    }
+    .kpi .bar {
+      margin-top: 12px;
+      background: var(--accent-soft);
+      height: 6px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .kpi .bar-fill {
+      background: var(--accent);
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    /* === FUNNEL === */
+    .funnel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+    }
+    .funnel-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 100px 60px;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .funnel-row:last-child { border-bottom: 0; }
+    .funnel-row .stage {
+      font-weight: 600;
+    }
+    .funnel-row .stage small {
+      display: block;
+      font-weight: 400;
+      color: var(--gray);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .funnel-bar {
+      background: var(--accent-soft);
+      height: 24px;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .funnel-bar-fill {
+      background: var(--accent);
+      height: 100%;
+    }
+    .funnel-row .count {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      text-align: right;
+    }
+    .funnel-row .rate {
+      font-size: 12px;
+      color: var(--gray);
+      text-align: right;
+    }
+
+    /* === TABLE === */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+    }
+    th {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 600;
+      background: #fafaf8;
+      border-bottom: 1px solid var(--border);
+    }
+    td { border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-good { background: rgba(46,204,113,0.12); color: var(--green); }
+    .badge-warn { background: rgba(243,156,18,0.14); color: var(--amber); }
+    .badge-bad { background: rgba(231,76,60,0.12); color: var(--red); }
+
+    /* === ROADMAP === */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .sprint {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sprint .sprint-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .sprint .sprint-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 2px 0 4px;
+    }
+    .sprint .sprint-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      align-self: flex-start;
+    }
+    .sprint .sprint-status.todo { background: var(--accent-soft); color: var(--accent); }
+    .sprint .sprint-status.doing { background: rgba(243,156,18,0.14); color: var(--amber); }
+    .sprint .sprint-status.done { background: rgba(46,204,113,0.12); color: var(--green); }
+    .sprint ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.55;
+    }
+    .sprint ul li + li { margin-top: 4px; }
+    .sprint-meta {
+      font-size: 11px;
+      color: var(--gray-soft);
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+
+    /* === TARGETS 6M === */
+    .targets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .target-row {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.7fr 0.7fr 1fr;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+    }
+    .target-row .name { font-weight: 600; }
+    .target-row .now { font-family: 'DM Serif Display', serif; font-size: 22px; }
+    .target-row .goal { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--accent); }
+    .target-row .progress-mini {
+      background: var(--accent-soft);
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .target-row .progress-mini-fill { background: var(--accent); height: 100%; }
+
+    /* === CHART === */
+    .chart-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+    }
+    .chart-card h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      margin: 0 0 4px;
+      font-weight: 600;
+    }
+    .chart-card p {
+      color: var(--gray);
+      font-size: 12px;
+      margin: 0 0 16px;
+    }
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    /* === TWO COLS === */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1000px) {
+      .hero-kpi { grid-template-columns: 1fr; gap: 24px; }
+      .kpi-grid, .roadmap { grid-template-columns: repeat(2, 1fr); }
+      .two-col, .targets { grid-template-columns: 1fr; }
+      .target-row { grid-template-columns: 1fr 1fr; }
+      main { padding: 24px; }
+    }
+    @media (max-width: 640px) {
+      .kpi-grid, .roadmap { grid-template-columns: 1fr; }
+      .funnel-row { grid-template-columns: 1fr; gap: 6px; }
+      .funnel-row .count, .funnel-row .rate { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Dashboard mensual</h1>
+      <div class="sub">Eventos Barcelona × Growth4U · medición SEO · GEO · AEO</div>
+    </div>
+    <div class="topbar-right">
+      <span>Periodo: 2026-02-18 → 2026-05-18 (90d) · GA 365d</span>
+      <span>Última actualización: <strong id="lastUpdated">2026-05-19</strong></span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ================== HERO KPI: LEADS ================== -->
+    <section class="section">
+      <div class="hero-kpi">
+        <div class="hero-kpi-left">
+          <div class="label">Métrica que importa</div>
+          <div class="big" id="leadsHero">~1</div>
+          <div class="unit">leads cualificados / día (estimado actual)</div>
+        </div>
+        <div class="hero-kpi-right">
+          <div class="target-label">Objetivo M6 (octubre 2026)</div>
+          <div class="target-value">2 / día</div>
+          <div class="progress">
+            <div class="progress-fill" id="leadsProgress" style="width: 50%;"></div>
+          </div>
+          <div class="progress-meta">
+            <span>Hoy: <strong>~1/día</strong></span>
+            <span><strong>50 %</strong> del objetivo</span>
+            <span>Stretch: 3/día</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== SEO KPIs ================== -->
+    <section class="section">
+      <div class="section-label">Buscadores (SEO)</div>
+      <h2 class="section-title">Visibilidad en Google</h2>
+      <p class="section-sub">Datos GSC últimos 90 días. Benchmark de CTR sector: 2,5 %.</p>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Impresiones / día</div>
+          <div class="value">2.593</div>
+          <div class="delta flat">▬ flat vs abril</div>
+          <div class="target">Objetivo M6: 4.000 (+54 %)</div>
+          <div class="bar"><div class="bar-fill" style="width: 65%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Clics / día</div>
+          <div class="value">22</div>
+          <div class="delta down">▼ -4 % vs abril</div>
+          <div class="target">Objetivo M6: 60 (+173 %)</div>
+          <div class="bar"><div class="bar-fill" style="width: 37%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">CTR</div>
+          <div class="value">0,85 %</div>
+          <div class="delta down">▼ vs benchmark 2,5 %</div>
+          <div class="target">Objetivo M6: 1,8 %</div>
+          <div class="bar"><div class="bar-fill" style="width: 47%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Posición media</div>
+          <div class="value">21,8</div>
+          <div class="delta flat">▬ nuevo dato</div>
+          <div class="target">Objetivo M6: 15</div>
+          <div class="bar"><div class="bar-fill" style="width: 38%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== TWO COL: chart + funnel ================== -->
+    <section class="section">
+      <div class="two-col">
+        <div class="chart-card">
+          <h3>Clics e impresiones por mes</h3>
+          <p>Tendencia 12 meses según GSC. El target dibuja la curva necesaria para llegar a 60 clics/día en M6.</p>
+          <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Embudo web → lead (365d)</h3>
+          <p>Conversión real medida en GA + GHL. El cuello no está en el fondo del embudo.</p>
+          <div class="funnel">
+            <div class="funnel-row">
+              <div class="stage">Sesiones<small>GA4 últimos 365d</small></div>
+              <div class="funnel-bar"><div class="funnel-bar-fill" style="width:100%"></div></div>
+              <div class="count">12.280</div>
+              <div class="rate">100 %</div>
+            </div>
+            <div class="funnel-row">
+              <div class="stage">Eventos de intención<small>contact + click_mail + click_tel</small></div>
+              <div class="funnel-bar"><div class="funnel-bar-fill" style="width:4.3%"></div></div>
+              <div class="count">524</div>
+              <div class="rate">4,3 %</div>
+            </div>
+            <div class="funnel-row">
+              <div class="stage">Lead estimado (Xavi)<small>2/día observados al cerrar</small></div>
+              <div class="funnel-bar"><div class="funnel-bar-fill" style="width:5.9%"></div></div>
+              <div class="count">~730</div>
+              <div class="rate">5,9 %</div>
+            </div>
+            <div class="funnel-row">
+              <div class="stage">Lead cualificado<small>el que convierte a cliente</small></div>
+              <div class="funnel-bar"><div class="funnel-bar-fill" style="width:1.5%"></div></div>
+              <div class="count">~180</div>
+              <div class="rate">~1,5 %</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== TOP QUERIES ================== -->
+    <section class="section">
+      <div class="section-label">Quick wins · Sprint 1</div>
+      <h2 class="section-title">Queries con techo de clics sin mover posición</h2>
+      <p class="section-sub">Páginas en página 1 con CTR muy debajo del benchmark de su posición. Solo afinando title + meta description: techo conservador <strong>+660 clics/90d (+7/día)</strong>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th class="num">Pos</th>
+              <th class="num">Impr (90d)</th>
+              <th class="num">CTR actual</th>
+              <th class="num">CTR esperado</th>
+              <th class="num">Δ clics si CTR sube</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>eventos barcelona</td><td class="num">6,8</td><td class="num">6.097</td><td class="num">4,7 %</td><td class="num">8 %</td><td class="num">+201</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>agencia eventos barcelona</td><td class="num">4,7</td><td class="num">1.280</td><td class="num">1,5 %</td><td class="num">12 %</td><td class="num">+135</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>agencia de eventos barcelona</td><td class="num">6,2</td><td class="num">1.730</td><td class="num">0,5 %</td><td class="num">8 %</td><td class="num">+130</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>agencia de eventos en barcelona</td><td class="num">6,6</td><td class="num">903</td><td class="num">1,0 %</td><td class="num">8 %</td><td class="num">+63</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>ideas originales para eventos</td><td class="num"><strong>1,7</strong></td><td class="num">196</td><td class="num">2,0 %</td><td class="num">25 %</td><td class="num">+45</td><td><span class="badge badge-bad">Snippet robado</span></td></tr>
+            <tr><td>agencia de eventos corporativos en barcelona</td><td class="num">4,6</td><td class="num">352</td><td class="num">1,4 %</td><td class="num">12 %</td><td class="num">+37</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>event agency barcelona (EN)</td><td class="num">7,7</td><td class="num">655</td><td class="num">0,6 %</td><td class="num">6 %</td><td class="num">+35</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+            <tr><td>empresas eventos barcelona</td><td class="num">6,2</td><td class="num">239</td><td class="num">1,7 %</td><td class="num">8 %</td><td class="num">+15</td><td><span class="badge badge-warn">Quick win</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================== GEO + AEO ================== -->
+    <section class="section">
+      <div class="two-col">
+        <div class="chart-card">
+          <div class="section-label">IA / GEO</div>
+          <h3 style="font-family: 'DM Serif Display', serif; font-size: 20px; margin-top: 6px;">Recomendación en motores generativos</h3>
+          <p>Cuántas veces que un LLM (ChatGPT, Claude, Perplexity) recibe una query relevante, recomienda activamente a Eventos Barcelona.</p>
+          <div style="display: flex; align-items: baseline; gap: 16px; margin: 18px 0 6px;">
+            <div style="font-family: 'DM Serif Display', serif; font-size: 56px; line-height: 1;">22,5 %</div>
+            <div style="color: var(--gray); font-size: 13px;">9 de 40 menciones IA<br>(medido abril 2026)</div>
+          </div>
+          <div style="background: var(--accent-soft); height: 10px; border-radius: 999px; overflow: hidden;">
+            <div style="background: var(--accent); height: 100%; width: 56%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-top: 8px;">
+            <span>Hoy: 22,5 %</span>
+            <span>Objetivo M6: <strong style="color: var(--accent);">40 %</strong></span>
+          </div>
+          <div style="border-top: 1px solid var(--border); margin-top: 18px; padding-top: 14px; font-size: 12px; color: var(--gray); line-height: 1.6;">
+            <strong style="color: var(--dark);">Por qué bajo:</strong> los LLMs citan a quien tiene datos propios estructurados + presencia en medios sectoriales. EB tiene 15 años, 300+ shows y 1.000+ eventos producidos pero no en formato citable.
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="section-label">AEO · Answer Engine</div>
+          <h3 style="font-family: 'DM Serif Display', serif; font-size: 20px; margin-top: 6px;">Schema markup &amp; featured snippets</h3>
+          <p>Lo que Google necesita ver para servirnos en featured snippets y People Also Ask.</p>
+          <ul style="list-style: none; padding: 0; margin: 18px 0 0; font-size: 13px;">
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--green); font-weight: 700;">✓</span> Organization schema</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--green); font-weight: 700;">✓</span> LocalBusiness schema</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> FAQ schema en homepage</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Service schema (catálogo)</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Event schema</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Review/AggregateRating</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--amber); font-weight: 700;">!</span> 19 páginas con H2 pregunta sin respuesta</li>
+            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0;"><span style="color: var(--red); font-weight: 700;">0</span> featured snippets capturados</li>
+          </ul>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-top: 14px;">
+            <span>Objetivo M6: <strong style="color: var(--accent);">3 snippets + schema completo</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== ROADMAP ================== -->
+    <section class="section">
+      <div class="section-label">Plan</div>
+      <h2 class="section-title">Roadmap en 4 sprints</h2>
+      <p class="section-sub">Cada sprint con foco, esfuerzo estimado y métrica de éxito. Estado actualizable.</p>
+      <div class="roadmap">
+        <div class="sprint">
+          <div class="sprint-label">Sprint 1 · Semana 1-2</div>
+          <div class="sprint-title">Quick wins CTR + Schema</div>
+          <span class="sprint-status todo">● Por arrancar</span>
+          <ul>
+            <li>Reescribir titles + metas en 13 páginas top</li>
+            <li>FAQ schema en homepage (5-8 Q&A)</li>
+            <li>Service schema (catálogo principal)</li>
+            <li>Cerrar 19 H2 pregunta sin respuesta</li>
+          </ul>
+          <div class="sprint-meta">Esfuerzo: 10-15 h · Métrica: CTR semanal por página</div>
+        </div>
+        <div class="sprint">
+          <div class="sprint-label">Sprint 2 · Semana 3-6</div>
+          <div class="sprint-title">Top3 en queries Tier 1</div>
+          <span class="sprint-status todo">● Por arrancar</span>
+          <ul>
+            <li>Internal linking hacia "eventos barcelona" y "agencia eventos barcelona"</li>
+            <li>Auditar + desavow backlinks tóxicos (Rodanet)</li>
+            <li>Activar EventoPlus con anchor optimizado</li>
+            <li>2-3 medios sectoriales (eventoplus, BCB)</li>
+          </ul>
+          <div class="sprint-meta">Esfuerzo: 25-30 h · Métrica: pos media GSC</div>
+        </div>
+        <div class="sprint">
+          <div class="sprint-label">Sprint 3 · Semana 5-10</div>
+          <div class="sprint-title">Casos de éxito como activo</div>
+          <span class="sprint-status todo">● Por arrancar</span>
+          <ul>
+            <li>/casos-de-exito/ grid con 15 cases</li>
+            <li>Schema Event + AggregateRating por caso</li>
+            <li>Anonimizar SpaceX/F1 (confidencialidad)</li>
+            <li>Cluster de internal linking</li>
+          </ul>
+          <div class="sprint-meta">Esfuerzo: 30-40 h · Métrica: páginas indexadas + clics</div>
+        </div>
+        <div class="sprint">
+          <div class="sprint-label">Sprint 4 · Continuo</div>
+          <div class="sprint-title">Medición sistemática</div>
+          <span class="sprint-status todo">● Por arrancar</span>
+          <ul>
+            <li>Dashboard mensual auto (este → live)</li>
+            <li>Tracker GEO semanal (ChatGPT / Perplexity)</li>
+            <li>UTMs obligatorios en todo backlink y campaña</li>
+            <li>Reporte mensual con atribución por canal</li>
+          </ul>
+          <div class="sprint-meta">Esfuerzo: 12-15 h setup · Métrica: existencia + uso</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== TARGETS 6M ================== -->
+    <section class="section">
+      <div class="section-label">Compromiso</div>
+      <h2 class="section-title">Objetivos a 6 meses</h2>
+      <p class="section-sub">Revisión M6 = octubre 2026. Estos son los números contra los que se mide el retainer.</p>
+      <div class="targets">
+        <div class="target-row"><span class="name">Leads cualificados/día</span><span class="now">~1</span><span class="goal">2</span><div class="progress-mini"><div class="progress-mini-fill" style="width:50%"></div></div></div>
+        <div class="target-row"><span class="name">Impresiones/día</span><span class="now">2.593</span><span class="goal">4.000</span><div class="progress-mini"><div class="progress-mini-fill" style="width:65%"></div></div></div>
+        <div class="target-row"><span class="name">Clics/día</span><span class="now">22</span><span class="goal">60</span><div class="progress-mini"><div class="progress-mini-fill" style="width:37%"></div></div></div>
+        <div class="target-row"><span class="name">CTR medio</span><span class="now">0,85 %</span><span class="goal">1,8 %</span><div class="progress-mini"><div class="progress-mini-fill" style="width:47%"></div></div></div>
+        <div class="target-row"><span class="name">Posición media</span><span class="now">21,8</span><span class="goal">15</span><div class="progress-mini"><div class="progress-mini-fill" style="width:38%"></div></div></div>
+        <div class="target-row"><span class="name">Recomendación IA</span><span class="now">22,5 %</span><span class="goal">40 %</span><div class="progress-mini"><div class="progress-mini-fill" style="width:56%"></div></div></div>
+        <div class="target-row"><span class="name">Featured snippets</span><span class="now">0</span><span class="goal">3</span><div class="progress-mini"><div class="progress-mini-fill" style="width:0%"></div></div></div>
+        <div class="target-row"><span class="name">Top3 en keywords Tier 1</span><span class="now">0</span><span class="goal">2</span><div class="progress-mini"><div class="progress-mini-fill" style="width:0%"></div></div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Chart: clics/impresiones por mes
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jun 25', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene 26', 'Feb', 'Mar', 'Abr', 'May'],
+        datasets: [
+          {
+            label: 'Clics/día',
+            data: [18, 19, 17, 20, 21, 23, 21, 22, 23, 22, 23, 22],
+            borderColor: '#e87461',
+            backgroundColor: 'rgba(232, 116, 97, 0.08)',
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#e87461',
+            yAxisID: 'y1'
+          },
+          {
+            label: 'Target M6 (60/día)',
+            data: [null, null, null, null, null, null, null, null, null, null, 22, 60],
+            borderColor: '#111',
+            borderDash: [4, 4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0,
+            yAxisID: 'y1'
+          },
+          {
+            label: 'Impr/día (÷100)',
+            data: [22, 23, 22, 24, 25, 26, 25, 26, 26, 26, 26, 26],
+            borderColor: '#98968f',
+            backgroundColor: 'transparent',
+            borderDash: [2, 3],
+            tension: 0.3,
+            borderWidth: 1.5,
+            pointRadius: 2,
+            pointBackgroundColor: '#98968f',
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { font: { size: 11 }, padding: 12, usePointStyle: true } }
+        },
+        scales: {
+          y1: { beginAtZero: true, ticks: { font: { size: 11 } }, grid: { color: '#f0efeb' } },
+          x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
