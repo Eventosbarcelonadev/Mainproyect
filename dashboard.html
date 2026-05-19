@@ -530,18 +530,163 @@
       gap: 24px;
     }
 
+    /* === TIMELINE (roadmap mes a mes) === */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .month-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .month-card-final {
+      border-color: var(--accent);
+      border-width: 2px;
+    }
+    .month-head {
+      padding: 22px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fafaf8 0%, #fff 100%);
+    }
+    .month-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Serif Display', serif;
+      font-size: 16px;
+      padding: 2px 16px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+    .month-date {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 10px 0 6px;
+      font-weight: 600;
+    }
+    .month-theme {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .month-leads {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .month-leads .lbl {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 600;
+    }
+    .month-leads .val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color: var(--accent);
+      margin-top: 6px;
+      line-height: 1.1;
+    }
+    .month-body { padding: 22px 26px; }
+    .weeks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .week {
+      background: #fafaf8;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .week strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .week ul {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #3a3a37;
+    }
+    .week ul li + li { margin-top: 4px; }
+    .week code {
+      font-size: 11px;
+      background: rgba(232,116,97,0.1);
+      color: var(--accent);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .month-meta {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1100px) {
+      .weeks { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 1000px) {
-      .hero-kpi { grid-template-columns: 1fr; gap: 24px; }
+      .hero-kpi { grid-template-columns: 1fr; gap: 24px; padding: 28px; }
+      .hero-kpi-left .big { font-size: 48px !important; }
       .kpi-grid, .roadmap { grid-template-columns: repeat(2, 1fr); }
       .two-col, .targets { grid-template-columns: 1fr; }
       .target-row { grid-template-columns: 1fr 1fr; }
-      .diagnostico-grid, .promesa-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .diagnostico-grid, .promesa-grid { grid-template-columns: 1fr !important; gap: 24px !important; padding: 28px !important; }
+      .section-title { font-size: 26px; }
       main { padding: 24px; }
+      .topbar { padding: 18px 24px; }
+    }
+    @media (max-width: 720px) {
+      .weeks { grid-template-columns: 1fr; }
+      .month-head { flex-direction: column; gap: 12px; padding: 18px 20px; }
+      .month-leads { text-align: left; }
+      .month-body { padding: 18px 20px; }
     }
     @media (max-width: 640px) {
       .kpi-grid, .roadmap { grid-template-columns: 1fr; }
       .funnel-row { grid-template-columns: 1fr; gap: 6px; }
       .funnel-row .count, .funnel-row .rate { text-align: left; }
+      .hero-kpi-left .big { font-size: 38px !important; line-height: 1.1; }
+      .section-title { font-size: 22px; }
+      .topbar { padding: 16px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
+      .topbar-right { font-size: 11px; flex-direction: column; align-items: flex-start; gap: 4px; }
+      main { padding: 18px; }
+      .section { margin-bottom: 36px; }
+      /* Tablas con scroll horizontal */
+      .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .table-wrap table { min-width: 700px; }
+      th, td { padding: 10px 12px; font-size: 12px; }
+      /* Plan tabs wrap */
+      .plan-tabs { flex-wrap: wrap; }
+      .plan-tab { font-size: 12px; padding: 8px 14px; }
+      .totals-strip { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .totals-strip .item { width: 100%; }
+      .target-row { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 14px; }
+      .target-row .progress-mini { grid-column: span 2; }
+      .month-num { font-size: 14px; }
+      .month-theme { font-size: 20px; }
+      .month-leads .val { font-size: 22px; }
+      .kpi .value { font-size: 30px; }
     }
   </style>
 </head>
@@ -816,9 +961,13 @@
       <div class="plan-panel active" id="panel-improve">
         <div style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;">
           <h3 style="font-family: 'DM Serif Display', serif; font-size: 22px; margin: 0 0 8px; line-height: 1.25;">Hay 153.000 personas viendo nuestras 10 páginas top — y entran menos de 1.000.</h3>
-          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin: 0;">
-            Cada fila es una página que Google ya elige para mostrarle a la audiencia correcta. <strong style="color: var(--dark);">Lo único que falla es el escaparate</strong>: un title genérico, una meta sin emoción, sin estrellas de reviews, sin precio "desde". Reescribir 10 páginas son <strong style="color: var(--dark);">12-15 horas de trabajo</strong> que recuperan <strong style="color: var(--accent);">~12 leads/mes</strong> sin mover una sola posición.
+          <p style="color: var(--gray); font-size: 14px; line-height: 1.7; margin: 0 0 14px;">
+            Cada fila es una página que Google ya elige para mostrarle a la audiencia correcta. <strong style="color: var(--dark);">Lo único que falla es el escaparate</strong>: un title genérico, una meta sin emoción, sin estrellas de reviews, sin precio "desde". Reescribir 10 páginas son <strong style="color: var(--dark);">8-10 horas de trabajo</strong> que recuperan <strong style="color: var(--accent);">~12 leads/mes</strong> sin mover una sola posición.
           </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 14px; background: rgba(46,204,113,0.06); border: 1px solid rgba(46,204,113,0.18); border-radius: 10px; font-size: 12px; color: var(--gray);">
+            <span style="color: var(--green); font-weight: 700;">✓</span>
+            <span><strong style="color: var(--dark);">Stack actual ya tiene todo lo que hace falta:</strong> Yoast SEO Premium v24.2 (titles, metas, FAQ schema, Service schema, internal linking) · WPML 4.8.2 (ES/EN sincronizado) · Elementor 3.32.4. <strong style="color: var(--dark);">Cero plugins nuevos a instalar.</strong> No tocamos hosting, no tocamos código, no tocamos plantillas.</span>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -849,7 +998,7 @@
         </div>
         <div class="totals-strip">
           <div class="item"><div class="lbl">Páginas tocadas</div><div class="val">10</div></div>
-          <div class="item"><div class="lbl">Esfuerzo</div><div class="val">12-15 h</div></div>
+          <div class="item"><div class="lbl">Esfuerzo</div><div class="val">8-10 h</div></div>
           <div class="item"><div class="lbl">+Clics/90d</div><div class="val">+1.115</div></div>
           <div class="item"><div class="lbl">+Leads/quarter</div><div class="val accent">+36</div></div>
           <div class="item"><div class="lbl">+Leads/mes sostenidos M3</div><div class="val accent">~+12</div></div>
@@ -1009,60 +1158,158 @@
       </div>
     </section>
 
-    <!-- ================== ROADMAP ================== -->
+    <!-- ================== ROADMAP MES A MES ================== -->
     <section class="section">
-      <div class="section-label">Plan</div>
-      <h2 class="section-title">Roadmap en 4 sprints</h2>
-      <p class="section-sub">Cada sprint con foco, esfuerzo estimado y métrica de éxito. Estado actualizable.</p>
-      <div class="roadmap">
-        <div class="sprint">
-          <div class="sprint-label">Sprint 1 · Semana 1-2</div>
-          <div class="sprint-title">Quick wins CTR + Schema</div>
-          <span class="sprint-status todo">● Por arrancar</span>
-          <ul>
-            <li>Reescribir titles + metas en 13 páginas top</li>
-            <li>FAQ schema en homepage (5-8 Q&A)</li>
-            <li>Service schema (catálogo principal)</li>
-            <li>Cerrar 19 H2 pregunta sin respuesta</li>
-          </ul>
-          <div class="sprint-meta">Esfuerzo: 10-15 h · Métrica: CTR semanal por página</div>
+      <div class="section-label">Cronograma</div>
+      <h2 class="section-title">Roadmap mes a mes</h2>
+      <p class="section-sub">Qué se hace cada mes, esfuerzo en horas, entregables medibles, y los leads/mes que cierra el mes (cumulativo). Arranque: mayo 2026 · Revisión: octubre 2026.</p>
+
+      <div class="timeline">
+        <!-- M1 -->
+        <div class="month-card">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M1</div>
+              <div class="month-date">Mayo 19 – Junio 19, 2026</div>
+              <div class="month-theme">Quick wins de CTR · Sprint 1 mitad</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+4/mes</div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1</strong><ul><li>Audit completo de titles/metas vía WP REST (vía Yoast)</li><li>Reescribir <code>Home</code> (title + meta + FAQ schema 8 Q&A + Service schema)</li><li>Baseline GSC + GA congelado para comparar</li></ul></div>
+              <div class="week"><strong>Semana 2</strong><ul><li>Reescribir <code>/alquiler-iluminacion/</code> (specs + tabla equipos + FAQ)</li><li>Reescribir <code>/grupos-musica/</code> (categorías + grid + FAQ)</li><li>Reescribir <code>/musica/dj-barcelona/</code> (perfiles video + FAQ precio)</li></ul></div>
+              <div class="week"><strong>Semana 3</strong><ul><li>Reescribir <code>/15-excelentes-alternativas-…/</code> (edición 2026 + ToC + Q&A para snippet)</li><li>Reescribir <code>/eventos-mice-que-es/</code> (guía 2026 + glosario)</li><li>Reescribir <code>/alquiler-escenarios/</code> (dimensiones + capacidad + FAQ)</li></ul></div>
+              <div class="week"><strong>Semana 4</strong><ul><li>Reescribir <code>/espectaculos/</code>, <code>/en/</code>, <code>/artistas/</code></li><li>Validar el supuesto de conversión 1/30 con datos GHL+GA</li><li>Primera medición CTR (espera tomar ~2-3 semanas en GSC)</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>8-10 h</strong> · Entregable: 10 páginas con title/meta/schema nuevos · Métrica: CTR por página en GSC</div>
+          </div>
         </div>
-        <div class="sprint">
-          <div class="sprint-label">Sprint 2 · Semana 3-6</div>
-          <div class="sprint-title">Top3 en queries Tier 1</div>
-          <span class="sprint-status todo">● Por arrancar</span>
-          <ul>
-            <li>Internal linking hacia "eventos barcelona" y "agencia eventos barcelona"</li>
-            <li>Auditar + desavow backlinks tóxicos (Rodanet)</li>
-            <li>Activar EventoPlus con anchor optimizado</li>
-            <li>2-3 medios sectoriales (eventoplus, BCB)</li>
-          </ul>
-          <div class="sprint-meta">Esfuerzo: 25-30 h · Métrica: pos media GSC</div>
+
+        <!-- M2 -->
+        <div class="month-card">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M2</div>
+              <div class="month-date">Junio 19 – Julio 19, 2026</div>
+              <div class="month-theme">Cerrar Sprint 1 + arrancar Sprint 2</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+10/mes</div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1-2</strong><ul><li>Cerrar las 19 páginas con H2 pregunta sin respuesta — bloque corto de respuesta + FAQ schema</li><li>Reporte de cambio de CTR de las 10 páginas tocadas en M1</li><li>Configurar Yoast internal linking suggestions</li></ul></div>
+              <div class="week"><strong>Semana 3</strong><ul><li>Auditoría completa de backlinks vía GSC + manual</li><li>Identificar lista de backlinks tóxicos heredados de Rodanet</li><li>Confirmar acceso a EventoPlus para optimizar anchors</li></ul></div>
+              <div class="week"><strong>Semana 4</strong><ul><li>Submit disavow file a Google</li><li>Primera ronda de internal linking sistemática hacia Home y <code>/agencia-eventos/</code></li><li>Negociar 1 backlink editorial con eventoplus.com</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>12-15 h</strong> · Entregable: 19 H2 cerrados, disavow submitted, internal linking activo · Métrica: pos media + CTR consolidados</div>
+          </div>
         </div>
-        <div class="sprint">
-          <div class="sprint-label">Sprint 3 · Semana 5-10</div>
-          <div class="sprint-title">Casos de éxito como activo</div>
-          <span class="sprint-status todo">● Por arrancar</span>
-          <ul>
-            <li>/casos-de-exito/ grid con 15 cases</li>
-            <li>Schema Event + AggregateRating por caso</li>
-            <li>Anonimizar SpaceX/F1 (confidencialidad)</li>
-            <li>Cluster de internal linking</li>
-          </ul>
-          <div class="sprint-meta">Esfuerzo: 30-40 h · Métrica: páginas indexadas + clics</div>
+
+        <!-- M3 -->
+        <div class="month-card">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M3</div>
+              <div class="month-date">Julio 19 – Agosto 19, 2026</div>
+              <div class="month-theme">Sprint 2 a fondo · primer artículo nuevo</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+17/mes</div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1</strong><ul><li>Publicar artículo nuevo #1: <code>/team-building-barcelona-empresas/</code> (720 vol/mes)</li><li>Schema Event + Service en el artículo</li></ul></div>
+              <div class="week"><strong>Semana 2</strong><ul><li>Internal linking ronda 2: páginas de servicio → Home con anchors variados</li><li>Negociar backlink #2 (Barcelona Convention Bureau o sectorial similar)</li></ul></div>
+              <div class="week"><strong>Semana 3</strong><ul><li>Publicar artículo nuevo #2: <code>/family-day-corporativo-barcelona/</code> (320 vol/mes)</li><li>Crear página hub <code>/casos-de-exito/</code> (grid + filtros)</li></ul></div>
+              <div class="week"><strong>Semana 4</strong><ul><li>Publicar primeros 3 casos de éxito (sourcing con Xavi · anonimizar SpaceX/F1)</li><li>Reporte M3: CTR / pos media / clicks / leads vs M0 baseline</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>18-22 h</strong> · Entregable: 2 artículos publicados + 3 case studies + hub · Métrica: nuevas páginas indexadas + clicks/qry</div>
+          </div>
         </div>
-        <div class="sprint">
-          <div class="sprint-label">Sprint 4 · Continuo</div>
-          <div class="sprint-title">Medición sistemática</div>
-          <span class="sprint-status todo">● Por arrancar</span>
-          <ul>
-            <li>Dashboard mensual auto (este → live)</li>
-            <li>Tracker GEO semanal (ChatGPT / Perplexity)</li>
-            <li>UTMs obligatorios en todo backlink y campaña</li>
-            <li>Reporte mensual con atribución por canal</li>
-          </ul>
-          <div class="sprint-meta">Esfuerzo: 12-15 h setup · Métrica: existencia + uso</div>
+
+        <!-- M4 -->
+        <div class="month-card">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M4</div>
+              <div class="month-date">Agosto 19 – Septiembre 19, 2026</div>
+              <div class="month-theme">Contenido + autoridad escalan</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+25/mes</div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1</strong><ul><li>Publicar artículo nuevo #3: <code>/como-organizar-evento-corporativo-barcelona/</code> (480 vol/mes)</li><li>Publicar 4 casos de éxito más (total 7)</li></ul></div>
+              <div class="week"><strong>Semana 2</strong><ul><li>Publicar artículo nuevo #4: <code>/entretenimiento-eventos-corporativos-barcelona/</code> (590 vol/mes)</li><li>Negociar backlink #3 (medio sectorial)</li></ul></div>
+              <div class="week"><strong>Semana 3</strong><ul><li>Publicar artículo EN #5: <code>/en/corporate-event-planner-barcelona/</code> (vía WPML translation flow)</li><li>4 casos de éxito más (total 11)</li></ul></div>
+              <div class="week"><strong>Semana 4</strong><ul><li>Publicar artículo nuevo #6: <code>/venues-eventos-corporativos-barcelona/</code></li><li>Reporte M4 + GEO check (ChatGPT/Claude/Perplexity sample queries)</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>22-26 h</strong> · Entregable: 4 artículos nuevos + 8 casos · Métrica: tráfico páginas nuevas + posición keywords objetivo</div>
+          </div>
         </div>
+
+        <!-- M5 -->
+        <div class="month-card">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M5</div>
+              <div class="month-date">Septiembre 19 – Octubre 19, 2026</div>
+              <div class="month-theme">Cerrar contenido + preparar review</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+38/mes</div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1</strong><ul><li>Publicar artículo nuevo #7: <code>/en/dmc-barcelona-corporate-events/</code></li><li>4 casos de éxito más (total 15 — completos)</li></ul></div>
+              <div class="week"><strong>Semana 2</strong><ul><li>Publicar artículo nuevo #8 (a definir según señales reales de GSC del M1-M4)</li><li>Optimización mobile-first de Home + páginas más visitadas</li></ul></div>
+              <div class="week"><strong>Semana 3</strong><ul><li>Revisión semántica de todo el cluster: internal linking refinement</li><li>Sumar Review/AggregateRating schema con reviews reales de Google</li></ul></div>
+              <div class="week"><strong>Semana 4</strong><ul><li>Reporte M5 completo</li><li>Preparar paquete de revisión M6 para Xavi: GSC + GA + leads atribuídos + posiciones</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>14-18 h</strong> · Entregable: 8 artículos publicados, 15 casos, schema enriquecido · Métrica: leads/mes orgánicos vs baseline M0</div>
+          </div>
+        </div>
+
+        <!-- M6 -->
+        <div class="month-card month-card-final">
+          <div class="month-head">
+            <div>
+              <div class="month-num">M6</div>
+              <div class="month-date">Octubre 19 – Noviembre 19, 2026</div>
+              <div class="month-theme">Revisión 6 meses · plan v2</div>
+            </div>
+            <div class="month-leads">
+              <div class="lbl">Lead lift acum.</div>
+              <div class="val">+44/mes <span style="display: inline-block; background: rgba(46,204,113,0.18); color: var(--green); font-size: 10px; padding: 2px 8px; border-radius: 999px; vertical-align: middle; margin-left: 6px;">objetivo ✓</span></div>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="weeks">
+              <div class="week"><strong>Semana 1</strong><ul><li>Capitalizar el peak de queries de octubre/noviembre (próximas Navidad/eventos fin de año)</li><li>Push final de internal linking + última ronda de optimización CTR</li></ul></div>
+              <div class="week"><strong>Semana 2</strong><ul><li><strong style="color: var(--accent);">Call de revisión con Xavi</strong>: hoy vs 6 meses atrás · resultados medidos · ROI</li><li>Decisión: continuar al precio actual / subir / ajustar incentivos</li></ul></div>
+              <div class="week"><strong>Semana 3-4</strong><ul><li>Plan v2: foco campaña outbound + partnerships si SEO está rindiendo</li><li>O doblar apuesta SEO si la rampa todavía está abierta</li><li>Setup automation del dashboard (live data) si renovamos</li></ul></div>
+            </div>
+            <div class="month-meta">Esfuerzo: <strong>10-12 h</strong> · Entregable: paquete de revisión + plan v2 propuesto · Métrica: <strong style="color: var(--accent);">2 leads cualificados/día sostenidos</strong> (objetivo del retainer)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 32px; background: #fafaf8; border: 1px dashed var(--border); border-radius: 12px; padding: 18px 22px; font-size: 13px; color: var(--gray); line-height: 1.7;">
+        <strong style="color: var(--dark);">Total esfuerzo 6 meses: ~85-100 h</strong> (incluye implementación + reporting mensual + 1 revisión grande M6). Equivale a ~14-17 h/mes. Distribuido para que el primer mes traiga el lift más rápido (quick wins) y los meses siguientes construyan sobre lo anterior.
       </div>
     </section>
 
