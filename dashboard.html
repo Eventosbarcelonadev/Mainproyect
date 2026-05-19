@@ -758,16 +758,40 @@
         <div class="chart-card">
           <div class="section-label">AEO · Answer Engine</div>
           <h3 style="font-family: 'DM Serif Display', serif; font-size: 20px; margin-top: 6px;">Schema markup &amp; featured snippets</h3>
-          <p>Lo que Google necesita ver para servirnos en featured snippets y People Also Ask.</p>
+          <p>Lo que Google necesita ver para servirnos en featured snippets, People Also Ask y resultados enriquecidos.</p>
           <ul style="list-style: none; padding: 0; margin: 18px 0 0; font-size: 13px;">
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--green); font-weight: 700;">✓</span> Organization schema</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--green); font-weight: 700;">✓</span> LocalBusiness schema</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> FAQ schema en homepage</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Service schema (catálogo)</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Event schema</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--red); font-weight: 700;">✗</span> Review/AggregateRating</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="color: var(--amber); font-weight: 700;">!</span> 19 páginas con H2 pregunta sin respuesta</li>
-            <li style="display:flex; align-items:center; gap: 10px; padding: 8px 0;"><span style="color: var(--red); font-weight: 700;">0</span> featured snippets capturados</li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--green); font-weight: 700;">✓</span> Organization schema</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Le dice a Google quiénes somos (nombre, dirección, logo, contacto). Sin esto, Google adivina.</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--green); font-weight: 700;">✓</span> LocalBusiness schema</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Nos posiciona como "agencia local en Barcelona" → entramos en búsquedas con intención local y Google Maps.</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--red); font-weight: 700;">✗</span> FAQ schema en homepage</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Marca preguntas + respuestas como tales. Habilita aparecer como la "caja de respuesta" arriba de los 10 resultados orgánicos para queries tipo "cuánto cuesta un evento corporativo".</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--red); font-weight: 700;">✗</span> Service schema (catálogo)</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Declara qué servicios concretos vendemos (entretenimiento, producción técnica, iluminación, audio…). Habilita resultados enriquecidos con precio "desde" y reviews.</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--red); font-weight: 700;">✗</span> Event schema</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Cuando publicamos un caso de éxito o un evento próximo, lo etiquetamos como Event. Google puede mostrarlo en su buscador de eventos y dashboards visuales.</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--red); font-weight: 700;">✗</span> Review / AggregateRating</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Las estrellas doradas debajo del título en Google. Suben CTR ~25-30 % vs un resultado sin estrellas — el mismo tráfico de Google que ya tenemos, +30 % de clics.</div>
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--amber); font-weight: 700;">!</span> 19 páginas con H2 pregunta sin respuesta</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">Tenemos artículos que preguntan "¿Cuánto cuesta…?" sin un párrafo corto y claro como respuesta directamente debajo. Receta exacta para perder el featured snippet contra el competidor que sí lo escribió.</div>
+            </li>
+            <li style="padding: 10px 0;">
+              <div style="display:flex; align-items:center; gap: 10px; font-weight: 600;"><span style="color: var(--red); font-weight: 700;">0</span> featured snippets capturados</div>
+              <div style="font-size: 12px; color: var(--gray); margin-left: 24px; line-height: 1.5; margin-top: 3px;">El snippet es esa caja gris arriba de los 10 resultados orgánicos. Quien la captura se lleva ~35 % del tráfico de esa query. Hoy nos la lleva siempre la competencia.</div>
+            </li>
           </ul>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-top: 14px;">
             <span>Objetivo M6: <strong style="color: var(--accent);">3 snippets + schema completo</strong></span>
@@ -810,7 +834,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td><code>/</code></td><td class="num">76.121</td><td class="num">0,78 %</td><td>Title con "15 años, 300+ shows" · meta con CTA · FAQ schema 8 Q&A · Service schema</td><td class="num">1,5 %</td><td class="num">+548</td><td class="num"><strong>+18</strong></td></tr>
+              <tr><td><strong>Home</strong><br><code style="font-size: 11px; color: var(--gray);">eventosbarcelona.com/</code></td><td class="num">76.121</td><td class="num">0,78 %</td><td>Title con "15 años, 300+ shows" · meta con CTA · FAQ schema 8 Q&A · Service schema</td><td class="num">1,5 %</td><td class="num">+548</td><td class="num"><strong>+18</strong></td></tr>
               <tr><td><code>/alquiler-iluminacion/</code></td><td class="num">15.601</td><td class="num">0,15 %</td><td>Title con specs (Pars LED, Lyres) · tabla equipos · FAQ · meta "precio desde"</td><td class="num">0,8 %</td><td class="num">+101</td><td class="num"><strong>+3</strong></td></tr>
               <tr><td><code>/grupos-musica/</code></td><td class="num">15.250</td><td class="num">0,37 %</td><td>Title con categorías (jazz, flamenco, pop, DJ) · grid clickeable · FAQ</td><td class="num">1,2 %</td><td class="num">+130</td><td class="num"><strong>+4</strong></td></tr>
               <tr><td><code>/musica/dj-barcelona/</code></td><td class="num">10.089</td><td class="num">0,14 %</td><td>Title "DJ profesional eventos corporativos" · perfiles con video · FAQ "cuánto cuesta"</td><td class="num">0,7 %</td><td class="num">+57</td><td class="num"><strong>+2</strong></td></tr>
@@ -818,7 +842,7 @@
               <tr><td><code>/eventos-mice-que-es/</code></td><td class="num">6.823</td><td class="num">0,37 %</td><td>Title "guía 2026 + glosario" · ToC · internal linking a /eventos-empresa/</td><td class="num">1,0 %</td><td class="num">+43</td><td class="num"><strong>+1,5</strong></td></tr>
               <tr><td><code>/alquiler-escenarios/</code></td><td class="num">6.362</td><td class="num">0,44 %</td><td>Title con dimensiones · tabla por capacidad · FAQ "cuánto cuesta alquilar"</td><td class="num">1,2 %</td><td class="num">+49</td><td class="num"><strong>+1,5</strong></td></tr>
               <tr><td><code>/espectaculos/</code></td><td class="num">5.652</td><td class="num">0,30 %</td><td>Hub con 4 categorías clickeables · FAQ · Service schema</td><td class="num">1,0 %</td><td class="num">+39</td><td class="num"><strong>+1</strong></td></tr>
-              <tr><td><code>/en/</code></td><td class="num">5.354</td><td class="num">1,87 %</td><td>Title "Corporate event agency Barcelona — 1.000+ events" · FAQ EN · LocalBusiness</td><td class="num">2,8 %</td><td class="num">+50</td><td class="num"><strong>+2</strong></td></tr>
+              <tr><td><strong>Home EN</strong><br><code style="font-size: 11px; color: var(--gray);">eventosbarcelona.com/en/</code></td><td class="num">5.354</td><td class="num">1,87 %</td><td>Title "Corporate event agency Barcelona — 1.000+ events" · FAQ EN · LocalBusiness</td><td class="num">2,8 %</td><td class="num">+50</td><td class="num"><strong>+2</strong></td></tr>
               <tr><td><code>/artistas/</code></td><td class="num">4.311</td><td class="num">0,65 %</td><td>Title "500+ artistas Barcelona" · filtro categoría visible · FAQ</td><td class="num">1,5 %</td><td class="num">+37</td><td class="num"><strong>+1</strong></td></tr>
             </tbody>
           </table>
