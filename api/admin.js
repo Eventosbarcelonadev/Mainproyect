@@ -836,6 +836,9 @@ async function addShow(req, res, env) {
   const body = req.body || {};
   const name = (body.name || '').trim();
   if (!name) return res.status(400).json({ error: 'Nombre del show es requerido' });
+  // shows.category es NOT NULL — sin esto Postgres tira 23502 críptico.
+  const category = (body.category || '').trim();
+  if (!category) return res.status(400).json({ error: 'La categoría del show es requerida' });
   const initialImageUrl = (body.image_url || '').trim() || null;
 
   // Generar id slug único: si ya existe, añadir sufijo -2, -3...
@@ -860,12 +863,13 @@ async function addShow(req, res, env) {
     id: showId,
     name,
     name_en: (body.name_en || '').trim() || null,
-    category: body.category || null,
+    category,
     subcategory: (body.subcategory || '').trim() || null,
     subcategory_en: (body.subcategory_en || '').trim() || null,
     description: (body.description || '').trim() || null,
     description_en: (body.description_en || '').trim() || null,
-    base_price: body.base_price != null && body.base_price !== '' ? parseInt(body.base_price, 10) : null,
+    // base_price es NOT NULL — default 0 si no se indica (Xavi lo edita luego).
+    base_price: body.base_price != null && body.base_price !== '' ? (parseInt(body.base_price, 10) || 0) : 0,
     price_note: (body.price_note || '').trim() || null,
     price_note_en: (body.price_note_en || '').trim() || null,
     video_url: (body.video_url || '').trim() || null,

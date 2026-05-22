@@ -1560,6 +1560,7 @@
       try {
         if (_addingShow) {
           if (!fields.name) { showError('El nombre del show es requerido'); btn.disabled = false; return; }
+          if (!fields.category) { showError('La categoría es requerida'); btn.disabled = false; return; }
           // Si la imagen pendiente es URL externa, viaja directo en el create
           // (un solo round-trip, queda en SB + GHL.url_imagen en el insert).
           const payload = { ...fields };
