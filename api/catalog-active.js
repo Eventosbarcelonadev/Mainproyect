@@ -20,11 +20,16 @@ export default async function handler(req, res) {
   if (!SB_URL || !SB_KEY) return res.status(500).json({ error: 'Missing Supabase config' });
 
   try {
+    // artista:artista_id(...) = artista primario legacy (1:1, compat).
+    // show_artistas(...) = todos los artistas vinculados N:M, con bio, para
+    // que el cliente pueda elegir cuál quiere dentro del show (Xavi 2026-05-22).
+    const artistaCols = 'id,nombre,nombre_artistico,compania,fotos_urls,bio_show';
     const fields = [
       'id', 'name', 'category', 'subcategory', 'description', 'base_price',
       'price_note', 'video_url', 'image_url', 'image_urls', 'name_en', 'description_en',
       'subcategory_en', 'price_note_en', 'is_favorite', 'artista_id',
-      'artista:artista_id(id,nombre,nombre_artistico,compania,fotos_urls)'
+      `artista:artista_id(${artistaCols})`,
+      `show_artistas(posicion,artista:artista_id(${artistaCols}))`
     ].join(',');
     const url = `${SB_URL}/rest/v1/shows?status=eq.active&select=${fields}&order=name`;
 
@@ -41,11 +46,33 @@ export default async function handler(req, res) {
         });
       }
     }
+    // Fallback si la tabla show_artistas aún no existe en este entorno.
+    if (!r.ok) {
+      const txt = await r.clone().text();
+      if (/show_artistas/i.test(txt) && /does not exist|not find|relation/i.test(txt)) {
+        const fallback = fields.replace(new RegExp(',show_artistas\\([^)]*\\([^)]*\\)[^)]*\\)'), '');
+        r = await fetch(`${SB_URL}/rest/v1/shows?status=eq.active&select=${fallback}&order=name`, {
+          headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+        });
+      }
+    }
     if (!r.ok) {
       const txt = await r.text();
       return res.status(500).json({ error: `Supabase ${r.status}`, details: txt.slice(0, 200) });
     }
     const rows = await r.json();
+
+    // Mapea una fila de artista (legacy o embebida en show_artistas) al shape
+    // que consume la propuesta: nombre legible + bio + fotos.
+    const shapeArtista = (a) => {
+      if (!a) return null;
+      return {
+        id: a.id,
+        nombre: a.nombre_artistico || a.compania || a.nombre || '',
+        bio: a.bio_show || '',
+        fotos: Array.isArray(a.fotos_urls) ? a.fotos_urls : []
+      };
+    };
 
     // Shape compatible con SHOW_CATALOG[id] del propuesta.html (camelCase keys)
     const catalog = {};
@@ -53,6 +80,24 @@ export default async function handler(req, res) {
       const a = row.artista || null;
       const artistaNombre = a ? (a.nombre_artistico || a.compania || a.nombre || '') : '';
       const artistaFotos = (a && Array.isArray(a.fotos_urls)) ? a.fotos_urls : [];
+
+      // artistas[] = todos los vinculados (N:M), ordenados por posición, sin
+      // duplicar. Si la join está vacía, cae al artista primario legacy.
+      const saRows = Array.isArray(row.show_artistas) ? row.show_artistas : [];
+      const ordered = [...saRows].sort((x, y) => (x.posicion || 99) - (y.posicion || 99));
+      const artistasArr = [];
+      const seen = new Set();
+      for (const sa of ordered) {
+        const shaped = shapeArtista(sa.artista);
+        if (shaped && shaped.id && !seen.has(shaped.id)) {
+          seen.add(shaped.id);
+          artistasArr.push(shaped);
+        }
+      }
+      if (!artistasArr.length && a) {
+        const shaped = shapeArtista(a);
+        if (shaped && shaped.id) artistasArr.push(shaped);
+      }
       // image_urls = array completo de la galería (orden visible).
       // imageUrl   = primera del array (o image_url legacy si la columna nueva
       //              no existe / el row es viejo). Mantiene compat con código
@@ -76,6 +121,7 @@ export default async function handler(req, res) {
         artistaId: row.artista_id || null,
         artistaNombre,
         artistaFotos,
+        artistas: artistasArr, // [{id, nombre, bio, fotos}] — para el selector de propuesta
         isFavorite: !!row.is_favorite
       };
     }
