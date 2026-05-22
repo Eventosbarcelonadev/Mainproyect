@@ -821,13 +821,43 @@ async function editShow(req, res, env) {
 // Crea un nuevo show: 1) inserta en Supabase, 2) crea record en GHL
 // custom_objects.shows, 3) persiste ghl_show_id en la fila SB. GHL es
 // best-effort: si falla, el show queda creado en SB y se reporta el error.
+// shows.id es un slug TEXT (no UUID auto-generado): "Banda de Jazz" → "banda-de-jazz".
+// El insert tiene que traerlo explícito o Postgres falla por NOT NULL.
+function slugifyShowName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '') // quita acentos
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'show';
+}
+
 async function addShow(req, res, env) {
   const body = req.body || {};
   const name = (body.name || '').trim();
   if (!name) return res.status(400).json({ error: 'Nombre del show es requerido' });
   const initialImageUrl = (body.image_url || '').trim() || null;
 
+  // Generar id slug único: si ya existe, añadir sufijo -2, -3...
+  const baseSlug = slugifyShowName(name);
+  let showId = baseSlug;
+  try {
+    const existRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?id=like.${encodeURIComponent(baseSlug + '*')}&select=id`,
+      { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+    );
+    if (existRes.ok) {
+      const taken = new Set((await existRes.json()).map(r => r.id));
+      if (taken.has(showId)) {
+        let n = 2;
+        while (taken.has(`${baseSlug}-${n}`)) n++;
+        showId = `${baseSlug}-${n}`;
+      }
+    }
+  } catch (e) { /* si falla la verificación, seguimos con baseSlug */ }
+
   const row = {
+    id: showId,
     name,
     name_en: (body.name_en || '').trim() || null,
     category: body.category || null,
@@ -842,7 +872,6 @@ async function addShow(req, res, env) {
     image_url: initialImageUrl,
     image_urls: initialImageUrl ? [initialImageUrl] : null,
     status: 'active',
-    origen: 'admin-create',
     submitted_at: new Date().toISOString()
   };
 
