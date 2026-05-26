@@ -226,6 +226,23 @@ p { font-size: var(--body-size); line-height: 1.55; }
 }
 .data-table td:first-child { font-weight: 700; color: var(--navy); }
 .data-table td.good { color: var(--green); font-weight: 700; }
+
+/* Dark-slide variant: invertir colores para legibilidad sobre fondo navy */
+.slide.dark .data-table {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.1);
+}
+.slide.dark .data-table thead th {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.55);
+}
+.slide.dark .data-table td {
+    color: rgba(255,255,255,0.82);
+    border-top-color: rgba(255,255,255,0.08);
+}
+.slide.dark .data-table td:first-child { color: var(--white); }
+.slide.dark .data-table td.good { color: var(--green); }
+.slide.dark .data-table td.bad { color: #ff9999; }
 .data-table td.bad { color: var(--red-muted); }
 .data-table td .pill {
     display: inline-block;
@@ -574,7 +591,7 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
                     <td class="good">15 min/día</td>
                 </tr>
                 <tr>
-                    <td>Ramiro</td>
+                    <td>Scale IT</td>
                     <td>SDR — copy, gestión de la herramienta, seguimiento</td>
                     <td>~4 h/sem</td>
                 </tr>
@@ -587,7 +604,7 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
         </table>
         <div class="card" style="border-left: 4px solid var(--green);">
             <div class="card-label">Punto crítico</div>
-            <p style="color: var(--gray-700);">Lanzar desde <strong>tu perfil</strong> convierte mucho más que desde el de Ramiro: eres conocido en BCN, tienes red de 1er grado, autoridad. Pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes garantizarlo, caemos al perfil de Ramiro y aceptamos ~30% menos aceptación.</p>
+            <p style="color: var(--gray-700);">Lanzar desde <strong>tu perfil</strong> convierte mucho más que desde el de Scale IT: eres conocido en BCN, tienes red de 1er grado, autoridad. Pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes garantizarlo, caemos al perfil de Scale IT y aceptamos ~30% menos aceptación.</p>
         </div>
     </div>
     <div class="slide-number">06 / 12</div>
@@ -624,15 +641,15 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
                 <tr><th>Día</th><th>Tarea</th><th>Quién</th></tr>
             </thead>
             <tbody>
-                <tr><td>Mié 27 may</td><td>Call 30 min — aprobar plan + decidir puntos abiertos</td><td>Tú + Ramiro</td></tr>
+                <tr><td>Mié 27 may</td><td>Call 30 min — aprobar plan + decidir puntos abiertos</td><td>Tú + Scale IT</td></tr>
                 <tr><td>Mié 27 may</td><td>Compra de Sales Navigator + Ulinc desde tu cuenta</td><td>Tú + equipo técnico</td></tr>
-                <tr><td>Jue 28 may</td><td>Lista de 300 cuentas + 600 contactos en Sales Nav</td><td>Ramiro</td></tr>
+                <tr><td>Jue 28 may</td><td>Lista de 300 cuentas + 600 contactos en Sales Nav</td><td>Scale IT</td></tr>
                 <tr><td>Jue 28 may</td><td>Conexión de Ulinc a tu LinkedIn + límites de seguridad</td><td>Equipo técnico</td></tr>
-                <tr><td>Vie 29 may</td><td>Redacción del copy (invite + 4 mensajes)</td><td>Ramiro → revisas tú</td></tr>
+                <tr><td>Vie 29 may</td><td>Redacción del copy (invite + 4 mensajes)</td><td>Scale IT → revisas tú</td></tr>
                 <tr><td>Vie 29 may</td><td>Etapa nueva en GHL: "LinkedIn — En conversación"</td><td>Equipo técnico</td></tr>
                 <tr><td class="good">Lun 1 jun</td><td><strong>LANZAMIENTO</strong> — 20 invites (semana de warm-up)</td><td>Sistema</td></tr>
                 <tr><td>Lun 8 jun</td><td>Subimos a 80 invites/semana (régimen normal)</td><td>Sistema</td></tr>
-                <tr><td>Cada viernes</td><td>Reporting + ajuste de copy con datos reales</td><td>Ramiro → tú</td></tr>
+                <tr><td>Cada viernes</td><td>Reporting + ajuste de copy con datos reales</td><td>Scale IT → tú</td></tr>
             </tbody>
         </table>
     </div>
@@ -690,7 +707,7 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
                 </tr>
                 <tr>
                     <td>Respuestas perdidas por falta de seguimiento</td>
-                    <td>Notificación a tu WhatsApp por cada respuesta; ping de Ramiro a las 24h si no contestas</td>
+                    <td>Notificación a tu WhatsApp por cada respuesta; ping de Scale IT a las 24h si no contestas</td>
                 </tr>
                 <tr>
                     <td>Copy genérico → bajo reply rate</td>
@@ -797,10 +814,10 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
             <div class="q-block">
                 <span class="q-num">Pregunta 7</span>
                 <div class="q-text">¿Desde qué perfil lanzamos las invitaciones?</div>
-                <div class="q-help">Tu perfil convierte ~30% más por autoridad local, pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes, usamos el de Ramiro y ajustamos expectativas.</div>
+                <div class="q-help">Tu perfil convierte ~30% más por autoridad local, pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes, usamos el de Scale IT y ajustamos expectativas.</div>
                 <div class="choice-row">
                     <label class="choice"><input type="radio" name="perfil" value="xavi" required> Mi perfil (recomendado)</label>
-                    <label class="choice"><input type="radio" name="perfil" value="ramiro"> Perfil de Ramiro</label>
+                    <label class="choice"><input type="radio" name="perfil" value="ramiro"> Perfil de Scale IT</label>
                     <label class="choice"><input type="radio" name="perfil" value="hablamos"> Lo hablamos en la call</label>
                 </div>
             </div>
@@ -899,7 +916,7 @@ const LABELS = {
     geo: { bcn_cataluna: 'BCN+Cataluña', espana: 'Resto España', europa: 'Europa', internacional: 'US/Internacional' },
     sectores: { tech: 'Tech/SaaS', farma: 'Farma/Healthcare', consultoria: 'Consultoría', legal: 'Legal', retail: 'Retail/E-commerce', finanzas: 'Finanzas/Banca', industria: 'Industria', educacion: 'Educación/Edtech' },
     cargos: { hr: 'HR/People/Talent', marketing: 'Marketing/Comms', events: 'Events Manager', office: 'Office Manager', cxo: 'CEO/COO', ea: 'Asistente dirección' },
-    perfil: { xavi: 'Perfil de Xavi (recomendado)', ramiro: 'Perfil de Ramiro', hablamos: 'Lo hablamos en la call' }
+    perfil: { xavi: 'Perfil de Xavi (recomendado)', ramiro: 'Perfil de Scale IT', hablamos: 'Lo hablamos en la call' }
 };
 function pretty(field, v) {
     const map = LABELS[field];
