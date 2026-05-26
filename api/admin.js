@@ -948,6 +948,67 @@ async function addShow(req, res, env) {
   return res.status(200).json({ success: true, show, ghl: ghlResult });
 }
 
+// Elimina un show permanentemente: borra las filas show_artistas vinculadas
+// (FK), el record GHL custom_objects.shows si existe, y el row de shows.
+// Las propuestas referencian shows por id dentro de un JSON (sin FK), así que
+// el borrado no rompe la BD — solo deja ids colgando en propuestas viejas.
+async function deleteShow(req, res, env) {
+  const id = (req.body && req.body.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+
+  const sbHeaders = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Resolver ghl_show_id antes de borrar
+  let ghlShowId = null;
+  try {
+    const r = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=ghl_show_id`,
+      { headers: sbHeaders }
+    );
+    if (r.ok) {
+      const rows = await r.json();
+      if (!rows.length) return res.status(404).json({ error: 'Show no encontrado' });
+      ghlShowId = rows[0].ghl_show_id || null;
+    }
+  } catch (e) { /* sigue: el delete de shows abajo es lo crítico */ }
+
+  // 2. Borrar vínculos show_artistas (FK — el delete del show fallaría si quedan)
+  try {
+    await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE', headers: sbHeaders
+    });
+  } catch (e) { /* si la tabla no existe, no hay nada que limpiar */ }
+
+  // 3. Borrar el row de shows
+  const del = await fetch(`${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE', headers: sbHeaders
+  });
+  if (!del.ok) {
+    return res.status(del.status).json({ error: await del.text() });
+  }
+
+  // 4. Borrar el record en GHL custom_objects.shows (best-effort).
+  //    locationId va como query param en custom_objects (no en el body).
+  const ghlResult = { deleted: false };
+  if (ghlShowId && env.GHL_TOKEN && env.GHL_LOC) {
+    const g = await ghlFetch(
+      'DELETE',
+      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${ghlShowId}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+      env
+    );
+    if (g.ok) ghlResult.deleted = true;
+    else ghlResult.error = `GHL ${g.status}: ${(g.body || '').slice(0, 160)}`;
+  } else {
+    ghlResult.skipped = ghlShowId ? 'missing_ghl_config' : 'no_ghl_show_id';
+  }
+
+  return res.status(200).json({ success: true, id, ghl: ghlResult });
+}
+
 // Sube una imagen (data URL base64) al bucket artist-assets y la APPENDS al
 // array shows.image_urls del show. La primera del array se sincroniza también
 // como shows.image_url para compatibilidad con queries que aún leen la columna
@@ -1183,6 +1244,7 @@ export default async function handler(req, res) {
       if (action === 'review-show') return reviewShow(req, res, env);
       if (action === 'edit-show') return editShow(req, res, env);
       if (action === 'add-show') return addShow(req, res, env);
+      if (action === 'delete-show') return deleteShow(req, res, env);
       if (action === 'upload-show-image') return uploadShowImage(req, res, env);
       if (action === 'set-show-images') return setShowImages(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
@@ -1191,7 +1253,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|upload-show-image|set-show-images|toggle-favorite|add-artista|edit-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|set-show-images|toggle-favorite|add-artista|edit-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
