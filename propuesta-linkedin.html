@@ -460,7 +460,7 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
                 <div class="stat-label">Única decisión de coste que necesitamos validar</div>
             </div>
             <div class="stat-card">
-                <div class="stat-val">7 preguntas</div>
+                <div class="stat-val">6 preguntas</div>
                 <div class="stat-label">Para definir contigo a quién escribimos</div>
             </div>
             <div class="stat-card">
@@ -603,8 +603,8 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
             </tbody>
         </table>
         <div class="card" style="border-left: 4px solid var(--green);">
-            <div class="card-label">Punto crítico</div>
-            <p style="color: var(--gray-700);">Lanzar desde <strong>tu perfil</strong> convierte mucho más que desde el de Scale IT: eres conocido en BCN, tienes red de 1er grado, autoridad. Pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes garantizarlo, caemos al perfil de Scale IT y aceptamos ~30% menos aceptación.</p>
+            <div class="card-label">Por qué desde tu perfil</div>
+            <p style="color: var(--gray-700);">Eres conocido en BCN, tienes red de 1er grado, autoridad local. Ningún perfil del equipo va a abrir las puertas que abre el tuyo. A cambio te pedimos 15 min/día revisando respuestas — sin eso, las conversaciones se enfrían y desperdiciamos las aperturas.</p>
         </div>
     </div>
     <div class="slide-number">06 / 12</div>
@@ -808,20 +808,6 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
                 <textarea name="casos_exito" class="q-textarea" placeholder="Ej: Glovo · Fiesta aniversario 300 personas · 9.2/10 satisfacción, repetidores 2024 y 2025&#10;Ej: PwC Barcelona · Team building 80 personas en Montjuïc · convertido en 3 eventos siguientes&#10;..." required></textarea>
             </div>
 
-            <!-- ===== SECCIÓN D: Logística ===== -->
-            <div class="section-header">D · Logística · decisiones rápidas</div>
-
-            <div class="q-block">
-                <span class="q-num">Pregunta 7</span>
-                <div class="q-text">¿Desde qué perfil lanzamos las invitaciones?</div>
-                <div class="q-help">Tu perfil convierte ~30% más por autoridad local, pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes, usamos el de Scale IT y ajustamos expectativas.</div>
-                <div class="choice-row">
-                    <label class="choice"><input type="radio" name="perfil" value="xavi" required> Mi perfil (recomendado)</label>
-                    <label class="choice"><input type="radio" name="perfil" value="ramiro"> Perfil de Scale IT</label>
-                    <label class="choice"><input type="radio" name="perfil" value="hablamos"> Lo hablamos en la call</label>
-                </div>
-            </div>
-
             <!-- ===== Comentarios extra ===== -->
             <div class="q-block">
                 <span class="q-num">Extra · opcional</span>
@@ -915,8 +901,7 @@ const LABELS = {
     coste: { si: 'Sí, adelante', hablamos: 'Lo hablamos en la call', no: 'No, busquemos alternativa' },
     geo: { bcn_cataluna: 'BCN+Cataluña', espana: 'Resto España', europa: 'Europa', internacional: 'US/Internacional' },
     sectores: { tech: 'Tech/SaaS', farma: 'Farma/Healthcare', consultoria: 'Consultoría', legal: 'Legal', retail: 'Retail/E-commerce', finanzas: 'Finanzas/Banca', industria: 'Industria', educacion: 'Educación/Edtech' },
-    cargos: { hr: 'HR/People/Talent', marketing: 'Marketing/Comms', events: 'Events Manager', office: 'Office Manager', cxo: 'CEO/COO', ea: 'Asistente dirección' },
-    perfil: { xavi: 'Perfil de Xavi (recomendado)', ramiro: 'Perfil de Scale IT', hablamos: 'Lo hablamos en la call' }
+    cargos: { hr: 'HR/People/Talent', marketing: 'Marketing/Comms', events: 'Events Manager', office: 'Office Manager', cxo: 'CEO/COO', ea: 'Asistente dirección' }
 };
 function pretty(field, v) {
     const map = LABELS[field];
@@ -953,9 +938,6 @@ ${data.empresas_target || '(no indicado)'}
 C · MATERIAL PARA EL COPY
   6. Casos de éxito reales:
 ${data.casos_exito || '-'}
-
-D · LOGÍSTICA
-  7. Perfil emisor: ${pretty('perfil', data.perfil) || '-'}
 
 EXTRA · Comentarios y/o sectores a evitar:
 ${data.comentarios || '(ninguno)'}
