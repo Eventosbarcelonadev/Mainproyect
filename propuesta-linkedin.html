@@ -394,6 +394,18 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
 .form-status.ok { color: var(--green); font-weight: 700; }
 .form-status.err { color: var(--red-muted); font-weight: 700; }
 
+.section-header {
+    font-size: var(--label-size);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    padding: 0.4em 0 0.2em;
+    border-bottom: 1px solid rgba(46,196,160,0.25);
+    margin-top: 0.4em;
+}
+.section-header:first-child { margin-top: 0; }
+
 @media (max-width: 720px) {
     html { scroll-snap-type: none; }
     .slide { min-height: auto; }
@@ -423,23 +435,23 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
 <!-- ========== SLIDE 2 — TL;DR ========== -->
 <section class="slide light">
     <div class="slide-content">
-        <span class="label">Resumen ejecutivo</span>
-        <h2>Llegamos a <span class="accent">600 contactos cualificados</span> en BCN+Cataluña con un coste mínimo y desde tu propio perfil.</h2>
+        <span class="label">Para qué es esta propuesta</span>
+        <h2>No te pedimos aprobar todo. Te pedimos <span class="accent">validar el coste</span> y <span class="accent">co-diseñar el ICP</span> con nosotros.</h2>
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-val">~180€</div>
-                <div class="stat-label">Inversión adicional al mes (herramientas)</div>
+                <div class="stat-label">Única decisión de coste que necesitamos validar</div>
             </div>
             <div class="stat-card">
-                <div class="stat-val">10–15</div>
-                <div class="stat-label">Conversaciones reales esperadas en junio</div>
+                <div class="stat-val">7 preguntas</div>
+                <div class="stat-label">Para definir contigo a quién escribimos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-val">4–6</div>
-                <div class="stat-label">Calls agendadas en tu calendario</div>
+                <div class="stat-val">Lun 1 jun</div>
+                <div class="stat-label">Fecha objetivo de arranque si todo cuadra</div>
             </div>
         </div>
-        <p style="font-size: var(--small-size); color: var(--gray-400); margin-top: 0.5em;">El trabajo (setup, copy, gestión, reporting) entra dentro del retainer. Junio es mes de validación, no de cierre masivo.</p>
+        <p style="font-size: var(--small-size); color: var(--gray-400); margin-top: 0.5em;">Tú conoces a tu cliente mejor que nadie. El resto del documento es el marco operativo; las preguntas del final son la sustancia.</p>
     </div>
     <div class="slide-number">02 / 12</div>
 </section>
@@ -484,33 +496,34 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
     <div class="slide-number">03 / 12</div>
 </section>
 
-<!-- ========== SLIDE 4 — ICP ========== -->
+<!-- ========== SLIDE 4 — ICP (hipótesis) ========== -->
 <section class="slide light">
     <div class="slide-content">
-        <span class="label">Público objetivo</span>
-        <h2>A quién escribimos (y por qué <span class="accent">no a todo el mundo</span>)</h2>
+        <span class="label">Hipótesis inicial · pendiente de tu validación</span>
+        <h2>Aquí está nuestro punto de partida. <span class="accent">Tú lo afinas</span> en las preguntas del final.</h2>
         <div class="two-col">
             <div class="col-block">
-                <h3>Empresa</h3>
+                <h3>Geografía (a discutir)</h3>
                 <ul>
-                    <li>Geo: Barcelona + Cataluña (ola 1), Madrid (ola 2 en julio)</li>
-                    <li>Tamaño: 50–500 empleados</li>
-                    <li>Sectores: tech/SaaS, farma, consultoría, retail, finanzas, legal</li>
-                    <li>Lista inicial: 300 cuentas, 600 contactos</li>
+                    <li><strong>Empresas locales:</strong> BCN + Cataluña, decisor en la zona</li>
+                    <li><strong>Empresas nacionales:</strong> Madrid y otras, con interés en hacer eventos en BCN</li>
+                    <li><strong>Empresas internacionales:</strong> Europa / US, que vienen a BCN para kick-offs, retreats, conferencias</li>
                 </ul>
+                <p style="font-size: var(--small-size); color: var(--gray-700); margin-top: 0.4em;"><em>BCN es destino MICE de referencia. No tiene sentido autolimitarnos geográficamente.</em></p>
             </div>
             <div class="col-block">
-                <h3>Cargos (en orden de prioridad)</h3>
+                <h3>Empresa (a discutir)</h3>
                 <ul>
-                    <li>HR Director / People Manager / Talent &amp; Culture</li>
-                    <li>Marketing Manager / Events Manager / Office Manager</li>
-                    <li>COO / CEO en empresas &lt;100 empleados</li>
+                    <li>Tamaño: 50–500 empleados (sweet spot inicial)</li>
+                    <li>Sectores tentativos: tech/SaaS, farma, consultoría, retail, finanzas, legal</li>
+                    <li>Lista inicial: 300 cuentas, 600 contactos</li>
                 </ul>
-                <h3 style="margin-top: 0.6em;">Señales de compra</h3>
+                <h3 style="margin-top: 0.6em;">Cargos (a discutir)</h3>
                 <ul>
-                    <li>Han publicado sobre eventos / team building / cultura últimos 6 meses</li>
-                    <li>Contratan activamente (= crecimiento = más eventos)</li>
-                    <li>Aniversario de empresa próximo</li>
+                    <li>HR / People / Talent &amp; Culture</li>
+                    <li>Marketing / Events / Office Manager</li>
+                    <li>COO / CEO en empresas &lt;100</li>
+                    <li>Asistentes de dirección (a veces clave)</li>
                 </ul>
             </div>
         </div>
@@ -693,79 +706,115 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
     <div class="slide-number">10 / 12</div>
 </section>
 
-<!-- ========== SLIDE 11 — Form (4 preguntas) ========== -->
+<!-- ========== SLIDE 11 — Form (validación coste + co-diseño ICP) ========== -->
 <section class="slide dark" id="decisiones">
     <div class="slide-content">
-        <span class="label">Tus decisiones</span>
-        <h2>4 preguntas para <span class="accent">cerrar la call del miércoles</span></h2>
-        <p style="color: rgba(255,255,255,0.7);">Responde aquí mismo. Al enviar, llega directo al equipo y arrancamos jueves con el setup.</p>
+        <span class="label">Tu input</span>
+        <h2>Validación de coste + <span class="accent">co-diseño del ICP</span></h2>
+        <p style="color: rgba(255,255,255,0.7);">Tú conoces a tu cliente mejor que nadie. Responde lo que puedas; lo demás lo cerramos en la call. Al enviar llega directo al equipo.</p>
 
         <form class="form-wrap" id="decisionForm" onsubmit="return submitForm(event)">
 
+            <!-- ===== SECCIÓN A: Validación de coste ===== -->
+            <div class="section-header">A · Validación de coste</div>
+
             <div class="q-block">
                 <span class="q-num">Pregunta 1</span>
-                <div class="q-text">¿Desde qué perfil lanzamos las invitaciones?</div>
-                <div class="q-help">Recomendación: el tuyo (mucha más autoridad en BCN). Pero requiere tu compromiso de revisar respuestas a diario.</div>
-                <div class="choice-row" data-question="q1">
-                    <label class="choice" data-value="xavi">
-                        <input type="radio" name="q1" value="xavi" required>
-                        Mi perfil (recomendado)
-                    </label>
-                    <label class="choice" data-value="ramiro">
-                        <input type="radio" name="q1" value="ramiro">
-                        Perfil de Ramiro
-                    </label>
-                </div>
-            </div>
-
-            <div class="q-block">
-                <span class="q-num">Pregunta 2</span>
-                <div class="q-text">¿Te comprometes a 15 min/día revisando respuestas?</div>
-                <div class="q-help">Sin este compromiso, recomendamos no usar tu perfil. Mejor lanzar desde Ramiro con expectativas ajustadas.</div>
-                <div class="choice-row" data-question="q2">
-                    <label class="choice" data-value="si">
-                        <input type="radio" name="q2" value="si" required>
-                        Sí, me comprometo
-                    </label>
-                    <label class="choice" data-value="no">
-                        <input type="radio" name="q2" value="no">
-                        No puedo garantizarlo
-                    </label>
-                </div>
-            </div>
-
-            <div class="q-block">
-                <span class="q-num">Pregunta 3</span>
                 <div class="q-text">¿Apruebas el gasto extra de ~180 €/mes en herramientas?</div>
-                <div class="q-help">Sales Navigator (~99 €) + Ulinc (~83 €). Se facturan directamente a EB, no entran en el retainer.</div>
-                <div class="choice-row" data-question="q3">
-                    <label class="choice" data-value="si">
-                        <input type="radio" name="q3" value="si" required>
-                        Sí, adelante
-                    </label>
-                    <label class="choice" data-value="no">
-                        <input type="radio" name="q3" value="no">
-                        No / hablémoslo
-                    </label>
+                <div class="q-help">Sales Navigator (~99 €) + Ulinc (~83 €). Se facturan directamente a EB, no entran en el retainer del equipo.</div>
+                <div class="choice-row">
+                    <label class="choice"><input type="radio" name="coste" value="si" required> Sí, adelante</label>
+                    <label class="choice"><input type="radio" name="coste" value="hablamos"> Lo hablamos en la call</label>
+                    <label class="choice"><input type="radio" name="coste" value="no"> No, busquemos alternativa</label>
+                </div>
+            </div>
+
+            <!-- ===== SECCIÓN B: Co-diseño del ICP ===== -->
+            <div class="section-header">B · A quién escribimos · tu experiencia manda</div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 2 · multi-selección</span>
+                <div class="q-text">¿A qué geografías apuntamos?</div>
+                <div class="q-help">EB es destino MICE. No tiene por qué limitarse a BCN. Marca todas las que te interesen.</div>
+                <div class="choice-row">
+                    <label class="choice"><input type="checkbox" name="geo" value="bcn_cataluna"> BCN + Cataluña (local)</label>
+                    <label class="choice"><input type="checkbox" name="geo" value="espana"> Resto de España</label>
+                    <label class="choice"><input type="checkbox" name="geo" value="europa"> Europa</label>
+                    <label class="choice"><input type="checkbox" name="geo" value="internacional"> US / Internacional</label>
                 </div>
             </div>
 
             <div class="q-block">
-                <span class="q-num">Pregunta 4</span>
-                <div class="q-text">¿Qué 2–3 casos de éxito reales podemos usar en el copy?</div>
-                <div class="q-help">Necesitamos: <strong>nombre empresa + qué evento organizamos + resultado concreto</strong> (asistentes, satisfacción, repetición). Cuanto más concreto, mejor convierte.</div>
-                <textarea name="q4" class="q-textarea" placeholder="Ej: Glovo · Fiesta aniversario 300 personas · 9.2/10 satisfacción, repetidores 2024 y 2025&#10;Ej: PwC Barcelona · Team building 80 personas en Montjuïc · convertido en 3 eventos siguientes&#10;..." required></textarea>
+                <span class="q-num">Pregunta 3 · multi-selección</span>
+                <div class="q-text">¿Qué sectores te traen los mejores clientes hoy?</div>
+                <div class="q-help">Los que más eventos contratan, mejor presupuesto, o repiten. Marca máx. 4-5.</div>
+                <div class="choice-row" style="flex-wrap: wrap;">
+                    <label class="choice"><input type="checkbox" name="sectores" value="tech"> Tech / SaaS</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="farma"> Farma / Healthcare</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="consultoria"> Consultoría</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="legal"> Legal</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="retail"> Retail / E-commerce</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="finanzas"> Finanzas / Banca</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="industria"> Industria / Manufactura</label>
+                    <label class="choice"><input type="checkbox" name="sectores" value="educacion"> Educación / Edtech</label>
+                </div>
             </div>
 
             <div class="q-block">
-                <span class="q-num">Comentarios extra (opcional)</span>
-                <div class="q-text" style="font-size: clamp(0.85rem, 1.4vw, 1rem);">¿Algo más que tengamos que tener en cuenta antes de arrancar?</div>
-                <textarea name="q5" class="q-textarea" style="min-height: 70px;" placeholder="Por ejemplo: sectores a evitar, contactos sensibles, fechas de no-disponibilidad..."></textarea>
+                <span class="q-num">Pregunta 4 · multi-selección</span>
+                <div class="q-text">¿Quién toma la decisión de eventos en tu experiencia?</div>
+                <div class="q-help">Los que firman el contrato, no los que pasan briefings. Marca los que veas habitualmente.</div>
+                <div class="choice-row" style="flex-wrap: wrap;">
+                    <label class="choice"><input type="checkbox" name="cargos" value="hr"> HR / People / Talent</label>
+                    <label class="choice"><input type="checkbox" name="cargos" value="marketing"> Marketing / Comms</label>
+                    <label class="choice"><input type="checkbox" name="cargos" value="events"> Events Manager</label>
+                    <label class="choice"><input type="checkbox" name="cargos" value="office"> Office Manager</label>
+                    <label class="choice"><input type="checkbox" name="cargos" value="cxo"> CEO / COO</label>
+                    <label class="choice"><input type="checkbox" name="cargos" value="ea"> Asistente de dirección</label>
+                </div>
+            </div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 5 · texto libre</span>
+                <div class="q-text">Empresas concretas que te encantaría tener como cliente</div>
+                <div class="q-help">5–15 nombres. Da igual si son "imposibles" — nos sirven para calibrar el ICP real.</div>
+                <textarea name="empresas_target" class="q-textarea" style="min-height: 90px;" placeholder="Ej: Glovo, Cabify, Roche, Cuatrecasas, Tous, Mango, Volotea..."></textarea>
+            </div>
+
+            <!-- ===== SECCIÓN C: Material para el copy ===== -->
+            <div class="section-header">C · Material para el copy</div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 6 · texto libre</span>
+                <div class="q-text">2–3 casos de éxito reales para usar en los mensajes</div>
+                <div class="q-help">Necesitamos: <strong>nombre empresa + qué evento organizasteis + resultado concreto</strong>. Cuanto más específico, mejor convierte.</div>
+                <textarea name="casos_exito" class="q-textarea" placeholder="Ej: Glovo · Fiesta aniversario 300 personas · 9.2/10 satisfacción, repetidores 2024 y 2025&#10;Ej: PwC Barcelona · Team building 80 personas en Montjuïc · convertido en 3 eventos siguientes&#10;..." required></textarea>
+            </div>
+
+            <!-- ===== SECCIÓN D: Logística ===== -->
+            <div class="section-header">D · Logística · decisiones rápidas</div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 7</span>
+                <div class="q-text">¿Desde qué perfil lanzamos las invitaciones?</div>
+                <div class="q-help">Tu perfil convierte ~30% más por autoridad local, pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes, usamos el de Ramiro y ajustamos expectativas.</div>
+                <div class="choice-row">
+                    <label class="choice"><input type="radio" name="perfil" value="xavi" required> Mi perfil (recomendado)</label>
+                    <label class="choice"><input type="radio" name="perfil" value="ramiro"> Perfil de Ramiro</label>
+                    <label class="choice"><input type="radio" name="perfil" value="hablamos"> Lo hablamos en la call</label>
+                </div>
+            </div>
+
+            <!-- ===== Comentarios extra ===== -->
+            <div class="q-block">
+                <span class="q-num">Extra · opcional</span>
+                <div class="q-text" style="font-size: clamp(0.85rem, 1.4vw, 1rem);">¿Sectores o empresas a evitar? ¿Algo más antes de arrancar?</div>
+                <textarea name="comentarios" class="q-textarea" style="min-height: 70px;" placeholder="Ej: evitar competencia directa de un cliente actual, contactos sensibles, fechas de no-disponibilidad..."></textarea>
             </div>
 
             <div class="form-footer">
-                <div class="form-status" id="formStatus">Las respuestas llegan al equipo en cuanto envíes.</div>
-                <button type="submit" class="cta-btn" id="submitBtn">Enviar decisiones →</button>
+                <div class="form-status" id="formStatus">Tus respuestas llegan al equipo en cuanto envíes.</div>
+                <button type="submit" class="cta-btn" id="submitBtn">Enviar respuestas →</button>
             </div>
         </form>
     </div>
@@ -796,44 +845,73 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
         </div>
         <div class="card" style="margin-top: 1em;">
             <div class="card-label">Próximo paso inmediato</div>
-            <p>Envía las 4 decisiones arriba ↑ — confirmamos el miércoles en la call y arrancamos jueves con el setup.</p>
+            <p>Envía tus respuestas arriba ↑ (validación de coste + tu input sobre el ICP). Cerramos el miércoles en la call y arrancamos jueves con el setup.</p>
         </div>
     </div>
     <div class="slide-number">12 / 12</div>
 </section>
 
 <script>
-// Toggle visual estado del radio seleccionado
-document.querySelectorAll('.choice input[type="radio"]').forEach(input => {
+// Toggle visual del .choice según estado del input (radio o checkbox)
+document.querySelectorAll('.choice input').forEach(input => {
     input.addEventListener('change', () => {
-        const name = input.name;
-        document.querySelectorAll(`.choice input[name="${name}"]`).forEach(i => {
-            i.closest('.choice').classList.toggle('selected', i.checked);
-        });
+        if (input.type === 'radio') {
+            document.querySelectorAll(`.choice input[type="radio"][name="${input.name}"]`).forEach(i => {
+                i.closest('.choice').classList.toggle('selected', i.checked);
+            });
+        } else {
+            input.closest('.choice').classList.toggle('selected', input.checked);
+        }
     });
 });
 
-// Restaurar respuestas previas si existen
-const STORAGE_KEY = 'eb_linkedin_decisions';
+// Restaurar respuestas previas
+const STORAGE_KEY = 'eb_linkedin_decisions_v2';
 const saved = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(_) { return {}; } })();
-Object.entries(saved).forEach(([k, v]) => {
-    const el = document.querySelector(`[name="${k}"]`);
-    if (!el) return;
-    if (el.tagName === 'TEXTAREA') {
-        el.value = v;
+Object.entries(saved).forEach(([name, val]) => {
+    const els = document.getElementsByName(name);
+    if (!els.length) return;
+    if (els[0].tagName === 'TEXTAREA') {
+        els[0].value = val;
     } else {
-        const radio = document.querySelector(`input[name="${k}"][value="${v}"]`);
-        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+        const values = Array.isArray(val) ? val : [val];
+        els.forEach(el => {
+            if (values.includes(el.value)) {
+                el.checked = true;
+                el.dispatchEvent(new Event('change'));
+            }
+        });
     }
 });
+
+function collectFormData(form) {
+    const fd = new FormData(form);
+    const data = {};
+    for (const key of new Set(fd.keys())) {
+        const vals = fd.getAll(key);
+        data[key] = vals.length > 1 ? vals : vals[0];
+    }
+    return data;
+}
+
+const LABELS = {
+    coste: { si: 'Sí, adelante', hablamos: 'Lo hablamos en la call', no: 'No, busquemos alternativa' },
+    geo: { bcn_cataluna: 'BCN+Cataluña', espana: 'Resto España', europa: 'Europa', internacional: 'US/Internacional' },
+    sectores: { tech: 'Tech/SaaS', farma: 'Farma/Healthcare', consultoria: 'Consultoría', legal: 'Legal', retail: 'Retail/E-commerce', finanzas: 'Finanzas/Banca', industria: 'Industria', educacion: 'Educación/Edtech' },
+    cargos: { hr: 'HR/People/Talent', marketing: 'Marketing/Comms', events: 'Events Manager', office: 'Office Manager', cxo: 'CEO/COO', ea: 'Asistente dirección' },
+    perfil: { xavi: 'Perfil de Xavi (recomendado)', ramiro: 'Perfil de Ramiro', hablamos: 'Lo hablamos en la call' }
+};
+function pretty(field, v) {
+    const map = LABELS[field];
+    if (!map) return v;
+    if (Array.isArray(v)) return v.map(x => map[x] || x).join(', ');
+    return map[v] || v;
+}
 
 function submitForm(e) {
     e.preventDefault();
     const form = e.target;
-    const fd = new FormData(form);
-    const data = {};
-    for (const [k, v] of fd.entries()) data[k] = v;
-
+    const data = collectFormData(form);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
     const status = document.getElementById('formStatus');
@@ -841,25 +919,36 @@ function submitForm(e) {
     status.textContent = 'Abriendo tu correo con las respuestas...';
     status.className = 'form-status ok';
 
-    const subject = encodeURIComponent('Decisiones LinkedIn Outbound — Xavi');
+    const subject = encodeURIComponent('LinkedIn Outbound — respuestas de Xavi');
     const body = encodeURIComponent(
-`Decisiones de Xavi sobre la campaña LinkedIn Outbound (junio 2026):
+`Respuestas de Xavi a la propuesta LinkedIn Outbound (junio 2026):
 
-1. Perfil desde el que lanzar: ${data.q1 || '-'}
-2. Compromiso 15 min/día: ${data.q2 || '-'}
-3. Aprueba +180 €/mes en herramientas: ${data.q3 || '-'}
+A · VALIDACIÓN DE COSTE
+  1. Apruebas +180 €/mes en herramientas: ${pretty('coste', data.coste) || '-'}
 
-4. Casos de éxito para el copy:
-${data.q4 || '-'}
+B · CO-DISEÑO DEL ICP
+  2. Geografías objetivo: ${pretty('geo', data.geo) || '(sin marcar)'}
+  3. Sectores top: ${pretty('sectores', data.sectores) || '(sin marcar)'}
+  4. Cargos que deciden: ${pretty('cargos', data.cargos) || '(sin marcar)'}
+  5. Empresas concretas a perseguir:
+${data.empresas_target || '(no indicado)'}
 
-5. Comentarios extra:
-${data.q5 || '(ninguno)'}
+C · MATERIAL PARA EL COPY
+  6. Casos de éxito reales:
+${data.casos_exito || '-'}
 
-Enviado: ${new Date().toLocaleString('es-ES')}`
+D · LOGÍSTICA
+  7. Perfil emisor: ${pretty('perfil', data.perfil) || '-'}
+
+EXTRA · Comentarios y/o sectores a evitar:
+${data.comentarios || '(ninguno)'}
+
+—
+Enviado: ${new Date().toLocaleString('es-ES')}
+Origen: propuestas.eventosbarcelona.com/linkedin`
     );
     window.location.href = `mailto:accounts@growth4u.io?subject=${subject}&body=${body}`;
     btn.textContent = 'Enviado ✓';
-
     return false;
 }
 </script>
