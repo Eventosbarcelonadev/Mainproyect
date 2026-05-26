@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>LinkedIn Outbound · Eventos Barcelona · Junio 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --green: #2EC4A0;
+    --green-light: #e8f9f5;
+    --green-glow: rgba(46, 196, 160, 0.15);
+    --green-border: rgba(46, 196, 160, 0.35);
+    --navy: #1a2744;
+    --navy-light: #243352;
+    --white: #ffffff;
+    --gray-50: #fafbfe;
+    --gray-100: #f7f8fc;
+    --gray-200: #eef0f6;
+    --gray-400: #9099b0;
+    --gray-700: #3d4560;
+    --red-muted: #cc4444;
+
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    --title-size: clamp(1.6rem, 4.5vw, 2.9rem);
+    --h2-size: clamp(1.3rem, 3.2vw, 2.2rem);
+    --h3-size: clamp(0.9rem, 1.9vw, 1.2rem);
+    --body-size: clamp(0.72rem, 1.25vw, 0.95rem);
+    --small-size: clamp(0.65rem, 1vw, 0.8rem);
+    --label-size: clamp(0.55rem, 0.8vw, 0.7rem);
+
+    --slide-padding: clamp(1.3rem, 3.5vw, 3.5rem);
+    --content-gap: clamp(0.8rem, 1.8vw, 1.6rem);
+    --element-gap: clamp(0.35rem, 0.9vw, 0.9rem);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    font-family: var(--font-body);
+    color: var(--gray-700);
+    background: var(--navy);
+}
+
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-size: var(--body-size);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: min(1240px, 94vw);
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--slide-padding);
+    gap: var(--content-gap);
+}
+
+.slide.dark {
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(46, 196, 160, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 90%, rgba(46, 196, 160, 0.05) 0%, transparent 50%),
+        var(--navy);
+    color: var(--white);
+}
+.slide.light { background: var(--gray-50); color: var(--gray-700); }
+.slide.white { background: var(--white); color: var(--gray-700); }
+
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    color: inherit;
+}
+.slide.dark h1, .slide.dark h2, .slide.dark h3 { color: var(--white); }
+.slide.light h1, .slide.light h2, .slide.light h3,
+.slide.white h1, .slide.white h2, .slide.white h3 { color: var(--navy); }
+
+h1 { font-size: var(--title-size); }
+h2 { font-size: var(--h2-size); }
+h3 { font-size: var(--h3-size); font-weight: 700; }
+
+h1 span.accent, h2 span.accent, h3 span.accent { color: var(--green); }
+
+p { font-size: var(--body-size); line-height: 1.55; }
+.slide.dark p { color: rgba(255,255,255,0.78); }
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: var(--green-glow);
+    color: var(--green);
+    padding: 0.4em 0.95em;
+    border-radius: 100px;
+    font-size: var(--label-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    width: fit-content;
+    border: 1px solid var(--green-border);
+}
+
+.card {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.85rem, 1.6vw, 1.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.slide.dark .card {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+.card .card-label, .card-label {
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--green);
+    font-weight: 700;
+}
+.metric {
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+}
+
+.comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.8rem, 1.8vw, 1.4rem); }
+.comparison-card { padding: clamp(0.95rem, 1.9vw, 1.6rem); border-radius: 12px; display: flex; flex-direction: column; gap: 0.5em; }
+.comparison-card.bad { background: var(--gray-100); border: 1px solid var(--gray-200); }
+.comparison-card.bad .card-label { color: var(--red-muted); }
+.comparison-card.good { background: var(--navy); color: var(--white); border: 1px solid var(--green-border); }
+.comparison-card.good .card-label { color: var(--green); }
+.comparison-card.good h3 { color: var(--white); }
+.comparison-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.35em; }
+.comparison-card ul li {
+    padding-left: 1.1em; position: relative;
+    font-size: var(--body-size); line-height: 1.4;
+}
+.comparison-card ul li::before {
+    content: ""; position: absolute; left: 0; top: 0.55em;
+    width: 0.42em; height: 0.42em; border-radius: 50%; background: var(--green);
+}
+.comparison-card.bad ul li::before { background: var(--red-muted); }
+.comparison-card.good ul li { color: rgba(255,255,255,0.85); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.9rem, 2.2vw, 1.8rem); }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.1rem); }
+.col-block { display: flex; flex-direction: column; gap: 0.6em; }
+.col-block h3 { font-size: clamp(0.95rem, 1.7vw, 1.2rem); }
+.col-block ul { list-style: none; display: flex; flex-direction: column; gap: 0.35em; }
+.col-block ul li {
+    padding-left: 1.1em; position: relative;
+    font-size: var(--body-size); line-height: 1.45;
+}
+.col-block ul li::before { content: "→"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+.mini-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    display: flex; flex-direction: column; gap: 0.45em;
+}
+.mini-card h3 { font-size: clamp(0.88rem, 1.5vw, 1.1rem); color: var(--navy); }
+.mini-card p { font-size: var(--small-size); line-height: 1.45; color: var(--gray-700); }
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    font-size: var(--small-size);
+}
+.data-table thead th {
+    background: var(--gray-100);
+    padding: clamp(0.5rem, 1vw, 0.85rem);
+    text-align: left;
+    font-size: var(--label-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-400);
+}
+.data-table td {
+    padding: clamp(0.45rem, 0.85vw, 0.75rem) clamp(0.5rem, 1vw, 0.85rem);
+    border-top: 1px solid var(--gray-200);
+    line-height: 1.35;
+    color: var(--gray-700);
+}
+.data-table td:first-child { font-weight: 700; color: var(--navy); }
+.data-table td.good { color: var(--green); font-weight: 700; }
+.data-table td.bad { color: var(--red-muted); }
+.data-table td .pill {
+    display: inline-block;
+    background: var(--green-glow);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+    padding: 0.15em 0.6em;
+    border-radius: 100px;
+    font-size: var(--label-size);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    background: var(--green);
+    color: var(--navy);
+    padding: 0.9em 1.8em;
+    border-radius: 100px;
+    font-weight: 800;
+    font-size: var(--body-size);
+    text-decoration: none;
+    font-family: var(--font-display);
+    transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s var(--ease-out-expo);
+    cursor: pointer;
+    border: none;
+    width: fit-content;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(46,196,160,0.3); }
+.cta-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.slide-number {
+    position: absolute;
+    bottom: clamp(1rem, 2vw, 1.8rem);
+    right: clamp(1.2rem, 3vw, 2.5rem);
+    font-size: var(--label-size);
+    color: var(--gray-400);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+.slide.dark .slide-number { color: rgba(255,255,255,0.4); }
+
+.title-slide .slide-content { justify-content: center; align-items: flex-start; gap: clamp(0.7rem, 1.5vw, 1.2rem); }
+.title-slide h1 { font-size: clamp(2.1rem, 5.8vw, 4.2rem); max-width: 18ch; }
+.title-slide .subtitle { font-size: clamp(0.95rem, 1.7vw, 1.25rem); color: rgba(255,255,255,0.72); max-width: 50ch; }
+.title-slide .footer-pills { display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.5em; }
+.title-slide .footer-pills span {
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.4em 0.95em;
+    border-radius: 100px;
+}
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.3vw, 1rem); }
+.stat-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    display: flex; flex-direction: column; gap: 0.3em;
+}
+.stat-card .stat-val {
+    font-size: clamp(1.25rem, 2.6vw, 1.85rem);
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+}
+.stat-card .stat-label { font-size: var(--small-size); color: var(--gray-700); line-height: 1.3; }
+
+.step-card {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: clamp(0.75rem, 1.4vw, 1.15rem);
+    display: flex; flex-direction: column; gap: 0.35em;
+}
+.step-num {
+    font-size: var(--label-size);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    text-transform: uppercase;
+}
+.step-card h3 { font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--navy); }
+.step-card p { font-size: var(--small-size); line-height: 1.4; color: var(--gray-700); }
+
+/* Form */
+.form-wrap {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: clamp(1rem, 2.2vw, 1.8rem);
+    display: flex; flex-direction: column; gap: clamp(0.9rem, 1.8vw, 1.4rem);
+}
+.q-block { display: flex; flex-direction: column; gap: 0.55em; }
+.q-num {
+    font-size: var(--label-size);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    text-transform: uppercase;
+}
+.q-text {
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    color: var(--white);
+    font-weight: 700;
+    line-height: 1.3;
+}
+.q-help { font-size: var(--small-size); color: rgba(255,255,255,0.6); line-height: 1.4; }
+
+.choice-row { display: flex; gap: 0.6em; flex-wrap: wrap; }
+.choice {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.75em 1.1em;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    font-size: var(--body-size);
+    cursor: pointer;
+    transition: all 0.15s var(--ease-out-expo);
+    text-align: center;
+}
+.choice:hover { border-color: var(--green-border); background: rgba(46,196,160,0.05); }
+.choice input { display: none; }
+.choice.selected {
+    background: var(--green-glow);
+    border-color: var(--green);
+    color: var(--white);
+}
+
+textarea.q-textarea {
+    width: 100%;
+    min-height: 110px;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0.85em 1em;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.5;
+    resize: vertical;
+    transition: border-color 0.15s var(--ease-out-expo);
+}
+textarea.q-textarea:focus { outline: none; border-color: var(--green); background: rgba(46,196,160,0.05); }
+textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
+
+.form-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1em; flex-wrap: wrap; margin-top: 0.4em;
+}
+.form-status { font-size: var(--small-size); color: rgba(255,255,255,0.6); }
+.form-status.ok { color: var(--green); font-weight: 700; }
+.form-status.err { color: var(--red-muted); font-weight: 700; }
+
+@media (max-width: 720px) {
+    html { scroll-snap-type: none; }
+    .slide { min-height: auto; }
+    .two-col, .three-col, .comparison-grid, .stats-row { grid-template-columns: 1fr; }
+    .choice-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== SLIDE 1 — Portada ========== -->
+<section class="slide dark title-slide">
+    <div class="slide-content">
+        <span class="label">Propuesta · Junio 2026</span>
+        <h1>Campaña LinkedIn <span class="accent">Outbound</span> para Eventos Barcelona</h1>
+        <p class="subtitle">Activación del bucket Outbound del retainer. 300 cuentas, 5 toques personalizados, métricas en tu calendario en 30 días.</p>
+        <div class="footer-pills">
+            <span>Sales Navigator</span>
+            <span>Ulinc</span>
+            <span>Perfil de Xavi</span>
+            <span>Pipeline GHL</span>
+        </div>
+    </div>
+    <div class="slide-number">01 / 12</div>
+</section>
+
+<!-- ========== SLIDE 2 — TL;DR ========== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label">Resumen ejecutivo</span>
+        <h2>Llegamos a <span class="accent">600 contactos cualificados</span> en BCN+Cataluña con un coste mínimo y desde tu propio perfil.</h2>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-val">~180€</div>
+                <div class="stat-label">Inversión adicional al mes (herramientas)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">10–15</div>
+                <div class="stat-label">Conversaciones reales esperadas en junio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">4–6</div>
+                <div class="stat-label">Calls agendadas en tu calendario</div>
+            </div>
+        </div>
+        <p style="font-size: var(--small-size); color: var(--gray-400); margin-top: 0.5em;">El trabajo (setup, copy, gestión, reporting) entra dentro del retainer. Junio es mes de validación, no de cierre masivo.</p>
+    </div>
+    <div class="slide-number">02 / 12</div>
+</section>
+
+<!-- ========== SLIDE 3 — Por qué LinkedIn ========== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label">Decisión de canal</span>
+        <h2>Por qué <span class="accent">Sales Navigator + Ulinc</span> y no otra cosa</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Opción</th>
+                    <th>Decisión</th>
+                    <th>Motivo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LinkedIn Ads</td>
+                    <td class="bad">Descartar</td>
+                    <td>CPC B2B España (8–15 €) no rentabiliza tickets &lt;2k € sin nurture largo</td>
+                </tr>
+                <tr>
+                    <td>LinkedIn orgánico solo</td>
+                    <td>Soporte</td>
+                    <td>Construye autoridad, pero tarda meses en dar leads cualificados</td>
+                </tr>
+                <tr>
+                    <td>LinkedIn Premium solo</td>
+                    <td class="bad">Insuficiente</td>
+                    <td>Da los filtros pero no escala (mensajes uno a uno, manual)</td>
+                </tr>
+                <tr>
+                    <td>Sales Nav + Ulinc</td>
+                    <td class="good">Elegido <span class="pill">Recomendado</span></td>
+                    <td>Combina filtrado quirúrgico + automatización personalizada</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">03 / 12</div>
+</section>
+
+<!-- ========== SLIDE 4 — ICP ========== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label">Público objetivo</span>
+        <h2>A quién escribimos (y por qué <span class="accent">no a todo el mundo</span>)</h2>
+        <div class="two-col">
+            <div class="col-block">
+                <h3>Empresa</h3>
+                <ul>
+                    <li>Geo: Barcelona + Cataluña (ola 1), Madrid (ola 2 en julio)</li>
+                    <li>Tamaño: 50–500 empleados</li>
+                    <li>Sectores: tech/SaaS, farma, consultoría, retail, finanzas, legal</li>
+                    <li>Lista inicial: 300 cuentas, 600 contactos</li>
+                </ul>
+            </div>
+            <div class="col-block">
+                <h3>Cargos (en orden de prioridad)</h3>
+                <ul>
+                    <li>HR Director / People Manager / Talent &amp; Culture</li>
+                    <li>Marketing Manager / Events Manager / Office Manager</li>
+                    <li>COO / CEO en empresas &lt;100 empleados</li>
+                </ul>
+                <h3 style="margin-top: 0.6em;">Señales de compra</h3>
+                <ul>
+                    <li>Han publicado sobre eventos / team building / cultura últimos 6 meses</li>
+                    <li>Contratan activamente (= crecimiento = más eventos)</li>
+                    <li>Aniversario de empresa próximo</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">04 / 12</div>
+</section>
+
+<!-- ========== SLIDE 5 — Secuencia ========== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label">Secuencia</span>
+        <h2>5 toques en <span class="accent">21 días</span>, todo desde tu perfil</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Día</th>
+                    <th>Acción</th>
+                    <th>Tono</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>Ver perfil + reaccionar a su último post</td><td>Calienta sin pedir nada</td></tr>
+                <tr><td>1</td><td>Invitación con nota personalizada (200 chars)</td><td>Hook a su contexto, no genérico</td></tr>
+                <tr><td>+2 (si acepta)</td><td>Mensaje 1: presentación + propuesta de valor</td><td>Conversacional, sin pitch agresivo</td></tr>
+                <tr><td>+6</td><td>Mensaje 2: caso de éxito real de su sector</td><td>Prueba social concreta</td></tr>
+                <tr><td>+13</td><td>Mensaje 3: oferta de call de 15 min</td><td>Llamada a la acción clara</td></tr>
+                <tr><td>+20</td><td>Mensaje 4: "break-up"</td><td>Última oportunidad, libera el contacto</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size: var(--small-size); color: var(--gray-700);">Todo el copy lo redactamos nosotros. Lo revisas tú antes de lanzar. Tono local, BCN, primera persona desde tu perfil.</p>
+    </div>
+    <div class="slide-number">05 / 12</div>
+</section>
+
+<!-- ========== SLIDE 6 — Roles ========== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label">Roles y compromiso</span>
+        <h2>Quién hace qué — <span class="accent">y cuánto tiempo</span> te pedimos a ti</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Quién</th><th>Qué hace</th><th>Tiempo/sem</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Xavi</td>
+                    <td>Cara visible (envíos desde tu perfil), revisar respuestas, cerrar calls</td>
+                    <td class="good">15 min/día</td>
+                </tr>
+                <tr>
+                    <td>Ramiro</td>
+                    <td>SDR — copy, gestión de la herramienta, seguimiento</td>
+                    <td>~4 h/sem</td>
+                </tr>
+                <tr>
+                    <td>Equipo técnico</td>
+                    <td>Setup, integración con GHL, reporting</td>
+                    <td>~3 h/sem</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="card" style="border-left: 4px solid var(--green);">
+            <div class="card-label">Punto crítico</div>
+            <p style="color: var(--gray-700);">Lanzar desde <strong>tu perfil</strong> convierte mucho más que desde el de Ramiro: eres conocido en BCN, tienes red de 1er grado, autoridad. Pero requiere tu compromiso de 15 min/día revisando respuestas. Si no puedes garantizarlo, caemos al perfil de Ramiro y aceptamos ~30% menos aceptación.</p>
+        </div>
+    </div>
+    <div class="slide-number">06 / 12</div>
+</section>
+
+<!-- ========== SLIDE 7 — Stack y coste ========== -->
+<section class="slide dark">
+    <div class="slide-content">
+        <span class="label">Stack &amp; coste</span>
+        <h2>Total cash extra para EB: <span class="accent">~180 € / mes</span></h2>
+        <table class="data-table" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08);">
+            <thead>
+                <tr><th>Herramienta</th><th>Para qué</th><th>Coste/mes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td style="color: var(--white);">LinkedIn Sales Navigator</td><td>Filtros avanzados de búsqueda</td><td>~99 €</td></tr>
+                <tr><td style="color: var(--white);">Ulinc</td><td>Automatización invites + secuencia de mensajes</td><td>~83 € (90 USD)</td></tr>
+                <tr><td style="color: var(--white);">GHL</td><td>Pipeline + tracking de respuestas (ya lo tienes)</td><td class="good">—</td></tr>
+                <tr><td style="color: var(--white);">Trabajo del equipo</td><td>Setup + copy + gestión + reporting</td><td class="good">Incluido en retainer</td></tr>
+            </tbody>
+        </table>
+        <p style="color: rgba(255,255,255,0.7); font-size: var(--small-size);">Sales Nav y Ulinc se facturan directamente a EB. No pasan por el retainer.</p>
+    </div>
+    <div class="slide-number">07 / 12</div>
+</section>
+
+<!-- ========== SLIDE 8 — Cronograma ========== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label">Cronograma de arranque</span>
+        <h2>De hoy al <span class="accent">lanzamiento</span> el lunes 1 de junio</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Día</th><th>Tarea</th><th>Quién</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Mié 27 may</td><td>Call 30 min — aprobar plan + decidir puntos abiertos</td><td>Tú + Ramiro</td></tr>
+                <tr><td>Mié 27 may</td><td>Compra de Sales Navigator + Ulinc desde tu cuenta</td><td>Tú + equipo técnico</td></tr>
+                <tr><td>Jue 28 may</td><td>Lista de 300 cuentas + 600 contactos en Sales Nav</td><td>Ramiro</td></tr>
+                <tr><td>Jue 28 may</td><td>Conexión de Ulinc a tu LinkedIn + límites de seguridad</td><td>Equipo técnico</td></tr>
+                <tr><td>Vie 29 may</td><td>Redacción del copy (invite + 4 mensajes)</td><td>Ramiro → revisas tú</td></tr>
+                <tr><td>Vie 29 may</td><td>Etapa nueva en GHL: "LinkedIn — En conversación"</td><td>Equipo técnico</td></tr>
+                <tr><td class="good">Lun 1 jun</td><td><strong>LANZAMIENTO</strong> — 20 invites (semana de warm-up)</td><td>Sistema</td></tr>
+                <tr><td>Lun 8 jun</td><td>Subimos a 80 invites/semana (régimen normal)</td><td>Sistema</td></tr>
+                <tr><td>Cada viernes</td><td>Reporting + ajuste de copy con datos reales</td><td>Ramiro → tú</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">08 / 12</div>
+</section>
+
+<!-- ========== SLIDE 9 — Métricas ========== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label">Reporting</span>
+        <h2>Lo que recibes <span class="accent">cada viernes</span> en tu correo</h2>
+        <div class="three-col">
+            <div class="mini-card">
+                <h3>Volumen</h3>
+                <p>Invitaciones enviadas / aceptadas. <strong>Objetivo: 30–40% aceptación.</strong></p>
+            </div>
+            <div class="mini-card">
+                <h3>Engagement</h3>
+                <p>Mensajes enviados / respondidos. <strong>Objetivo: 10–15% respuesta.</strong></p>
+            </div>
+            <div class="mini-card">
+                <h3>Calidad</h3>
+                <p>Conversaciones positivas con intención real de compra.</p>
+            </div>
+            <div class="mini-card">
+                <h3>Pipeline</h3>
+                <p>Calls agendadas en tu calendario, propuestas enviadas.</p>
+            </div>
+            <div class="mini-card">
+                <h3>CRM</h3>
+                <p>Leads creados en GHL con etiqueta <code>linkedin_outbound</code>.</p>
+            </div>
+            <div class="mini-card">
+                <h3>Iteración</h3>
+                <p>Qué copy funciona, qué cambiamos la semana siguiente.</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">09 / 12</div>
+</section>
+
+<!-- ========== SLIDE 10 — Riesgos ========== -->
+<section class="slide white">
+    <div class="slide-content">
+        <span class="label">Transparencia</span>
+        <h2>Riesgos y cómo los <span class="accent">mitigamos</span></h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Riesgo</th><th>Mitigación</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Baneo de tu cuenta de LinkedIn</td>
+                    <td>Límite estricto 80 invites/sem; warm-up gradual 20→40→80 las 3 primeras semanas</td>
+                </tr>
+                <tr>
+                    <td>Respuestas perdidas por falta de seguimiento</td>
+                    <td>Notificación a tu WhatsApp por cada respuesta; ping de Ramiro a las 24h si no contestas</td>
+                </tr>
+                <tr>
+                    <td>Copy genérico → bajo reply rate</td>
+                    <td>A/B test de 2 variantes desde semana 2; iteración cada viernes con datos</td>
+                </tr>
+                <tr>
+                    <td>Mes 1 sin pipeline cerrado</td>
+                    <td>Esperable. Junio es validación. Primer cliente cerrado por este canal: típicamente julio-agosto</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">10 / 12</div>
+</section>
+
+<!-- ========== SLIDE 11 — Form (4 preguntas) ========== -->
+<section class="slide dark" id="decisiones">
+    <div class="slide-content">
+        <span class="label">Tus decisiones</span>
+        <h2>4 preguntas para <span class="accent">cerrar la call del miércoles</span></h2>
+        <p style="color: rgba(255,255,255,0.7);">Responde aquí mismo. Al enviar, llega directo al equipo y arrancamos jueves con el setup.</p>
+
+        <form class="form-wrap" id="decisionForm" onsubmit="return submitForm(event)">
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 1</span>
+                <div class="q-text">¿Desde qué perfil lanzamos las invitaciones?</div>
+                <div class="q-help">Recomendación: el tuyo (mucha más autoridad en BCN). Pero requiere tu compromiso de revisar respuestas a diario.</div>
+                <div class="choice-row" data-question="q1">
+                    <label class="choice" data-value="xavi">
+                        <input type="radio" name="q1" value="xavi" required>
+                        Mi perfil (recomendado)
+                    </label>
+                    <label class="choice" data-value="ramiro">
+                        <input type="radio" name="q1" value="ramiro">
+                        Perfil de Ramiro
+                    </label>
+                </div>
+            </div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 2</span>
+                <div class="q-text">¿Te comprometes a 15 min/día revisando respuestas?</div>
+                <div class="q-help">Sin este compromiso, recomendamos no usar tu perfil. Mejor lanzar desde Ramiro con expectativas ajustadas.</div>
+                <div class="choice-row" data-question="q2">
+                    <label class="choice" data-value="si">
+                        <input type="radio" name="q2" value="si" required>
+                        Sí, me comprometo
+                    </label>
+                    <label class="choice" data-value="no">
+                        <input type="radio" name="q2" value="no">
+                        No puedo garantizarlo
+                    </label>
+                </div>
+            </div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 3</span>
+                <div class="q-text">¿Apruebas el gasto extra de ~180 €/mes en herramientas?</div>
+                <div class="q-help">Sales Navigator (~99 €) + Ulinc (~83 €). Se facturan directamente a EB, no entran en el retainer.</div>
+                <div class="choice-row" data-question="q3">
+                    <label class="choice" data-value="si">
+                        <input type="radio" name="q3" value="si" required>
+                        Sí, adelante
+                    </label>
+                    <label class="choice" data-value="no">
+                        <input type="radio" name="q3" value="no">
+                        No / hablémoslo
+                    </label>
+                </div>
+            </div>
+
+            <div class="q-block">
+                <span class="q-num">Pregunta 4</span>
+                <div class="q-text">¿Qué 2–3 casos de éxito reales podemos usar en el copy?</div>
+                <div class="q-help">Necesitamos: <strong>nombre empresa + qué evento organizamos + resultado concreto</strong> (asistentes, satisfacción, repetición). Cuanto más concreto, mejor convierte.</div>
+                <textarea name="q4" class="q-textarea" placeholder="Ej: Glovo · Fiesta aniversario 300 personas · 9.2/10 satisfacción, repetidores 2024 y 2025&#10;Ej: PwC Barcelona · Team building 80 personas en Montjuïc · convertido en 3 eventos siguientes&#10;..." required></textarea>
+            </div>
+
+            <div class="q-block">
+                <span class="q-num">Comentarios extra (opcional)</span>
+                <div class="q-text" style="font-size: clamp(0.85rem, 1.4vw, 1rem);">¿Algo más que tengamos que tener en cuenta antes de arrancar?</div>
+                <textarea name="q5" class="q-textarea" style="min-height: 70px;" placeholder="Por ejemplo: sectores a evitar, contactos sensibles, fechas de no-disponibilidad..."></textarea>
+            </div>
+
+            <div class="form-footer">
+                <div class="form-status" id="formStatus">Las respuestas llegan al equipo en cuanto envíes.</div>
+                <button type="submit" class="cta-btn" id="submitBtn">Enviar decisiones →</button>
+            </div>
+        </form>
+    </div>
+    <div class="slide-number">11 / 12</div>
+</section>
+
+<!-- ========== SLIDE 12 — Qué pasa después ========== -->
+<section class="slide light">
+    <div class="slide-content">
+        <span class="label">Hoja de ruta</span>
+        <h2>Qué pasa <span class="accent">después de junio</span></h2>
+        <div class="three-col">
+            <div class="step-card">
+                <span class="step-num">Julio</span>
+                <h3>Iteración + expansión</h3>
+                <p>Segunda ola Madrid. Iteración de copy con datos del mes 1. Arranque de outreach por email a los que no aceptan LinkedIn.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Agosto</span>
+                <h3>Modo bajo</h3>
+                <p>Mes de bajón (vacaciones). Pausamos volumen, mantenemos solo respuestas calientes y nurturing.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Septiembre +</span>
+                <h3>Régimen de crucero</h3>
+                <p>Mezcla óptima de canales según ROI real. Decisión informada por datos, no por intuición.</p>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 1em;">
+            <div class="card-label">Próximo paso inmediato</div>
+            <p>Envía las 4 decisiones arriba ↑ — confirmamos el miércoles en la call y arrancamos jueves con el setup.</p>
+        </div>
+    </div>
+    <div class="slide-number">12 / 12</div>
+</section>
+
+<script>
+// Toggle visual estado del radio seleccionado
+document.querySelectorAll('.choice input[type="radio"]').forEach(input => {
+    input.addEventListener('change', () => {
+        const name = input.name;
+        document.querySelectorAll(`.choice input[name="${name}"]`).forEach(i => {
+            i.closest('.choice').classList.toggle('selected', i.checked);
+        });
+    });
+});
+
+// Restaurar respuestas previas si existen
+const STORAGE_KEY = 'eb_linkedin_decisions';
+const saved = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(_) { return {}; } })();
+Object.entries(saved).forEach(([k, v]) => {
+    const el = document.querySelector(`[name="${k}"]`);
+    if (!el) return;
+    if (el.tagName === 'TEXTAREA') {
+        el.value = v;
+    } else {
+        const radio = document.querySelector(`input[name="${k}"][value="${v}"]`);
+        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+    }
+});
+
+function submitForm(e) {
+    e.preventDefault();
+    const form = e.target;
+    const fd = new FormData(form);
+    const data = {};
+    for (const [k, v] of fd.entries()) data[k] = v;
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    const status = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
+    status.textContent = 'Abriendo tu correo con las respuestas...';
+    status.className = 'form-status ok';
+
+    const subject = encodeURIComponent('Decisiones LinkedIn Outbound — Xavi');
+    const body = encodeURIComponent(
+`Decisiones de Xavi sobre la campaña LinkedIn Outbound (junio 2026):
+
+1. Perfil desde el que lanzar: ${data.q1 || '-'}
+2. Compromiso 15 min/día: ${data.q2 || '-'}
+3. Aprueba +180 €/mes en herramientas: ${data.q3 || '-'}
+
+4. Casos de éxito para el copy:
+${data.q4 || '-'}
+
+5. Comentarios extra:
+${data.q5 || '(ninguno)'}
+
+Enviado: ${new Date().toLocaleString('es-ES')}`
+    );
+    window.location.href = `mailto:accounts@growth4u.io?subject=${subject}&body=${body}`;
+    btn.textContent = 'Enviado ✓';
+
+    return false;
+}
+</script>
+
+</body>
+</html>
