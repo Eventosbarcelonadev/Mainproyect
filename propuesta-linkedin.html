@@ -816,10 +816,12 @@ textarea.q-textarea::placeholder { color: rgba(255,255,255,0.35); }
             </div>
 
             <div class="form-footer">
-                <div class="form-status" id="formStatus">Tus respuestas llegan al equipo en cuanto envíes.</div>
-                <button type="submit" class="cta-btn" id="submitBtn">Enviar respuestas →</button>
+                <div class="form-status" id="formStatus">Tus respuestas se guardan en esta página — revisamos juntos en la call.</div>
+                <button type="submit" class="cta-btn" id="submitBtn">Guardar respuestas →</button>
             </div>
         </form>
+
+        <div id="summaryBox" style="display:none; margin-top: 1.2em;"></div>
     </div>
     <div class="slide-number">11 / 12</div>
 </section>
@@ -910,45 +912,108 @@ function pretty(field, v) {
     return map[v] || v;
 }
 
+function renderSummary(data) {
+    const rows = [
+        ['A · Validación de coste', [
+            ['Apruebas +180 €/mes en herramientas', pretty('coste', data.coste)]
+        ]],
+        ['B · Co-diseño del ICP', [
+            ['Geografías objetivo', pretty('geo', data.geo)],
+            ['Sectores top', pretty('sectores', data.sectores)],
+            ['Cargos que deciden', pretty('cargos', data.cargos)],
+            ['Empresas concretas a perseguir', data.empresas_target]
+        ]],
+        ['C · Material para el copy', [
+            ['Casos de éxito reales', data.casos_exito]
+        ]],
+        ['Comentarios extra', [
+            ['', data.comentarios]
+        ]]
+    ];
+    const html = `
+        <div class="form-wrap" style="border: 1.5px solid var(--green); background: rgba(46,196,160,0.06);">
+            <div style="display:flex; align-items:center; justify-content: space-between; gap:1em; flex-wrap:wrap;">
+                <div>
+                    <div class="section-header" style="margin:0; border:none; padding:0;">✓ Respuestas guardadas en esta página</div>
+                    <p style="color: rgba(255,255,255,0.7); font-size: var(--small-size); margin-top:0.3em;">Persisten en tu navegador. Comparte la pantalla en la call o haz screenshot si lo prefieres.</p>
+                </div>
+                <button type="button" class="cta-btn" onclick="copySummary()" style="padding: 0.6em 1.2em; font-size: var(--small-size);">Copiar al portapapeles</button>
+            </div>
+            ${rows.map(([section, items]) => `
+                <div>
+                    <div class="section-header" style="margin-top: 0.6em;">${section}</div>
+                    ${items.map(([label, val]) => `
+                        <div style="margin-top: 0.5em;">
+                            ${label ? `<div style="font-size: var(--small-size); color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 0.2em;">${label}</div>` : ''}
+                            <div style="color: var(--white); white-space: pre-wrap; line-height: 1.5;">${val ? String(val).replace(/</g,'&lt;') : '<em style="color: rgba(255,255,255,0.4);">(sin respuesta)</em>'}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('')}
+            <p style="color: rgba(255,255,255,0.55); font-size: var(--small-size); margin-top: 0.8em;">Guardado: ${new Date().toLocaleString('es-ES')}</p>
+        </div>
+    `;
+    const box = document.getElementById('summaryBox');
+    box.innerHTML = html;
+    box.style.display = 'block';
+}
+
+function buildTextSummary(data) {
+    return `LinkedIn Outbound — Respuestas de Xavi
+Guardado: ${new Date().toLocaleString('es-ES')}
+
+A · VALIDACIÓN DE COSTE
+  Apruebas +180 €/mes en herramientas: ${pretty('coste', data.coste) || '-'}
+
+B · CO-DISEÑO DEL ICP
+  Geografías objetivo: ${pretty('geo', data.geo) || '(sin marcar)'}
+  Sectores top: ${pretty('sectores', data.sectores) || '(sin marcar)'}
+  Cargos que deciden: ${pretty('cargos', data.cargos) || '(sin marcar)'}
+  Empresas concretas a perseguir:
+${data.empresas_target || '(no indicado)'}
+
+C · MATERIAL PARA EL COPY
+  Casos de éxito reales:
+${data.casos_exito || '-'}
+
+COMENTARIOS EXTRA:
+${data.comentarios || '(ninguno)'}`;
+}
+
+let lastData = null;
+function copySummary() {
+    if (!lastData) return;
+    navigator.clipboard.writeText(buildTextSummary(lastData)).then(() => {
+        const btns = document.querySelectorAll('#summaryBox .cta-btn');
+        btns.forEach(b => { b.textContent = '✓ Copiado'; setTimeout(() => b.textContent = 'Copiar al portapapeles', 2000); });
+    });
+}
+
 function submitForm(e) {
     e.preventDefault();
     const form = e.target;
     const data = collectFormData(form);
+    lastData = data;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
     const status = document.getElementById('formStatus');
     const btn = document.getElementById('submitBtn');
-    status.textContent = 'Abriendo tu correo con las respuestas...';
+    status.textContent = '✓ Respuestas guardadas. Quedan visibles aquí abajo.';
     status.className = 'form-status ok';
+    btn.textContent = 'Actualizar respuestas ↻';
 
-    const subject = encodeURIComponent('LinkedIn Outbound — respuestas de Xavi');
-    const body = encodeURIComponent(
-`Respuestas de Xavi a la propuesta LinkedIn Outbound (junio 2026):
-
-A · VALIDACIÓN DE COSTE
-  1. Apruebas +180 €/mes en herramientas: ${pretty('coste', data.coste) || '-'}
-
-B · CO-DISEÑO DEL ICP
-  2. Geografías objetivo: ${pretty('geo', data.geo) || '(sin marcar)'}
-  3. Sectores top: ${pretty('sectores', data.sectores) || '(sin marcar)'}
-  4. Cargos que deciden: ${pretty('cargos', data.cargos) || '(sin marcar)'}
-  5. Empresas concretas a perseguir:
-${data.empresas_target || '(no indicado)'}
-
-C · MATERIAL PARA EL COPY
-  6. Casos de éxito reales:
-${data.casos_exito || '-'}
-
-EXTRA · Comentarios y/o sectores a evitar:
-${data.comentarios || '(ninguno)'}
-
-—
-Enviado: ${new Date().toLocaleString('es-ES')}
-Origen: propuestas.eventosbarcelona.com/linkedin`
-    );
-    window.location.href = `mailto:accounts@growth4u.io?subject=${subject}&body=${body}`;
-    btn.textContent = 'Enviado ✓';
+    renderSummary(data);
+    document.getElementById('summaryBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
     return false;
+}
+
+// Si hay respuestas guardadas, renderizar el resumen al cargar
+if (Object.keys(saved).length) {
+    lastData = saved;
+    renderSummary(saved);
+    document.getElementById('submitBtn').textContent = 'Actualizar respuestas ↻';
+    document.getElementById('formStatus').textContent = '✓ Tienes respuestas guardadas de una sesión anterior.';
+    document.getElementById('formStatus').className = 'form-status ok';
 }
 </script>
 
