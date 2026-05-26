@@ -729,9 +729,9 @@
     }
     .artista-card {
       display: grid;
-      grid-template-columns: 22px 1fr;
-      align-items: start;
-      gap: 4px 10px;
+      grid-template-columns: 22px 64px 1fr;
+      align-items: center;
+      gap: 12px;
       text-align: left;
       width: 100%;
       padding: 12px 14px;
@@ -748,28 +748,58 @@
       background: color-mix(in srgb, var(--accent) 7%, white);
     }
     .artista-card-check {
-      grid-row: 1 / span 2;
       width: 22px; height: 22px;
       border-radius: 50%;
       border: 1.5px solid var(--border);
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; color: #fff;
-      align-self: center;
     }
     .artista-card.selected .artista-card-check {
       background: var(--accent);
       border-color: var(--accent);
+    }
+    .artista-card-photo {
+      width: 64px; height: 64px;
+      border-radius: 8px;
+      background: var(--light-gray) center/cover no-repeat;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray);
+      font-weight: 600;
+      font-size: 22px;
+    }
+    .artista-card-photo.placeholder { background: var(--light-gray); }
+    .artista-card-body {
+      display: flex; flex-direction: column; gap: 2px;
+      min-width: 0;
     }
     .artista-card-name {
       font-size: 15px;
       font-weight: 600;
       color: var(--dark);
     }
+    .artista-card-meta {
+      font-size: 12px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     .artista-card-bio {
       font-size: 13px;
       color: var(--gray);
       line-height: 1.5;
+      margin-top: 2px;
     }
+    .artista-card-links {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .artista-card-links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .artista-card-links a:hover { text-decoration: underline; }
     /* En PDF: ocultar los no seleccionados, dejar solo el elegido sin hover */
     body.print-mode .artista-card:not(.selected) { display: none; }
     body.print-mode .artista-card.selected {
@@ -2537,11 +2567,22 @@
               <div class="block-artistas-grid">
                 ${artistas.map(art => {
                   const sel = art.id === selectedArtistaId;
+                  const meta = [art.alias, art.ciudad].filter(Boolean).map(escapeHtmlText).join(' · ');
+                  const links = [];
+                  if (art.video) links.push(`<a href="${escapeHtmlText(art.video)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver vídeo</a>`);
+                  if (art.web) links.push(`<a href="${escapeHtmlText(art.web)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Perfil</a>`);
                   return `
                   <button type="button" class="artista-card ${sel ? 'selected' : ''}" onclick="selectShowArtista(${i}, '${art.id}')">
                     <span class="artista-card-check" aria-hidden="true">${sel ? '&#10003;' : ''}</span>
-                    <span class="artista-card-name">${escapeHtmlText(art.nombre || 'Artista')}</span>
-                    ${art.bio ? `<span class="artista-card-bio">${escapeHtmlText(art.bio)}</span>` : ''}
+                    ${art.foto
+                      ? `<span class="artista-card-photo" style="background-image:url('${escapeHtmlText(art.foto)}')"></span>`
+                      : `<span class="artista-card-photo placeholder">${escapeHtmlText((art.nombre || '?').charAt(0).toUpperCase())}</span>`}
+                    <span class="artista-card-body">
+                      <span class="artista-card-name">${escapeHtmlText(art.nombre || 'Artista')}</span>
+                      ${meta ? `<span class="artista-card-meta">${meta}</span>` : ''}
+                      ${art.bio ? `<span class="artista-card-bio">${escapeHtmlText(art.bio)}</span>` : ''}
+                      ${links.length ? `<span class="artista-card-links">${links.join(' &middot; ')}</span>` : ''}
+                    </span>
                   </button>`;
                 }).join('')}
               </div>

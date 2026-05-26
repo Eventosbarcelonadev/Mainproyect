@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     // artista:artista_id(...) = artista primario legacy (1:1, compat).
     // show_artistas(...) = todos los artistas vinculados N:M, con bio, para
     // que el cliente pueda elegir cuál quiere dentro del show (Xavi 2026-05-22).
-    const artistaCols = 'id,nombre,nombre_artistico,compania,fotos_urls,bio_show';
+    const artistaCols = 'id,nombre,nombre_artistico,compania,ciudad,fotos_urls,bio_show,video1,web_rrss';
     const fields = [
       'id', 'name', 'category', 'subcategory', 'description', 'base_price',
       'price_note', 'video_url', 'image_url', 'image_urls', 'name_en', 'description_en',
@@ -63,14 +63,25 @@ export default async function handler(req, res) {
     const rows = await r.json();
 
     // Mapea una fila de artista (legacy o embebida en show_artistas) al shape
-    // que consume la propuesta: nombre legible + bio + fotos.
+    // que consume el selector de la propuesta. Incluye todos los campos que
+    // pueden ayudar al cliente a elegir entre artistas del mismo show:
+    // foto principal, nombre, alias, ciudad, bio, video, RRSS.
     const shapeArtista = (a) => {
       if (!a) return null;
+      const fotos = Array.isArray(a.fotos_urls) ? a.fotos_urls.filter(Boolean) : [];
+      const display = a.nombre_artistico || a.compania || a.nombre || '';
+      // alias visible solo si difiere del nombre principal
+      const alias = (a.nombre_artistico && a.nombre && a.nombre !== a.nombre_artistico) ? a.nombre : '';
       return {
         id: a.id,
-        nombre: a.nombre_artistico || a.compania || a.nombre || '',
+        nombre: display,
+        alias,
+        ciudad: a.ciudad || '',
         bio: a.bio_show || '',
-        fotos: Array.isArray(a.fotos_urls) ? a.fotos_urls : []
+        foto: fotos[0] || '',
+        fotos,
+        video: a.video1 || '',
+        web: a.web_rrss || ''
       };
     };
 
