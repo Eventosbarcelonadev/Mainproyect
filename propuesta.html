@@ -709,103 +709,6 @@
       font-family: 'Inter', sans-serif;
     }
 
-    /* === SELECTOR DE ARTISTAS (cliente elige dentro de un show) === */
-    .block-artistas {
-      margin-top: 20px;
-      font-family: 'Inter', sans-serif;
-    }
-    .block-artistas-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-    .block-artistas-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .artista-card {
-      display: grid;
-      grid-template-columns: 22px 64px 1fr;
-      align-items: center;
-      gap: 12px;
-      text-align: left;
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      background: var(--white);
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      font-family: inherit;
-    }
-    .artista-card:hover { border-color: var(--accent); }
-    .artista-card.selected {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 7%, white);
-    }
-    .artista-card-check {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; color: #fff;
-    }
-    .artista-card.selected .artista-card-check {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    .artista-card-photo {
-      width: 64px; height: 64px;
-      border-radius: 8px;
-      background: var(--light-gray) center/cover no-repeat;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--gray);
-      font-weight: 600;
-      font-size: 22px;
-    }
-    .artista-card-photo.placeholder { background: var(--light-gray); }
-    .artista-card-body {
-      display: flex; flex-direction: column; gap: 2px;
-      min-width: 0;
-    }
-    .artista-card-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--dark);
-    }
-    .artista-card-meta {
-      font-size: 12px;
-      color: var(--gray);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .artista-card-bio {
-      font-size: 13px;
-      color: var(--gray);
-      line-height: 1.5;
-      margin-top: 2px;
-    }
-    .artista-card-links {
-      font-size: 12px;
-      margin-top: 4px;
-    }
-    .artista-card-links a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .artista-card-links a:hover { text-decoration: underline; }
-    /* En PDF: ocultar los no seleccionados, dejar solo el elegido sin hover */
-    body.print-mode .artista-card:not(.selected) { display: none; }
-    body.print-mode .artista-card.selected {
-      border-color: var(--border);
-      background: var(--white);
-    }
     .block-extras-row {
       display: flex;
       align-items: center;
@@ -2033,7 +1936,6 @@
         roleDirector: 'Director de Eventos y Co-Fundador',
         roleManager: 'Event Manager',
         btnVideo: 'Ver vídeo',
-        chooseArtist: 'Elige tu artista',
         addedSuffix: ' (agregado)',
         formLink: 'formulario-inteligente.html'
       },
@@ -2069,7 +1971,6 @@
         roleDirector: 'Head of Events & Co-Founder',
         roleManager: 'Event Manager',
         btnVideo: 'Watch video',
-        chooseArtist: 'Choose your artist',
         addedSuffix: ' (added)',
         formLink: 'formulario-inteligente-en.html'
       }
@@ -2438,7 +2339,6 @@
           if (s.priceNote) proposalState.shows[i].priceNote = s.priceNote;
           if (s.name) proposalState.shows[i].name = s.name;
           if (s.description) proposalState.shows[i].description = s.description;
-          if (s.selectedArtistaId) proposalState.shows[i].selectedArtistaId = s.selectedArtistaId;
           if (Array.isArray(s.extras)) proposalState.shows[i].extras = s.extras;
         });
         renderProposal();
@@ -2557,37 +2457,6 @@
               ${isAdmin ? `<button class="block-extras-add" onclick="addExtra(${i})">+ A&ntilde;adir l&iacute;nea de coste</button>` : ''}
             </div>` : '';
 
-        // Selector de artistas: si el show tiene 2+ artistas vinculados, el
-        // cliente elige cuál quiere. Mismo precio. (Xavi 2026-05-22)
-        const artistas = Array.isArray(show.artistas) ? show.artistas : [];
-        const selectedArtistaId = show.selectedArtistaId || (artistas[0] && artistas[0].id) || null;
-        const artistasBlock = artistas.length > 1 ? `
-            <div class="block-artistas">
-              <div class="block-artistas-label">${T.chooseArtist}</div>
-              <div class="block-artistas-grid">
-                ${artistas.map(art => {
-                  const sel = art.id === selectedArtistaId;
-                  const meta = [art.alias, art.ciudad].filter(Boolean).map(escapeHtmlText).join(' · ');
-                  const links = [];
-                  if (art.video) links.push(`<a href="${escapeHtmlText(art.video)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver vídeo</a>`);
-                  if (art.web) links.push(`<a href="${escapeHtmlText(art.web)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Perfil</a>`);
-                  return `
-                  <button type="button" class="artista-card ${sel ? 'selected' : ''}" onclick="selectShowArtista(${i}, '${art.id}')">
-                    <span class="artista-card-check" aria-hidden="true">${sel ? '&#10003;' : ''}</span>
-                    ${art.foto
-                      ? `<span class="artista-card-photo" style="background-image:url('${escapeHtmlText(art.foto)}')"></span>`
-                      : `<span class="artista-card-photo placeholder">${escapeHtmlText((art.nombre || '?').charAt(0).toUpperCase())}</span>`}
-                    <span class="artista-card-body">
-                      <span class="artista-card-name">${escapeHtmlText(art.nombre || 'Artista')}</span>
-                      ${meta ? `<span class="artista-card-meta">${meta}</span>` : ''}
-                      ${art.bio ? `<span class="artista-card-bio">${escapeHtmlText(art.bio)}</span>` : ''}
-                      ${links.length ? `<span class="artista-card-links">${links.join(' &middot; ')}</span>` : ''}
-                    </span>
-                  </button>`;
-                }).join('')}
-              </div>
-            </div>` : '';
-
         showBlocksHTML += `
           <div class="block ${reversed ? 'block--reversed' : ''} ${isAdmin ? 'admin-mode' : ''}" data-show="${show.id}" data-index="${i}">
             ${isAdmin ? `<button class="block-remove" onclick="removeShow(${i})" title="Eliminar show">&times;</button>` : ''}
@@ -2596,7 +2465,6 @@
               <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-show-field="contextLabel" data-show-index="${i}"` : ''}>${show.contextLabel}</div>
               <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="name" data-show-index="${i}"` : ''}>${show.name}</h2>
               <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="description" data-show-index="${i}"` : ''}>${show.description}</p>
-              ${artistasBlock}
               <div class="block-footer">
                 <div class="block-price ${isAdmin ? 'editable' : ''}" data-price="${priceWithMargin}" data-index="${i}" ${isAdmin ? 'onclick="startPriceEdit(this, ' + i + ')"' : ''}>
                   ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="priceNote" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${show.priceNote}</small>
@@ -3003,25 +2871,6 @@
       showToast(proposalState.hideSummary ? 'Resumen de presupuesto ocultado' : 'Resumen de presupuesto visible');
     }
 
-    // El cliente (o Xavi en admin) elige qué artista del show quiere. Mismo
-    // precio. Se persiste en proposalState.shows[i].selectedArtistaId y viaja
-    // al backend al aprobar/guardar.
-    function selectShowArtista(showIndex, artistaId) {
-      const show = proposalState.shows[showIndex];
-      if (!show) return;
-      show.selectedArtistaId = artistaId;
-      renderProposal();
-      if (proposalState.isAdmin) {
-        document.getElementById('adminBar').classList.add('visible');
-        updateAdminBar();
-      } else {
-        // Cliente: marcamos el draft como sucio para persistir la elección
-        // cuando confirme. Ver confirmProposalByEmail.
-        proposalState._artistaChoiceDirty = true;
-      }
-      const art = (show.artistas || []).find(a => a.id === artistaId);
-      if (art) showToast('Artista seleccionado: ' + (art.nombre || ''));
-    }
 
     // =============================================
     // CONDICIONES editables (admin mode)
@@ -3405,18 +3254,6 @@
       btns.forEach(b => { b.disabled = true; b.textContent = '...'; });
 
       try {
-        // Si el cliente eligió artista(s) dentro de un show, persistir esa
-        // elección antes de confirmar para que Xavi la vea en la propuesta.
-        if (proposalState._artistaChoiceDirty) {
-          try {
-            await saveProposalDraft();
-            proposalState._artistaChoiceDirty = false;
-          } catch (saveErr) {
-            console.error('persist artista choice error:', saveErr);
-            // no bloqueamos la confirmación por esto
-          }
-        }
-
         const r = await fetch('/api/validate-proposal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3576,7 +3413,6 @@
           contextLabel: s.contextLabel,
           priceNote: s.priceNote,
           base_price: s.basePrice,
-          selectedArtistaId: s.selectedArtistaId || null,
           extras: Array.isArray(s.extras) ? s.extras : []
         })),
         globalMargin: proposalState.globalMargin,
