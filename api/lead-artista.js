@@ -366,9 +366,15 @@ export default async function handler(req, res) {
       }
     }
 
-    // 4. Upsert to Supabase (always — creates or updates by email)
+    // 4. Upsert to Supabase (always — creates or updates by email).
+    // IMPORTANTE: artistas tiene unique constraint en email. Sin
+    // ?on_conflict=email, el merge-duplicates no sabe sobre qué columna
+    // hacer el upsert y Postgres responde 409 duplicate key. Bug Xavi QA
+    // 2026-05-28: leads pasaban por la thank-you pero nunca llegaban a
+    // Supabase porque el error se tragaba silenciosamente.
     let supabaseToken = data._token || null;
     let artistaId = null;
+    let supabaseError = null;
     if (SUPABASE_URL && SUPABASE_KEY) {
       try {
         const supabaseRow = {
@@ -399,9 +405,11 @@ export default async function handler(req, res) {
           origen: isUpdate ? 'actualizacion-formulario' : 'web-formulario'
         };
 
-        // Upsert by email — on conflict update all fields
+        // Upsert by email — on conflict update all fields.
+        // ?on_conflict=email es CRÍTICO: sin él, Postgres devuelve 409 cuando
+        // el email ya existe y el lead nunca llega a Supabase (solo a GHL).
         const sbRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/artistas`,
+          `${SUPABASE_URL}/rest/v1/artistas?on_conflict=email`,
           {
             method: 'POST',
             headers: {
@@ -413,12 +421,16 @@ export default async function handler(req, res) {
             body: JSON.stringify(supabaseRow)
           }
         );
-        const sbData = await sbRes.json();
-        if (Array.isArray(sbData) && sbData[0]) {
+        const sbData = await sbRes.json().catch(() => null);
+        if (!sbRes.ok) {
+          supabaseError = `Supabase ${sbRes.status}: ${sbData ? (sbData.message || sbData.error || JSON.stringify(sbData)) : 'no body'}`;
+          console.error('Supabase upsert failed:', supabaseError);
+        } else if (Array.isArray(sbData) && sbData[0]) {
           if (sbData[0].token) supabaseToken = sbData[0].token;
           if (sbData[0].id) artistaId = sbData[0].id;
         }
       } catch (sbErr) {
+        supabaseError = sbErr.message;
         console.error('Supabase sync error:', sbErr.message);
       }
     }
@@ -439,6 +451,19 @@ export default async function handler(req, res) {
       } catch (urlErr) {
         console.error('GHL url_supabase update error:', urlErr.message);
       }
+    }
+
+    // Si el upsert a Supabase falló, devolver error claro. El contact GHL
+    // ya está creado, pero sin Supabase el artista no aparece en /admin —
+    // es un fail funcional desde el punto de vista del usuario.
+    if (supabaseError) {
+      return res.status(500).json({
+        success: false,
+        error: 'No se pudo guardar en la base de datos: ' + supabaseError,
+        contactId: contactId,
+        opportunityId: oppId,
+        ghl_created: true
+      });
     }
 
     return res.status(200).json({
