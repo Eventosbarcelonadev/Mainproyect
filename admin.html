@@ -357,6 +357,73 @@
     .img-edit-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
     .img-edit-status { font-size: 12px; color: var(--gray); }
 
+    /* === Modal artista — secciones y galería === */
+    .edit-modal .art-section-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 26px 0 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .art-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+      min-height: 24px;
+    }
+    .art-gallery-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--light);
+      background-size: cover;
+      background-position: center;
+    }
+    .art-gallery-item .remove-btn {
+      position: absolute; top: 4px; right: 4px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .art-gallery-item .remove-btn:hover { background: #c0392b; }
+    .art-gallery-empty {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+      padding: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+    }
+    .art-shows-list {
+      display: flex; flex-direction: column; gap: 6px;
+      max-height: 180px; overflow-y: auto;
+    }
+    .art-show-mini {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .art-show-mini-name { font-weight: 600; color: var(--dark); }
+    .art-show-mini-meta { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; }
+    .art-shows-empty {
+      font-size: 12px; color: var(--gray); text-align: center;
+      padding: 14px; border: 1px dashed var(--border); border-radius: 8px;
+    }
+
     /* Multi-imagen: galería del show editor */
     .gallery {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -543,6 +610,8 @@
     <div class="edit-modal">
       <h2 id="art-modal-title">Editar artista</h2>
       <div class="show-id" id="art-modal-sub"></div>
+
+      <div class="art-section-title">Contacto</div>
       <div class="row">
         <div>
           <label>Nombre del contacto</label>
@@ -587,8 +656,45 @@
           <input type="text" id="art-disciplinas" placeholder="Danza, Música">
         </div>
       </div>
+
+      <div class="art-section-title">Fotos</div>
+      <div class="art-gallery" id="art-gallery"></div>
+      <div class="img-edit-row">
+        <button type="button" class="btn-cancel" id="art-image-file-btn">Subir imagen</button>
+        <input type="file" id="art-image-file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+        <input type="url" id="art-image-url" placeholder="o pega una URL externa de imagen…" style="flex:1;">
+        <button type="button" class="btn-cancel" id="art-image-url-add">Añadir URL</button>
+      </div>
+      <div id="art-image-status" style="font-size:12px;color:var(--gray);margin-top:4px;"></div>
+
+      <div class="art-section-title">Multimedia y precio</div>
+      <div class="row">
+        <div>
+          <label>Rango caché (€)</label>
+          <input type="text" id="art-rango-cache" placeholder="Ej: 500–1.500 €">
+        </div>
+        <div>
+          <label>Web / RRSS</label>
+          <input type="url" id="art-web-rrss" placeholder="https://instagram.com/...">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Vídeo 1 (URL)</label>
+          <input type="url" id="art-video1" placeholder="https://youtube.com/...">
+        </div>
+        <div>
+          <label>Vídeo 2 (URL)</label>
+          <input type="url" id="art-video2" placeholder="https://youtube.com/...">
+        </div>
+      </div>
+
       <label>Bio / descripción</label>
-      <textarea id="art-bio"></textarea>
+      <textarea id="art-bio" rows="3"></textarea>
+
+      <div class="art-section-title">Shows vinculados</div>
+      <div id="art-shows-list" class="art-shows-list"></div>
+
       <div class="actions">
         <button type="button" class="btn-cancel" id="art-cancel">Cancelar</button>
         <button type="button" class="btn-save" id="art-save">Guardar</button>
@@ -879,9 +985,17 @@
       card.querySelector('[data-detail]').addEventListener('click', () => setHash('artistas', a.id, {}));
       const editArtBtn = card.querySelector('[data-edit-artista]');
       if (editArtBtn) {
-        editArtBtn.addEventListener('click', (e) => {
+        editArtBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
-          openEditArtistaModal(a);
+          // Fetch detalle para tener shows vinculados y todos los campos del artista
+          try {
+            const r = await fetch('/api/admin?action=get-artista-detail&id=' + encodeURIComponent(a.id));
+            const d = await r.json();
+            if (r.ok && d.artista) openEditArtistaModal(d.artista);
+            else openEditArtistaModal(a);
+          } catch {
+            openEditArtistaModal(a);
+          }
         });
       }
       return card;
@@ -1602,10 +1716,18 @@
         }
         // image_urls + image_url se persisten via /set-show-images en cada
         // mutación de galería; acá sólo guardamos los demás campos textuales.
+        // Quitar campos null/undefined del patch para no pisar valores existentes
+        // con null (ej. base_price es NOT NULL, mandar null tira 23502).
+        const cleanPatch = {};
+        for (const k of Object.keys(fields)) {
+          if (fields[k] !== null && fields[k] !== undefined && fields[k] !== '') {
+            cleanPatch[k] = fields[k];
+          }
+        }
         const r = await fetch('/api/admin?action=edit-show', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: _editingShow.id, patch: fields })
+          body: JSON.stringify({ id: _editingShow.id, patch: cleanPatch })
         });
         const d = await r.json();
         if (!r.ok) { showError(d.error || 'Error'); btn.disabled = false; return; }
@@ -1700,11 +1822,51 @@
     // ---------- artista add/edit modal ----------
     let _editingArtista = null; // null = adding new
     let _addingTipo = 'artista'; // when _editingArtista is null
+    let _artistaFotos = []; // array de URLs en el modal abierto
 
-    function openEditArtistaModal(a) {
-      _editingArtista = a;
-      $('art-modal-title').textContent = 'Editar ' + ((a && a.tipo) || 'artista');
-      $('art-modal-sub').textContent = 'id: ' + (a.id || '—');
+    function renderArtistaGallery() {
+      const cont = $('art-gallery');
+      if (!cont) return;
+      if (!_artistaFotos.length) {
+        cont.innerHTML = '<div class="art-gallery-empty">Sin fotos. Subí una desde abajo.</div>';
+        return;
+      }
+      cont.innerHTML = _artistaFotos.map((u, i) => `
+        <div class="art-gallery-item" style="background-image:url('${escapeHtml(u)}')">
+          <button type="button" class="remove-btn" data-photo-idx="${i}" title="Eliminar">&times;</button>
+        </div>
+      `).join('');
+      cont.querySelectorAll('[data-photo-idx]').forEach(b => {
+        b.addEventListener('click', () => {
+          const idx = parseInt(b.dataset.photoIdx, 10);
+          if (Number.isFinite(idx)) {
+            _artistaFotos.splice(idx, 1);
+            renderArtistaGallery();
+          }
+        });
+      });
+    }
+
+    function renderArtistaShowsList(a) {
+      const cont = $('art-shows-list');
+      if (!cont) return;
+      const shows = Array.isArray(a && a.shows) ? a.shows : [];
+      if (!shows.length) {
+        cont.innerHTML = '<div class="art-shows-empty">Sin shows vinculados. Se creó uno automático al cargar el artista.</div>';
+        return;
+      }
+      cont.innerHTML = shows.map(s => `
+        <div class="art-show-mini">
+          <div>
+            <div class="art-show-mini-name">${escapeHtml(s.name || s.id)}</div>
+            <div class="art-show-mini-meta">${escapeHtml(s.category || '—')}${s.subcategory ? ' · ' + escapeHtml(s.subcategory) : ''} · ${escapeHtml(s.status || '—')}</div>
+          </div>
+          <a class="btn btn-secondary" href="#shows/${encodeURIComponent(s.id)}" style="font-size:12px;text-decoration:none;">Abrir</a>
+        </div>
+      `).join('');
+    }
+
+    function fillArtistaModalCommon(a) {
       $('art-nombre').value = a.nombre || '';
       $('art-nombre-artistico').value = a.nombre_artistico || '';
       $('art-compania').value = a.compania || '';
@@ -1714,6 +1876,22 @@
       $('art-ciudad').value = a.ciudad || '';
       $('art-disciplinas').value = (Array.isArray(a.disciplinas) ? a.disciplinas : []).join(', ');
       $('art-bio').value = a.bio_show || '';
+      $('art-rango-cache').value = a.rango_cache || '';
+      $('art-web-rrss').value = a.web_rrss || '';
+      $('art-video1').value = a.video1 || '';
+      $('art-video2').value = a.video2 || '';
+      $('art-image-url').value = '';
+      $('art-image-status').textContent = '';
+      _artistaFotos = Array.isArray(a.fotos_urls) ? [...a.fotos_urls] : [];
+      renderArtistaGallery();
+      renderArtistaShowsList(a);
+    }
+
+    function openEditArtistaModal(a) {
+      _editingArtista = a;
+      $('art-modal-title').textContent = 'Editar ' + ((a && a.tipo) || 'artista');
+      $('art-modal-sub').textContent = 'id: ' + (a.id || '—');
+      fillArtistaModalCommon(a);
       $('art-modal-backdrop').classList.add('open');
     }
     function openAddArtistaModal(tipo) {
@@ -1722,8 +1900,7 @@
       const label = _addingTipo === 'proveedor' ? 'proveedor' : _addingTipo === 'venue' ? 'venue' : 'artista';
       $('art-modal-title').textContent = 'Agregar ' + label;
       $('art-modal-sub').textContent = 'Se creará en Supabase y en GHL';
-      ['art-nombre','art-nombre-artistico','art-compania','art-email','art-telefono','art-ciudad','art-disciplinas','art-bio'].forEach(id => $(id).value = '');
-      $('art-tipo').value = _addingTipo;
+      fillArtistaModalCommon({ tipo: _addingTipo });
       $('art-modal-backdrop').classList.add('open');
     }
     function closeArtistaModal() {
@@ -1752,7 +1929,12 @@
         ciudad: $('art-ciudad').value.trim(),
         tipo: $('art-tipo').value,
         disciplinas: disciplinasArr,
-        bio_show: $('art-bio').value.trim()
+        bio_show: $('art-bio').value.trim(),
+        rango_cache: $('art-rango-cache').value.trim(),
+        web_rrss: $('art-web-rrss').value.trim(),
+        video1: $('art-video1').value.trim(),
+        video2: $('art-video2').value.trim(),
+        fotos_urls: _artistaFotos
       };
       try {
         const action = _editingArtista ? 'edit-artista' : 'add-artista';
@@ -1816,6 +1998,58 @@
     $('art-save').addEventListener('click', saveArtistaModal);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && $('art-modal-backdrop').classList.contains('open')) closeArtistaModal();
+    });
+
+    // ---------- Subir / añadir fotos al artista ----------
+    $('art-image-file-btn').addEventListener('click', () => $('art-image-file').click());
+    $('art-image-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const status = $('art-image-status');
+      status.style.color = 'var(--gray)';
+      status.textContent = 'Procesando…';
+      try {
+        const dataUrl = await resizeImageFile(file, 1600, 0.85);
+        if (_editingArtista && _editingArtista.id) {
+          // Editar: subir al server inmediatamente y persistir
+          const r = await fetch('/api/admin?action=upload-artista-photo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: _editingArtista.id, dataUrl })
+          });
+          const d = await r.json();
+          if (!r.ok) { status.style.color = '#c0392b'; status.textContent = 'Error: ' + (d.error || 'subida fallida'); return; }
+          if (d.uploadedUrl && !_artistaFotos.includes(d.uploadedUrl)) _artistaFotos.push(d.uploadedUrl);
+          renderArtistaGallery();
+          status.style.color = '#2ecc71';
+          status.textContent = 'Imagen subida ✓';
+        } else {
+          // Modo crear: por ahora no soportamos upload binario antes de tener id.
+          // Sugerir URL externa.
+          status.style.color = '#c0392b';
+          status.textContent = 'Para subir archivos primero guardá el artista. Mientras tanto, pegá una URL externa abajo.';
+        }
+      } catch (err) {
+        status.style.color = '#c0392b';
+        status.textContent = 'Error: ' + (err.message || 'no se pudo procesar la imagen');
+      }
+    });
+    $('art-image-url-add').addEventListener('click', () => {
+      const url = $('art-image-url').value.trim();
+      if (!url) return;
+      if (_artistaFotos.includes(url)) {
+        $('art-image-status').textContent = 'Ya está en la galería';
+        return;
+      }
+      _artistaFotos.push(url);
+      $('art-image-url').value = '';
+      $('art-image-status').style.color = '#2ecc71';
+      $('art-image-status').textContent = 'URL añadida (guardá para persistir)';
+      renderArtistaGallery();
+    });
+    $('art-image-url').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); $('art-image-url-add').click(); }
     });
 
     // ---------- Artistas dentro del modal Editar show ----------

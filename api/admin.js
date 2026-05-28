@@ -761,7 +761,7 @@ async function editArtista(req, res, env) {
   if (!curRows.length) return res.status(404).json({ error: 'Artista not found' });
   const cur = curRows[0];
 
-  const allowed = ['nombre', 'nombre_artistico', 'compania', 'email', 'telefono', 'ciudad', 'tipo', 'disciplinas', 'bio_show'];
+  const allowed = ['nombre', 'nombre_artistico', 'compania', 'email', 'telefono', 'ciudad', 'tipo', 'disciplinas', 'bio_show', 'rango_cache', 'video1', 'video2', 'web_rrss', 'fotos_urls'];
   const update = {};
   for (const k of allowed) if (k in patch) update[k] = patch[k];
   if (Object.keys(update).length === 0) return res.status(400).json({ error: 'patch is empty' });
@@ -1171,6 +1171,64 @@ async function uploadShowImage(req, res, env) {
   return await patchShowImages(env, id, nextArray, res, publicUrl);
 }
 
+// Sube una foto al artista. Misma lógica que uploadShowImage pero contra
+// la columna artistas.fotos_urls. Usa el bucket artist-assets.
+async function uploadArtistaPhoto(req, res, env) {
+  const { id, dataUrl } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: 'id must be a UUID' });
+  if (!dataUrl || typeof dataUrl !== 'string') return res.status(400).json({ error: 'Missing dataUrl' });
+
+  const m = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(dataUrl);
+  if (!m) return res.status(400).json({ error: 'dataUrl debe ser image/jpeg|png|webp|gif en base64' });
+  const mime = m[1];
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[mime];
+  const buf = Buffer.from(m[2], 'base64');
+  if (buf.length > 15 * 1024 * 1024) return res.status(413).json({ error: 'Imagen supera 15MB' });
+
+  const cur = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=fotos_urls`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!cur.ok) return res.status(cur.status).json({ error: await cur.text() });
+  const curRows = await cur.json();
+  if (!curRows.length) return res.status(404).json({ error: 'Artista not found' });
+  const existing = Array.isArray(curRows[0].fotos_urls) ? curRows[0].fotos_urls.filter(Boolean) : [];
+
+  const objectPath = `artistas/${encodeURIComponent(id)}-${Date.now()}.${ext}`;
+  const up = await fetch(`${env.SUPABASE_URL}/storage/v1/object/artist-assets/${objectPath}`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': mime,
+      'x-upsert': 'true'
+    },
+    body: buf
+  });
+  if (!up.ok) return res.status(up.status).json({ error: 'storage: ' + (await up.text()).slice(0, 200) });
+
+  const publicUrl = `${env.SUPABASE_URL}/storage/v1/object/public/artist-assets/${objectPath}`;
+  const nextArray = [...existing, publicUrl];
+
+  const patch = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=*`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify({ fotos_urls: nextArray })
+    }
+  );
+  if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
+  const updated = (await patch.json())[0];
+  return res.status(200).json({ success: true, artista: updated, uploadedUrl: publicUrl });
+}
+
 // Reemplaza el array completo de imágenes (reorder/delete desde el admin).
 async function setShowImages(req, res, env) {
   const { id, image_urls } = req.body || {};
@@ -1357,6 +1415,7 @@ export default async function handler(req, res) {
       if (action === 'add-show') return addShow(req, res, env);
       if (action === 'delete-show') return deleteShow(req, res, env);
       if (action === 'upload-show-image') return uploadShowImage(req, res, env);
+      if (action === 'upload-artista-photo') return uploadArtistaPhoto(req, res, env);
       if (action === 'set-show-images') return setShowImages(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
       if (action === 'add-artista') return addArtista(req, res, env);
