@@ -1361,22 +1361,69 @@ async function reviewShow(req, res, env) {
   const rows = await r.json();
   const show = rows[0];
 
-  // GHL sync best-effort: propaga estado_show siempre (approve/archive cambian
-  // status) y, en action=edit, también los campos del custom_object.
+  // GHL sync best-effort.
+  // Si el show NO tiene ghl_show_id y se está APROBANDO, lo creamos en GHL
+  // custom_objects.shows ahora (los shows auto-creados desde form/admin no
+  // tienen ghl_show_id hasta que pasan por approve). Spec Xavi 2026-05-28:
+  // aprobar = publicar en el catálogo + sincronizar a GHL.
   let ghl = null;
-  if (show && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
-    const props = { url_admin: adminUrlShow(env, show.id) };
-    if (update.status) props.estado_show = update.status;
-    if (action === 'edit') {
-      if ('name' in update) props.nombre_show = show.name || '';
-      if ('description' in update) props.descripcion_show = show.description || '';
-      if ('video_url' in update) props.url_video = show.video_url || '';
-      if ('image_url' in update) props.url_imagen = show.image_url || '';
+  if (show && env.GHL_TOKEN && env.GHL_LOC) {
+    if (!show.ghl_show_id && action === 'approve') {
+      // CREATE en GHL custom_objects.shows
+      const props = {
+        nombre_show: show.name || '',
+        url_admin: adminUrlShow(env, show.id),
+        estado_show: show.status || 'active'
+      };
+      if (show.description) props.descripcion_show = show.description;
+      if (show.video_url) props.url_video = show.video_url;
+      if (show.image_url) props.url_imagen = show.image_url;
+      const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
+        locationId: env.GHL_LOC, properties: props
+      });
+      if (g.ok) {
+        let ghlShowId = null;
+        try {
+          const parsed = JSON.parse(g.body);
+          ghlShowId = parsed.record?.id || parsed.id || null;
+        } catch {}
+        if (ghlShowId) {
+          // Persistir ghl_show_id en Supabase para futuras sync
+          await fetch(
+            `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(show.id)}`,
+            {
+              method: 'PATCH',
+              headers: {
+                apikey: env.SUPABASE_KEY,
+                Authorization: `Bearer ${env.SUPABASE_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ ghl_show_id: ghlShowId })
+            }
+          );
+          show.ghl_show_id = ghlShowId;
+          ghl = { created: true, ghl_show_id: ghlShowId, fields: Object.keys(props) };
+        } else {
+          ghl = { error: 'GHL response missing record id' };
+        }
+      } else {
+        ghl = { error: `GHL ${g.status}: ${g.body.slice(0, 200)}` };
+      }
+    } else if (show.ghl_show_id) {
+      // UPDATE — propaga estado_show y campos editados al record existente
+      const props = { url_admin: adminUrlShow(env, show.id) };
+      if (update.status) props.estado_show = update.status;
+      if (action === 'edit') {
+        if ('name' in update) props.nombre_show = show.name || '';
+        if ('description' in update) props.descripcion_show = show.description || '';
+        if ('video_url' in update) props.url_video = show.video_url || '';
+        if ('image_url' in update) props.url_imagen = show.image_url || '';
+      }
+      const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
+        properties: props
+      });
+      ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0, 200)}` };
     }
-    const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
-      properties: props
-    });
-    ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0,200)}` };
   }
   return res.status(200).json({ success: true, show, ghl });
 }
