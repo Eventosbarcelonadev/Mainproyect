@@ -2383,8 +2383,11 @@
           if (!proposalState.shows[i]) return;
           if (s.currentPrice) proposalState.shows[i].currentPrice = s.currentPrice;
           if (s.priceNote) proposalState.shows[i].priceNote = s.priceNote;
+          if (s.priceNoteEn) proposalState.shows[i].priceNoteEn = s.priceNoteEn;
           if (s.name) proposalState.shows[i].name = s.name;
+          if (s.nameEn) proposalState.shows[i].nameEn = s.nameEn;
           if (s.description) proposalState.shows[i].description = s.description;
+          if (s.descriptionEn) proposalState.shows[i].descriptionEn = s.descriptionEn;
           if (Array.isArray(s.extras)) proposalState.shows[i].extras = s.extras;
         });
         renderProposal();
@@ -2431,6 +2434,19 @@
     // =============================================
     // RENDER PROPOSAL
     // =============================================
+    // Devuelve la versión localizada de un campo del show según LANG actual.
+    // Cuando LANG='en' usamos el sufijo *En del catálogo (nameEn,
+    // descriptionEn, priceNoteEn, subcategoryEn). Fallback al campo base si
+    // el EN está vacío (covers shows que no tienen traducción aún).
+    function localizedShowField(show, base) {
+      if (!show) return '';
+      if (LANG === 'en') {
+        const enKey = base + 'En'; // nameEn, descriptionEn, priceNoteEn, subcategoryEn
+        if (show[enKey] != null && String(show[enKey]).trim()) return show[enKey];
+      }
+      return show[base] || '';
+    }
+
     function flushPendingEditableEdits() {
       // Vuelca a proposalState cualquier edición inline aún no persistida.
       // Defensa contra "edito el título y cambio el margen" — el blur del
@@ -2509,11 +2525,11 @@
             ${blockImageHTML}
             <div class="block-content">
               <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-show-field="contextLabel" data-show-index="${i}"` : ''}>${show.contextLabel}</div>
-              <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="name" data-show-index="${i}"` : ''}>${show.name}</h2>
-              <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="description" data-show-index="${i}"` : ''}>${show.description}</p>
+              <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'nameEn' : 'name'}" data-show-index="${i}"` : ''}>${localizedShowField(show, 'name')}</h2>
+              <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'descriptionEn' : 'description'}" data-show-index="${i}"` : ''}>${localizedShowField(show, 'description')}</p>
               <div class="block-footer">
                 <div class="block-price ${isAdmin ? 'editable' : ''}" data-price="${priceWithMargin}" data-index="${i}" ${isAdmin ? 'onclick="startPriceEdit(this, ' + i + ')"' : ''}>
-                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="priceNote" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${show.priceNote}</small>
+                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'priceNoteEn' : 'priceNote'}" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${localizedShowField(show, 'priceNote')}</small>
                 </div>
                 ${show.videoUrl ? `<a href="${show.videoUrl.replace('/embed/', '/watch?v=')}" target="_blank" class="btn-dark">${T.btnVideo}</a>` : ''}
               </div>
@@ -2531,7 +2547,7 @@
         total += price;
         summaryHTML += `
           <div class="summary-row" data-summary="${show.id}">
-            <span>${show.name} (${show.priceNote})</span>
+            <span>${localizedShowField(show, 'name')} (${localizedShowField(show, 'priceNote')})</span>
             <span>${formatPrice(price)}&euro;</span>
           </div>
         `;
@@ -3311,6 +3327,7 @@
               heroSub: proposalState.heroSub,
               shows: proposalState.shows.map(s => ({
                 id: s.id, name: s.name, description: s.description,
+                nameEn: s.nameEn, descriptionEn: s.descriptionEn, priceNoteEn: s.priceNoteEn,
                 currentPrice: s.currentPrice, contextLabel: s.contextLabel,
                 priceNote: s.priceNote, base_price: s.basePrice,
                 extras: Array.isArray(s.extras) ? s.extras : []
@@ -3504,6 +3521,9 @@
           id: s.id,
           name: s.name,
           description: s.description,
+          nameEn: s.nameEn,
+          descriptionEn: s.descriptionEn,
+          priceNoteEn: s.priceNoteEn,
           currentPrice: s.currentPrice,
           contextLabel: s.contextLabel,
           priceNote: s.priceNote,
