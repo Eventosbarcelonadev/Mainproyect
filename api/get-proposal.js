@@ -58,6 +58,9 @@ export default async function handler(req, res) {
         text: p.concept_text
       },
       heroSub: p.hero_sub,
+      heroSubEn: p.hero_sub_en || null,
+      conceptTitleEn: p.concept_title_en || null,
+      conceptTextEn: p.concept_text_en || null,
       heroImageUrl: p.hero_image_url || null,
       shows: typeof p.shows === 'string' ? JSON.parse(p.shows) : p.shows,
       globalMargin: p.global_margin,

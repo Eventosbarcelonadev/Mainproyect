@@ -2120,7 +2120,8 @@
       globalMargin: 0,
       hideSummary: false,
       heroImageUrl: null, // override admin: imagen elegida entre los shows
-      heroSub: null,      // override admin del subtítulo del hero (default: catConfig)
+      heroSub: null,      // override admin del subtítulo del hero ES (default: catConfig)
+      heroSubEn: null,    // override admin del subtítulo del hero EN
       // These get populated from proposal data
       client: {},
       event: {},
@@ -2368,8 +2369,15 @@
         proposalState.hideSummary = !!p.hideSummary;
         proposalState.heroImageUrl = p.heroImageUrl || null;
         // heroSub: si Xavi lo editó en admin, lo guardamos como override.
-        // El render lee proposalState.heroSub || catConfig.heroSub.
+        // El render lee proposalState.heroSub/heroSubEn según LANG, con
+        // fallback al catConfig si está vacío.
         proposalState.heroSub = (p.heroSub && p.heroSub.trim()) ? p.heroSub : null;
+        proposalState.heroSubEn = (p.heroSubEn && p.heroSubEn.trim()) ? p.heroSubEn : null;
+        // conceptEn → si vino del backend lo aplicamos al objeto concept
+        if (showsData.concept) {
+          if (p.conceptTitleEn) showsData.concept.titleEn = p.conceptTitleEn;
+          if (p.conceptTextEn) showsData.concept.textEn = p.conceptTextEn;
+        }
         // Condiciones custom: si la propuesta las tiene editadas, las usamos.
         // Si no, el render cae al default de T.conditions automáticamente.
         proposalState.conditions = Array.isArray(p.conditions) ? p.conditions : null;
@@ -2564,6 +2572,23 @@
         });
       });
 
+      // Resuelve campo i18n-aware: en EN usa el override *En del state,
+      // sino fallback al catConfig EN; en ES usa el campo base del state,
+      // sino fallback al catConfig ES. Permite que el toggle EN funcione
+      // sobre propuestas que tienen overrides escritos en ES.
+      const heroSubField = LANG === 'en' ? 'heroSubEn' : 'heroSub';
+      const conceptTitleField = LANG === 'en' ? 'titleEn' : 'title';
+      const conceptTextField = LANG === 'en' ? 'textEn' : 'text';
+      const heroSubValue = (proposalState[heroSubField] && String(proposalState[heroSubField]).trim())
+        ? proposalState[heroSubField]
+        : catConfig.heroSub;
+      const conceptTitleValue = (concept[conceptTitleField] && String(concept[conceptTitleField]).trim())
+        ? concept[conceptTitleField]
+        : (catConfig.conceptTitle || '');
+      const conceptTextValue = (concept[conceptTextField] && String(concept[conceptTextField]).trim())
+        ? concept[conceptTextField]
+        : (catConfig.conceptText || '');
+
       // Full HTML
       const html = `
         <!-- HERO -->
@@ -2580,15 +2605,15 @@
             </div>
           </div>
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
-          <p class="hero-sub ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? 'contenteditable="true" data-field="heroSub"' : ''}>${proposalState.heroSub != null ? proposalState.heroSub : catConfig.heroSub}</p>
+          <p class="hero-sub ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-field="${heroSubField}"` : ''}>${escapeHtmlText(heroSubValue)}</p>
           <p class="hero-detail">${event.date} &middot; ${event.type}</p>
         </div>
 
         <!-- CONCEPTO -->
         <div class="concept-section">
           <div class="section-label">${T.conceptLabel}</div>
-          <h2 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="concept.title"' : ''}>${concept.title}</h2>
-          <p ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="concept.text"' : ''}>${concept.text}</p>
+          <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-field="concept.${conceptTitleField}"` : ''}>${escapeHtmlText(conceptTitleValue)}</h2>
+          <p ${isAdmin ? `class="editable-text" contenteditable="true" data-field="concept.${conceptTextField}"` : ''}>${escapeHtmlText(conceptTextValue)}</p>
         </div>
 
         <!-- SHOW BLOCKS -->
@@ -3325,6 +3350,7 @@
               category: proposalState.category,
               concept: proposalState.concept,
               heroSub: proposalState.heroSub,
+              heroSubEn: proposalState.heroSubEn,
               shows: proposalState.shows.map(s => ({
                 id: s.id, name: s.name, description: s.description,
                 nameEn: s.nameEn, descriptionEn: s.descriptionEn, priceNoteEn: s.priceNoteEn,
@@ -3415,6 +3441,7 @@
         category: proposalState.category,
         concept: proposalState.concept,
         heroSub: proposalState.heroSub,
+        heroSubEn: proposalState.heroSubEn,
         shows: proposalState.shows.map(s => ({
           id: s.id,
           name: s.name,                // override admin del nombre del show
@@ -3517,6 +3544,7 @@
         category: proposalState.category,
         concept: proposalState.concept,
         heroSub: proposalState.heroSub,
+        heroSubEn: proposalState.heroSubEn,
         shows: proposalState.shows.map(s => ({
           id: s.id,
           name: s.name,
