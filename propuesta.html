@@ -1510,6 +1510,35 @@
 
     .btn-pdf:hover { background: rgba(255,255,255,0.2); }
 
+    .lang-toggle {
+      display: inline-flex;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-right: 4px;
+    }
+    .lang-toggle button {
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      border: none;
+      padding: 7px 14px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-toggle button.active {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+    .lang-toggle button:not(.active):hover {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+    }
+    body.print-mode .lang-toggle { display: none; }
+
     /* === TOAST === */
     .toast {
       position: fixed;
@@ -1767,6 +1796,10 @@
       </div>
     </div>
     <div class="admin-bar-right">
+      <div class="lang-toggle" id="langToggle" title="Cambiar idioma de la propuesta">
+        <button type="button" data-lang="es" onclick="toggleProposalLang('es')">ES</button>
+        <button type="button" data-lang="en" onclick="toggleProposalLang('en')">EN</button>
+      </div>
       <button class="btn-admin btn-pdf" onclick="exportPDF()">Exportar PDF</button>
       <button class="btn-admin btn-approve" onclick="showApproveModal()">Aprobar y enviar</button>
     </div>
@@ -3247,6 +3280,55 @@
       }
 
       meta.textContent = `${client.company} \u2014 ${event.type} \u2014 ${event.date}`;
+
+      // Marca el lang actual en el toggle
+      document.querySelectorAll('#langToggle button').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === LANG);
+      });
+    }
+
+    // Cambia el idioma de la propuesta: persiste lang en Supabase si la
+    // propuesta tiene id, y recarga con ?lang=. Si todav\u00eda no hay id
+    // guardado (modo builder), solo recarga con el query.
+    async function toggleProposalLang(target) {
+      if (target !== 'es' && target !== 'en') return;
+      if (target === LANG) return;
+      try {
+        flushPendingEditableEdits();
+        if (proposalState.proposalId) {
+          // Persistir el cambio antes de recargar para que la propuesta
+          // quede guardada en el nuevo idioma.
+          await fetch('/api/save-proposal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: proposalState.proposalId,
+              status: proposalState.status || 'revision',
+              client: proposalState.client,
+              event: proposalState.event,
+              category: proposalState.category,
+              concept: proposalState.concept,
+              heroSub: proposalState.heroSub,
+              shows: proposalState.shows.map(s => ({
+                id: s.id, name: s.name, description: s.description,
+                currentPrice: s.currentPrice, contextLabel: s.contextLabel,
+                priceNote: s.priceNote, base_price: s.basePrice,
+                extras: Array.isArray(s.extras) ? s.extras : []
+              })),
+              globalMargin: proposalState.globalMargin,
+              hideSummary: proposalState.hideSummary,
+              heroImageUrl: proposalState.heroImageUrl || null,
+              conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
+              lang: target,
+              ghlContactId: proposalState.ghlContactId || null,
+              ghlOpportunityId: proposalState.ghlOpportunityId || null
+            })
+          });
+        }
+      } catch (e) { console.error('toggle lang save error:', e); }
+      const params = new URLSearchParams(location.search);
+      params.set('lang', target);
+      location.assign(`${location.pathname}?${params.toString()}${location.hash}`);
     }
 
     // =============================================
