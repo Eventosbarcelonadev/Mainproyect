@@ -2296,16 +2296,38 @@
         origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
       };
 
+      let submitFailed = false;
+      let submitError = '';
       try {
         const res = await fetch('/api/lead-artista', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const result = await res.json();
-        if (!result.success) console.error('GHL error:', result);
+        const result = await res.json().catch(() => null);
+        if (!res.ok || !result || !result.success) {
+          submitFailed = true;
+          submitError = (result && (result.error || JSON.stringify(result))) || `HTTP ${res.status}`;
+          console.error('Lead artista error:', { status: res.status, result });
+        }
       } catch (err) {
+        submitFailed = true;
+        submitError = err.message || 'Network error';
         console.error('Submit error:', err);
+      }
+
+      if (submitFailed) {
+        btn.disabled = false;
+        btn.textContent = profileType === 'proveedor' ? 'Enviar mi ficha' : 'Enviar mi perfil';
+        // Inyecta un error visible debajo del botón
+        document.querySelectorAll('#step-4 .field-error.submit-error').forEach(e => e.remove());
+        const msg = document.createElement('div');
+        msg.className = 'field-error submit-error';
+        msg.style.textAlign = 'center';
+        msg.style.marginTop = '12px';
+        msg.textContent = 'No pudimos guardar tu ficha. Probá de nuevo en unos segundos. (Detalle: ' + submitError + ')';
+        document.querySelector('#step-4 .form-actions').after(msg);
+        return;
       }
 
       // Show success — adapt message for updates / proveedor
