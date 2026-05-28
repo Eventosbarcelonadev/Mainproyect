@@ -1388,11 +1388,15 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // Trim defensivo: las env vars de Vercel a veces vienen con \n al final
+  // (bug Xavi QA 2026-05-28: las URLs de imágenes quedaban con "\n" en
+  // medio, ej. https://...supabase.co\n/storage/... → 404 en el browser).
+  const trim = (v) => (typeof v === 'string' ? v.trim() : v);
   const env = {
-    SUPABASE_URL: process.env.SUPABASE_URL,
-    SUPABASE_KEY: process.env.SUPABASE_SERVICE_KEY,
-    GHL_TOKEN: process.env.GHL_API_KEY,
-    GHL_LOC: process.env.GHL_LOCATION_ID
+    SUPABASE_URL: trim(process.env.SUPABASE_URL),
+    SUPABASE_KEY: trim(process.env.SUPABASE_SERVICE_KEY),
+    GHL_TOKEN: trim(process.env.GHL_API_KEY),
+    GHL_LOC: trim(process.env.GHL_LOCATION_ID)
   };
   if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
     return res.status(500).json({ error: 'Supabase not configured' });
