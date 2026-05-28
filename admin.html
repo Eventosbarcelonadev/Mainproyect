@@ -85,6 +85,19 @@
       cursor: pointer;
     }
     .subtab.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .subtab-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px;
+      padding: 0 6px;
+      margin-left: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .subtab.active .subtab-badge { background: #fff; color: var(--dark); }
     .empty, .loading {
       text-align: center;
       padding: 80px 32px;
@@ -558,7 +571,7 @@
         <button class="subtab" data-substatus="no_image">Sin imagen</button>
         <button class="subtab" data-substatus="orphans">Sin artista asignado</button>
         <button class="subtab" data-substatus="archived">Archived</button>
-        <button class="subtab" data-substatus="pending_review">Pending review</button>
+        <button class="subtab" data-substatus="pending_review">Pending review<span class="subtab-badge hidden" id="pending-review-count">0</span></button>
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
@@ -1244,6 +1257,24 @@
       } catch (e) { return []; }
     }
 
+    // Refresca el badge "Pending review" con la cantidad de shows pendientes.
+    // Idempotente — llamarla siempre que cambie el listado de shows.
+    async function refreshPendingReviewBadge() {
+      try {
+        const r = await fetch('/api/admin?action=shows-pending&status=pending_review');
+        const d = await r.json();
+        const n = Array.isArray(d.shows) ? d.shows.length : 0;
+        const el = document.getElementById('pending-review-count');
+        if (!el) return;
+        if (n > 0) {
+          el.textContent = String(n);
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      } catch (e) { /* silencioso */ }
+    }
+
     async function loadShows() {
       $('shows-loading').classList.remove('hidden');
       $('shows-empty').classList.add('hidden');
@@ -1302,9 +1333,15 @@
           clearBtn.classList.add('hidden');
         }
 
-        if (!items.length) { $('shows-empty').classList.remove('hidden'); return; }
-        const grid = $('shows-grid');
-        for (const s of items) grid.appendChild(renderShowCard(s));
+        if (!items.length) { $('shows-empty').classList.remove('hidden'); }
+        else {
+          const grid = $('shows-grid');
+          for (const s of items) grid.appendChild(renderShowCard(s));
+        }
+
+        // Refresca el badge de "Pending review" (puede haber cambiado tras
+        // edit/archive/approve/delete sin importar el subtab actual)
+        refreshPendingReviewBadge();
 
         // Preload artistas for picker (background)
         loadAllArtistasForPicker();
@@ -2530,6 +2567,9 @@
     }
 
     applyHash();
+    // Carga el badge "Pending review" al boot — independiente del tab actual,
+    // así Xavi ve cuántos shows tiene que revisar apenas entra a /admin.
+    refreshPendingReviewBadge();
   </script>
 </body>
 </html>
