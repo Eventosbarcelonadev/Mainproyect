@@ -1,3 +1,105 @@
+// Helper: crea automáticamente un show vinculado al artista cuando llega
+// vía form web (1 artista = 1 show, Xavi 2026-05-26). Replica el patrón
+// de autoCreateShowForArtista de api/admin.js — duplicado intencional
+// porque las serverless functions de Vercel no comparten imports.
+async function autoCreateShowForArtistaPublic(SB_URL, SB_KEY, artista) {
+  if (!artista || !artista.id) return { error: 'artista without id' };
+  const hdr = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' };
+  const displayName = artista.nombre_artistico || artista.compania || artista.nombre || 'Show sin nombre';
+  const slug = String(displayName).toLowerCase()
+    .normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'show';
+
+  // Si el artista YA tiene show vinculado (porque hizo update u otro intento),
+  // no creamos otro. Devolver el existente.
+  try {
+    const existCheck = await fetch(
+      `${SB_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(artista.id)}&select=show_id&limit=1`,
+      { headers: hdr }
+    );
+    if (existCheck.ok) {
+      const rows = await existCheck.json();
+      if (rows.length) return { skipped: 'already_linked', show_id: rows[0].show_id };
+    }
+    const legacyCheck = await fetch(
+      `${SB_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(artista.id)}&select=id&limit=1`,
+      { headers: hdr }
+    );
+    if (legacyCheck.ok) {
+      const rows = await legacyCheck.json();
+      if (rows.length) return { skipped: 'already_linked_legacy', show_id: rows[0].id };
+    }
+  } catch (e) { /* sigue al insert */ }
+
+  // Dedup slug
+  let showId = slug;
+  try {
+    const ex = await fetch(
+      `${SB_URL}/rest/v1/shows?id=like.${encodeURIComponent(slug + '*')}&select=id`,
+      { headers: hdr }
+    );
+    if (ex.ok) {
+      const taken = new Set((await ex.json()).map(r => r.id));
+      if (taken.has(showId)) {
+        let n = 2;
+        while (taken.has(`${slug}-${n}`)) n++;
+        showId = `${slug}-${n}`;
+      }
+    }
+  } catch (e) { /* sigue con slug */ }
+
+  // Categoría derivada de disciplinas (mismo mapping que admin)
+  const DISC_MAP = {
+    danza: 'danza', musica: 'musica', 'música': 'musica',
+    circo: 'circo', wow: 'wow', 'wow effect': 'wow', proveedores: null
+  };
+  let category = null;
+  if (Array.isArray(artista.disciplinas) && artista.disciplinas.length) {
+    const first = String(artista.disciplinas[0]).toLowerCase().trim();
+    if (first in DISC_MAP) category = DISC_MAP[first];
+  }
+
+  const row = {
+    id: showId,
+    name: displayName,
+    category,
+    base_price: 0,
+    status: 'pending_review',
+    artista_id: artista.id,
+    submitted_at: new Date().toISOString()
+  };
+  let r = await fetch(`${SB_URL}/rest/v1/shows`, {
+    method: 'POST',
+    headers: { ...hdr, Prefer: 'return=representation' },
+    body: JSON.stringify(row)
+  });
+  // Fallback: si la migración category-nullable no se aplicó, retry con 'shows'
+  if (!r.ok && row.category == null) {
+    const txt = await r.clone().text();
+    if (/category.*not.*null|23502/i.test(txt)) {
+      row.category = 'shows';
+      r = await fetch(`${SB_URL}/rest/v1/shows`, {
+        method: 'POST',
+        headers: { ...hdr, Prefer: 'return=representation' },
+        body: JSON.stringify(row)
+      });
+    }
+  }
+  if (!r.ok) return { error: 'create_show_failed: ' + (await r.text()).slice(0, 160) };
+  const show = (await r.json())[0];
+
+  // Vincular en show_artistas (idempotente)
+  try {
+    await fetch(`${SB_URL}/rest/v1/show_artistas`, {
+      method: 'POST',
+      headers: { ...hdr, Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify({ show_id: show.id, artista_id: artista.id, posicion: 1, source: 'lead-artista-web' })
+    });
+  } catch (e) { /* legacy artista_id ya garantiza el vínculo */ }
+
+  return { ok: true, show_id: show.id, name: show.name, status: show.status, category: show.category };
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -435,6 +537,22 @@ export default async function handler(req, res) {
       }
     }
 
+    // 4b. Auto-crear show vinculado al artista (Xavi 2026-05-26: 1 artista = 1 show).
+    //     Solo para tipo=Artista (no proveedor), solo en submits nuevos
+    //     (no en updates), y solo si artistaId existe (Supabase upsert OK).
+    let autoShow = null;
+    if (artistaId && !isUpdate && tipoContacto === 'Artista') {
+      try {
+        autoShow = await autoCreateShowForArtistaPublic(
+          SUPABASE_URL, SUPABASE_KEY,
+          { id: artistaId, nombre: data.nombre, nombre_artistico: data.nombreArtistico, compania: data.compania, disciplinas: data.disciplinas }
+        );
+      } catch (e) {
+        console.error('Auto-show error:', e.message);
+        autoShow = { error: e.message };
+      }
+    }
+
     // 5. Update GHL contact with admin panel URL pointing to the artista in Supabase.
     //    Esta URL se usa desde el contacto en GHL para abrir la ficha del artista en /admin.
     if (artistaId) {
@@ -473,6 +591,7 @@ export default async function handler(req, res) {
       holdedId: holdedId,
       supabaseToken: supabaseToken,
       artistaId: artistaId,
+      autoShow: autoShow,
       updated: isUpdate
     });
 
