@@ -2298,6 +2298,19 @@
         }
 
         const p = result.proposal;
+
+        // Si la propuesta tiene `lang` distinto al que estamos renderizando
+        // y el usuario NO lo forzó vía ?lang= en la URL, redirigir para que
+        // la página cargue con el idioma correcto. Evita que una propuesta
+        // guardada en EN salga en ES (o viceversa).
+        const urlParams = new URLSearchParams(location.search);
+        const queryLangSet = urlParams.has('lang');
+        if (!queryLangSet && p.lang && p.lang !== LANG) {
+          urlParams.set('lang', p.lang);
+          location.replace(`${location.pathname}?${urlParams.toString()}${location.hash}`);
+          return;
+        }
+
         proposalState.proposalId = p.id;
         proposalState.status = p.status || 'revision';
         proposalState.ghlContactId = p.ghl_contact_id || null;
