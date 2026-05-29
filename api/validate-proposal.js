@@ -184,11 +184,36 @@ export default async function handler(req, res) {
         monetaryValue = shows.reduce((s, x) => s + (parseFloat(x.base_price || x.price || 0) || 0), 0);
       } catch (_) {}
 
+      // La URL validada (que va al CLIENTE) tiene que ser distinta a la del
+      // generador (que es para XAVI):
+      // - Quitar admin=1 → modo cliente, no editable. Spec Xavi 2026-05-29:
+      //   "la propuesta validada debería ser la definitiva, no se debería
+      //    poder editar y es la que aparece en el campo de propuesta validada".
+      // - Agregar &lang= si la propuesta tiene lang guardado (para que el
+      //   cliente la vea en el idioma correcto sin depender del redirect auto).
+      const buildClientUrl = (sourceUrl, lang) => {
+        if (!sourceUrl) return '';
+        try {
+          const u = new URL(sourceUrl);
+          u.searchParams.delete('admin');
+          if (lang === 'en' || lang === 'es') u.searchParams.set('lang', lang);
+          return u.toString();
+        } catch {
+          // Fallback string-replace si por alguna razón sourceUrl no es URL válida
+          let out = String(sourceUrl).replace(/[?&]admin=1/g, '').replace(/\?&/, '?');
+          if (lang === 'en' || lang === 'es') {
+            out += (out.includes('?') ? '&' : '?') + 'lang=' + lang;
+          }
+          return out;
+        }
+      };
+      const urlValidada = buildClientUrl(urlGenerador, proposal.lang);
+
       const customFields = [
         { id: OPP_VALIDAR_PROPUESTA, field_value: 'validada por Xavi' }
       ];
-      if (urlGenerador) {
-        customFields.push({ id: OPP_URL_PROPUESTA_VALIDADA, field_value: urlGenerador });
+      if (urlValidada) {
+        customFields.push({ id: OPP_URL_PROPUESTA_VALIDADA, field_value: urlValidada });
       }
       const oppBody = { customFields };
       if (monetaryValue > 0) oppBody.monetaryValue = monetaryValue;
