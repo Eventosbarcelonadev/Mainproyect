@@ -1,3 +1,38 @@
+// Inyecta el textarea "mensaje" en cada form .eb-form (de cliente) si todavía
+// no lo tiene. Permite agregar el campo sin tocar el HTML de Elementor en WP.
+// Se ejecuta inmediato al cargar el script + watcher por si el form aparece
+// después (lazy load).
+(function ebInjectMensaje(){
+  function inject(){
+    var forms = document.querySelectorAll('form.eb-form, form#eb-contact-form');
+    forms.forEach(function(form){
+      var tipo = form.getAttribute('data-form-type') || 'cliente';
+      // Solo para form cliente — para artista/proveedor no aplica
+      if (tipo !== 'cliente') return;
+      if (form.querySelector('textarea[name="mensaje"]')) return;
+      var check = form.querySelector('.eb-check, .eb-submit, button[type="submit"]');
+      if (!check) return;
+      var row = document.createElement('div');
+      row.className = 'eb-row';
+      row.style.marginTop = '8px';
+      row.innerHTML = '<textarea name="mensaje" placeholder="Cuéntanos brevemente sobre tu evento (opcional)" rows="3" style="width:100%;resize:vertical;font-family:inherit;font-size:inherit;padding:12px 16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;"></textarea>';
+      check.parentNode.insertBefore(row, check);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inject);
+  } else {
+    inject();
+  }
+  // Watcher por si el form aparece después (Elementor lazy load)
+  var tries = 0;
+  var iv = setInterval(function(){
+    tries++;
+    inject();
+    if (tries > 20) clearInterval(iv);
+  }, 500);
+})();
+
 function ebSubmit(form){
   var d=Object.fromEntries(new FormData(form));
   var btn=form.querySelector('.eb-submit');
