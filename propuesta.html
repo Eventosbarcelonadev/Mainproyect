@@ -3521,10 +3521,13 @@
     // navega a esta misma página con ?print=1, captura A4 y lo sube a
     // Supabase Storage + GHL. Devuelve la URL pública del PDF.
     async function generateProposalPdf(proposalId) {
+      // Pasar el LANG actual al backend para que Puppeteer abra la página
+      // directo en ese idioma (sin depender del redirect automático que en
+      // print-mode puede ganarle la carrera a Puppeteer y capturar en ES).
       const r = await fetch('/api/generate-proposal-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proposalId })
+        body: JSON.stringify({ proposalId, lang: LANG })
       });
       const data = await r.json();
       if (!r.ok || !data.success) throw new Error(data.error || `pdf ${r.status}`);

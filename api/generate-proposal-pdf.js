@@ -72,13 +72,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Missing env config' });
   }
 
-  const { proposalId } = req.body || {};
+  const { proposalId, lang } = req.body || {};
   if (!proposalId) return res.status(400).json({ error: 'proposalId required' });
 
   // Base URL del deployment (la propia página que renderizamos).
   const proto = (req.headers['x-forwarded-proto'] || 'https').split(',')[0];
   const baseUrl = process.env.PUBLIC_BASE_URL || `${proto}://${req.headers.host}`;
-  const pageUrl = `${baseUrl}/propuesta.html?id=${encodeURIComponent(proposalId)}&print=1`;
+  // Si el cliente pasa lang explícito, lo incluimos en la URL para que
+  // Puppeteer cargue directo en ese idioma (Xavi QA 2026-05-29: sin esto,
+  // el redirect automático que detecta proposals.lang puede llegar tarde
+  // y Puppeteer captura el PDF en ES por default).
+  const langParam = (lang === 'en' || lang === 'es') ? `&lang=${lang}` : '';
+  const pageUrl = `${baseUrl}/propuesta.html?id=${encodeURIComponent(proposalId)}&print=1${langParam}`;
 
   let browser;
   try {
