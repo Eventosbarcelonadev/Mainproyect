@@ -15,7 +15,9 @@
       var row = document.createElement('div');
       row.className = 'eb-row';
       row.style.marginTop = '8px';
-      row.innerHTML = '<textarea name="mensaje" placeholder="Cuéntanos brevemente sobre tu evento (opcional)" rows="3" style="width:100%;resize:vertical;font-family:inherit;font-size:inherit;padding:12px 16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;"></textarea>';
+      // Estilo que matchea los otros inputs del .eb-form: sin caja, solo
+      // border-bottom gris, fondo transparente, texto color del theme.
+      row.innerHTML = '<textarea name="mensaje" placeholder="Cuéntanos brevemente sobre tu evento (opcional)" rows="3" style="width:100%!important;padding:16px 0!important;border:none!important;border-bottom:1px solid #ddd!important;background:transparent!important;color:inherit!important;font-family:inherit!important;font-size:inherit!important;resize:vertical;outline:none;min-height:80px;box-sizing:border-box;"></textarea>';
       check.parentNode.insertBefore(row, check);
     });
   }
