@@ -2399,7 +2399,8 @@
           if (Array.isArray(s.extras)) proposalState.shows[i].extras = s.extras;
         });
         renderProposal();
-        if (isAdmin) {
+        // showAdminBar incluye approved (mostrar toggle + PDF) y revision (todo).
+        if (proposalState.showAdminBar) {
           document.getElementById('adminBar').classList.add('visible');
           updateAdminBar();
         }
@@ -2414,7 +2415,11 @@
       proposalState.event = data.event;
       proposalState.category = data.category;
       proposalState.concept = data.concept;
-      proposalState.isAdmin = isAdmin;
+      // showAdminBar: el usuario abrió ?admin=1 → mostrar toggle ES/EN + Exportar PDF
+      // isAdmin: edición real. Si la propuesta ya está aprobada queda CONGELADA
+      //   aunque el usuario abra con admin=1 (Spec Xavi 2026-05-29).
+      proposalState.showAdminBar = isAdmin;
+      proposalState.isAdmin = isAdmin && proposalState.status !== 'approved';
       proposalState.shows = data.shows.map(id => {
         const show = SHOW_CATALOG[id];
         if (!show) return null;
@@ -3326,6 +3331,14 @@
       document.querySelectorAll('#langToggle button').forEach(b => {
         b.classList.toggle('active', b.dataset.lang === LANG);
       });
+
+      // Si la propuesta est\u00e1 aprobada, congelar la edici\u00f3n: ocultar el bot\u00f3n
+      // "Aprobar y enviar" (ya aprobada) y dejar el admin-bar con toggle ES/EN
+      // + Exportar PDF \u00fanicamente. Spec Xavi 2026-05-29.
+      const approveBtn = document.querySelector('.btn-admin.btn-approve');
+      if (approveBtn) {
+        approveBtn.style.display = (proposalState.status === 'approved') ? 'none' : '';
+      }
     }
 
     // Cambia el idioma de la propuesta: persiste lang en Supabase si la
