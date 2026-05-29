@@ -1665,7 +1665,9 @@
     body.print-mode .block-remove,
     body.print-mode .summary-remove,
     body.print-mode .add-show-block,
-    body.print-mode .margin-control { display: none !important; }
+    body.print-mode .margin-control,
+    body.print-mode .btn-approve-client,
+    body.print-mode .cta-section { display: none !important; }
     body.print-mode {
       background: #fff;
       -webkit-print-color-adjust: exact;
@@ -1675,7 +1677,19 @@
     body.print-mode .hero { page-break-after: always; break-after: page; }
     body.print-mode .block,
     body.print-mode .summary-section,
+    body.print-mode .stats-section,
+    body.print-mode .about-section,
+    body.print-mode .concept-section,
+    body.print-mode .conditions-section,
     body.print-mode .footer { page-break-inside: avoid; break-inside: avoid; }
+    /* Forzar salto de página antes de bloques grandes para evitar cortes feos */
+    body.print-mode .stats-section,
+    body.print-mode .summary-section,
+    body.print-mode .about-section { page-break-before: auto; break-before: auto; }
+    /* Las imágenes nunca se cortan entre páginas */
+    body.print-mode .block-image,
+    body.print-mode .hero-bg-image,
+    body.print-mode .stat-number { page-break-inside: avoid; break-inside: avoid; }
   </style>
 </head>
 <body>
