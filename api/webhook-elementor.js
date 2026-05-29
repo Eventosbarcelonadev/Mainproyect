@@ -164,7 +164,9 @@ export default async function handler(req, res) {
     if (!empresa) empresa = fields.field_2 || '';
     if (!emailValue) emailValue = fields.field_3 || '';
     if (!phoneValue) phoneValue = fields.field_4 || '';
-    if (!mensaje) mensaje = fields.field_5 || fields.field_6 || '';
+    // mensaje: aceptar también el campo directo "mensaje" que manda eb-form.js
+    // (mini-form de /contacto/) además de los field_5/field_6 de Elementor.
+    if (!mensaje) mensaje = fields.mensaje || fields.field_5 || fields.field_6 || '';
 
     const formName = raw.form_name || raw.form_id || raw['form_name'] || 'elementor-form';
     // origen_pagina viene del hidden field que WP inyecta a partir del ?from=

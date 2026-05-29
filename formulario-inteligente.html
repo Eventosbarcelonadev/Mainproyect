@@ -1499,6 +1499,11 @@
         if (params.get('telefono')) document.getElementById('f-phone').value = params.get('telefono');
         if (params.get('web')) document.getElementById('f-web').value = params.get('web');
         if (params.get('cargo')) document.getElementById('f-cargo').value = params.get('cargo');
+        // Mensaje del mini-form de /contacto/ → pre-rellena step 5 (comentarios).
+        if (params.get('mensaje')) {
+          var tx = document.getElementById('f-comentarios');
+          if (tx) tx.value = params.get('mensaje');
+        }
         goToStep(2);
       }
     })();

@@ -31,13 +31,35 @@ function ebSubmit(form){
       window.location.href=base+'formulario-artistas'+suffix+params;
     });
   } else {
-    params+='&empresa='+encodeURIComponent(d.empresa||'');
+    params+='&empresa='+encodeURIComponent(d.empresa||'')
+      +(d.mensaje?'&mensaje='+encodeURIComponent(d.mensaje):'');
+    // Origen: captura el slug de la URL (?from=) o el referrer al cargar la
+    // página /contacto/. Se manda al webhook como hidden info y se persiste
+    // en sessionStorage por si después abandona el wizard.
+    var qs=new URLSearchParams(location.search);
+    var originSlug=qs.get('from')||qs.get('origin')||'';
+    if(!originSlug && document.referrer){
+      try{
+        var u=new URL(document.referrer);
+        if(u.hostname.indexOf('eventosbarcelona.com')>=0){
+          originSlug=u.pathname.replace(/^\/+|\/+$/g,'').split('/').filter(Boolean).pop()||'';
+        }
+      }catch(e){}
+    }
     fetch(base+'api/webhook-elementor',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         form_name:'contacto-web',
-        form_fields:{name:d.nombre,email:d.empresa,field_7bfecee:d.email,field_016bf1b:d.telefono},
+        form_fields:{
+          name:d.nombre,
+          email:d.empresa,
+          field_7bfecee:d.email,
+          field_016bf1b:d.telefono,
+          mensaje:d.mensaje||'',
+          origen_pagina:originSlug
+        },
+        page_url:document.referrer||location.href,
         privacidad_aceptada:'Si',
         lang:isEn?'en':'es'
       })
