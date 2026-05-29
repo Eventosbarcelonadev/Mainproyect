@@ -30,6 +30,11 @@ export default async function handler(req, res) {
   // lead sin tener que preguntar al cliente. Antes (Elementor) lo veía por formName.
   const extractPageSlug = (pageUrl) => {
     if (!pageUrl) return '';
+    // Si ya es un slug directo (sin protocolo, ej. "jazz-barcelona" del hidden
+    // field origen_pagina), lo devolvemos limpio.
+    if (!/^https?:\/\//i.test(pageUrl)) {
+      return String(pageUrl).trim().replace(/^\/+|\/+$/g, '').split('/').filter(Boolean).pop() || '';
+    }
     try {
       const u = new URL(pageUrl);
       const last = u.pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean).pop();
@@ -162,7 +167,16 @@ export default async function handler(req, res) {
     if (!mensaje) mensaje = fields.field_5 || fields.field_6 || '';
 
     const formName = raw.form_name || raw.form_id || raw['form_name'] || 'elementor-form';
-    const pageUrl = raw.page_url || raw.referrer || raw['referrer'] || '';
+    // origen_pagina viene del hidden field que WP inyecta a partir del ?from=
+    // (CTAs de cada página linkean con ?from=<slug>; JS en /contacto/ lo copia
+    // al form Elementor). Tiene prioridad sobre page_url porque page_url casi
+    // siempre es "/contacto/" — no la página de la que vino el cliente.
+    const originFromField = (fields.origen_pagina || fields['origen_pagina'] || '').toString().trim();
+    const pageUrl = originFromField
+      || raw.page_url
+      || raw.referrer
+      || raw['referrer']
+      || '';
 
     console.log('Mapped:', { nombre, empresa, emailValue, phoneValue, mensaje, fecha, formName });
 
