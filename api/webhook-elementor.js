@@ -293,6 +293,12 @@ export default async function handler(req, res) {
       const oppName = nombre
         ? `${nombre}${phoneValue ? ' - ' + phoneValue : (emailValue ? ' - ' + emailValue : '')}`
         : (empresa || emailValue || phoneValue || 'Lead');
+      // Propagar el mensaje del cliente como comentarios_adicionales del opp.
+      // Así Xavi lo ve directo en el opportunity sin tener que abrir la nota
+      // del contacto. Si después llenan el form inteligente, lead-cliente.js
+      // sobreescribe con el mensaje extendido del wizard.
+      const oppCustomFields = [];
+      if (mensaje) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: mensaje });
       const oppBody = {
         locationId: LOC,
         pipelineId: PIPELINE,
@@ -301,7 +307,8 @@ export default async function handler(req, res) {
         name: oppName,
         status: 'open',
         monetaryValue: 0,
-        source: sourceLabel
+        source: sourceLabel,
+        customFields: oppCustomFields
       };
 
       const oppRes = await fetch(`${API}/opportunities/`, {
