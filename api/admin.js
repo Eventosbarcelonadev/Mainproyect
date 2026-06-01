@@ -711,10 +711,17 @@ async function autoCreateShowForArtista(env, artista) {
   // catálogo no quede vacía. image_url = primera foto (legacy single-image).
   const artistaFotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
 
+  // Subcategoría: disciplinas[1] si hay (la 0 ya es category)
+  const discsArr = Array.isArray(artista.disciplinas) ? artista.disciplinas.filter(Boolean) : [];
+  const subcategory = discsArr.length > 1 ? String(discsArr[1]).trim() : null;
+
   const row = {
     id: showId,
     name: displayName,
     category,
+    subcategory,
+    description: (artista.bio_show && String(artista.bio_show).trim()) || null,
+    video_url: (artista.video1 && String(artista.video1).trim()) || null,
     base_price: 0,
     status: 'pending_review',
     artista_id: artista.id,
@@ -976,14 +983,14 @@ async function editArtista(req, res, env) {
   // url_supabase, tipo, nombre) desde estado Supabase actual. Idempotente.
   const ghlSync = await syncArtistaToGhlFull(env, artista);
 
-  // Si se actualizaron las fotos del artista, propagar a shows vinculados que
-  // no tengan imagen propia (no pisamos shows con imagen ya cargada).
+  // Propagar a shows vinculados los campos del artista que se acabaron de
+  // actualizar (foto, bio, video, subcategoría). NO pisa shows con campo
+  // propio ya cargado. Solo corremos si el patch tocó algún campo relevante.
   let showsSync = { updated: 0 };
-  if ('fotos_urls' in update) {
-    try {
-      const fotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
-      showsSync = await propagateFotosToEmptyShows(env, id, fotos);
-    } catch (e) { showsSync = { updated: 0, error: e.message }; }
+  const PROPAGATABLE = ['fotos_urls', 'bio_show', 'video1', 'disciplinas'];
+  if (PROPAGATABLE.some(f => f in update)) {
+    try { showsSync = await propagateArtistaDataToEmptyShows(env, id, artista); }
+    catch (e) { showsSync = { updated: 0, error: e.message }; }
   }
 
   return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, shows_sync: showsSync, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
@@ -1486,20 +1493,28 @@ async function uploadShowImage(req, res, env) {
   return await patchShowImages(env, id, nextArray, res, publicUrl);
 }
 
-// Sube una foto al artista. Misma lógica que uploadShowImage pero contra
-// la columna artistas.fotos_urls. Usa el bucket artist-assets.
-// Cuando se sube una foto al artista (o se setea fotos_urls vía edit), los
-// shows vinculados que NO tengan image_url propio se quedan vacíos en la DB
-// (la card del listing usa fallback al artista, pero el show en sí no tenía
-// imagen). Este helper propaga la primera foto del artista a esos shows
-// huérfanos de imagen — no pisa los que ya tienen foto propia.
-async function propagateFotosToEmptyShows(env, artistaId, fotos) {
-  if (!Array.isArray(fotos) || !fotos.length) return { updated: 0 };
+// Propaga datos del artista a los shows vinculados que tengan los campos
+// vacíos. NO pisa shows con campo ya cargado. Campos propagados:
+//   - image_url + image_urls ← artista.fotos_urls
+//   - description ← artista.bio_show
+//   - video_url ← artista.video1
+//   - subcategory ← artista.disciplinas[1] (la primera ya es category)
+// Se llama desde uploadArtistaPhoto, edit-artista, y el script de backfill.
+async function propagateArtistaDataToEmptyShows(env, artistaId, artista) {
   const sbHdr = {
     apikey: env.SUPABASE_KEY,
     Authorization: `Bearer ${env.SUPABASE_KEY}`,
     'Content-Type': 'application/json'
   };
+
+  const fotos = Array.isArray(artista?.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
+  const bio = (artista?.bio_show || '').trim();
+  const video = (artista?.video1 || '').trim();
+  const discs = Array.isArray(artista?.disciplinas) ? artista.disciplinas.filter(Boolean) : [];
+  const subcat = discs.length > 1 ? String(discs[1]).trim() : '';
+
+  // Si artista no tiene NADA que aportar, salir temprano
+  if (!fotos.length && !bio && !video && !subcat) return { updated: 0, no_data: true };
 
   // 1. Recolectar shows vinculados (N:M + legacy FK), sin duplicar
   const linkedIds = new Set();
@@ -1517,32 +1532,42 @@ async function propagateFotosToEmptyShows(env, artistaId, fotos) {
   } catch (e) { return { updated: 0, error: e.message }; }
   if (!linkedIds.size) return { updated: 0 };
 
-  // 2. Filtrar los que ya tienen imagen propia (no pisamos)
+  // 2. Leer estado actual de los shows
   const idsList = [...linkedIds];
   const showsRes = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/shows?id=in.(${idsList.map(encodeURIComponent).join(',')})&select=id,image_url,image_urls`,
+    `${env.SUPABASE_URL}/rest/v1/shows?id=in.(${idsList.map(encodeURIComponent).join(',')})&select=id,image_url,image_urls,description,video_url,subcategory`,
     { headers: sbHdr }
   );
   if (!showsRes.ok) return { updated: 0, error: await showsRes.text() };
   const shows = await showsRes.json();
-  const targets = shows.filter(s => {
-    const hasUrl = s.image_url && String(s.image_url).trim();
-    const hasArr = Array.isArray(s.image_urls) && s.image_urls.filter(Boolean).length > 0;
-    return !hasUrl && !hasArr;
-  });
-  if (!targets.length) return { updated: 0 };
 
-  // 3. PATCH cada show con image_url + image_urls = fotos del artista
+  // 3. Para cada show, construir patch SOLO con campos que están vacíos
   let updated = 0;
-  for (const s of targets) {
+  const fieldsByShow = {};
+  for (const s of shows) {
+    const patch = {};
+    const hasImgUrl = s.image_url && String(s.image_url).trim();
+    const hasImgArr = Array.isArray(s.image_urls) && s.image_urls.filter(Boolean).length > 0;
+    if (fotos.length && !hasImgUrl && !hasImgArr) {
+      patch.image_url = fotos[0];
+      patch.image_urls = fotos;
+    }
+    if (bio && !(s.description && String(s.description).trim())) patch.description = bio;
+    if (video && !(s.video_url && String(s.video_url).trim())) patch.video_url = video;
+    if (subcat && !(s.subcategory && String(s.subcategory).trim())) patch.subcategory = subcat;
+
+    if (Object.keys(patch).length === 0) continue;
     const r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(s.id)}`, {
-      method: 'PATCH',
-      headers: sbHdr,
-      body: JSON.stringify({ image_url: fotos[0], image_urls: fotos })
+      method: 'PATCH', headers: sbHdr, body: JSON.stringify(patch)
     });
-    if (r.ok) updated++;
+    if (r.ok) { updated++; fieldsByShow[s.id] = Object.keys(patch); }
   }
-  return { updated, target_show_ids: targets.map(s => s.id) };
+  return { updated, fields_by_show: fieldsByShow };
+}
+
+// Alias retrocompatible (algunos sitios viejos llaman al nombre original).
+async function propagateFotosToEmptyShows(env, artistaId, fotos) {
+  return propagateArtistaDataToEmptyShows(env, artistaId, { fotos_urls: fotos });
 }
 
 async function uploadArtistaPhoto(req, res, env) {
