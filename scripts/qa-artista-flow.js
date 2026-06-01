@@ -155,6 +155,51 @@ const assert = (cond, msg) => cond ? ok(msg) : (failures++, fail(msg));
   console.log('');
 
   // ============================================================
+  // 5b. create-show-from-artista — verificar que un SEGUNDO show
+  //     se crea con TODOS los datos del artista (bio, video, fotos, etc).
+  //     Antes lo enriquecemos con bio + video.
+  // ============================================================
+  info('5b. PATCH artista: cargar bio + video (para que el siguiente show los herede)');
+  const testBio = 'Bio QA: artista de prueba para verificar prefill del show.';
+  const testVideo = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  await fetch(`${PROD_API}/api/admin?action=edit-artista`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: artistaId,
+      patch: { bio_show: testBio, video1: testVideo }
+    })
+  });
+
+  info('5c. POST create-show-from-artista (botón nuevo en /admin)');
+  const csfaRes = await fetch(`${PROD_API}/api/admin?action=create-show-from-artista`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ artistaId })
+  });
+  const csfa = await csfaRes.json();
+  assert(csfaRes.ok, `create-show-from-artista respondió ${csfaRes.status}`);
+  assert(csfa.success === true, `csfa.success = true`);
+  const newShow = csfa.show || {};
+  assert(!!newShow.id && newShow.id !== show.id, `nuevo show id distinto al auto-creado (auto=${show.id}, nuevo=${newShow.id})`);
+  assert(newShow.status === 'pending_review', `nuevo show.status = 'pending_review' (es '${newShow.status}')`);
+  assert(newShow.description === testBio, `nuevo show.description = bio del artista`);
+  assert(newShow.video_url === testVideo, `nuevo show.video_url = video1 del artista`);
+  assert(newShow.image_url === testFoto, `nuevo show.image_url = fotos_urls[0] del artista`);
+  assert(Array.isArray(newShow.image_urls) && newShow.image_urls.includes(testFoto), `nuevo show.image_urls incluye la foto`);
+  assert(newShow.category === 'danza', `nuevo show.category = 'danza' (es '${newShow.category}')`);
+  assert(newShow.artista_id === artistaId, `nuevo show.artista_id = artista (legacy FK)`);
+
+  // Verificar vínculo show_artistas
+  const sa2Res = await fetch(
+    `${SB_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(newShow.id)}&artista_id=eq.${artistaId}&select=*`,
+    { headers: sbHdr }
+  );
+  const sa2 = await sa2Res.json();
+  assert(sa2.length === 1, `show_artistas tiene fila para el nuevo show (tiene ${sa2.length})`);
+  console.log('');
+
+  // ============================================================
   // 6. CLEANUP — delete-artista
   // ============================================================
   info('6. POST /api/admin?action=delete-artista (cleanup)');
@@ -165,7 +210,7 @@ const assert = (cond, msg) => cond ? ok(msg) : (failures++, fail(msg));
   });
   const delData = await delRes.json();
   assert(delRes.ok, `delete-artista respondió ${delRes.status}`);
-  assert(delData.deleted_shows >= 1, `borró ≥1 show huérfano (borró ${delData.deleted_shows})`);
+  assert(delData.deleted_shows >= 2, `borró ambos shows huérfanos (borró ${delData.deleted_shows})`);
 
   // Verificar que NO queda en Supabase
   const afterArt = await (await fetch(`${SB_URL}/rest/v1/artistas?id=eq.${artistaId}`, { headers: sbHdr })).json();
