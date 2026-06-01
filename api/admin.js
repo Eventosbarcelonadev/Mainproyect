@@ -775,6 +775,135 @@ async function autoCreateShowForArtista(env, artista) {
   return { ok: true, show_id: show.id, name: show.name, status: show.status, category: show.category };
 }
 
+// Crea un NUEVO show pre-llenado con todos los datos del artista (bio, video,
+// fotos, disciplinas → category). A diferencia de autoCreateShowForArtista
+// (que corre 1 vez al crear el artista), este se llama desde el modal artista
+// con el botón "+ Crear show con datos del artista" y permite múltiples shows
+// por artista. NO dedupea — siempre crea uno nuevo con sufijo -2/-3 si hace falta.
+async function createShowFromArtista(req, res, env) {
+  const { artistaId } = req.body || {};
+  if (!artistaId) return res.status(400).json({ error: 'Missing artistaId' });
+  if (!UUID_RE.test(artistaId)) return res.status(400).json({ error: 'artistaId must be a UUID' });
+
+  const sbHdr = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Leer artista completo
+  const ar = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(artistaId)}&select=*`,
+    { headers: sbHdr }
+  );
+  if (!ar.ok) return res.status(ar.status).json({ error: await ar.text() });
+  const arRows = await ar.json();
+  if (!arRows.length) return res.status(404).json({ error: 'Artista no encontrado' });
+  const artista = arRows[0];
+
+  const displayName = artista.nombre_artistico || artista.compania || artista.nombre || 'Show sin nombre';
+
+  // 2. Categoría desde disciplinas[0]
+  const DISC_MAP = {
+    danza: 'danza', musica: 'musica', 'música': 'musica',
+    circo: 'circo', wow: 'wow', 'wow effect': 'wow',
+    proveedores: null
+  };
+  let category = null;
+  let subcategory = null;
+  const discs = Array.isArray(artista.disciplinas) ? artista.disciplinas.filter(Boolean) : [];
+  if (discs.length) {
+    const first = String(discs[0]).toLowerCase().trim();
+    if (first in DISC_MAP) category = DISC_MAP[first];
+    if (discs.length > 1) subcategory = String(discs[1]).trim();
+  }
+
+  // 3. Slug único — siempre permitimos N shows por artista
+  const baseSlug = slugifyShowName(displayName);
+  let showId = baseSlug;
+  try {
+    const ex = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?id=like.${encodeURIComponent(baseSlug + '*')}&select=id`,
+      { headers: sbHdr }
+    );
+    if (ex.ok) {
+      const taken = new Set((await ex.json()).map(r => r.id));
+      if (taken.has(showId)) {
+        let n = 2;
+        while (taken.has(`${baseSlug}-${n}`)) n++;
+        showId = `${baseSlug}-${n}`;
+      }
+    }
+  } catch (e) { /* seguimos con baseSlug */ }
+
+  // 4. Fotos: copiamos todas las del artista
+  const fotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
+
+  // 5. Insert row
+  const row = {
+    id: showId,
+    name: displayName,
+    category,
+    subcategory,
+    description: artista.bio_show || null,
+    base_price: 0,
+    price_note: null,
+    video_url: artista.video1 || null,
+    image_url: fotos[0] || null,
+    image_urls: fotos.length ? fotos : null,
+    status: 'pending_review',
+    artista_id: artista.id,
+    submitted_at: new Date().toISOString()
+  };
+
+  let r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows`, {
+    method: 'POST',
+    headers: { ...sbHdr, Prefer: 'return=representation' },
+    body: JSON.stringify(row)
+  });
+  // Fallback si la migración category-nullable no se aplicó
+  if (!r.ok && row.category == null) {
+    const txt = await r.clone().text();
+    if (/category.*not.*null|23502/i.test(txt)) {
+      row.category = 'shows';
+      r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows`, {
+        method: 'POST',
+        headers: { ...sbHdr, Prefer: 'return=representation' },
+        body: JSON.stringify(row)
+      });
+    }
+  }
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const created = await r.json();
+  const show = Array.isArray(created) ? created[0] : created;
+
+  // 6. Vincular en show_artistas (N:M, posición 1)
+  try {
+    await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas`, {
+      method: 'POST',
+      headers: { ...sbHdr, Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify({
+        show_id: show.id, artista_id: artista.id, posicion: 1,
+        source: 'admin-create-from-artista'
+      })
+    });
+  } catch (e) { /* legacy artista_id ya garantiza el vínculo */ }
+
+  return res.status(200).json({
+    success: true,
+    show,
+    artista_id: artista.id,
+    copied_fields: {
+      name: !!row.name,
+      category: !!row.category,
+      subcategory: !!row.subcategory,
+      description: !!row.description,
+      video_url: !!row.video_url,
+      image_urls_count: fotos.length
+    }
+  });
+}
+
 async function editArtista(req, res, env) {
   const { id, patch } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -1648,10 +1777,11 @@ export default async function handler(req, res) {
       if (action === 'add-artista') return addArtista(req, res, env);
       if (action === 'edit-artista') return editArtista(req, res, env);
       if (action === 'delete-artista') return deleteArtista(req, res, env);
+      if (action === 'create-show-from-artista') return createShowFromArtista(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

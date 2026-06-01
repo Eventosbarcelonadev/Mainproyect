@@ -704,7 +704,10 @@
       <label>Bio / descripción</label>
       <textarea id="art-bio" rows="3"></textarea>
 
-      <div class="art-section-title">Shows vinculados</div>
+      <div class="art-section-title" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span>Shows vinculados</span>
+        <button type="button" class="btn btn-primary hidden" id="art-create-show" style="font-size:12px;padding:6px 14px;">+ Crear show con estos datos</button>
+      </div>
       <div id="art-shows-list" class="art-shows-list"></div>
 
       <div class="actions">
@@ -1950,6 +1953,10 @@
       fillArtistaModalCommon(a);
       $('art-delete').classList.remove('hidden');
       $('art-delete').textContent = 'Eliminar ' + (a && a.tipo === 'proveedor' ? 'proveedor' : a && a.tipo === 'venue' ? 'venue' : 'artista');
+      // Botón crear show solo para tipo='artista' (proveedores no tienen shows)
+      const showBtn = $('art-create-show');
+      if (a && a.tipo === 'artista') showBtn.classList.remove('hidden');
+      else showBtn.classList.add('hidden');
       $('art-modal-backdrop').classList.add('open');
     }
     function openAddArtistaModal(tipo) {
@@ -1960,6 +1967,7 @@
       $('art-modal-sub').textContent = 'Se creará en Supabase y en GHL';
       fillArtistaModalCommon({ tipo: _addingTipo });
       $('art-delete').classList.add('hidden');
+      $('art-create-show').classList.add('hidden'); // requiere artista guardado
       $('art-modal-backdrop').classList.add('open');
     }
     function closeArtistaModal() {
@@ -2088,8 +2096,44 @@
         btn.textContent = orig;
       }
     }
+    async function createShowFromArtistaModal() {
+      if (!_editingArtista || !_editingArtista.id) return;
+      const a = _editingArtista;
+      const fotos = Array.isArray(a.fotos_urls) ? a.fotos_urls.length : 0;
+      const summary = [
+        a.bio_show ? '· bio/descripción' : null,
+        a.video1 ? '· vídeo principal' : null,
+        fotos ? `· ${fotos} foto${fotos === 1 ? '' : 's'}` : null,
+        (a.disciplinas && a.disciplinas.length) ? `· disciplinas (${a.disciplinas.join(', ')})` : null
+      ].filter(Boolean).join('\n');
+      const msg = `Se va a crear un nuevo show pre-cargado con los datos del artista "${artistaDisplayName(a)}":\n\n${summary || '(sin datos extra cargados)'}\n\nDespués podrás ajustar nombre, precio, etc. en el modal de edición.\n\n¿Continuar?`;
+      if (!confirm(msg)) return;
+      const btn = $('art-create-show');
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Creando…';
+      try {
+        const r = await fetch('/api/admin?action=create-show-from-artista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ artistaId: a.id })
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || 'Error creando show'); return; }
+        closeArtistaModal();
+        await loadShows();
+        // Abrir el modal del show recién creado para ajustar nombre/precio/etc.
+        openEditShowModal(d.show);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    }
     $('art-cancel').addEventListener('click', closeArtistaModal);
     $('art-delete').addEventListener('click', deleteArtistaFromModal);
+    $('art-create-show').addEventListener('click', createShowFromArtistaModal);
     $('art-modal-backdrop').addEventListener('click', (e) => {
       if (e.target === $('art-modal-backdrop')) closeArtistaModal();
     });
