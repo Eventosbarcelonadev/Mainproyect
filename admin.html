@@ -975,7 +975,14 @@
       // (typical case: a proveedor is "Sonority" but the human contact is
       // "Juan Pérez"; we want both visible on the card).
       const contactPerson = a.nombre && a.nombre.trim() && a.nombre !== display ? a.nombre : '';
-      const tipoLabel = a.tipo === 'proveedor' ? 'Proveedor' : a.tipo === 'venue' ? 'Venue' : 'Artista';
+      // En el meta de abajo: para artistas/venues mostramos el tipo. Para proveedores,
+      // el tipo es redundante (ya están en la tab Proveedores) — Xavi quiere ver
+      // ahí el NOMBRE DE LA EMPRESA. Si no está cargado, lo señalamos como faltante.
+      const tipoLabel = a.tipo === 'proveedor'
+        ? ((a.compania && a.compania.trim()) ? a.compania : '(falta nombre de la empresa)')
+        : a.tipo === 'venue' ? 'Venue' : 'Artista';
+      // Evitar duplicación: si la compañía ya es el H3, no la repetimos en el meta.
+      const tipoLabelForMeta = (tipoLabel === display) ? null : tipoLabel;
       card.innerHTML = `
         <div class="card-img ${photo ? '' : 'placeholder'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}">${photo ? '' : '·'}
           <span class="status-badge ${complete ? 'status-completa' : 'status-incompleta'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'completo' : 'incompleto'}</span>
@@ -992,7 +999,7 @@
             ${[
               a.tipo === 'proveedor' ? null : `${showsCount} show${showsCount === 1 ? '' : 's'}`,
               a.ciudad ? escapeHtml(a.ciudad) : null,
-              tipoLabel
+              tipoLabelForMeta
             ].filter(Boolean).map(s => `<span>${s}</span>`).join(' · ')}
           </div>
           <div class="meta ${ph ? '' : ''}" title="${escapeHtml(a.email || '')}">
