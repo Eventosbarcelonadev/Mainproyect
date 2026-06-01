@@ -975,7 +975,18 @@ async function editArtista(req, res, env) {
   // Sync completo: re-popula custom fields (categoria_artista, shows_vinculados,
   // url_supabase, tipo, nombre) desde estado Supabase actual. Idempotente.
   const ghlSync = await syncArtistaToGhlFull(env, artista);
-  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
+
+  // Si se actualizaron las fotos del artista, propagar a shows vinculados que
+  // no tengan imagen propia (no pisamos shows con imagen ya cargada).
+  let showsSync = { updated: 0 };
+  if ('fotos_urls' in update) {
+    try {
+      const fotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
+      showsSync = await propagateFotosToEmptyShows(env, id, fotos);
+    } catch (e) { showsSync = { updated: 0, error: e.message }; }
+  }
+
+  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, shows_sync: showsSync, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
 }
 
 async function showsPending(req, res, env) {
@@ -1477,6 +1488,63 @@ async function uploadShowImage(req, res, env) {
 
 // Sube una foto al artista. Misma lógica que uploadShowImage pero contra
 // la columna artistas.fotos_urls. Usa el bucket artist-assets.
+// Cuando se sube una foto al artista (o se setea fotos_urls vía edit), los
+// shows vinculados que NO tengan image_url propio se quedan vacíos en la DB
+// (la card del listing usa fallback al artista, pero el show en sí no tenía
+// imagen). Este helper propaga la primera foto del artista a esos shows
+// huérfanos de imagen — no pisa los que ya tienen foto propia.
+async function propagateFotosToEmptyShows(env, artistaId, fotos) {
+  if (!Array.isArray(fotos) || !fotos.length) return { updated: 0 };
+  const sbHdr = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Recolectar shows vinculados (N:M + legacy FK), sin duplicar
+  const linkedIds = new Set();
+  try {
+    const a = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(artistaId)}&select=show_id`,
+      { headers: sbHdr }
+    );
+    if (a.ok) (await a.json()).forEach(x => linkedIds.add(x.show_id));
+    const b = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(artistaId)}&select=id`,
+      { headers: sbHdr }
+    );
+    if (b.ok) (await b.json()).forEach(x => linkedIds.add(x.id));
+  } catch (e) { return { updated: 0, error: e.message }; }
+  if (!linkedIds.size) return { updated: 0 };
+
+  // 2. Filtrar los que ya tienen imagen propia (no pisamos)
+  const idsList = [...linkedIds];
+  const showsRes = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/shows?id=in.(${idsList.map(encodeURIComponent).join(',')})&select=id,image_url,image_urls`,
+    { headers: sbHdr }
+  );
+  if (!showsRes.ok) return { updated: 0, error: await showsRes.text() };
+  const shows = await showsRes.json();
+  const targets = shows.filter(s => {
+    const hasUrl = s.image_url && String(s.image_url).trim();
+    const hasArr = Array.isArray(s.image_urls) && s.image_urls.filter(Boolean).length > 0;
+    return !hasUrl && !hasArr;
+  });
+  if (!targets.length) return { updated: 0 };
+
+  // 3. PATCH cada show con image_url + image_urls = fotos del artista
+  let updated = 0;
+  for (const s of targets) {
+    const r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(s.id)}`, {
+      method: 'PATCH',
+      headers: sbHdr,
+      body: JSON.stringify({ image_url: fotos[0], image_urls: fotos })
+    });
+    if (r.ok) updated++;
+  }
+  return { updated, target_show_ids: targets.map(s => s.id) };
+}
+
 async function uploadArtistaPhoto(req, res, env) {
   const { id, dataUrl } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -1530,7 +1598,13 @@ async function uploadArtistaPhoto(req, res, env) {
   );
   if (!patch.ok) return res.status(patch.status).json({ error: await patch.text() });
   const updated = (await patch.json())[0];
-  return res.status(200).json({ success: true, artista: updated, uploadedUrl: publicUrl });
+
+  // Propagar foto a shows vinculados sin imagen propia (best-effort, no bloquea)
+  let showsSync = { updated: 0 };
+  try { showsSync = await propagateFotosToEmptyShows(env, id, nextArray); }
+  catch (e) { showsSync = { updated: 0, error: e.message }; }
+
+  return res.status(200).json({ success: true, artista: updated, uploadedUrl: publicUrl, shows_sync: showsSync });
 }
 
 // Reemplaza el array completo de imágenes (reorder/delete desde el admin).
