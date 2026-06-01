@@ -7,7 +7,7 @@
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
 // POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
 // GET  /api/admin?action=shows-pending&status=pending_review|active|archived
-// POST /api/admin?action=review-show  body: {id, action: approve|archive|edit, patch?}
+// POST /api/admin?action=review-show  body: {id, action: approve|archive|to-pending|edit, patch?}
 // POST /api/admin?action=edit-show  body: {id, patch: {name?, description?, ...}}
 // POST /api/admin?action=add-show   body: {name, name_en?, category?, subcategory?, description?, base_price?, price_note?, video_url?, ...} -> crea show + record GHL custom_objects.shows
 // POST /api/admin?action=upload-show-image  body: {id, dataUrl} -> sube a Storage + APPEND a image_urls (y sincroniza image_url = image_urls[0])
@@ -1506,14 +1506,15 @@ async function toggleFavorite(req, res, env) {
 async function reviewShow(req, res, env) {
   const { id, action, patch } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
-  if (!['approve', 'archive', 'edit'].includes(action)) {
-    return res.status(400).json({ error: 'action must be approve|archive|edit' });
+  if (!['approve', 'archive', 'to-pending', 'edit'].includes(action)) {
+    return res.status(400).json({ error: 'action must be approve|archive|to-pending|edit' });
   }
 
   const now = new Date().toISOString();
   const update = { reviewed_at: now, reviewed_by: 'admin' };
   if (action === 'approve') update.status = 'active';
   if (action === 'archive') update.status = 'archived';
+  if (action === 'to-pending') update.status = 'pending_review';
   if (action === 'edit' && patch && typeof patch === 'object') {
     const allowed = ['name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url'];
     for (const k of allowed) if (k in patch) update[k] = patch[k];

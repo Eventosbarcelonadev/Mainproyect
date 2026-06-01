@@ -570,7 +570,6 @@
         <button class="subtab" data-substatus="active">Active</button>
         <button class="subtab" data-substatus="no_image">Sin imagen</button>
         <button class="subtab" data-substatus="orphans">Sin artista asignado</button>
-        <button class="subtab" data-substatus="archived">Archived</button>
         <button class="subtab" data-substatus="pending_review">Pending review<span class="subtab-badge hidden" id="pending-review-count">0</span></button>
       </div>
       <div class="toolbar">
@@ -1393,9 +1392,16 @@
       const primary = artistasList[0] || null;
       const artistName = artistaDisplayName(primary);
 
+      // Fallback: si el show no tiene imagen, usar la primera foto del artista
+      // principal. Cubre shows auto-creados antes del fix de propagación de fotos.
+      const primaryFoto = primary && Array.isArray(primary.fotos_urls)
+        ? primary.fotos_urls.find(u => u && String(u).trim())
+        : null;
+      const cardImg = (s.image_url && String(s.image_url).trim()) || primaryFoto || '';
+
       const favClass = s.is_favorite ? 'is-favorite' : 'fav';
       card.innerHTML = `
-        <div class="card-img ${s.image_url ? '' : 'placeholder'}" style="${s.image_url ? `background-image:url('${escapeHtml(s.image_url)}')` : ''}">${s.image_url ? '' : '·'}
+        <div class="card-img ${cardImg ? '' : 'placeholder'}" style="${cardImg ? `background-image:url('${escapeHtml(cardImg)}')` : ''}">${cardImg ? '' : '·'}
           <div class="card-actions-overlay">
             <button class="icon-btn ${favClass}" data-fav="${escapeHtml(s.id)}" data-fav-state="${s.is_favorite ? '1' : '0'}" title="${s.is_favorite ? 'Quitar de favoritos' : 'Marcar como favorito'}"></button>
             <button class="icon-btn edit" data-edit="${escapeHtml(s.id)}" title="Editar show"></button>
@@ -1429,11 +1435,8 @@
         </div>
         <div class="card-footer">
           ${state.shows.substatus === 'pending_review'
-            ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>
-               <button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="archive">Archivar</button>`
-            : state.shows.substatus === 'archived'
-              ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Restaurar</button>`
-              : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="archive">Archivar</button>`}
+            ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>`
+            : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="to-pending">Pasar a pending review</button>`}
           ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Video</a>` : ''}
         </div>
       `;
@@ -1693,7 +1696,7 @@
       $('edit-modal-backdrop').classList.remove('open');
       // If the URL points to a single show, reset back to the substatus tab
       const cur = parseHash();
-      const allowed = ['pending_review', 'active', 'archived', 'orphans', 'no_image'];
+      const allowed = ['pending_review', 'active', 'orphans', 'no_image'];
       if (cur.tab === 'shows' && cur.sub && !allowed.includes(cur.sub)) {
         setHash('shows', state.shows.substatus, {});
       }
@@ -2569,7 +2572,7 @@
         if (sub) openArtistaDetail(sub);
         else closeDrawer();
       } else if (tab === 'shows') {
-        const allowed = ['pending_review', 'active', 'archived', 'orphans', 'no_image'];
+        const allowed = ['pending_review', 'active', 'orphans', 'no_image'];
         let openShowId = null;
         let sub2;
         if (sub && !allowed.includes(sub)) {
