@@ -1951,9 +1951,19 @@
             <div class="art-show-mini-name">${escapeHtml(s.name || s.id)}</div>
             <div class="art-show-mini-meta">${escapeHtml(s.category || '—')}${s.subcategory ? ' · ' + escapeHtml(s.subcategory) : ''} · ${escapeHtml(s.status || '—')}</div>
           </div>
-          <a class="btn btn-secondary" href="#shows/${encodeURIComponent(s.id)}" style="font-size:12px;text-decoration:none;">Abrir</a>
+          <button type="button" class="btn btn-secondary" data-open-show="${escapeHtml(s.id)}" style="font-size:12px;">Abrir</button>
         </div>
       `).join('');
+      // Wire los botones "Abrir" para cerrar el modal artista ANTES de navegar
+      // al show. Antes era un <a href> y el hash cambiaba pero el modal artista
+      // quedaba arriba del show modal.
+      cont.querySelectorAll('[data-open-show]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sid = btn.dataset.openShow;
+          closeArtistaModal();
+          setHash('shows', sid, {});
+        });
+      });
     }
 
     function fillArtistaModalCommon(a) {
@@ -2650,6 +2660,18 @@
     async function applyHash() {
       const { tab, sub, query } = parseHash();
       activateTab(tab);
+
+      // Safety net: cualquier modal que quede abierto se cierra al navegar.
+      // Antes los botones "Abrir" del modal artista cambiaban la URL pero
+      // dejaban el modal artista encima del modal show recién abierto.
+      const artModal = document.getElementById('art-modal-backdrop');
+      const showModal = document.getElementById('edit-modal-backdrop');
+      if (artModal && artModal.classList.contains('open') && (tab !== 'artistas' && tab !== 'proveedores')) {
+        artModal.classList.remove('open');
+      }
+      if (showModal && showModal.classList.contains('open') && tab !== 'shows') {
+        showModal.classList.remove('open');
+      }
 
       if (tab === 'artistas') {
         if (state.artistas.items.length === 0 || state.currentTab !== 'artistas-loaded') {
