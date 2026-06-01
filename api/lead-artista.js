@@ -59,6 +59,9 @@ async function autoCreateShowForArtistaPublic(SB_URL, SB_KEY, artista) {
     if (first in DISC_MAP) category = DISC_MAP[first];
   }
 
+  // Propagar fotos del artista al show recién creado (sino la card queda vacía)
+  const artistaFotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
+
   const row = {
     id: showId,
     name: displayName,
@@ -66,7 +69,9 @@ async function autoCreateShowForArtistaPublic(SB_URL, SB_KEY, artista) {
     base_price: 0,
     status: 'pending_review',
     artista_id: artista.id,
-    submitted_at: new Date().toISOString()
+    submitted_at: new Date().toISOString(),
+    image_url: artistaFotos[0] || null,
+    image_urls: artistaFotos.length ? artistaFotos : null
   };
   let r = await fetch(`${SB_URL}/rest/v1/shows`, {
     method: 'POST',

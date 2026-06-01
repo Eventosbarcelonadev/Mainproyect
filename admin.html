@@ -710,6 +710,7 @@
 
       <div class="actions">
         <button type="button" class="btn-cancel" id="art-cancel">Cancelar</button>
+        <button type="button" class="btn-delete-show hidden" id="art-delete">Eliminar</button>
         <button type="button" class="btn-save" id="art-save">Guardar</button>
       </div>
     </div>
@@ -1929,6 +1930,8 @@
       $('art-modal-title').textContent = 'Editar ' + ((a && a.tipo) || 'artista');
       $('art-modal-sub').textContent = 'id: ' + (a.id || '—');
       fillArtistaModalCommon(a);
+      $('art-delete').classList.remove('hidden');
+      $('art-delete').textContent = 'Eliminar ' + (a && a.tipo === 'proveedor' ? 'proveedor' : a && a.tipo === 'venue' ? 'venue' : 'artista');
       $('art-modal-backdrop').classList.add('open');
     }
     function openAddArtistaModal(tipo) {
@@ -1938,6 +1941,7 @@
       $('art-modal-title').textContent = 'Agregar ' + label;
       $('art-modal-sub').textContent = 'Se creará en Supabase y en GHL';
       fillArtistaModalCommon({ tipo: _addingTipo });
+      $('art-delete').classList.add('hidden');
       $('art-modal-backdrop').classList.add('open');
     }
     function closeArtistaModal() {
@@ -2028,7 +2032,46 @@
       } catch (err) { showError(err.message); }
       finally { btn.disabled = false; }
     }
+    async function deleteArtistaFromModal() {
+      if (!_editingArtista || !_editingArtista.id) return;
+      const a = _editingArtista;
+      const label = a.tipo === 'proveedor' ? 'proveedor' : a.tipo === 'venue' ? 'venue' : 'artista';
+      const displayName = a.nombre_artistico || a.nombre || a.compania || a.id;
+      if (!confirm(
+        `¿Eliminar permanentemente el ${label} "${displayName}"?\n\n` +
+        `· Se borran los vínculos con sus shows.\n` +
+        `· Los shows que sólo tenían a este ${label} también se borran.\n` +
+        `· En GHL no se borra el contacto, sólo se le sacan los tags y campos de ${label}.\n\n` +
+        `No se puede deshacer.`
+      )) return;
+      const btn = $('art-delete');
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Eliminando…';
+      try {
+        const r = await fetch('/api/admin?action=delete-artista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: a.id })
+        });
+        const d = await r.json();
+        if (!r.ok) { showError(d.error || 'Error eliminando ' + label); return; }
+        if (d.ghl && d.ghl.error) showError('Borrado en Supabase, pero GHL falló: ' + d.ghl.error);
+        closeArtistaModal();
+        // Refrescar la tab activa
+        const tab = state.currentTab;
+        if (tab === 'artistas') loadArtistas();
+        else if (tab === 'proveedores') loadProveedores();
+        else if (tab === 'shows') loadShows();
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    }
     $('art-cancel').addEventListener('click', closeArtistaModal);
+    $('art-delete').addEventListener('click', deleteArtistaFromModal);
     $('art-modal-backdrop').addEventListener('click', (e) => {
       if (e.target === $('art-modal-backdrop')) closeArtistaModal();
     });

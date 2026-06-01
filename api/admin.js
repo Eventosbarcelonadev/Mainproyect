@@ -651,6 +651,29 @@ async function addArtista(req, res, env) {
 async function autoCreateShowForArtista(env, artista) {
   if (!artista || !artista.id) return { error: 'artista without id' };
   const displayName = artista.nombre_artistico || artista.compania || artista.nombre || 'Show sin nombre';
+  const sbHdr = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+
+  // Dedup: si el artista ya tiene un show vinculado (N:M o legacy FK), no crear
+  // otro. Causaba duplicados cuando el artista venía de form web + se reabría
+  // en /admin (cada path llamaba a su auto-create sin chequear).
+  try {
+    const linkCheck = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(artista.id)}&select=show_id&limit=1`,
+      { headers: sbHdr }
+    );
+    if (linkCheck.ok) {
+      const rows = await linkCheck.json();
+      if (rows.length) return { skipped: 'already_linked', show_id: rows[0].show_id };
+    }
+    const legacyCheck = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(artista.id)}&select=id&limit=1`,
+      { headers: sbHdr }
+    );
+    if (legacyCheck.ok) {
+      const rows = await legacyCheck.json();
+      if (rows.length) return { skipped: 'already_linked_legacy', show_id: rows[0].id };
+    }
+  } catch (e) { /* sigue al insert */ }
 
   // Mapeo disciplina → category (lowercase de los enum del catálogo).
   const DISCIPLINA_TO_CATEGORY = {
@@ -672,7 +695,7 @@ async function autoCreateShowForArtista(env, artista) {
   try {
     const ex = await fetch(
       `${env.SUPABASE_URL}/rest/v1/shows?id=like.${encodeURIComponent(baseSlug + '*')}&select=id`,
-      { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+      { headers: sbHdr }
     );
     if (ex.ok) {
       const taken = new Set((await ex.json()).map(r => r.id));
@@ -684,6 +707,10 @@ async function autoCreateShowForArtista(env, artista) {
     }
   } catch (e) { /* sigue con baseSlug */ }
 
+  // Propagar fotos del artista al show recién creado para que la card del
+  // catálogo no quede vacía. image_url = primera foto (legacy single-image).
+  const artistaFotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
+
   const row = {
     id: showId,
     name: displayName,
@@ -691,7 +718,9 @@ async function autoCreateShowForArtista(env, artista) {
     base_price: 0,
     status: 'pending_review',
     artista_id: artista.id,
-    submitted_at: new Date().toISOString()
+    submitted_at: new Date().toISOString(),
+    image_url: artistaFotos[0] || null,
+    image_urls: artistaFotos.length ? artistaFotos : null
   };
 
   // Intento 1: con category derivada (puede ser null).
@@ -1120,6 +1149,152 @@ async function deleteShow(req, res, env) {
   return res.status(200).json({ success: true, id, ghl: ghlResult });
 }
 
+// Elimina un artista. Borra los show_artistas vinculados, los shows que
+// quedaban sin ningún otro artista (huérfanos), nulea shows.artista_id legacy
+// donde apuntaba a este, y finalmente borra el row de artistas. En GHL NO
+// borramos el contacto (puede ser lead/cliente también) — solo le sacamos los
+// tags artista_ok/proveedor_ok y limpiamos los custom fields de artista para
+// que deje de aparecer como tal.
+async function deleteArtista(req, res, env) {
+  const id = (req.body && req.body.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: 'id must be a UUID' });
+
+  const sbHeaders = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Leer artista (necesitamos ghl_contact_id y tipo)
+  let artista = null;
+  {
+    const r = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=id,nombre,nombre_artistico,tipo,ghl_contact_id`,
+      { headers: sbHeaders }
+    );
+    if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+    const rows = await r.json();
+    if (!rows.length) return res.status(404).json({ error: 'Artista no encontrado' });
+    artista = rows[0];
+  }
+
+  // 2. Recolectar shows vinculados (N:M + legacy FK)
+  const linkedShowIds = new Set();
+  try {
+    const a = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(id)}&select=show_id`,
+      { headers: sbHeaders }
+    );
+    if (a.ok) (await a.json()).forEach(x => linkedShowIds.add(x.show_id));
+    const b = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(id)}&select=id`,
+      { headers: sbHeaders }
+    );
+    if (b.ok) (await b.json()).forEach(x => linkedShowIds.add(x.id));
+  } catch (e) { /* sigue: el delete es lo crítico */ }
+
+  // 3. Decidir cuáles shows quedan huérfanos (no tienen otro artista en N:M)
+  const orphanShowIds = [];
+  for (const showId of linkedShowIds) {
+    try {
+      const other = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(showId)}&artista_id=neq.${encodeURIComponent(id)}&select=artista_id&limit=1`,
+        { headers: sbHeaders }
+      );
+      const rows = other.ok ? await other.json() : [];
+      if (!rows.length) orphanShowIds.push(showId);
+    } catch (e) { /* lo dejamos como no-huérfano */ }
+  }
+
+  // 4. Borrar vínculos show_artistas
+  try {
+    await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE', headers: sbHeaders
+    });
+  } catch (e) { /* sigue */ }
+
+  // 5. Nulear shows.artista_id legacy (donde apunte a este)
+  try {
+    await fetch(`${env.SUPABASE_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: sbHeaders,
+      body: JSON.stringify({ artista_id: null })
+    });
+  } catch (e) { /* sigue */ }
+
+  // 6. Borrar shows huérfanos (eran exclusivos de este artista)
+  let deletedShows = 0;
+  const ghlShowDeletes = [];
+  for (const showId of orphanShowIds) {
+    let ghlShowId = null;
+    try {
+      const r = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(showId)}&select=ghl_show_id`,
+        { headers: sbHeaders }
+      );
+      if (r.ok) {
+        const rows = await r.json();
+        ghlShowId = rows[0]?.ghl_show_id || null;
+      }
+    } catch (e) { /* sigue */ }
+    try {
+      const del = await fetch(`${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(showId)}`, {
+        method: 'DELETE', headers: sbHeaders
+      });
+      if (del.ok) deletedShows++;
+    } catch (e) { /* best-effort */ }
+    if (ghlShowId && env.GHL_TOKEN && env.GHL_LOC) {
+      try {
+        await ghlFetch(
+          'DELETE',
+          `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${ghlShowId}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+          env
+        );
+        ghlShowDeletes.push(ghlShowId);
+      } catch (e) { /* best-effort */ }
+    }
+  }
+
+  // 7. Borrar el row de artistas
+  const del = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE', headers: sbHeaders
+  });
+  if (!del.ok) {
+    return res.status(del.status).json({ error: await del.text() });
+  }
+
+  // 8. GHL: NO borramos el contacto. Solo le sacamos tag artista_ok/proveedor_ok
+  //    y limpiamos custom fields de artista.
+  const ghlResult = { ok: false };
+  if (artista.ghl_contact_id && env.GHL_TOKEN && env.GHL_LOC) {
+    try {
+      const tag = artista.tipo === 'proveedor' ? 'proveedor_ok' : 'artista_ok';
+      await ghlDelTag(env, artista.ghl_contact_id, tag);
+      await ghlPutContact(env, artista.ghl_contact_id, {
+        customFields: [
+          { id: GHL_CF.nombre_artista, field_value: '' },
+          { id: GHL_CF.categoria_artista, field_value: '' },
+          { id: GHL_CF.subcategoria_artista, field_value: '' },
+          { id: GHL_CF.shows_vinculados, field_value: '' },
+          { id: GHL_CF.url_supabase, field_value: '' }
+        ]
+      });
+      ghlResult.ok = true;
+    } catch (e) { ghlResult.error = e.message; }
+  } else {
+    ghlResult.skipped = artista.ghl_contact_id ? 'missing_ghl_config' : 'no_ghl_contact_id';
+  }
+
+  return res.status(200).json({
+    success: true,
+    id,
+    deleted_shows: deletedShows,
+    ghl_show_deletes: ghlShowDeletes,
+    ghl: ghlResult
+  });
+}
+
 // Sube una imagen (data URL base64) al bucket artist-assets y la APPENDS al
 // array shows.image_urls del show. La primera del array se sincroniza también
 // como shows.image_url para compatibilidad con queries que aún leen la columna
@@ -1471,10 +1646,11 @@ export default async function handler(req, res) {
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
       if (action === 'add-artista') return addArtista(req, res, env);
       if (action === 'edit-artista') return editArtista(req, res, env);
+      if (action === 'delete-artista') return deleteArtista(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|set-show-images|toggle-favorite|add-artista|edit-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
