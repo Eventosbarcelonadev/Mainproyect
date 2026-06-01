@@ -811,6 +811,11 @@
     }
     function artistaDisplayName(a) {
       if (!a) return null;
+      // Proveedores son empresas: priorizar compañía. Artistas son personas/grupos
+      // con nombre artístico distinto al legal, así que ahí prevalece nombre_artistico.
+      if (a.tipo === 'proveedor') {
+        return a.compania || a.nombre_artistico || a.nombre || 'sin empresa';
+      }
       return a.nombre_artistico || a.compania || a.nombre || 'sin nombre';
     }
     function isArtistComplete(a) {
@@ -960,7 +965,10 @@
       const display = artistaDisplayName(a);
       const photo = (a.fotos_urls && a.fotos_urls[0]) || '';
       const showsCount = showsCountFromNested(a.shows);
-      const disciplinas = Array.isArray(a.disciplinas) ? a.disciplinas : [];
+      // Filtrar disciplinas que repiten el tipo: si vienen "Proveedor"/"Proveedores"
+      // del form viejo, no las mostramos como chip (el tipo ya se muestra abajo).
+      const disciplinas = (Array.isArray(a.disciplinas) ? a.disciplinas : [])
+        .filter(d => !/^proveedor(es)?$/i.test(String(d).trim()));
       const ph = isPlaceholderEmail(a.email);
       const complete = isArtistComplete(a);
       // Contact person line: prefer nombre if it's different from the display
