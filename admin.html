@@ -2666,7 +2666,9 @@
         let openShowId = null;
         let sub2;
         if (sub && !allowed.includes(sub)) {
-          // sub is a show id → load all active and open the edit modal for it
+          // sub es un show id → primero intentamos active (lo más común); si
+          // no está, probamos pending_review (auto-shows nuevos). Antes
+          // hard-codeaba 'active' y los pending caían en "Show no encontrado".
           openShowId = sub;
           sub2 = 'active';
         } else {
@@ -2677,7 +2679,15 @@
         state.shows.showFilter = openShowId ? null : (query.show || null);
         await loadShows();
         if (openShowId) {
-          const found = state.shows.items.find(s => s.id === openShowId);
+          let found = state.shows.items.find(s => s.id === openShowId);
+          if (!found) {
+            // Fallback: el show puede estar en pending_review. Cambiamos de
+            // subtab y reintentamos. Mantiene el contexto del usuario en el
+            // subtab donde realmente está el show.
+            state.shows.substatus = 'pending_review';
+            await loadShows();
+            found = state.shows.items.find(s => s.id === openShowId);
+          }
           if (found) openEditShowModal(found);
           else showError('Show no encontrado: ' + openShowId);
         }
