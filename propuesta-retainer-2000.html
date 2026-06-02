@@ -327,10 +327,15 @@
     }
     .price-extras strong { color: var(--dark); display: block; margin-bottom: 4px; font-size: 12.5px; }
 
-    /* NEXT STEPS */
+    /* NEXT STEPS / DOCS GRID */
     .steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
     .step {
@@ -364,7 +369,7 @@
       .hero-meta { gap: 22px; }
       .hero-meta .item .val { font-size: 22px; }
       .section-title { font-size: 24px; }
-      .pillars, .timeline, .steps, .roi-grid, .price-extras { grid-template-columns: 1fr; }
+      .pillars, .timeline, .steps, .docs-grid, .roi-grid, .price-extras { grid-template-columns: 1fr; }
       .roi { padding: 28px 24px; }
       .price-card { padding: 24px; }
       .price-card .price-num { font-size: 56px; }
@@ -618,11 +623,16 @@
       <div class="section-label">Documentos relacionados</div>
       <h2 class="section-title">Material previo que fundamenta esta propuesta.</h2>
       <p class="section-lead">Para profundizar en cada bloque, estos son los documentos que ya hemos preparado y compartido contigo en los últimos meses. Forman parte del mismo plan, esta propuesta es la consolidación.</p>
-      <div class="steps">
+      <div class="docs-grid">
         <div class="step">
           <div class="step-num">📄</div>
-          <strong><a href="https://propuestas.eventosbarcelona.com/propuesta-eb-8m.html" target="_blank" rel="noopener" style="color:var(--dark); text-decoration:none;">Plan 8 meses · SEO/GEO/AEO</a></strong>
-          <p>El plan original detallado de SEO/GEO/AEO de 8 meses con los 4 pilares estratégicos. Base del Pilar 1 de esta propuesta.</p>
+          <strong><a href="https://propuestas.eventosbarcelona.com/propuesta-eb-8m.html" target="_blank" rel="noopener" style="color:var(--dark); text-decoration:none;">Plan estratégico 8 meses</a></strong>
+          <p>La propuesta inicial con los 4 pilares estratégicos (SEO + GEO + Partnerships + Outbound). El marco general donde encaja todo lo siguiente.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">🔍</div>
+          <strong><a href="https://propuestas.eventosbarcelona.com/view-doc.html?doc=medicion-mayo" target="_blank" rel="noopener" style="color:var(--dark); text-decoration:none;">Medición SEO/GEO/AEO · Mayo 2026</a></strong>
+          <p>Lo que encontramos al medir: CTR 0,85 % vs benchmark 2,5 %, pos media 21,8, recomendación IA 22,5 %. Diagnóstico + plan en 4 sprints. <strong>El "qué encontramos" detrás del Pilar 1.</strong></p>
         </div>
         <div class="step">
           <div class="step-num">📄</div>
@@ -632,7 +642,7 @@
         <div class="step">
           <div class="step-num">📊</div>
           <strong><a href="https://propuestas.eventosbarcelona.com/dashboard.html" target="_blank" rel="noopener" style="color:var(--dark); text-decoration:none;">Dashboard SEO/GEO/AEO mensual</a></strong>
-          <p>Vista actual con plan operativo mes a mes, métricas live de GSC/GA, proyección de leads. Versión M1 será automática.</p>
+          <p>Vista actual con plan operativo mes a mes, métricas reales de GSC/GA, proyección de leads. La versión M1 será live y automática.</p>
         </div>
       </div>
     </section>

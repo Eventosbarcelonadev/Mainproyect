@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documento — Eventos Barcelona × Growth4U</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <style>
+    :root {
+      --accent: #e87461;
+      --accent-soft: rgba(232,116,97,0.12);
+      --dark: #111;
+      --gray: #6b6b66;
+      --gray-soft: #98968f;
+      --light: #f7f7f5;
+      --border: #e9e7e1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    .topbar {
+      background: var(--dark);
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .topbar .title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 18px;
+    }
+    .topbar a {
+      color: rgba(255,255,255,0.65);
+      font-size: 12px;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
+    .topbar a:hover { color: #fff; }
+
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+    #loading, #error {
+      text-align: center;
+      color: var(--gray);
+      padding: 80px 24px;
+      font-size: 14px;
+    }
+    #error { color: #c53e2c; }
+
+    /* Markdown rendered styling */
+    .doc h1, .doc h2, .doc h3, .doc h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.2px;
+    }
+    .doc h1 {
+      font-size: 40px;
+      margin: 0 0 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc h2 {
+      font-size: 28px;
+      margin: 48px 0 16px;
+    }
+    .doc h3 {
+      font-size: 22px;
+      margin: 36px 0 12px;
+    }
+    .doc h4 {
+      font-size: 18px;
+      margin: 28px 0 10px;
+    }
+    .doc p { margin: 0 0 16px; color: #2a2a27; }
+    .doc strong { color: var(--dark); font-weight: 600; }
+    .doc em { color: var(--gray); }
+    .doc a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-soft);
+    }
+    .doc a:hover { border-bottom-color: var(--accent); }
+    .doc ul, .doc ol { padding-left: 24px; margin: 0 0 18px; color: #2a2a27; }
+    .doc li { margin-bottom: 6px; }
+    .doc blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 18px 0;
+      padding: 12px 20px;
+      background: #fff;
+      border-radius: 0 8px 8px 0;
+      color: var(--gray);
+      font-style: italic;
+    }
+    .doc code {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    .doc pre {
+      background: #1d1d1c;
+      color: #f0efeb;
+      padding: 18px 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      margin: 18px 0;
+    }
+    .doc pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .doc hr {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+    .doc table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 24px;
+      font-size: 13.5px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .doc th, .doc td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc th {
+      background: #fafaf8;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .doc tr:last-child td { border-bottom: 0; }
+    .doc img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    .footer-cta {
+      margin-top: 56px;
+      padding: 24px 28px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-cta p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 13px;
+    }
+    .footer-cta a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid var(--accent-soft);
+      padding: 8px 14px;
+      border-radius: 999px;
+      transition: all 0.15s;
+    }
+    .footer-cta a:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 14px 18px; }
+      main { padding: 32px 18px 60px; }
+      .doc h1 { font-size: 30px; }
+      .doc h2 { font-size: 22px; }
+      .doc h3 { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="title" id="docTitle">Documento</div>
+    <a href="propuesta-retainer-2000.html">← Volver a la propuesta</a>
+  </div>
+
+  <main>
+    <div id="loading">Cargando documento…</div>
+    <div id="error" style="display:none;"></div>
+    <article class="doc" id="content" style="display:none;"></article>
+
+    <div class="footer-cta" id="footerCta" style="display:none;">
+      <p>¿Quieres ver la propuesta consolidada con los 6 pilares y la inversión?</p>
+      <a href="propuesta-retainer-2000.html">Ver propuesta retainer →</a>
+    </div>
+  </main>
+
+  <script>
+    (async function () {
+      const ALLOWED = {
+        'estrategia-seo-geo': { file: 'Eventos-Barcelona-Estrategia-SEO-GEO.md', title: 'Estrategia SEO/GEO · Abril 2026' },
+        'medicion-mayo': { file: 'docs/medicion-seo-geo-aeo-mayo2026.md', title: 'Medición SEO/GEO/AEO · Mayo 2026' },
+        'plan-accion-mayo': { file: 'docs/plan-accion-detallado-mayo2026.md', title: 'Plan de acción detallado · Mayo 2026' },
+        'arquitectura-show-artista': { file: 'docs/arquitectura-show-artista.md', title: 'Arquitectura show ↔ artista' }
+      };
+
+      const params = new URLSearchParams(location.search);
+      const key = params.get('doc');
+      const entry = ALLOWED[key];
+
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const contentEl = document.getElementById('content');
+      const titleEl = document.getElementById('docTitle');
+      const footerEl = document.getElementById('footerCta');
+
+      if (!entry) {
+        loadingEl.style.display = 'none';
+        errorEl.textContent = 'Documento no encontrado. Documentos disponibles: ' + Object.keys(ALLOWED).join(', ');
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      titleEl.textContent = entry.title;
+      document.title = entry.title + ' — Eventos Barcelona × Growth4U';
+
+      try {
+        const res = await fetch('/' + entry.file);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const md = await res.text();
+        // Wrap tables for horizontal scroll on mobile
+        marked.use({
+          renderer: {
+            table(header, body) {
+              return `<div class="table-wrap"><table><thead>${header}</thead><tbody>${body}</tbody></table></div>`;
+            }
+          }
+        });
+        contentEl.innerHTML = marked.parse(md);
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+        footerEl.style.display = 'flex';
+      } catch (e) {
+        loadingEl.style.display = 'none';
+        errorEl.textContent = 'No se pudo cargar el documento (' + e.message + ').';
+        errorEl.style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>
