@@ -185,51 +185,132 @@
     }
     .pillar .deliv strong { color: var(--dark); }
 
-    /* TIMELINE */
+    /* TIMELINE — full width vertical stack */
     .timeline {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-direction: column;
       gap: 14px;
     }
     .tl-card {
       background: #fff;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 22px;
+      border-radius: 16px;
+      overflow: hidden;
     }
-    .tl-card .tl-num {
+    .tl-card.tl-final { border-color: var(--accent); border-width: 2px; }
+    .tl-head {
+      padding: 20px 26px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      background: linear-gradient(180deg, #fafaf8 0%, #fff 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .tl-head .tl-num {
       display: inline-block;
       background: var(--accent);
       color: #fff;
       font-family: 'DM Serif Display', serif;
       font-size: 14px;
-      padding: 1px 12px;
+      padding: 2px 14px;
       border-radius: 999px;
-      margin-bottom: 10px;
+      letter-spacing: 0.3px;
     }
-    .tl-card h4 {
+    .tl-head .tl-date {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 8px 0 4px;
+      font-weight: 600;
+    }
+    .tl-head h4 {
       font-family: 'DM Serif Display', serif;
-      font-size: 17px;
-      margin: 0 0 8px;
+      font-size: 22px;
+      margin: 0;
       font-weight: 400;
-      line-height: 1.25;
+      line-height: 1.2;
     }
-    .tl-card ul {
-      margin: 8px 0 14px;
+    .tl-leads-pill {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .tl-leads-pill .lbl {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 600;
+    }
+    .tl-leads-pill .val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color: var(--accent);
+      margin-top: 4px;
+      line-height: 1.05;
+    }
+    .tl-body {
+      padding: 22px 26px 18px;
+    }
+    .tl-pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .tl-pillar {
+      background: #fafaf8;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .tl-pillar .pname {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 10.5px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .tl-pillar .pname .icon { font-size: 14px; }
+    .tl-pillar .pname .hrs {
+      margin-left: auto;
+      color: var(--gray);
+      font-size: 10px;
+      letter-spacing: 0.3px;
+      text-transform: none;
+      font-weight: 600;
+    }
+    .tl-pillar ul {
+      margin: 0;
       padding-left: 16px;
       font-size: 12.5px;
       line-height: 1.55;
-      color: var(--gray);
+      color: #3a3a37;
     }
-    .tl-card ul li + li { margin-top: 3px; }
-    .tl-card .tl-leads {
-      padding-top: 12px;
+    .tl-pillar ul li + li { margin-top: 3px; }
+    .tl-pillar code {
+      font-size: 11px;
+      background: rgba(232,116,97,0.1);
+      color: var(--accent);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .tl-foot {
+      margin-top: 16px;
+      padding-top: 14px;
       border-top: 1px solid var(--border);
-      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
       color: var(--gray);
+      line-height: 1.5;
     }
-    .tl-card .tl-leads strong { color: var(--accent); }
-    .tl-card.tl-final { border-color: var(--accent); border-width: 2px; }
+    .tl-foot strong { color: var(--dark); }
 
     /* ROI BLOCK */
     .roi {
@@ -369,7 +450,10 @@
       .hero-meta { gap: 22px; }
       .hero-meta .item .val { font-size: 22px; }
       .section-title { font-size: 24px; }
-      .pillars, .timeline, .steps, .docs-grid, .roi-grid, .price-extras { grid-template-columns: 1fr; }
+      .pillars, .steps, .docs-grid, .roi-grid, .price-extras { grid-template-columns: 1fr; }
+      .tl-head { grid-template-columns: 1fr; }
+      .tl-leads-pill { text-align: left; }
+      .tl-pillars { grid-template-columns: 1fr; }
       .roi { padding: 28px 24px; }
       .price-card { padding: 24px; }
       .price-card .price-num { font-size: 56px; }
@@ -476,76 +560,400 @@
 
       <div class="timeline">
 
+        <!-- M1 -->
         <div class="tl-card">
-          <div class="tl-num">M1 · Junio</div>
-          <h4>Encender lo rápido</h4>
-          <ul>
-            <li>Lanzamiento LinkedIn outbound (1 jun)</li>
-            <li>Reescritura 10 páginas top (titles, metas, schema)</li>
-            <li>Baseline GSC/GA congelado para medir</li>
-            <li>Setup email outbound (calentamiento dominio)</li>
-          </ul>
-          <div class="tl-leads"><strong>+4 leads/mes acumulado</strong> · 10-15 conversaciones LinkedIn</div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M1</span>
+              <div class="tl-date">Junio · arranque</div>
+              <h4>Encender los canales rápidos</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+4 leads/mes</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">8-10 h</span></div>
+                <ul>
+                  <li>Audit de titles/metas vía Yoast Premium</li>
+                  <li>Reescritura <code>Home</code> + 9 páginas top con FAQ + Service schema</li>
+                  <li>Internal linking sugerido por Yoast activado</li>
+                  <li>Baseline GSC + GA congelado para comparar mes a mes</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">8-10 h setup</span></div>
+                <ul>
+                  <li>Setup Sales Nav: 300 cuentas filtradas, 600 contactos</li>
+                  <li>Conexión Ulinc a tu perfil + 5 piezas de copy</li>
+                  <li>Lanzamiento 1 jun · warm-up 20 → 40 → 80 invites/sem</li>
+                  <li>Etapa GHL "LinkedIn — En conversación"</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + Dashboard<span class="hrs">10-12 h</span></div>
+                <ul>
+                  <li>Auditoría tags <code>lang:es/en</code> + workflow notify Xavi</li>
+                  <li>Construcción dashboard live (GSC + GA APIs)</li>
+                  <li>Setup email outbound (calentamiento dominio, listo M2)</li>
+                  <li>Auditoría EventoPlus actual (anchor + visibilidad)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 30-35 h</span>
+              <span><strong>Entregable:</strong> 10 páginas reescritas · LinkedIn live · dashboard automático</span>
+              <span><strong>Métrica:</strong> 10-15 conversaciones LinkedIn · primer Δ CTR en GSC</span>
+            </div>
+          </div>
         </div>
 
+        <!-- M2 -->
         <div class="tl-card">
-          <div class="tl-num">M2 · Julio</div>
-          <h4>Email vivo + cerrar SEO base</h4>
-          <ul>
-            <li>Email outbound activo (3 toques / 14 días)</li>
-            <li>Cerrar 19 H2 pregunta sin respuesta</li>
-            <li>Auditar backlinks tóxicos + disavow</li>
-            <li>Optimizar EventoPlus + Clutch + Sortlist</li>
-          </ul>
-          <div class="tl-leads"><strong>+10 leads/mes acumulado</strong></div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M2</span>
+              <div class="tl-date">Julio · email vivo + cerrar SEO base</div>
+              <h4>Multi-canal funcionando, deuda técnica saldada</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+10 leads/mes</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">10-12 h</span></div>
+                <ul>
+                  <li>Cerrar 19 H2 pregunta sin respuesta (+ FAQ schema)</li>
+                  <li>Auditoría completa backlinks GSC + manual</li>
+                  <li>Submit disavow de backlinks tóxicos heredados de Rodanet</li>
+                  <li>Internal linking ronda 1: páginas servicio → Home</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Régimen normal 80 invites/sem</li>
+                  <li>A/B test copy invitación (2 variantes)</li>
+                  <li>Reporte semanal + primeras calls agendadas</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📨</span>Email outbound<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Email outbound LIVE: lista 1.000 contactos</li>
+                  <li>Secuencia 3 toques / 14 días, copy distinto a LinkedIn</li>
+                  <li>Tag <code>source:email_outbound</code> en GHL</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + propuestas<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Soporte ad-hoc (cambios catálogo, fixes detectados)</li>
+                  <li>Mejora picker propuestas con nombre artista visible</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🤝</span>Partnerships<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>EventoPlus optimizado: anchors + nuevos shows publicados</li>
+                  <li>Alta en Clutch + Sortlist (perfil + 3 reviews iniciales)</li>
+                  <li>Configurar Bing Webmaster (heredado de Rodanet)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📊</span>Mejora continua<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Reporte M1 enviado a Xavi (PDF + dashboard live)</li>
+                  <li>Experimento M1 documentado: A/B title homepage</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 32-42 h</span>
+              <span><strong>Entregable:</strong> 19 H2 cerrados · email outbound activo · 3 perfiles partnership creados</span>
+              <span><strong>Métrica:</strong> reply rate email + LinkedIn · disavow procesado por Google</span>
+            </div>
+          </div>
         </div>
 
+        <!-- M3 -->
         <div class="tl-card">
-          <div class="tl-num">M3 · Agosto</div>
-          <h4>Validación de funnel</h4>
-          <ul>
-            <li>Primer artículo nuevo (team building)</li>
-            <li>Internal linking ronda 2</li>
-            <li>Validar ratio real leads/clics con GHL</li>
-            <li>Iteración copy LinkedIn + email</li>
-          </ul>
-          <div class="tl-leads"><strong>+17 leads/mes acumulado</strong></div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M3</span>
+              <div class="tl-date">Agosto · validación de funnel</div>
+              <h4>Datos reales para ajustar el resto del plan</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+17 leads/mes</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">10-12 h</span></div>
+                <ul>
+                  <li>Validar ratio real <code>leads/clics</code> cruzando GHL + GA</li>
+                  <li>Publicar artículo #1: <code>/team-building-barcelona-empresas/</code></li>
+                  <li>Schema Event + Service en el artículo nuevo</li>
+                  <li>Internal linking ronda 2: cluster temático</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Iteración copy con datos M1+M2 (mejor caso éxito)</li>
+                  <li>Foco en respuestas calientes (anti-pérdida)</li>
+                  <li>Primer cliente cerrado por LinkedIn (target)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📨</span>Email outbound<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Segmentación por industria + iteración copy</li>
+                  <li>Cross con LinkedIn: emails a los que no aceptaron invite</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + propuestas<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Atribución completa: cada lead etiquetado por canal</li>
+                  <li>Mejora "propuesta desde cero" con sugerencias inteligentes</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🤝</span>Partnerships<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Renegociar EventoPlus si no rinde · outreach 3 medios sectoriales</li>
+                  <li>Negociación 1er backlink editorial (BCB / sectorial)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📊</span>Mejora continua<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Reporte M2 + dashboard refrescado</li>
+                  <li>Experimento M2: A/B copy LinkedIn (filtro duro vs aspiracional)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 33-44 h</span>
+              <span><strong>Entregable:</strong> 1 artículo nuevo · atribución por canal · ratio leads/clics validado</span>
+              <span><strong>Métrica:</strong> CR real orgánico · primer cierre LinkedIn</span>
+            </div>
+          </div>
         </div>
 
+        <!-- M4 -->
         <div class="tl-card">
-          <div class="tl-num">M4 · Septiembre</div>
-          <h4>Contenido + casos</h4>
-          <ul>
-            <li>3 artículos nuevos (corporate, entretenimiento, family day)</li>
-            <li>Hub /casos-de-exito/ + primeros 5 cases</li>
-            <li>Ola 2 LinkedIn: Madrid</li>
-            <li>Partnerships review (renew/drop)</li>
-          </ul>
-          <div class="tl-leads"><strong>+25 leads/mes acumulado</strong></div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M4</span>
+              <div class="tl-date">Septiembre · contenido + autoridad</div>
+              <h4>El SEO empieza a rendir, LinkedIn escala</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+25 leads/mes</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">12-15 h</span></div>
+                <ul>
+                  <li>3 artículos nuevos: family day · entretenimiento · cómo organizar</li>
+                  <li>Hub <code>/casos-de-exito/</code> publicado</li>
+                  <li>Primeros 5 casos con schema Event + AggregateRating</li>
+                  <li>Casos anonimizados (SpaceX, F1) por confidencialidad</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">7-9 h</span></div>
+                <ul>
+                  <li>Ola 2 Madrid: 300 cuentas nuevas + setup local</li>
+                  <li>Continuar BCN-Cataluña con copy iterado</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📨</span>Email outbound<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Escala a 2.000 envíos/mes</li>
+                  <li>Test secuencia 5 toques vs 3 toques</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + propuestas<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Nuevos workflows según patrones detectados M1-M3</li>
+                  <li>Dashboard con métricas predictivas (pipeline forecast)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🤝</span>Partnerships<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Activar Clutch + Sortlist con reseñas reales</li>
+                  <li>Push de 2 medios sectoriales + evaluar MPI / ICCA con números</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📊</span>Mejora continua<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Reporte M3 + iteraciones</li>
+                  <li>Experimento M3: landing alternativa para "team building"</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 36-48 h</span>
+              <span><strong>Entregable:</strong> 3 artículos + hub + 5 casos · ola 2 Madrid LinkedIn</span>
+              <span><strong>Métrica:</strong> tráfico artículos nuevos · pipeline Madrid · 1er backlink</span>
+            </div>
+          </div>
         </div>
 
+        <!-- M5 -->
         <div class="tl-card">
-          <div class="tl-num">M5 · Octubre</div>
-          <h4>Capitalizar Navidad / Q4</h4>
-          <ul>
-            <li>2 artículos finales (DMC EN, venues)</li>
-            <li>Completar 15 casos de éxito</li>
-            <li>Push estacional eventos fin de año</li>
-            <li>Schema Review/AggregateRating</li>
-          </ul>
-          <div class="tl-leads"><strong>+38 leads/mes acumulado</strong></div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M5</span>
+              <div class="tl-date">Octubre · capitalizar Q4</div>
+              <h4>Cosechar mientras el ciclo de eventos pica</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+38 leads/mes</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">10-12 h</span></div>
+                <ul>
+                  <li>Artículos #5-6: venues + DMC EN (vía WPML)</li>
+                  <li>Completar 10-15 casos de éxito (total acumulado)</li>
+                  <li>Schema Review/AggregateRating con reviews reales de Google</li>
+                  <li>Optimización mobile-first de Home + páginas top</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Push Q4: mensajes específicos eventos navidad / fin de año</li>
+                  <li>Pipeline acumulado para cerrar dic-ene</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📨</span>Email outbound<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Push estacional Q4 con ofertas concretas</li>
+                  <li>Reactivación de contactos M2-M4 que abrieron pero no respondieron</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + propuestas<span class="hrs">6-8 h</span></div>
+                <ul>
+                  <li>Templates específicos eventos navideños</li>
+                  <li>Shortcuts en /admin para Xavi (acción más frecuente Q4)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🤝</span>Partnerships<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Decisión renew / drop basada en 3 meses de datos</li>
+                  <li>Negociar 2º backlink editorial</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📊</span>Mejora continua<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Reporte M4 + iteraciones</li>
+                  <li>Experimento M4: nuevo segmento ICP (sector retail por ejemplo)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 33-44 h</span>
+              <span><strong>Entregable:</strong> 8 artículos publicados · 10-15 casos · push Q4 multi-canal</span>
+              <span><strong>Métrica:</strong> pipeline cerrado Q4 · ROI de partnerships activos</span>
+            </div>
+          </div>
         </div>
 
+        <!-- M6 -->
         <div class="tl-card tl-final">
-          <div class="tl-num">M6 · Noviembre</div>
-          <h4>Revisión + plan v2</h4>
-          <ul>
-            <li>Reporte completo de 6 meses</li>
-            <li>Decisión renovación / ajuste / incentivos</li>
-            <li>Plan v2 con canales más rentables</li>
-            <li>Dashboard live final</li>
-          </ul>
-          <div class="tl-leads"><strong>+44 leads/mes</strong> · objetivo 2,5/día ✓</div>
+          <div class="tl-head">
+            <div>
+              <span class="tl-num">M6</span>
+              <div class="tl-date">Noviembre · revisión + plan v2</div>
+              <h4>Cerramos los 6 meses con datos y decidimos qué sigue</h4>
+            </div>
+            <div class="tl-leads-pill">
+              <div class="lbl">Lift acumulado</div>
+              <div class="val">+44 leads/mes ✓</div>
+            </div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-pillars">
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📈</span>SEO/GEO/AEO<span class="hrs">8-10 h</span></div>
+                <ul>
+                  <li>2 últimos artículos según señales reales M1-M5</li>
+                  <li>5 casos finales (total 15) · cluster completo</li>
+                  <li>Push final de internal linking</li>
+                  <li>Última optimización CTR páginas críticas</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>LinkedIn<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Cierre Q4 + consolidación pipeline navidad</li>
+                  <li>Handover de mensajes calientes para diciembre</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">📨</span>Email outbound<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Cierre Q4</li>
+                  <li>Lista limpia + estructura lista para 2027</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">⚙️</span>CRM + propuestas<span class="hrs">4-6 h</span></div>
+                <ul>
+                  <li>Mantenimiento estándar</li>
+                  <li>Preparación features Q1 2027 (según feedback Xavi)</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🤝</span>Partnerships<span class="hrs">3-4 h</span></div>
+                <ul>
+                  <li>Decisión final renew / drop por canal</li>
+                  <li>Acuerdos firmados para 2027 con los que rindieron</li>
+                </ul>
+              </div>
+              <div class="tl-pillar">
+                <div class="pname"><span class="icon">🎯</span>Revisión 6 meses<span class="hrs">8-10 h</span></div>
+                <ul>
+                  <li>Reporte completo: hoy vs M0, ROI por canal, atribución</li>
+                  <li>Call de revisión con Xavi · decisión renew / precio / incentivos</li>
+                  <li>Plan v2 con canales más rentables identificados</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tl-foot">
+              <span><strong>Esfuerzo total:</strong> 30-40 h</span>
+              <span><strong>Entregable:</strong> paquete de revisión completo · plan v2 propuesto · dashboard final</span>
+              <span><strong>Métrica:</strong> <strong style="color:var(--accent);">2,5 leads cualificados/día sostenidos</strong> · objetivo del retainer ✓</span>
+            </div>
+          </div>
         </div>
 
       </div>
