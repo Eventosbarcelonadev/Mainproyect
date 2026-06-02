@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propuesta Eventos Barcelona × Growth4U — Retainer mensual</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #e87461;
+      --accent-soft: rgba(232, 116, 97, 0.12);
+      --dark: #111;
+      --gray: #6b6b66;
+      --gray-soft: #98968f;
+      --light: #f7f7f5;
+      --border: #e9e7e1;
+      --green: #2ecc71;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    main { max-width: 980px; margin: 0 auto; padding: 0 32px; }
+
+    /* HERO */
+    .hero {
+      background: var(--dark);
+      color: #fff;
+      padding: 64px 0 72px;
+      margin-bottom: 56px;
+    }
+    .hero-inner { max-width: 980px; margin: 0 auto; padding: 0 32px; }
+    .hero .stamp {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 56px;
+      line-height: 1.05;
+      margin: 0 0 18px;
+      letter-spacing: -0.5px;
+      font-weight: 400;
+    }
+    .hero .lead {
+      color: rgba(255,255,255,0.7);
+      font-size: 17px;
+      line-height: 1.55;
+      max-width: 720px;
+      margin: 0 0 32px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .hero-meta .item .lbl {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
+    .hero-meta .item .val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      margin-top: 6px;
+      color: #fff;
+    }
+    .hero-meta .item .val.accent { color: var(--accent); }
+
+    /* SECTIONS */
+    section { margin-bottom: 64px; }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      font-weight: 400;
+    }
+    .section-lead {
+      color: var(--gray);
+      font-size: 15px;
+      margin: 0 0 28px;
+      max-width: 760px;
+    }
+
+    /* CARDS */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+    }
+    .card + .card { margin-top: 14px; }
+    .card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      margin: 0 0 8px;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .card p { margin: 0 0 10px; color: var(--gray); font-size: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    .card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--gray);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+    .card ul li + li { margin-top: 4px; }
+
+    /* PILARES — 2 col grid */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .pillar {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pillar-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 15px;
+    }
+    .pillar h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      margin: 0;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .pillar .role {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 600;
+      margin-top: -4px;
+    }
+    .pillar p { color: var(--gray); font-size: 13.5px; margin: 0; line-height: 1.6; }
+    .pillar .deliv {
+      font-size: 12px;
+      color: var(--gray);
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      line-height: 1.6;
+    }
+    .pillar .deliv strong { color: var(--dark); }
+
+    /* TIMELINE */
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .tl-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .tl-card .tl-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Serif Display', serif;
+      font-size: 14px;
+      padding: 1px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .tl-card h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 17px;
+      margin: 0 0 8px;
+      font-weight: 400;
+      line-height: 1.25;
+    }
+    .tl-card ul {
+      margin: 8px 0 14px;
+      padding-left: 16px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--gray);
+    }
+    .tl-card ul li + li { margin-top: 3px; }
+    .tl-card .tl-leads {
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--gray);
+    }
+    .tl-card .tl-leads strong { color: var(--accent); }
+    .tl-card.tl-final { border-color: var(--accent); border-width: 2px; }
+
+    /* ROI BLOCK */
+    .roi {
+      background: var(--dark);
+      color: #fff;
+      border-radius: 20px;
+      padding: 40px 44px;
+    }
+    .roi .lbl {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .roi h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      margin: 0 0 14px;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .roi p { color: rgba(255,255,255,0.7); font-size: 14.5px; line-height: 1.65; margin: 0 0 24px; max-width: 700px; }
+    .roi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .roi-stat {
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .roi-stat.highlight {
+      background: rgba(232,116,97,0.15);
+      border: 1px solid rgba(232,116,97,0.3);
+    }
+    .roi-stat .lbl-stat {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .roi-stat .val-stat {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      margin: 4px 0 2px;
+      line-height: 1.1;
+    }
+    .roi-stat.highlight .val-stat { color: var(--accent); }
+    .roi-stat .sub-stat {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* PRECIO */
+    .price-card {
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 18px;
+      padding: 32px 36px;
+      text-align: center;
+    }
+    .price-card .price-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 72px;
+      line-height: 1;
+      color: var(--accent);
+      letter-spacing: -1.5px;
+    }
+    .price-card .price-num small {
+      font-size: 18px;
+      color: var(--gray);
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+    .price-card .price-sub {
+      color: var(--gray);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .price-extras {
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      text-align: left;
+      font-size: 13px;
+      color: var(--gray);
+    }
+    .price-extras strong { color: var(--dark); display: block; margin-bottom: 4px; font-size: 12.5px; }
+
+    /* NEXT STEPS */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .step {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 22px;
+    }
+    .step .step-num {
+      font-family: 'DM Serif Display', serif;
+      color: var(--accent);
+      font-size: 24px;
+      line-height: 1;
+    }
+    .step strong { display: block; margin: 6px 0 4px; font-size: 14px; }
+    .step p { margin: 0; color: var(--gray); font-size: 12.5px; line-height: 1.55; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 56px 32px 64px;
+      color: var(--gray-soft);
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 820px) {
+      .hero { padding: 48px 0 56px; margin-bottom: 40px; }
+      .hero h1 { font-size: 38px; }
+      .hero .lead { font-size: 15px; }
+      .hero-meta { gap: 22px; }
+      .hero-meta .item .val { font-size: 22px; }
+      .section-title { font-size: 24px; }
+      .pillars, .timeline, .steps, .roi-grid, .price-extras { grid-template-columns: 1fr; }
+      .roi { padding: 28px 24px; }
+      .price-card { padding: 24px; }
+      .price-card .price-num { font-size: 56px; }
+      main { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="stamp">Propuesta · Retainer mensual · Eventos Barcelona × Growth4U</div>
+      <h1>De 1 lead/día a 2-3 clientes reales al mes.</h1>
+      <p class="lead">Un retainer mensual que ataca los 6 frentes que mueven la aguja del negocio: SEO, IA generativa, LinkedIn outbound, email frío, mantenimiento del CRM y propuestas automáticas, partnerships y mejora continua. Una sola operación, un solo precio, resultados medidos cada mes.</p>
+      <div class="hero-meta">
+        <div class="item"><div class="lbl">Inversión</div><div class="val accent">2.000 €/mes</div></div>
+        <div class="item"><div class="lbl">Compromiso</div><div class="val">6 meses</div></div>
+        <div class="item"><div class="lbl">Revisión</div><div class="val">Mes 6</div></div>
+        <div class="item"><div class="lbl">Objetivo M6</div><div class="val">~2,5 leads/día sostenidos</div></div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- PUNTO DE PARTIDA -->
+    <section>
+      <div class="section-label">Punto de partida</div>
+      <h2 class="section-title">Ya tienes el sistema. Falta encenderlo.</h2>
+      <p class="section-lead">Durante los últimos meses construimos juntos la infraestructura que hace falta para escalar. Esta propuesta no es para construir más cosas — es para <strong>poner en marcha de forma sistemática lo que ya está hecho</strong>, sumando los canales de captación que faltan.</p>
+
+      <div class="card">
+        <h3>Lo que ya está construido y operativo (sin coste adicional)</h3>
+        <ul>
+          <li><strong>Sitio web</strong> en eventosbarcelona.com con SEO técnico mínimo, Yoast Premium, WPML ES/EN, integración Site Kit (GSC + GA4).</li>
+          <li><strong>CRM en GoHighLevel</strong> con pipelines Clientes / Artistas / Proveedores, tags por fuente e idioma, custom fields, workflows de notificación a Xavi cuando entra un lead caliente.</li>
+          <li><strong>Formularios inteligentes</strong> ES/EN para clientes y artistas con auto-skip por URL parameters, lead capture parcial vs completo, atribución de origen.</li>
+          <li><strong>Sistema de propuestas automáticas</strong>: a partir de un lead se genera un link personalizado, editable por Xavi, descargable en PDF, con shows del catálogo seleccionables. Modo "desde cero" para clientes que vienen por teléfono o mail.</li>
+          <li><strong>Panel admin</strong> (/admin.html) para gestionar shows / artistas / propuestas con revisión pending → active → archived.</li>
+          <li><strong>Catálogo de shows</strong> sincronizado entre WordPress y Supabase, con auditoría aplicada (67 filas backfilleadas en mayo).</li>
+          <li><strong>Dashboard mensual</strong> de métricas SEO / GEO / AEO con plan operativo mes a mes y proyección de leads.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LOS 6 PILARES -->
+    <section>
+      <div class="section-label">El plan</div>
+      <h2 class="section-title">6 pilares que trabajan a la vez.</h2>
+      <p class="section-lead">Ningún canal por sí solo cierra el objetivo. La combinación sí. SEO trae demanda existente, LinkedIn captura intención dormida, email cubre los huecos, partnerships escalan, y el CRM convierte todo en propuestas enviadas en horas, no días.</p>
+
+      <div class="pillars">
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">1</span><h3>SEO / GEO / AEO</h3></div>
+          <div class="role">Demand capture orgánico</div>
+          <p>Atacar las queries donde el cliente potencial ya nos busca en Google. Reescribir titles y metas de las 10 páginas top (8-10 h en M1), publicar 8 artículos nuevos sobre keywords con volumen real, mover 5 keywords Tier 1 a top3, activar schema FAQ / Service / Event vía Yoast Premium.</p>
+          <div class="deliv"><strong>Entregable mensual:</strong> reporte GSC + GA con CTR, posiciones y clics atribuidos. <strong>Esfuerzo:</strong> 12-15 h/mes. <strong>Lift M6:</strong> +29 leads/mes orgánicos.</div>
+        </div>
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">2</span><h3>LinkedIn outbound</h3></div>
+          <div class="role">Outbound personal · arranque 1 jun</div>
+          <p>Sales Navigator + Ulinc desde tu perfil. 300 cuentas, 600 contactos, ICP definido (HR / Marketing / Events de empresas 50-500 empleados en BCN-Cataluña, Madrid en ola 2). Secuencia de 5 toques en 21 días. Tú revisas 15 min/día.</p>
+          <div class="deliv"><strong>Entregable semanal:</strong> reporte invites/aceptaciones/conversaciones/calls. <strong>Esfuerzo:</strong> 6-8 h/mes G4U. <strong>Coste extra herramientas:</strong> ~180 €/mes (Sales Nav + Ulinc, facturado directo a EB). <strong>Target mes 1:</strong> 10-15 conversaciones, 4-6 calls.</div>
+        </div>
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">3</span><h3>Outbound email</h3></div>
+          <div class="role">Cobertura de los que no aceptan LinkedIn</div>
+          <p>A partir de julio, secuencia de email frío a los contactos que no aceptaron la invitación en LinkedIn (siguen siendo ICP). Copy distinto al de LinkedIn, más educativo, 3 toques en 14 días. Mismo CRM, mismo pipeline, atribución `source: email_outbound`.</p>
+          <div class="deliv"><strong>Entregable:</strong> métricas de envío / respuesta / calls agendadas. <strong>Esfuerzo:</strong> 4-6 h/mes. <strong>Stack:</strong> envío desde dominio propio con calentamiento (SmartLead o equivalente, coste herramienta incluido en retainer hasta 1000 envíos/mes).</div>
+        </div>
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">4</span><h3>CRM + propuestas automáticas</h3></div>
+          <div class="role">Mantenimiento + mejora continua</div>
+          <p>El sistema ya construido (GHL + formularios + propuesta.html + admin) necesita mantenimiento operativo: ajustes de pipeline, nuevos custom fields cuando Xavi los necesite, workflows nuevos, fixes de bugs, soporte cuando algo se rompe, mejoras al catálogo y al builder de propuestas.</p>
+          <div class="deliv"><strong>Entregable:</strong> uptime + tickets resueltos + mejoras iterativas. <strong>Esfuerzo:</strong> 8-10 h/mes. <strong>Incluye:</strong> soporte ad-hoc cuando entra un lead complicado, cambios al flow, integración de nuevos shows/artistas.</div>
+        </div>
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">5</span><h3>Partnerships + nuevas estrategias</h3></div>
+          <div class="role">Alianzas con ROI medido</div>
+          <p>Evaluar y activar partnerships con retorno real: EventoPlus (ya pagado — optimizar anchor + visibilidad), Clutch + Zoddys (reseñas + backlinks), Sortlist (directorio top en SERP), Barcelona Convention Bureau, MPI / ICCA según ROI estimado. Cada acción con UTM y métrica de leads atribuidos.</p>
+          <div class="deliv"><strong>Entregable:</strong> matriz mensual de partnerships con coste / leads generados / decisión renew/drop. <strong>Esfuerzo:</strong> 4-6 h/mes. <strong>Filosofía:</strong> ningún directorio se renueva sin ROI demostrado en 3 meses.</div>
+        </div>
+
+        <div class="pillar">
+          <div style="display:flex; gap:12px; align-items:center;"><span class="pillar-num">6</span><h3>Mejora continua</h3></div>
+          <div class="role">Reporting + experimentación</div>
+          <p>Un reporte mensual al cierre de cada mes con todas las métricas (SEO, LinkedIn, email, partnerships, leads atribuidos) y un experimento testeable por mes: A/B de copy de propuesta, nuevo segmento ICP, landing alternativa, etc. La idea es que cada mes el sistema rinda mejor que el anterior.</p>
+          <div class="deliv"><strong>Entregable:</strong> reporte mensual + 1 experimento documentado. <strong>Esfuerzo:</strong> 4-6 h/mes. <strong>Dashboard live:</strong> disponible siempre en propuestas.eventosbarcelona.com/dashboard.html.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TIMELINE MES A MES -->
+    <section>
+      <div class="section-label">Cronograma</div>
+      <h2 class="section-title">Qué pasa cada mes.</h2>
+      <p class="section-lead">El primer mes activamos los canales rápidos (LinkedIn + SEO quick wins) para tener lift visible en 30-45 días. Los meses siguientes construyen contenido y autoridad. Mes 6 = revisión completa con datos.</p>
+
+      <div class="timeline">
+
+        <div class="tl-card">
+          <div class="tl-num">M1 · Junio</div>
+          <h4>Encender lo rápido</h4>
+          <ul>
+            <li>Lanzamiento LinkedIn outbound (1 jun)</li>
+            <li>Reescritura 10 páginas top (titles, metas, schema)</li>
+            <li>Baseline GSC/GA congelado para medir</li>
+            <li>Setup email outbound (calentamiento dominio)</li>
+          </ul>
+          <div class="tl-leads"><strong>+4 leads/mes acumulado</strong> · 10-15 conversaciones LinkedIn</div>
+        </div>
+
+        <div class="tl-card">
+          <div class="tl-num">M2 · Julio</div>
+          <h4>Email vivo + cerrar SEO base</h4>
+          <ul>
+            <li>Email outbound activo (3 toques / 14 días)</li>
+            <li>Cerrar 19 H2 pregunta sin respuesta</li>
+            <li>Auditar backlinks tóxicos + disavow</li>
+            <li>Optimizar EventoPlus + Clutch + Sortlist</li>
+          </ul>
+          <div class="tl-leads"><strong>+10 leads/mes acumulado</strong></div>
+        </div>
+
+        <div class="tl-card">
+          <div class="tl-num">M3 · Agosto</div>
+          <h4>Validación de funnel</h4>
+          <ul>
+            <li>Primer artículo nuevo (team building)</li>
+            <li>Internal linking ronda 2</li>
+            <li>Validar ratio real leads/clics con GHL</li>
+            <li>Iteración copy LinkedIn + email</li>
+          </ul>
+          <div class="tl-leads"><strong>+17 leads/mes acumulado</strong></div>
+        </div>
+
+        <div class="tl-card">
+          <div class="tl-num">M4 · Septiembre</div>
+          <h4>Contenido + casos</h4>
+          <ul>
+            <li>3 artículos nuevos (corporate, entretenimiento, family day)</li>
+            <li>Hub /casos-de-exito/ + primeros 5 cases</li>
+            <li>Ola 2 LinkedIn: Madrid</li>
+            <li>Partnerships review (renew/drop)</li>
+          </ul>
+          <div class="tl-leads"><strong>+25 leads/mes acumulado</strong></div>
+        </div>
+
+        <div class="tl-card">
+          <div class="tl-num">M5 · Octubre</div>
+          <h4>Capitalizar Navidad / Q4</h4>
+          <ul>
+            <li>2 artículos finales (DMC EN, venues)</li>
+            <li>Completar 15 casos de éxito</li>
+            <li>Push estacional eventos fin de año</li>
+            <li>Schema Review/AggregateRating</li>
+          </ul>
+          <div class="tl-leads"><strong>+38 leads/mes acumulado</strong></div>
+        </div>
+
+        <div class="tl-card tl-final">
+          <div class="tl-num">M6 · Noviembre</div>
+          <h4>Revisión + plan v2</h4>
+          <ul>
+            <li>Reporte completo de 6 meses</li>
+            <li>Decisión renovación / ajuste / incentivos</li>
+            <li>Plan v2 con canales más rentables</li>
+            <li>Dashboard live final</li>
+          </ul>
+          <div class="tl-leads"><strong>+44 leads/mes</strong> · objetivo 2,5/día ✓</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ROI -->
+    <section>
+      <div class="roi">
+        <div class="lbl">ROI esperado</div>
+        <h2>Un solo cliente cualificado al mes ya cubre el retainer.</h2>
+        <p>A ticket promedio EB de 5.000–10.000 € con margen 25-40 %, un solo cliente nuevo cualificado al mes ya genera 1.250–4.000 € de margen neto — superando el coste del retainer. Cada cliente adicional es upside puro. El plan apunta a multiplicar ese baseline por 2,5 en seis meses.</p>
+        <div class="roi-grid">
+          <div class="roi-stat">
+            <div class="lbl-stat">Hoy</div>
+            <div class="val-stat">~30</div>
+            <div class="sub-stat">leads/mes (~1/día)</div>
+          </div>
+          <div class="roi-stat highlight">
+            <div class="lbl-stat">M6 · objetivo</div>
+            <div class="val-stat">~74</div>
+            <div class="sub-stat">leads/mes (~2,5/día)</div>
+          </div>
+          <div class="roi-stat">
+            <div class="lbl-stat">Punto de equilibrio</div>
+            <div class="val-stat">1</div>
+            <div class="sub-stat">cliente cualificado/mes</div>
+          </div>
+          <div class="roi-stat">
+            <div class="lbl-stat">Stretch M9</div>
+            <div class="val-stat">~83</div>
+            <div class="sub-stat">leads/mes (~2,8/día)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRECIO -->
+    <section>
+      <div class="section-label">Inversión</div>
+      <h2 class="section-title">Una cifra. Todo dentro.</h2>
+      <p class="section-lead">El retainer cubre los 6 pilares: estrategia, ejecución, mantenimiento del CRM y propuestas, partnerships, reporting y mejora continua. Sin sorpresas, sin facturas extra del equipo Growth4U.</p>
+
+      <div class="price-card">
+        <div class="price-num">2.000 € <small>/ mes</small></div>
+        <div class="price-sub">IVA aparte · facturación mensual · ~40-50 horas de equipo G4U / mes</div>
+        <div class="price-extras">
+          <div>
+            <strong>Incluido en el retainer</strong>
+            Estrategia + ejecución de los 6 pilares · soporte CRM / propuestas / formularios · dashboard live · reporting mensual · 1 experimento documentado/mes.
+          </div>
+          <div>
+            <strong>Coste herramientas (factura aparte)</strong>
+            LinkedIn Sales Nav ~99 € · Ulinc ~83 € · Email outbound stack incluido hasta 1.000 envíos/mes. Total extra: ~180 €/mes.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPROMISO -->
+    <section>
+      <div class="section-label">Compromiso</div>
+      <h2 class="section-title">Lo que pedimos a tu lado.</h2>
+      <div class="card">
+        <ul>
+          <li><strong>15 minutos al día</strong> para revisar respuestas en LinkedIn desde tu perfil. Es el activo de autoridad más fuerte que tenemos en BCN.</li>
+          <li><strong>1 call quincenal de 30 min</strong> con Ramiro y Philippe para revisar pipeline + ajustar prioridades.</li>
+          <li><strong>Decisión sobre 2-3 casos de éxito reales</strong> para usar en copy de LinkedIn, email y casos de éxito web (con anonimización donde haga falta — SpaceX, F1).</li>
+          <li><strong>Acceso a Google Ads</strong> (si existe cuenta histórica) o aprobar suscripción de keyword tool para volumen real de queries.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- NEXT STEPS -->
+    <section>
+      <div class="section-label">Próximos pasos</div>
+      <h2 class="section-title">Tres pasos para arrancar.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <strong>Aprobar la propuesta</strong>
+          <p>OK por WhatsApp o email. Comenzamos a facturar desde el primer día del mes siguiente.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <strong>Compra de herramientas</strong>
+          <p>Sales Navigator + Ulinc desde tu cuenta. ~180 €/mes facturado directo. Te ayudamos en el setup.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <strong>Kickoff call</strong>
+          <p>30 min con Ramiro y Philippe para confirmar ICP, casos de éxito a usar y lanzar M1.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Propuesta preparada por Growth4U · Philippe Saint-Hubert &amp; Ramiro · Mayo 2026
+  </footer>
+
+</body>
+</html>
