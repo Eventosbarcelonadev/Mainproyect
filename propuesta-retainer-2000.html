@@ -469,7 +469,7 @@
       .hero-meta { gap: 22px; }
       .hero-meta .item .val { font-size: 22px; }
       .section-title { font-size: 24px; }
-      .pillars, .steps, .docs-grid, .roi-grid, .price-extras { grid-template-columns: 1fr; }
+      .pillars, .steps, .docs-grid, .roi-grid, .price-extras, .paid-grid { grid-template-columns: 1fr !important; }
       .tl-head { grid-template-columns: 1fr; }
       .tl-leads-pill { text-align: left; }
       .tl-pillars { grid-template-columns: 1fr; }
@@ -1029,8 +1029,17 @@
             Sales Navigator 113 €/mes (o 83 €/mes con compromiso de 13 meses) + Ulink ~83 €/mes — facturados directamente a EB.
           </div>
           <div style="grid-column: 1 / -1;">
-            <strong>Plugins premium WordPress (ya pagados por EB)</strong>
-            Yoast SEO Premium, WPML (multilingual ES/EN), Elementor Pro, Advanced Custom Fields. Inversión existente que esta propuesta aprovecha — <strong style="color: var(--dark);">no hay que comprar ni instalar nada nuevo</strong>. Coste anual estimado: ~250-350 €/año (ya en tu factura actual).
+            <strong>Suscripciones que ya pagas hoy (no son coste adicional)</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px;" class="paid-grid">
+              <div>
+                <strong style="display:block; color: var(--dark); font-size: 12.5px; margin-bottom: 2px;">CRM · GoHighLevel</strong>
+                ~97 €/mes según tu plan actual. Es el motor del sistema completo (contactos, embudos, automatizaciones, propuestas, workflows). Esta propuesta lo aprovecha al máximo y le saca todo el rendimiento que hoy no se está usando.
+              </div>
+              <div>
+                <strong style="display:block; color: var(--dark); font-size: 12.5px; margin-bottom: 2px;">Plugins WordPress premium</strong>
+                Yoast SEO Premium, WPML (ES/EN), Elementor Pro, Advanced Custom Fields. <strong>No hay que comprar ni instalar nada nuevo</strong>. Coste anual estimado: ~250-350 €/año (ya en tu factura actual).
+              </div>
+            </div>
           </div>
         </div>
       </div>
