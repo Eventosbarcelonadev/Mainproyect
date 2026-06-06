@@ -1087,7 +1087,10 @@ async function editShow(req, res, env) {
       if ('name' in update) props.nombre_show = show.name || '';
       if ('description' in update) props.descripcion_show = show.description || '';
       if ('video_url' in update) props.url_video = show.video_url || '';
-      if ('image_url' in update) props.url_imagen = show.image_url || '';
+      // url_imagen está configurado como FILE_UPLOAD en GHL custom_objects.shows
+      // y rechaza URLs externas (400 "couldn't validate the mapped field").
+      // Si Xavi lo cambia a TEXT en el panel GHL, descomentar.
+      // if ('image_url' in update) props.url_imagen = show.image_url || '';
       const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
         properties: props
       });
@@ -1102,7 +1105,27 @@ async function editShow(req, res, env) {
     ghlResult.skipped = 'no_ghl_show_id';
   }
 
-  return res.status(200).json({ success: true, show, ghl: ghlResult });
+  // Si se cambió category o subcategory del show, re-sync los artistas
+  // vinculados a GHL (sus campos categoria_artista / subcategoria_artista se
+  // agregan desde los shows). Best-effort.
+  let artistasSync = { synced: 0 };
+  if ('category' in update || 'subcategory' in update) {
+    try {
+      const ids = new Set();
+      const sa = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(id)}&select=artista_id`,
+        { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      if (sa.ok) (await sa.json()).forEach(x => ids.add(x.artista_id));
+      if (show.artista_id) ids.add(show.artista_id);
+      if (ids.size) {
+        const r2 = await syncArtistasToGhlBulk(env, [...ids]);
+        artistasSync = { synced: ids.size, results: r2 };
+      }
+    } catch (e) { artistasSync = { synced: 0, error: e.message }; }
+  }
+
+  return res.status(200).json({ success: true, show, ghl: ghlResult, artistas_sync: artistasSync });
 }
 
 // Crea un nuevo show: 1) inserta en Supabase, 2) crea record en GHL
@@ -1190,7 +1213,8 @@ async function addShow(req, res, env) {
     };
     if (show.description) props.descripcion_show = show.description;
     if (show.video_url) props.url_video = show.video_url;
-    if (show.image_url) props.url_imagen = show.image_url;
+    // url_imagen rechazado por GHL (FILE_UPLOAD field, no acepta URL externa)
+    // if (show.image_url) props.url_imagen = show.image_url;
     const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
       locationId: env.GHL_LOC, properties: props
     });
@@ -1668,10 +1692,12 @@ async function patchShowImages(env, id, arr, res, uploadedUrl) {
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
   const show = rows[0];
 
-  // GHL sync: el campo url_imagen del custom_objects.shows refleja la primary
-  // de la galería. Cubre upload/reorder/delete. Best-effort.
-  const ghlImg = { updated: false };
-  if (show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+  // GHL sync: url_imagen está como FILE_UPLOAD en GHL custom_objects.shows,
+  // rechaza URLs externas. Desactivado hasta que Xavi cambie el campo a TEXT.
+  // (la imagen sí queda guardada en image_url + image_urls de Supabase para
+  // /admin, propuestas y el catálogo público.)
+  const ghlImg = { updated: false, skipped: 'url_imagen_field_is_FILE_UPLOAD' };
+  if (false && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
     const g = await ghlFetch('PUT',
       `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
       env,
@@ -1781,7 +1807,8 @@ async function reviewShow(req, res, env) {
       };
       if (show.description) props.descripcion_show = show.description;
       if (show.video_url) props.url_video = show.video_url;
-      if (show.image_url) props.url_imagen = show.image_url;
+      // url_imagen rechazado por GHL (FILE_UPLOAD field, no URL externa)
+      // if (show.image_url) props.url_imagen = show.image_url;
       const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
         locationId: env.GHL_LOC, properties: props
       });
@@ -1821,7 +1848,8 @@ async function reviewShow(req, res, env) {
         if ('name' in update) props.nombre_show = show.name || '';
         if ('description' in update) props.descripcion_show = show.description || '';
         if ('video_url' in update) props.url_video = show.video_url || '';
-        if ('image_url' in update) props.url_imagen = show.image_url || '';
+        // url_imagen rechazado por GHL (FILE_UPLOAD field)
+        // if ('image_url' in update) props.url_imagen = show.image_url || '';
       }
       const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
         properties: props
