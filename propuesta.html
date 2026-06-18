@@ -3963,13 +3963,17 @@
         const block = el.closest('.block');
         const showId = block && block.dataset ? block.dataset.show : null;
         let target = null;
-        if (showId != null) {
-          target = proposalState.shows.find(s => String(s.id) === String(showId));
-        }
-        // Fallback al índice solo si no pudimos resolver por id (no debería pasar)
-        if (!target) {
+        if (showId != null && showId !== '') {
+          // Resolver por ID. Si el show ya no existe en el array (fue borrado),
+          // NO escribimos nada — caer al índice acá pisaría el show que ahora
+          // ocupa esa posición con el texto del bloque borrado. Ese era el bug
+          // exacto: flushPendingEditableEdits() corre tras el splice, lee el
+          // DOM viejo, y el fallback por índice corrompía al vecino.
+          target = proposalState.shows.find(s => String(s.id) === String(showId)) || null;
+        } else {
+          // Solo sin id (caso legacy improbable) usamos el índice.
           const idx = parseInt(el.dataset.showIndex, 10);
-          if (Number.isFinite(idx)) target = proposalState.shows[idx];
+          if (Number.isFinite(idx)) target = proposalState.shows[idx] || null;
         }
         if (target) {
           target[showField] = text;
