@@ -3929,6 +3929,13 @@
     // delegation desde document.
     function persistEditableField(el) {
       if (!el || !el.matches) return;
+      // Guarda anti-corrupción: si el nodo ya fue desconectado del DOM (ej.
+      // borraste un bloque con removeShow → re-render → el navegador dispara
+      // un focusout TARDÍO sobre el nodo viejo ya detached), NO persistimos.
+      // Si no, escribiríamos el texto del bloque borrado en el índice que
+      // ahora ocupa el bloque siguiente. Bug Xavi 2026-06-18: borrar el bloque
+      // de arriba dejaba su texto pegado en el bloque que subía.
+      if (!document.body.contains(el)) return;
       const text = (el.innerText || el.textContent || '').replace(/ /g, ' ').trim();
       // data-field: path dotted en proposalState (event.name, concept.title, heroSub...)
       const fieldPath = el.dataset && el.dataset.field;
@@ -3947,12 +3954,25 @@
         }
         return;
       }
-      // data-show-field: campo de un show puntual (name, description, contextLabel)
+      // data-show-field: campo de un show puntual (name, description, contextLabel).
+      // Resolvemos el show por su ID (estable) leyendo el .block contenedor, no
+      // por data-show-index: el índice se corre cuando se borra/reordena un
+      // bloque y escribiría en el show equivocado.
       const showField = el.dataset && el.dataset.showField;
-      if (showField) {
-        const idx = parseInt(el.dataset.showIndex, 10);
-        if (Number.isFinite(idx) && proposalState.shows && proposalState.shows[idx]) {
-          proposalState.shows[idx][showField] = text;
+      if (showField && proposalState.shows) {
+        const block = el.closest('.block');
+        const showId = block && block.dataset ? block.dataset.show : null;
+        let target = null;
+        if (showId != null) {
+          target = proposalState.shows.find(s => String(s.id) === String(showId));
+        }
+        // Fallback al índice solo si no pudimos resolver por id (no debería pasar)
+        if (!target) {
+          const idx = parseInt(el.dataset.showIndex, 10);
+          if (Number.isFinite(idx)) target = proposalState.shows[idx];
+        }
+        if (target) {
+          target[showField] = text;
           if (proposalState.isAdmin && typeof updateAdminBar === 'function') {
             const bar = document.getElementById('adminBar');
             if (bar) bar.classList.add('visible');
