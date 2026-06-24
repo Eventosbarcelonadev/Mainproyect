@@ -1458,7 +1458,7 @@
       content.style.display = 'none';
       errorEl.style.display = 'none';
       try {
-        const url = '/api/geo-metrics' + (forceRefresh ? '?t=' + Date.now() : '');
+        const url = '/api/admin?action=geo-metrics' + (forceRefresh ? '&t=' + Date.now() : '');
         const res = await fetch(url);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const d = await res.json();

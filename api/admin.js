@@ -1860,6 +1860,69 @@ async function reviewShow(req, res, env) {
   return res.status(200).json({ success: true, show, ghl });
 }
 
+// === geo-metrics ===
+// Consume el MCP/REST de eventosbarcelona.com (WordPress) con auth Basic
+// server-side (WP_USER/WP_PASS desde env vars) y devuelve métricas
+// GEO/AEO/SEO normalizadas para el dashboard live. Sin secretos en el browser.
+// Consolidado dentro de /api/admin para no exceder el límite Hobby de 12
+// funciones serverless.
+async function geoMetrics(req, res, env) {
+  const WP_BASE = 'https://www.eventosbarcelona.com/wp-json';
+  const user = process.env.WP_USER;
+  const pass = process.env.WP_PASS;
+  if (!user || !pass) {
+    return res.status(500).json({ error: 'WP_USER / WP_PASS no configurados en Vercel env vars' });
+  }
+  const auth = Buffer.from(`${user}:${pass}`).toString('base64');
+  async function wp(method, path, body) {
+    const opts = {
+      method,
+      headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
+    };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const r = await fetch(WP_BASE + path, opts);
+    if (!r.ok) return { _error: `HTTP ${r.status}`, _path: path };
+    return r.json();
+  }
+  try {
+    const [
+      visibility, audit, llmsStatus, robotsStatus, siteInfo,
+      botTraffic, schemaStatus, recommendations, topPages,
+    ] = await Promise.all([
+      wp('POST', '/llm-analytics/v1/visibility-score/calculate', {}),
+      wp('POST', '/llm-analytics/v1/agent-audit/run', {}),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-llms-txt-status/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-robots-txt-status/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-site-info/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-bot-traffic/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-schema-status/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-recommendations/run'),
+      wp('GET', '/wp-abilities/v1/abilities/llmagnet/get-top-pages/run'),
+    ]);
+    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1200');
+    return res.status(200).json({
+      generated_at: new Date().toISOString(),
+      visibility: visibility?.score_data ?? visibility,
+      audit: {
+        score: audit?.score,
+        agent_ready: audit?.agent_ready,
+        counts: audit?.counts,
+        flag_checks: audit?.flag_checks,
+        domains: audit?.domains,
+      },
+      llms_txt: llmsStatus?.data ?? llmsStatus,
+      robots: robotsStatus?.data ?? robotsStatus,
+      site: siteInfo?.data ?? siteInfo,
+      bots: botTraffic?.data ?? botTraffic,
+      schema: schemaStatus?.data ?? schemaStatus,
+      recommendations: recommendations?.data ?? recommendations,
+      top_pages: topPages?.data ?? topPages,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || String(err) });
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -1889,6 +1952,7 @@ export default async function handler(req, res) {
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
+      if (action === 'geo-metrics') return geoMetrics(req, res, env);
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
