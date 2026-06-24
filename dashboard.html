@@ -1330,6 +1330,68 @@
       </div>
     </section>
 
+    <!-- ================== EVOLUCIÓN GEO LIVE ================== -->
+    <section>
+      <div class="section-label">Evolución GEO en vivo</div>
+      <h2 class="section-title">Métricas en tiempo real desde el sitio.</h2>
+      <p class="section-sub">Datos consultados en vivo del MCP de WordPress + LLMagnet + AEO God Mode al abrir esta página. Refresco automático cada 10 minutos del caché Vercel.</p>
+
+      <div id="geo-live-loading" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: center; color: var(--gray); font-size: 13px;">
+        Cargando métricas en vivo desde el sitio…
+      </div>
+
+      <div id="geo-live-content" style="display:none;">
+        <!-- KPI cards -->
+        <div class="kpi-grid" style="margin-bottom: 16px;">
+          <div class="kpi">
+            <div class="label">AI Visibility Score</div>
+            <div class="value" id="live-visibility-score">—</div>
+            <div class="delta flat" id="live-visibility-delta">—</div>
+            <div class="bar"><div class="bar-fill" id="live-visibility-bar" style="width: 0%"></div></div>
+          </div>
+          <div class="kpi">
+            <div class="label">Agent Readiness</div>
+            <div class="value" id="live-audit-score">—</div>
+            <div class="delta flat" id="live-audit-delta">—</div>
+            <div class="bar"><div class="bar-fill" id="live-audit-bar" style="width: 0%"></div></div>
+          </div>
+          <div class="kpi">
+            <div class="label">Visitas bots IA</div>
+            <div class="value" id="live-bot-visits">—</div>
+            <div class="delta flat" id="live-bot-detail">—</div>
+            <div class="target">desde activación del tracking</div>
+          </div>
+          <div class="kpi">
+            <div class="label">llms.txt</div>
+            <div class="value" id="live-llms-size">—</div>
+            <div class="delta flat" id="live-llms-docs">—</div>
+            <div class="target" id="live-llms-updated">—</div>
+          </div>
+        </div>
+
+        <!-- Two-col: Domain breakdown + recomendaciones live -->
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Domain breakdown — audit por categoría</h3>
+            <p>Score 0-100 por cada dominio del agent audit. Las debilidades guían el plan operativo del próximo mes.</p>
+            <div id="live-domains" style="margin-top: 8px;"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Recomendaciones priorizadas</h3>
+            <p>Sugerencias automáticas generadas por LLMagnet según el estado actual.</p>
+            <div id="live-recs" style="margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <div style="text-align: right; font-size: 11px; color: var(--gray-soft); margin-top: 12px;">
+          Generado a las <span id="live-generated">—</span> ·
+          <a href="#" onclick="loadGeoMetrics(true); return false;" style="color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft);">↻ Forzar refresh</a>
+        </div>
+      </div>
+
+      <div id="geo-live-error" style="display:none; background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3); border-radius: 12px; padding: 16px 20px; color: #c0392b; font-size: 13px;"></div>
+    </section>
+
   </main>
 
   <script>
@@ -1386,6 +1448,91 @@
         }
       }
     });
+
+    // === Evolución GEO live ===
+    async function loadGeoMetrics(forceRefresh = false) {
+      const loader = document.getElementById('geo-live-loading');
+      const content = document.getElementById('geo-live-content');
+      const errorEl = document.getElementById('geo-live-error');
+      loader.style.display = 'block';
+      content.style.display = 'none';
+      errorEl.style.display = 'none';
+      try {
+        const url = '/api/geo-metrics' + (forceRefresh ? '?t=' + Date.now() : '');
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const d = await res.json();
+
+        // Visibility score
+        const v = d.visibility || {};
+        document.getElementById('live-visibility-score').textContent = (v.score ?? '?') + '/100';
+        document.getElementById('live-visibility-bar').style.width = (v.score || 0) + '%';
+        document.getElementById('live-visibility-delta').textContent = (v.total_visits ?? 0) + ' visitas · ' + (v.unique_pages ?? 0) + ' páginas';
+
+        // Audit
+        const a = d.audit || {};
+        document.getElementById('live-audit-score').textContent = (a.score ?? '?') + '/100';
+        document.getElementById('live-audit-bar').style.width = (a.score || 0) + '%';
+        document.getElementById('live-audit-delta').textContent = 'pass ' + (a.counts?.pass ?? 0) + ' · fail ' + (a.counts?.fail ?? 0);
+
+        // Bot traffic
+        const bots = d.bots || {};
+        const totalBots = bots.total_visits ?? Object.values(bots.totals || {}).reduce((a,b) => a + (b||0), 0);
+        document.getElementById('live-bot-visits').textContent = totalBots;
+        const botList = Object.entries(bots.totals || {}).filter(([_,v]) => v > 0);
+        document.getElementById('live-bot-detail').textContent = botList.length ? botList.length + ' bots distintos' : 'ningún bot todavía';
+
+        // llms.txt
+        const llms = d.llms_txt || {};
+        const size = llms.llms_txt?.size_bytes ?? 0;
+        document.getElementById('live-llms-size').textContent = size ? (size/1024).toFixed(1) + ' KB' : '✗';
+        document.getElementById('live-llms-docs').textContent = (llms.docs_count ?? 0) + ' docs · ' + (llms.posts_in_scope ?? 0) + ' posts';
+        const lastGen = llms.last_generated ? new Date(llms.last_generated).toLocaleDateString('es-ES') : '—';
+        document.getElementById('live-llms-updated').textContent = 'última: ' + lastGen;
+
+        // Domains breakdown
+        const domEl = document.getElementById('live-domains');
+        domEl.innerHTML = (a.domains || []).map(dom => {
+          const w = dom.score || 0;
+          const color = w >= 80 ? 'var(--green)' : w >= 60 ? 'var(--amber)' : 'var(--red)';
+          return `
+            <div style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 4px;">
+                <span style="color: var(--dark); font-weight: 600;">${dom.label || dom.id}</span>
+                <span style="color: ${color}; font-weight: 700;">${dom.score}/100 <small style="color: var(--gray); font-weight: 400;">· peso ${dom.weight}%</small></span>
+              </div>
+              <div style="background: var(--accent-soft); height: 6px; border-radius: 999px; overflow: hidden;">
+                <div style="background: ${color}; height: 100%; width: ${w}%"></div>
+              </div>
+            </div>`;
+        }).join('') || '<div style="color: var(--gray); font-size: 12px;">Sin datos</div>';
+
+        // Recommendations
+        const recsArr = (d.recommendations?.recommendations) || (d.recommendations) || [];
+        const recsEl = document.getElementById('live-recs');
+        recsEl.innerHTML = (Array.isArray(recsArr) ? recsArr : []).slice(0, 6).map(r => {
+          const pri = (r.priority || 'medium').toLowerCase();
+          const bgColor = pri === 'critical' ? 'rgba(231,76,60,0.12)' : pri === 'high' ? 'rgba(243,156,18,0.12)' : 'var(--accent-soft)';
+          const txtColor = pri === 'critical' ? 'var(--red)' : pri === 'high' ? 'var(--amber)' : 'var(--accent)';
+          return `
+            <div style="background: ${bgColor}; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 12.5px; line-height: 1.5;">
+              <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: ${txtColor}; font-weight: 700; margin-bottom: 4px;">${pri} · ${r.area || 'general'}</div>
+              <div style="color: var(--dark); font-weight: 600; margin-bottom: 2px;">${r.message || '—'}</div>
+              <div style="color: var(--gray); font-size: 12px;">${r.action || ''}</div>
+            </div>`;
+        }).join('') || '<div style="color: var(--gray); font-size: 12px;">Sin recomendaciones activas</div>';
+
+        document.getElementById('live-generated').textContent = new Date(d.generated_at).toLocaleString('es-ES');
+
+        loader.style.display = 'none';
+        content.style.display = 'block';
+      } catch (err) {
+        loader.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'No se pudieron cargar las métricas en vivo: ' + err.message + '. Verificar que /api/geo-metrics está deployado y WP_USER/WP_PASS configurados en Vercel.';
+      }
+    }
+    if (document.getElementById('geo-live-loading')) loadGeoMetrics();
 
     // Plan de acción — tabs
     document.querySelectorAll('.plan-tab').forEach(tab => {
