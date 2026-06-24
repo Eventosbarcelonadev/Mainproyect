@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan del Mes 1 · Eventos Barcelona</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #e87461;
+      --accent-soft: rgba(232,116,97,0.12);
+      --dark: #111;
+      --gray: #6b6b66;
+      --gray-soft: #98968f;
+      --light: #f7f7f5;
+      --border: #e9e7e1;
+      --green: #2ecc71;
+      --amber: #f39c12;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); line-height: 1.55; font-size: 14px; }
+    main { max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+
+    .hero { background: var(--dark); color: #fff; padding: 64px 0 56px; margin-bottom: 48px; }
+    .hero-inner { max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+    .hero .stamp { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 14px; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: 48px; line-height: 1.05; margin: 0 0 16px; letter-spacing: -0.5px; font-weight: 400; }
+    .hero .lead { color: rgba(255,255,255,0.72); font-size: 16px; max-width: 720px; margin: 0 0 28px; }
+    .hero-meta { display: flex; gap: 28px; flex-wrap: wrap; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12); }
+    .hero-meta .item .lbl { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 600; }
+    .hero-meta .item .val { font-family: 'DM Serif Display', serif; font-size: 26px; margin-top: 4px; color: #fff; }
+    .hero-meta .item .val.accent { color: var(--accent); }
+
+    section { margin-bottom: 56px; }
+    .section-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 30px; line-height: 1.15; margin: 0 0 14px; font-weight: 400; }
+    .section-lead { color: var(--gray); font-size: 14.5px; margin: 0 0 24px; max-width: 760px; }
+
+    .week { background: #fff; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 18px; overflow: hidden; }
+    .week-head { padding: 22px 28px; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center; background: linear-gradient(180deg, #fafaf8, #fff); border-bottom: 1px solid var(--border); }
+    .week-num { background: var(--accent); color: #fff; font-family: 'DM Serif Display', serif; padding: 4px 14px; border-radius: 999px; font-size: 14px; letter-spacing: 0.5px; }
+    .week-title { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1.2; margin: 0; }
+    .week-title small { display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
+    .week-hrs { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--accent); }
+    .week-hrs small { font-size: 11px; color: var(--gray); display: block; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .week-body { padding: 22px 28px; }
+    .task { display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+    .task:last-child { border-bottom: 0; }
+    .task .check { font-size: 16px; font-weight: 700; line-height: 1.2; }
+    .check.done { color: var(--green); }
+    .check.pending { color: var(--gray-soft); }
+    .check.inprog { color: var(--amber); }
+    .task .desc strong { display: block; color: var(--dark); font-size: 13.5px; margin-bottom: 3px; }
+    .task .desc small { color: var(--gray); font-size: 12px; line-height: 1.5; }
+    .task .meta { font-size: 11px; color: var(--gray-soft); text-align: right; white-space: nowrap; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; }
+    .kpi .lbl { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); font-weight: 600; }
+    .kpi .val { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1.05; margin: 6px 0 2px; }
+    .kpi .delta { font-size: 12px; color: var(--green); font-weight: 600; }
+    .kpi .target { font-size: 11px; color: var(--gray-soft); margin-top: 4px; }
+    .kpi .bar { background: var(--accent-soft); height: 6px; border-radius: 999px; margin-top: 10px; overflow: hidden; }
+    .kpi .bar-fill { background: var(--accent); height: 100%; border-radius: 999px; }
+
+    .closure { background: var(--dark); color: #fff; border-radius: 20px; padding: 40px 44px; }
+    .closure h2 { font-family: 'DM Serif Display', serif; font-size: 30px; margin: 0 0 16px; font-weight: 400; line-height: 1.15; }
+    .closure p { color: rgba(255,255,255,0.78); font-size: 15px; line-height: 1.7; margin: 0 0 18px; max-width: 720px; }
+    .closure .lbl { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 12px; }
+    .closure-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+    .closure-stat { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 16px 18px; }
+    .closure-stat .lbl-s { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+    .closure-stat .val-s { font-family: 'DM Serif Display', serif; font-size: 26px; margin: 4px 0 2px; color: var(--accent); }
+    .closure-stat .sub-s { font-size: 11px; color: rgba(255,255,255,0.55); }
+
+    footer { text-align: center; padding: 40px 32px; color: var(--gray-soft); font-size: 11.5px; }
+
+    @media (max-width: 820px) {
+      .hero h1 { font-size: 34px; }
+      .week-head { grid-template-columns: 1fr; gap: 12px; }
+      .week-hrs { text-align: left; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .closure-grid { grid-template-columns: 1fr; }
+      main { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="stamp">Plan del Mes 1 · Setup técnico + validación · Eventos Barcelona</div>
+      <h1>Mes 1: dejar todo configurado y midiendo.</h1>
+      <p class="lead">Las primeras 4 semanas no son para mover posiciones — son para dejar listo el motor: web cargada de "señales" para Google y para la IA, panel en vivo de métricas, todas las herramientas conectadas y midiendo. Cuando termine el mes, tenemos baseline real contra el que comparar cada cambio del mes 2 en adelante.</p>
+      <div class="hero-meta">
+        <div class="item"><div class="lbl">Duración</div><div class="val">4 semanas</div></div>
+        <div class="item"><div class="lbl">Esfuerzo total</div><div class="val">~75-90 h</div></div>
+        <div class="item"><div class="lbl">Foco</div><div class="val accent">Setup + Baseline</div></div>
+        <div class="item"><div class="lbl">Entregable principal</div><div class="val">Dashboard live + KPIs medidos</div></div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- INTRO -->
+    <section>
+      <div class="section-label">Por qué este mes es invisible (pero crítico)</div>
+      <h2 class="section-title">Setup que no se ve, pero condiciona todos los meses siguientes.</h2>
+      <p class="section-lead">El mes 1 no genera leads nuevos. Lo que hace es <strong>poner el suelo en regla</strong>: instalar plugins profesionales, configurar señales técnicas para Google e IA, levantar el panel de medición, y resolver deuda técnica heredada (backlinks tóxicos de la agencia anterior, schemas incompletos, llms.txt inexistente). Sin este mes, cualquier acción del mes 2 corre sobre arena.</p>
+    </section>
+
+    <!-- SEMANA 1 -->
+    <section>
+      <div class="week">
+        <div class="week-head">
+          <span class="week-num">Semana 1</span>
+          <h3 class="week-title"><small>Días 1-7</small>Auditoría técnica + instalación de stack profesional</h3>
+          <div class="week-hrs">22h<small>Esfuerzo</small></div>
+        </div>
+        <div class="week-body">
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Auditoría SEO completa (9 categorías técnicas + 7 fases SXO + arquitectura + E-E-A-T)</strong>
+              <small>Crawl del sitemap (296 URLs en 7 sub-sitemaps detectados), análisis de schemas presentes, headers de seguridad, mobile, CTR vs benchmark del sector. Output: reporte con score técnico y quick wins priorizados.</small>
+            </div>
+            <span class="meta">8h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Diagnóstico GEO/AEO (Generative Engine Optimization para IA)</strong>
+              <small>Evaluar visibilidad actual en ChatGPT, Claude, Perplexity, Google AI Overviews. Identificar gaps: <code>/llms.txt</code> sirviendo HTML genérico (no real), schemas faltantes (FAQ, LocalBusiness, Service), robots.txt sin referencia a llms.txt.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Instalación + configuración LLMagnet AI SEO Optimizer (v3.4.1)</strong>
+              <small>Plugin profesional para generación automática de llms.txt, tracking de bots IA (GPTBot, ClaudeBot, PerplexityBot, etc.), scoring de visibilidad y recomendaciones. Onboarding wizard, configuración de business profile, post types a incluir.</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Instalación + configuración AEO God Mode (v1.6.15)</strong>
+              <small>Plugin complementario para Schema Engine, AI Crawler Log, Content Gap Scanner. Setup wizard, configuración de business type a "EventManagementCompany", social profiles (LinkedIn + Instagram), activación de 9 módulos (ai_crawlers, schema, local_business, robots, crawler_log, content_gaps, validator, GSC, aeo), conflict detector vs Yoast.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Verificación de plugins existentes (Yoast Premium 24.2, WPML 4.8.2, Elementor Pro 3.32, ACF 6.5)</strong>
+              <small>Inventario completo del stack ya pagado. Confirmar que la propuesta de SEO/GEO/AEO no requiere instalar nada más. Documentar uso del AI Generator de Yoast (premium feature ya pagada que da sugerencias automáticas de title/meta/keyphrase).</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEMANA 2 -->
+    <section>
+      <div class="week">
+        <div class="week-head">
+          <span class="week-num">Semana 2</span>
+          <h3 class="week-title"><small>Días 8-14</small>Inyección de señales técnicas + endpoints para IA</h3>
+          <div class="week-hrs">24h<small>Esfuerzo</small></div>
+        </div>
+        <div class="week-body">
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Headers HTTP de seguridad (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)</strong>
+              <small>Implementados sin necesidad de FTP/SSH (CDmon plan Junior no lo permite) usando el plugin Code Snippets para inyección PHP segura. Testing previo con CSP en modo Report-Only para no romper Elementor.</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>JSON-LD LocalBusiness en home (datos completos)</strong>
+              <small>Schema con address (Ronda General Mitre 126), phone (+34 653 979 329), email, openingHours (Mo-Fr 09:00-18:00), priceRange (€€-€€€), social profiles (LinkedIn + Instagram), areaServed (Barcelona + Spain). Validación con Google Rich Results Test.</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Generación de <code>/llms.txt</code> y <code>/llms-full.txt</code> (estándar emergente para LLMs)</strong>
+              <small>Antes: la URL devolvía HTML genérico (404 efectivo). Ahora: 22.752 bytes con descripción real del negocio, 44 docs indexados, 24 posts en scope, links a categorías principales. Regeneración automática cada vez que se publica contenido nuevo.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Fix de robots.txt para que referencie <code>/llms.txt</code> y autorice AI crawlers explícitamente</strong>
+              <small>15 AI crawlers verificados (GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, Claude-Web, anthropic-ai, PerplexityBot, Perplexity-User, Google-Extended, CCBot, Bytespider, meta-externalagent, Applebot-Extended, Amazonbot, cohere-ai). Endpoint llms.txt explícito en robots.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>AI Agent Discovery: <code>/.well-known/ai-agent.json</code>, Link headers <code>rel="mcp-server"</code> y <code>rel="ai-agent-card"</code>, alternate markdown per page</strong>
+              <small>Manifest con skills (list-services, search-content, get-content-markdown, get-pyramid-coverage), endpoints (llms.txt, sitemap, MCP server, REST API), license (crawl allowed, cite free with attribution). Link headers HTTP para discovery automática por agents.</small>
+            </div>
+            <span class="meta">5h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>17 abilities/tools del MCP server expuestas para consulta programática</strong>
+              <small>Visibility-score, bot-traffic, top-pages, recommendations, schema-status, page-visibility, attribution-stats, robots-txt-status, content-markdown, search-content, ai-visit-trends, regenerate-llms-txt, recalculate-visibility-score, send-report-email, bot-stats-table. Accesibles desde dashboard live y reportes mensuales.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Schema Scan completo (116 páginas indexables)</strong>
+              <small>Auditoría de structured data en cada URL del sitemap. Detección de schemas presentes (Article, Organization, BreadcrumbList, WebPage, ImageObject, WebSite, FAQPage en algunas), gaps de FAQ/Service/Event/Review.</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Resolución de conflictos schema Yoast vs AEO God Mode</strong>
+              <small>Decisión documentada: Yoast queda responsable de Article + Organization + WebPage (lo hace bien). AEO se encarga de FAQ + HowTo + custom schemas. Conflict detector activo monitoreando duplicados.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEMANA 3 -->
+    <section>
+      <div class="week">
+        <div class="week-head">
+          <span class="week-num">Semana 3</span>
+          <h3 class="week-title"><small>Días 15-21</small>Pirámide de keywords + auditoría URL por URL</h3>
+          <div class="week-hrs">20h<small>Esfuerzo</small></div>
+        </div>
+        <div class="week-body">
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Pirámide SEO canónica formalizada (46 keywords en 3 niveles)</strong>
+              <small>Nivel 1 (marca · 14 KW): agencia de eventos Barcelona, MICE, DMC Barcelona, etc. Nivel 2 (categorías · 17 KW): grupos de música, alquiler iluminación, team building, etc. Nivel 3 (long-tail · 15 KW): contratar grupo de jazz, saxofonista para cóctel, mago corporativo, etc. Documento canónico marcado como "fuente de verdad" para futuras decisiones de contenido.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+          <div class="task">
+            <span class="check inprog">◐</span>
+            <div class="desc">
+              <strong>Mapping URL ↔ keyword (cobertura actual y gaps)</strong>
+              <small>Cruce de las 46 keywords contra las 296 URLs del sitemap. Resultado: 64% cobertura directa, 22% parcial, 14% gap. 12 páginas críticas identificadas a crear: 3 P1 (DMC Barcelona, team building, entretenimiento empresarial), 4 P2, 5 P3. Cada gap con URL propuesta + nivel piramidal + volumen estimado.</small>
+            </div>
+            <span class="meta">6h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Regla maestra bilingüe ES + EN documentada</strong>
+              <small>Toda página y artículo de EB tiene que existir en ambos idiomas, sin excepciones. WPML translation flow ya está activo. El sitemap respeta el patrón en /musica/ ↔ /en/music/, /danza/ ↔ /en/dance/, /artistas/ ↔ /en/artists/, /casos-de-exito/ ↔ /en/success-stories/. Las páginas nuevas tienen que mantener la simetría.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Análisis de las 10 páginas top en GSC (CTR & posición)</strong>
+              <small>Identificación de páginas con muchas impresiones pero CTR muy debajo del benchmark de su posición. Resultado: 8 quick wins de titles/metas. Ej: /alquiler-iluminacion/ con 15.601 impr/90d pero CTR 0,15%. Reescritura propuesta lista para AI Generator de Yoast.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Análisis de backlinks heredados (Rodanet, agencia anterior)</strong>
+              <small>Lista de backlinks tóxicos a investigar (kimonos, sitios irrelevantes). Preparación del disavow file para enviar a Google Search Console al final del mes.</small>
+            </div>
+            <span class="meta">4h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEMANA 4 -->
+    <section>
+      <div class="week">
+        <div class="week-head">
+          <span class="week-num">Semana 4</span>
+          <h3 class="week-title"><small>Días 22-30</small>Panel de evolución + baseline + handoff</h3>
+          <div class="week-hrs">19h<small>Esfuerzo</small></div>
+        </div>
+        <div class="week-body">
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Dashboard en vivo de métricas SEO/GEO/AEO conectado vía REST + MCP</strong>
+              <small>Panel propio (propuestas.eventosbarcelona.com/dashboard.html) consumiendo en vivo los 17 endpoints LLMagnet + GSC + GA4. Visibility score, bot traffic, schema status, top pages, posiciones por keyword. Refresco automático cada 24h.</small>
+            </div>
+            <span class="meta">6h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Baseline congelado: foto exacta de hoy</strong>
+              <small>Snapshot de visibility score, agent readiness, CTR, posición media, impresiones, schemas presentes, bots IA detectados, conversiones. Versionado en el repo con fecha. Base contra la cual comparar M2 y M3.</small>
+            </div>
+            <span class="meta">3h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Disavow toolfile submitted a Google Search Console</strong>
+              <small>Lista de dominios de backlinks tóxicos (heredados de Rodanet) cargada en GSC vía Disavow Tool. Procesamiento por Google: 2-4 semanas.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Configuración del primer experimento documentado (M2 ready)</strong>
+              <small>A/B preparado para arrancar M2: hipótesis (ej. reescribir title del Home subiendo CTR de 0,78% a 1,5%), métrica primaria (CTR GSC), métrica secundaria (clicks/día), período (4 semanas), criterio de éxito.</small>
+            </div>
+            <span class="meta">2h</span>
+          </div>
+          <div class="task">
+            <span class="check pending">○</span>
+            <div class="desc">
+              <strong>Reporte M1 (PDF + dashboard live) + call de revisión con Xavi</strong>
+              <small>30 min de demo: lo que está vivo, baseline congelado, score evolución (0 → 66+), lista de gaps priorizados, plan operativo M2. Decisión conjunta de qué quick wins atacar primero según señales reales.</small>
+            </div>
+            <span class="meta">6h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section>
+      <div class="section-label">Métricas que demuestran el trabajo hecho</div>
+      <h2 class="section-title">KPIs medidos al final del Mes 1.</h2>
+      <p class="section-lead">Todas las métricas siguientes son verificables en vivo desde el dashboard. Valor actual (baseline pre-setup) y target al cierre del mes 1.</p>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="lbl">AI Visibility Score</div>
+          <div class="val">66/100</div>
+          <div class="delta">↑ desde 0</div>
+          <div class="target">Target M1 cierre: 70+</div>
+          <div class="bar"><div class="bar-fill" style="width:66%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Agent Readiness</div>
+          <div class="val">66/100</div>
+          <div class="delta">↑ desde 0</div>
+          <div class="target">Target M1 cierre: 75+</div>
+          <div class="bar"><div class="bar-fill" style="width:66%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Bot visits IA detectados</div>
+          <div class="val">146</div>
+          <div class="delta">↑ desde 0</div>
+          <div class="target">Target M1: 500+ visits</div>
+          <div class="bar"><div class="bar-fill" style="width:30%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Schema score</div>
+          <div class="val">99/100</div>
+          <div class="delta">↑ páginas auditadas</div>
+          <div class="target">116 URLs en scan</div>
+          <div class="bar"><div class="bar-fill" style="width:99%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Cobertura pirámide SEO</div>
+          <div class="val">64%</div>
+          <div class="delta">29/45 directas</div>
+          <div class="target">Target M3: 80%</div>
+          <div class="bar"><div class="bar-fill" style="width:64%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Plugins instalados/activos</div>
+          <div class="val">2 + 4</div>
+          <div class="delta">LLMagnet + AEO + 4 snippets</div>
+          <div class="target">Sin coste adicional</div>
+          <div class="bar"><div class="bar-fill" style="width:100%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">URLs en sitemap activo</div>
+          <div class="val">296</div>
+          <div class="delta">7 sub-sitemaps</div>
+          <div class="target">38 casos de éxito identificados</div>
+          <div class="bar"><div class="bar-fill" style="width:100%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">CTR Google (baseline)</div>
+          <div class="val">0,85%</div>
+          <div class="delta">↗ tras quick wins M2</div>
+          <div class="target">Benchmark sector: 2,5%</div>
+          <div class="bar"><div class="bar-fill" style="width:34%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CIERRE -->
+    <section>
+      <div class="closure">
+        <div class="lbl">Compromiso del Mes 1</div>
+        <h2>Al cierre del mes, nada está librado al azar.</h2>
+        <p>Todo lo que se mide en el dashboard está conectado en vivo a Google Search Console, Google Analytics 4, el CRM y los plugins SEO/GEO/AEO. No hay reportes manuales en Excel. Cada cambio que hagamos del mes 2 en adelante se ve reflejado <strong>al día siguiente</strong> en métricas reales.</p>
+        <div class="closure-grid">
+          <div class="closure-stat">
+            <div class="lbl-s">Setup técnico</div>
+            <div class="val-s">100%</div>
+            <div class="sub-s">Web + CRM + GEO + Dashboard listos</div>
+          </div>
+          <div class="closure-stat">
+            <div class="lbl-s">Baseline congelado</div>
+            <div class="val-s">8 KPIs</div>
+            <div class="sub-s">Snapshot para comparar M2/M3/M6</div>
+          </div>
+          <div class="closure-stat">
+            <div class="lbl-s">Próximo mes</div>
+            <div class="val-s">M2 ready</div>
+            <div class="sub-s">Primer experimento documentado + 3 quick wins listos</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Plan del Mes 1 · Eventos Barcelona · Junio-Julio 2026
+  </footer>
+
+</body>
+</html>
