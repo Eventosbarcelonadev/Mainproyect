@@ -162,6 +162,26 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .objective li b{color:var(--ink)}
 .objective li .o-detail{color:var(--muted);font-size:12px;margin-top:2px;display:block}
 
+/* Hero global metric */
+.hero-metric{background:linear-gradient(135deg,var(--ink) 0%,#12324f 100%);color:#fff;border-radius:6px;padding:32px 36px;margin:16px 0 24px;position:relative;overflow:hidden}
+.hero-metric::before{content:"";position:absolute;top:0;right:0;width:180px;height:180px;background:radial-gradient(circle,rgba(201,154,58,.15) 0%,transparent 70%);pointer-events:none}
+.hero-metric .h-label{color:var(--gold);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:12px}
+.hero-metric .h-value{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.hero-metric .h-num{font-size:72px;font-weight:800;line-height:1;letter-spacing:-.02em;color:#fff}
+.hero-metric .h-unit{font-size:16px;color:rgba(255,255,255,.7);letter-spacing:.02em;font-weight:400}
+.hero-metric .h-context{color:rgba(255,255,255,.65);font-size:13px;margin-bottom:20px}
+.hero-metric .h-context b{color:#fff;font-weight:600}
+.hero-metric .h-subs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
+.hero-metric .h-sub{color:rgba(255,255,255,.75)}
+.hero-metric .h-sub .s-cat{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:4px}
+.hero-metric .h-sub .s-val{font-size:22px;font-weight:700;color:#fff;line-height:1.1}
+.hero-metric .h-sub .s-note{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+@media(max-width:820px){
+  .hero-metric{padding:24px 22px}
+  .hero-metric .h-num{font-size:52px}
+  .hero-metric .h-subs{grid-template-columns:1fr;gap:12px}
+}
+
 /* Leads chart */
 .leads-chart{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}
 .lc-title{font-size:13px;color:var(--muted);margin-bottom:16px;letter-spacing:.02em}
@@ -243,6 +263,32 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="progress-wrap">
   <div class="p-label"><span>Progreso del sprint</span><b>día 1 de 14</b></div>
   <div class="p-bar"><span style="width:7%"></span></div>
+</div>
+
+<div class="hero-metric">
+<div class="h-label">Métrica global del retainer · North Star</div>
+<div class="h-value">
+  <span class="h-num">3,6</span>
+  <span class="h-unit">leads inbound / semana (promedio real GHL)</span>
+</div>
+<div class="h-context"><b>Última medición:</b> 29 leads en 8 semanas (17 mayo — 5 julio 2026) · pipeline "Clientes (ventas)" · fuente autoritativa: GoHighLevel API</div>
+<div class="h-subs">
+  <div class="h-sub">
+    <div class="s-cat">Pipeline activo</div>
+    <div class="s-val">48.500 €</div>
+    <div class="s-note">29 opportunities abiertas</div>
+  </div>
+  <div class="h-sub">
+    <div class="s-cat">Ticket promedio</div>
+    <div class="s-val">1.672 €</div>
+    <div class="s-note">Máximo actual 10.600 €</div>
+  </div>
+  <div class="h-sub">
+    <div class="s-cat">Objetivo Sprint 6 (sep)</div>
+    <div class="s-val">≥ 5,5 / sem</div>
+    <div class="s-note">+50% via SEO orgánico</div>
+  </div>
+</div>
 </div>
 
 <h3 class="section">Métricas de partida <span class="sub">valores concretos · día 1 del sprint</span></h3>
