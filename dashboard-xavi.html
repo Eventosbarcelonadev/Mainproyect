@@ -137,6 +137,31 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .baseline-table tr:last-child td{border-bottom:none}
 .baseline-table td:first-child{font-weight:600;color:var(--ink)}
 
+/* Diagnosis blocks (Sprint 1 análisis inicial) */
+.diagnosis-list{display:grid;grid-template-columns:1fr;gap:14px;margin:16px 0}
+.diagnosis{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--red);border-radius:4px;padding:20px 24px}
+.diagnosis .d-cat{color:var(--red);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.diagnosis h4{font-size:17px;margin:0 0 10px;color:var(--ink);letter-spacing:-.005em}
+.diagnosis .d-state{font-size:13.5px;margin:0 0 10px;color:var(--muted)}
+.diagnosis .d-state b{color:var(--ink)}
+.diagnosis ul{margin:6px 0;padding-left:20px;font-size:13.5px}
+.diagnosis li{margin:3px 0}
+.diagnosis li b{color:var(--ink)}
+.diagnosis .d-implica{background:rgba(193,39,45,.05);border-left:3px solid var(--red);padding:10px 14px;margin-top:12px;border-radius:2px;font-size:13px;color:var(--muted)}
+.diagnosis .d-implica b{color:var(--ink);display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;font-weight:700}
+
+/* Objectives (Sprint 1 acciones agrupadas) */
+.objective{background:var(--card);border:1px solid var(--line);border-radius:4px;margin-bottom:14px;overflow:hidden}
+.objective .o-header{background:var(--ink);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.o-num{background:var(--gold);color:#fff;width:26px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.objective .o-header b{font-size:14px;letter-spacing:.02em}
+.objective .o-header .o-goal{margin-left:auto;font-size:10px;color:rgba(255,255,255,.75);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.objective ul{margin:0;padding:0;list-style:none}
+.objective li{padding:12px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:baseline;font-size:13.5px}
+.objective li:last-child{border-bottom:none}
+.objective li b{color:var(--ink)}
+.objective li .o-detail{color:var(--muted);font-size:12px;margin-top:2px;display:block}
+
 footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
 
 @media(max-width:820px){
@@ -206,7 +231,68 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <div class="p-bar"><span style="width:7%"></span></div>
 </div>
 
-<h3 class="section">Snapshot inicial <span class="sub">2 julio 2026 · día 1 del sprint</span></h3>
+<h3 class="section">Cómo estaba el sitio antes de arrancar <span class="sub">análisis por dimensión · 2 julio 2026</span></h3>
+
+<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Diagnóstico honesto del punto de partida. Cada dimensión describe qué encontramos, qué implicaba para el negocio, y por qué era prioritario atacarlo en este primer sprint.</p>
+
+<div class="diagnosis-list">
+
+<div class="diagnosis">
+<div class="d-cat">Dimensión 1 · Presencia en el ecosistema AI</div>
+<h4>El sitio era invisible para los agentes de IA</h4>
+<p class="d-state"><b>Qué encontramos:</b> Eventos Barcelona no tenía ninguna de las señales que los agentes modernos (ChatGPT, Claude, Perplexity, Gemini) buscan cuando descubren un sitio para citarlo en sus respuestas.</p>
+<ul>
+<li>Sin <b>llms.txt</b> — el estándar propuesto por Anthropic para que los LLMs sepan de qué va el sitio y qué contenido pueden citar</li>
+<li>Sin archivos en <b>/.well-known/</b> (agent-card.json, agent-skills, mcp.json) — el estándar A2A/MCP emergente para agentes AI</li>
+<li>Robots.txt sin reglas explícitas para <b>GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot</b> — sin señal de consentimiento</li>
+<li>Sin <b>Content-Signal directive</b> (IAB standard) declarando qué se permite y qué no a IAs</li>
+<li>Score de agent-readiness inicial: <b>68/100</b> en la auditoría LLMagnet</li>
+</ul>
+<div class="d-implica"><b>Qué implicaba para el negocio</b>Cuando un event planner pregunta a ChatGPT "¿qué agencia MICE hay en Barcelona con experiencia en cenas de gala?", Eventos Barcelona no aparecía en la respuesta. Los competidores que sí están optimizando (Tukia, CREA Group, Essentia) sí. En una era donde el 30-40% de las búsquedas se está migrando a asistentes AI, este canal estaba <b>desatendido</b>.</div>
+</div>
+
+<div class="diagnosis">
+<div class="d-cat">Dimensión 2 · Accesibilidad y SEO on-page</div>
+<h4>Deuda técnica silenciosa acumulada</h4>
+<p class="d-state"><b>Qué encontramos:</b> Problemas de higiene SEO acumulados por años, invisibles pero costosos.</p>
+<ul>
+<li><b>1.000+ imágenes en la mediateca sin texto alternativo</b> — Google no podía entender qué representaban, y usuarios con lectores de pantalla no tenían descripción</li>
+<li><b>218 páginas de Elementor</b> con imágenes de alt vacío</li>
+<li>Plugin <b>"All 404 Redirect to Homepage"</b> activo — redirigía todas las URLs inexistentes a la home. Google lo interpretaba como <b>contenido duplicado masivo</b> (miles de URLs sirviendo la misma home)</li>
+<li>Perfmatters estaba bloqueando <code>/feed/</code> RSS — <b>agregadores y bots no podían descubrir novedades</b></li>
+</ul>
+<div class="d-implica"><b>Qué implicaba para el negocio</b>Cada imagen sin alt es una oportunidad de posicionamiento perdida en Google Images. El soft-404 penaliza el dominio entero (Google desconfía de sitios con contenido duplicado sistemático). El RSS bloqueado corta el descubrimiento pasivo por parte de aggregadores y comunidades de eventos.</div>
+</div>
+
+<div class="diagnosis">
+<div class="d-cat">Dimensión 3 · Estructura de contenido y estrategia</div>
+<h4>Sin norte estratégico documentado</h4>
+<p class="d-state"><b>Qué encontramos:</b> Contenido creado sin un mapa canónico. Decisiones ad hoc en cada publicación.</p>
+<ul>
+<li><b>No existía un documento canónico de priorización SEO</b> — no había forma de saber si una página nueva estaba resolviendo un gap real o creando duplicidad</li>
+<li>Al mapear las 46 keywords core del sector: <b>12 gaps críticos sin cubrir</b> (DMC Barcelona, team building, entretenimiento eventos empresariales, cenas gala, experiencias, animación, circo…) — 12 landings faltantes × ES+EN = <b>24 páginas por crear</b></li>
+<li>Norma bilingüe ES+EN implícita pero no documentada — el producto se creaba en un idioma y quedaba pendiente el otro</li>
+<li>Arquitectura de contenido no reflejaba <b>hub-and-spoke</b> (N1 marca → N2 categoría → N3 servicio específico). Existían hubs duplicados compitiendo entre sí (por ejemplo <code>/musica/</code> vs <code>/grupos-musica/</code>)</li>
+</ul>
+<div class="d-implica"><b>Qué implicaba para el negocio</b>Sin priorización, cualquier hora invertida en SEO tenía el mismo retorno esperado que tirar una moneda. Sin regla bilingüe, la audiencia MICE internacional (la de mayor ticket) quedaba fuera. Sin hub-and-spoke, la autoridad del dominio se dispersa entre landings similares en vez de concentrarse.</div>
+</div>
+
+<div class="diagnosis">
+<div class="d-cat">Dimensión 4 · Seguridad y calidad técnica base</div>
+<h4>Higiene técnica incompleta</h4>
+<p class="d-state"><b>Qué encontramos:</b> Cabeceras de seguridad ausentes y arquitectura sin auditar.</p>
+<ul>
+<li>Sin <b>HSTS</b> (forzar HTTPS) declarado por cabecera</li>
+<li>Sin <b>X-Frame-Options</b>, <b>X-Content-Type-Options</b>, <b>Referrer-Policy</b>, <b>Permissions-Policy</b> configurados</li>
+<li>Sin <b>CSP</b> (Content Security Policy) — vulnerable a XSS y clickjacking</li>
+<li>Sin diagnóstico técnico end-to-end previo — no había línea base contra la que medir mejora</li>
+</ul>
+<div class="d-implica"><b>Qué implicaba para el negocio</b>Google usa señales de seguridad como factor de ranking indirecto — un sitio "descuidado técnicamente" pierde posiciones frente a competidores igualmente rankeables pero con higiene. Los crawlers de IA (Google-Extended, GPTBot) valoran las señales de seguridad como filtro de calidad antes de citar contenido.</div>
+</div>
+
+</div>
+
+<h3 class="section">Métricas de partida <span class="sub">valores concretos · día 1 del sprint</span></h3>
 
 <div class="metrics-grid">
 
@@ -249,98 +335,64 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </div>
 
 <div class="callout info">
-<b>Baseline de tráfico orgánico (GSC, abril 2026):</b> 2.600 impresiones/día · 23 clics/día · CTR 0,90%. Trackeamos este número quincenalmente desde el Sprint 2 en adelante para ver el impacto del contenido en la aguja real.
+<b>Baseline de tráfico orgánico (GSC, abril 2026):</b> 2.600 impresiones/día · 23 clics/día · CTR 0,90%. Este es el termómetro externo. Trackeamos este número quincenalmente desde el Sprint 2 en adelante para ver el impacto del contenido en la aguja real. El trabajo de este sprint es estructural — Google reprocesa cambios de infraestructura en 2-6 semanas, así que la aguja se mueve a partir del Sprint 3.
 </div>
 
-<h3 class="section">Trabajo previsto en este sprint <span class="sub">se cierra 15 julio</span></h3>
+<h3 class="section">Qué haremos en este sprint <span class="sub">14 acciones agrupadas en 4 objetivos · cierre 15 julio</span></h3>
 
-<div class="work-list">
+<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Cada objetivo ataca una de las 4 dimensiones diagnosticadas arriba. Al cierre del sprint mostraremos el delta antes/después por dimensión.</p>
+
+<div class="objective">
+<div class="o-header">
+  <span class="o-num">A</span>
+  <b>Presencia en el ecosistema AI</b>
+  <span class="o-goal">Ataca dimensión 1</span>
+</div>
 <ul>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Instalar stack GEO completo</b><span class="o-detail">LLMagnet AI SEO Optimizer + AEO God Mode + snippets custom para señales AI. Base de la presencia AI.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Publicar 9 archivos en /.well-known/</b><span class="o-detail">agent-card.json (formato A2A), agent-skills, mcp.json, security.txt, api-catalog + oauth + change-password. Cumplir el estándar emergente para agentes AI.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Generar llms.txt + llms-full.txt</b><span class="o-detail">Contexto estructurado (22KB + 25KB) para que LLMs entiendan qué es Eventos Barcelona y qué servicios ofrece.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Robots.txt AI-friendly</b><span class="o-detail">Reglas explícitas para GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot + Content-Signal directive declarando consentimiento para búsqueda e input AI, sin entrenamiento.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Score agent-readiness 68 → objetivo ≥90</b><span class="o-detail">Techo alcanzable sin plan Pro. Medible via LLMagnet audit reproducible.</span></div></li>
+</ul>
+</div>
 
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Instalar stack GEO completo</b> — LLMagnet AI SEO Optimizer + AEO God Mode + snippets custom para señales AI. <span class="status-inline progress">En curso</span></div>
-<div class="impact">infraestructura</div>
-</li>
+<div class="objective">
+<div class="o-header">
+  <span class="o-num">B</span>
+  <b>Higiene técnica base</b>
+  <span class="o-goal">Ataca dimensiones 2 + 4</span>
+</div>
+<ul>
+<li><span class="cat-tag tech">Técnico</span><div><b>Batch alt-text fix — 1.000+ imágenes</b><span class="o-detail">Mediateca + páginas Elementor con alt vacío. Generación automática desde el título de cada archivo + fallback runtime para las nuevas.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Security headers completos</b><span class="o-detail">HSTS (1 año, includeSubDomains), X-Frame SAMEORIGIN, X-Content-Type nosniff, Referrer-Policy strict-origin, Permissions-Policy, CSP Report-Only para recolectar violaciones.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Fix soft-404</b><span class="o-detail">Desactivar plugin "All 404 Redirect to Homepage". Las URLs inexistentes ahora devuelven 404 real, no redirect fake que penaliza el dominio.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Restaurar RSS feeds</b><span class="o-detail">Perfmatters estaba bloqueando /feed/ redirigiendo a home. Reactivar. Agregadores y bots pueden acceder al feed correctamente.</span></div></li>
+</ul>
+</div>
 
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Publicar 9 archivos en /.well-known/</b> — agent-card.json (A2A), agent-skills, mcp.json, security.txt, api-catalog + otros. Cumplir el estándar emergente para agentes AI. <span class="status-inline progress">En curso</span></div>
-<div class="impact">discoverability</div>
-</li>
+<div class="objective">
+<div class="o-header">
+  <span class="o-num">C</span>
+  <b>Estrategia y documentación canónica</b>
+  <span class="o-goal">Ataca dimensión 3</span>
+</div>
+<ul>
+<li><span class="cat-tag docs">Docs</span><div><b>Pirámide SEO canónica — la "biblia"</b><span class="o-detail">46 keywords en 3 niveles (marca / categoría / long-tail) mapeadas a URLs reales del sitemap. Cobertura por keyword, gaps priorizados P1/P2/P3, estrategia hub-and-spoke definida. Única fuente de verdad para cualquier acción SEO.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Regla bilingüe ES + EN documentada</b><span class="o-detail">Toda página nueva debe existir en ambos idiomas simultáneamente. Sin excepciones. WPML soporta la infraestructura. Norma del proyecto.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Plan de contenido Sprints 2-5</b><span class="o-detail">12 gaps de la pirámide × ES+EN = 24 páginas a crear. Workflow con análisis competitivo previo, briefs de estructura, y Definition of Done aplicable a cada pieza.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Definition of Done por artículo</b><span class="o-detail">Checklist obligatoria en 3 fases (pre-publish · post-publish 24-48h · post-publish 7-14d) cubriendo metadata, schema, imágenes, internal linking, bilingüe, GEO/AEO, performance y tracking. Garantiza que cada artículo salga como activo SEO, no como contenido publicado.</span></div></li>
+</ul>
+</div>
 
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Generar llms.txt + llms-full.txt</b> — contexto estructurado para que LLMs entiendan qué es EB. Estándar propuesto por Anthropic. <span class="status-inline progress">En curso</span></div>
-<div class="impact">contexto AI</div>
-</li>
-
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Robots.txt AI-friendly</b> — reglas explícitas para GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot + Content-Signal directive. <span class="status-inline progress">En curso</span></div>
-<div class="impact">consent AI</div>
-</li>
-
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Score de agent-readiness 68 → objetivo ≥90</b> con techo alcanzable sin plan Pro. <span class="status-inline progress">En curso</span></div>
-<div class="impact">ranking AI</div>
-</li>
-
-<li>
-<span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Batch alt-text fix</b> — 1.000+ imágenes en mediateca + páginas Elementor con alt vacío. Fallback runtime para las nuevas. <span class="status-inline progress">En curso</span></div>
-<div class="impact">accesibilidad + SEO</div>
-</li>
-
-<li>
-<span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Security headers</b> — HSTS, X-Frame, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CSP Report-Only. <span class="status-inline progress">En curso</span></div>
-<div class="impact">seguridad</div>
-</li>
-
-<li>
-<span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Fix soft-404</b> — desactivar el plugin que redirige 404s a home. Google necesita 404 real, no fake redirect. <span class="status-inline progress">En curso</span></div>
-<div class="impact">indexabilidad</div>
-</li>
-
-<li>
-<span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Restaurar RSS feeds</b> — Perfmatters estaba bloqueando /feed/. Reactivar. <span class="status-inline progress">En curso</span></div>
-<div class="impact">discoverability</div>
-</li>
-
-<li>
-<span class="cat-tag docs">Docs</span>
-<div class="desc"><b>Pirámide SEO canónica</b> — 46 keywords en 3 niveles, mapping a URLs reales, gaps priorizados P1/P2/P3, estrategia hub-and-spoke. Única fuente de verdad para SEO/contenido. <span class="status-inline progress">En curso</span></div>
-<div class="impact">estrategia</div>
-</li>
-
-<li>
-<span class="cat-tag docs">Docs</span>
-<div class="desc"><b>Regla bilingüe ES + EN documentada</b> — norma del proyecto. Toda página nueva en ambos idiomas. <span class="status-inline progress">En curso</span></div>
-<div class="impact">estrategia</div>
-</li>
-
-<li>
-<span class="cat-tag docs">Docs</span>
-<div class="desc"><b>Plan de contenido Sprints 2-5</b> — 12 gaps de la pirámide × ES+EN = 24 páginas. Workflow con análisis competitivo previo. <span class="status-inline progress">En curso</span></div>
-<div class="impact">roadmap</div>
-</li>
-
-<li>
-<span class="cat-tag docs">Docs</span>
-<div class="desc"><b>Definition of Done por artículo</b> — checklist 3 fases (pre-publish, 24-48h, 7-14d). Garantiza que cada pieza salga como activo SEO. <span class="status-inline progress">En curso</span></div>
-<div class="impact">calidad</div>
-</li>
-
-<li>
-<span class="cat-tag seo">SEO</span>
-<div class="desc"><b>Radiografía SEO técnica end-to-end</b> — 9 categorías + arquitectura + SXO + E-E-A-T. Health score inicial + quick wins priorizados. <span class="status-inline progress">En curso</span></div>
-<div class="impact">diagnóstico</div>
-</li>
-
+<div class="objective">
+<div class="o-header">
+  <span class="o-num">D</span>
+  <b>Diagnóstico técnico y línea base</b>
+  <span class="o-goal">Cierra el sprint</span>
+</div>
+<ul>
+<li><span class="cat-tag seo">SEO</span><div><b>Radiografía SEO técnica end-to-end</b><span class="o-detail">9 categorías técnicas + arquitectura + SXO + E-E-A-T + content quality. Health score inicial documentado + 3-5 quick wins priorizados por impacto × facilidad para el Sprint 2.</span></div></li>
 </ul>
 </div>
 
