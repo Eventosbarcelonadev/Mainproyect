@@ -162,6 +162,20 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .objective li b{color:var(--ink)}
 .objective li .o-detail{color:var(--muted);font-size:12px;margin-top:2px;display:block}
 
+/* Leads chart */
+.leads-chart{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}
+.lc-title{font-size:13px;color:var(--muted);margin-bottom:16px;letter-spacing:.02em}
+.lc-title b{color:var(--ink)}
+.lc-bars{display:flex;gap:8px;align-items:flex-end;height:220px;padding:8px 0;border-bottom:2px solid var(--ink)}
+.lc-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;position:relative}
+.lc-bar .lc-num{font-size:16px;font-weight:700;color:var(--ink);position:absolute;top:0;left:0;right:0;text-align:center}
+.lc-bar .lc-fill{width:100%;background:linear-gradient(to top,var(--ink),var(--gold));border-radius:3px 3px 0 0;min-height:4px;transition:all .3s}
+.lc-bar.current .lc-fill{background:linear-gradient(to top,var(--gold),#e6c470)}
+.lc-bar .lc-week{margin-top:6px;font-size:10px;color:var(--muted);text-align:center;letter-spacing:.04em;font-weight:600}
+.lc-bar .lc-week span{display:block;font-weight:400;font-size:9px;margin-top:2px}
+.lc-footer{font-size:11px;color:var(--muted);margin-top:12px;font-style:italic}
+.lc-footer code{background:#f0ede4;padding:1px 5px;border-radius:2px;font-family:ui-monospace,monospace}
+
 footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
 
 @media(max-width:820px){
@@ -273,7 +287,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="metrics-grid">
 <div class="metric pending">
 <div class="m-cat">Cobertura pirámide</div>
-<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no medida</div><div class="m-note">Pirámide no existía</div></div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">64<small>%</small></div><div class="m-note">Directa · 22% partial · 14% gap</div></div>
 <div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 <div class="metric pending">
@@ -283,78 +297,26 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </div>
 <div class="metric pending">
 <div class="m-cat">Bilingüe ES + EN</div>
-<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no medido</div><div class="m-note">WPML activo</div></div>
+<div class="m-row"><div class="m-side">Real</div><div class="m-val">149 / 147</div><div class="m-note">Sitemap · EN / ES · equilibrio confirmado</div></div>
 <div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 </div>
 
-<h4 style="font-size:13px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:24px 0 8px">Grupo 3 · Funnel comercial · visitas → clics → leads (datos reales GHL + GSC)</h4>
+<h4 style="font-size:13px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:24px 0 8px">Grupo 3 · Leads inbound por semana (datos reales GHL)</h4>
 
-<div class="metrics-grid">
-<div class="metric pending">
-<div class="m-cat">Impresiones GSC / día</div>
-<div class="m-row"><div class="m-side">Baseline</div><div class="m-val">~2.600</div><div class="m-note">GSC · abril 2026</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">pull 15 jul</div></div>
+<div class="leads-chart">
+<div class="lc-title">Pipeline "Clientes (ventas)" · últimas 8 semanas · <b>29 leads totales</b> · promedio <b>3,6 / semana</b></div>
+<div class="lc-bars">
+<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:12.5%"></div><div class="lc-week">W20<span>11-17 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">8</div><div class="lc-fill" style="height:100%"></div><div class="lc-week">W21<span>18-24 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W22<span>25-31 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:12.5%"></div><div class="lc-week">W23<span>1-7 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">7</div><div class="lc-fill" style="height:87.5%"></div><div class="lc-week">W24<span>8-14 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W25<span>15-21 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">0</div><div class="lc-fill" style="height:2%"></div><div class="lc-week">W26<span>22-28 jun</span></div></div>
+<div class="lc-bar current"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W27<span>29 jun-5 jul</span></div></div>
 </div>
-<div class="metric pending">
-<div class="m-cat">Clics orgánicos GSC / día</div>
-<div class="m-row"><div class="m-side">Baseline</div><div class="m-val">~23</div><div class="m-note">CTR 0,90% · abril 2026</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">pull 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">CTR orgánico</div>
-<div class="m-row"><div class="m-side">Baseline</div><div class="m-val">0,90<small>%</small></div><div class="m-note">Debajo del promedio sector (1,5-2%)</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">pull 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Leads GHL · mayo 2026</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">13</div><div class="m-note">Pipeline Clientes (ventas)</div></div>
-<div class="m-row after"><div class="m-side">Meta</div><div class="m-val">crecimiento mensual</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Leads GHL · junio 2026</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">16</div><div class="m-note">+23% vs mayo</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">pull 15 jul (julio)</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Fuente web (formulario)</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">59<small>%</small></div><div class="m-note">17 de 29 opps · 41% sin fuente atribuida</div></div>
-<div class="m-row after"><div class="m-side">Meta</div><div class="m-val">100% con fuente (UTM tracking)</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Pipeline activo GHL</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">29<small> opps</small></div><div class="m-note">Todas abiertas o en trámite</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Valor pipeline · abierto</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">48.500<small> €</small></div><div class="m-note">Solo 28% de opps tienen valor asignado</div></div>
-<div class="m-row after"><div class="m-side">Meta</div><div class="m-val">100% opps valoradas</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Propuestas enviadas · activas</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">20<small>/29</small></div><div class="m-note">69% del pipeline · bottleneck stage</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Ticket promedio</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">1.672<small> €</small></div><div class="m-note">Máximo actual · 10.600 €</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Conversión Won · últimos 44 días</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">0<small>%</small></div><div class="m-note">0 Won de 29 opps · 2 Lost</div></div>
-<div class="m-row after"><div class="m-side">Meta</div><div class="m-val">desatar propuestas enviadas</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Sesiones orgánicas GA4</div>
-<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no medido</div><div class="m-note">GA4 accesible · sin baseline formal</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">Baseline 15 jul</div></div>
-</div>
-</div>
-
-<div class="callout info">
-<b>Cómo se lee el funnel comercial (datos reales del CRM):</b> Eventos Barcelona <b>captura 15-20 leads inbound al mes</b> vía GHL (crecimiento sostenido: 13 en mayo, 16 en junio). El pipeline tiene <b>48.500 € en trámite entre 29 oportunidades</b>, con ticket promedio de 1.672 €. Sin embargo, hay dos frentes ciegos: (1) el <b>41% de los leads no tiene origen atribuido</b> — no sabemos si vinieron de Google, de LinkedIn, de referido o de campañas — y (2) el <b>69% del pipeline está atascado en "Propuesta enviada"</b> con 0% de conversión Won en los últimos 44 días. El Sprint 2 arranca la solución al primer frente (UTM + GHL source). El segundo frente es de operativa comercial, no SEO — flag para conversación con Xavi.
+<div class="lc-footer">Datos extraídos vía GHL API · pipeline id <code>mhMMcnPkCuUpp0mhkp5P</code> · actualización manual cada 2 semanas</div>
 </div>
 
 <h3 class="section">Cómo estaba el sitio antes de arrancar <span class="sub">análisis por dimensión · 2 julio 2026</span></h3>
