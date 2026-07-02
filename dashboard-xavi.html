@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard Eventos Barcelona — Sprint 1 · 2026</title>
+<title>Dashboard Eventos Barcelona — Estado y avances</title>
 <style>
 :root{
   --ink:#0a2540;
@@ -15,391 +15,552 @@
   --amber:#d18416;
   --green:#2f7d3a;
   --muted:#5b6473;
-  --before:#f7d5d7;
-  --after:#d6ead9;
+  --pending:#9ca3af;
 }
 *{box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.55;font-size:15px}
 .wrap{max-width:1100px;margin:0 auto;padding:48px 32px}
 
-/* Header */
-header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:36px}
+header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:24px}
 .kicker{color:var(--gold);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
 h1{font-size:36px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
-.subtitle{color:var(--muted);font-size:14px;margin-bottom:10px}
-.sprint-meta{display:inline-flex;gap:12px;padding:8px 14px;background:var(--ink);color:#fff;border-radius:3px;font-size:12px;letter-spacing:.06em;font-weight:600;text-transform:uppercase;margin-top:8px}
-.sprint-meta span{opacity:.7}
-.sprint-meta b{color:var(--gold)}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:12px}
+.meta-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.meta-badges span{padding:6px 12px;background:var(--ink);color:#fff;border-radius:3px;font-size:11px;letter-spacing:.06em;font-weight:600;text-transform:uppercase}
+.meta-badges b{color:var(--gold)}
 
-/* Sections */
-h2{font-size:22px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.01em;display:flex;align-items:baseline;justify-content:space-between}
-h2 .sub{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none}
-h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
+/* Tabs (radio-based, no JS) */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:32px;overflow-x:auto;scrollbar-width:thin}
+input[name="sprint-tab"]{position:absolute;left:-9999px}
+.tabs label{display:block;padding:14px 22px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--muted);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tabs label:hover{color:var(--ink);background:rgba(201,154,58,.06)}
+.tabs label small{display:block;font-weight:400;font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
 
-/* Big narrative box */
-.executive{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:22px 26px;border-radius:4px;margin-bottom:24px}
-.executive p{margin:0 0 12px;font-size:15px}
-.executive p:last-child{margin-bottom:0}
-.executive b{color:var(--ink)}
+.tab-content{display:none}
+#tab-s1:checked~.tabs label[for="tab-s1"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s1:checked~.tabs label[for="tab-s1"] small{color:var(--gold);font-weight:700}
+#tab-s1:checked~.contents #c-s1{display:block}
+#tab-s2:checked~.tabs label[for="tab-s2"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s2:checked~.tabs label[for="tab-s2"] small{color:var(--gold);font-weight:700}
+#tab-s2:checked~.contents #c-s2{display:block}
+#tab-s3:checked~.tabs label[for="tab-s3"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s3:checked~.tabs label[for="tab-s3"] small{color:var(--gold);font-weight:700}
+#tab-s3:checked~.contents #c-s3{display:block}
+#tab-s4:checked~.tabs label[for="tab-s4"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s4:checked~.tabs label[for="tab-s4"] small{color:var(--gold);font-weight:700}
+#tab-s4:checked~.contents #c-s4{display:block}
+#tab-s5:checked~.tabs label[for="tab-s5"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s5:checked~.tabs label[for="tab-s5"] small{color:var(--gold);font-weight:700}
+#tab-s5:checked~.contents #c-s5{display:block}
+#tab-s6:checked~.tabs label[for="tab-s6"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s6:checked~.tabs label[for="tab-s6"] small{color:var(--gold);font-weight:700}
+#tab-s6:checked~.contents #c-s6{display:block}
+#tab-ov:checked~.tabs label[for="tab-ov"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-ov:checked~.tabs label[for="tab-ov"] small{color:var(--gold);font-weight:700}
+#tab-ov:checked~.contents #c-ov{display:block}
 
-/* Before/After metric cards */
-.deltas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
-.delta{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
-.delta .cat{background:var(--ink);color:#fff;padding:8px 14px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
-.delta .row{display:flex;padding:14px 16px;gap:10px;align-items:baseline;border-bottom:1px solid var(--line)}
-.delta .row:last-child{border-bottom:none}
-.delta .row .side{flex:0 0 auto;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;width:44px}
-.delta .row .val{font-size:24px;font-weight:700;flex:1}
-.delta .row.pre .val{color:var(--muted)}
-.delta .row.now .val{color:var(--ink)}
-.delta .row.now.up .val{color:var(--green)}
-.delta .row.now.up::after{content:"↑";color:var(--green);font-size:16px;font-weight:700;margin-left:6px}
-.delta .row.now.down .val{color:var(--red)}
-.delta .row .note{font-size:11px;color:var(--muted);margin-left:auto;text-align:right;max-width:120px}
+/* Sprint header */
+.sprint-header{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:24px 28px;border-radius:4px;margin-bottom:24px}
+.sprint-header.current{border-left-color:var(--ink)}
+.sprint-header.done{border-left-color:var(--green)}
+.sh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sh-top h2{font-size:24px;margin:0;padding:0;border:none;letter-spacing:-.01em}
+.status-tag{padding:6px 12px;border-radius:3px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.status-tag.current{background:var(--ink);color:#fff}
+.status-tag.done{background:var(--green);color:#fff}
+.status-tag.pending{background:var(--line);color:var(--muted)}
+.sprint-header .dates{color:var(--muted);font-size:13px;margin-bottom:12px}
+.sprint-header .focus{font-size:15px;margin:0}
+.sprint-header .focus b{color:var(--ink)}
 
-/* Delivered log */
-.delivered-list{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:6px 0}
-.delivered-list li{list-style:none;padding:12px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
-.delivered-list li:last-child{border-bottom:none}
-.delivered-list ul{margin:0;padding:0}
-.delivered-list .cat-tag{background:var(--gold);color:#fff;padding:3px 8px;border-radius:2px;font-size:10px;letter-spacing:.08em;font-weight:600;text-transform:uppercase;white-space:nowrap;min-width:74px;text-align:center}
-.delivered-list .cat-tag.geo{background:var(--ink)}
-.delivered-list .cat-tag.seo{background:var(--green)}
-.delivered-list .cat-tag.tech{background:var(--amber)}
-.delivered-list .cat-tag.content{background:var(--red)}
-.delivered-list .desc{font-size:14px}
-.delivered-list .desc b{color:var(--ink)}
-.delivered-list .impact{font-size:12px;color:var(--muted);text-align:right;font-style:italic;white-space:nowrap}
+h3.section{font-size:16px;margin:32px 0 12px;color:var(--ink);display:flex;align-items:baseline;justify-content:space-between;letter-spacing:-.005em}
+h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none}
 
-/* Roadmap next sprints */
-.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
-.sprint-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:18px 20px}
-.sprint-card.current{border-color:var(--ink);border-width:2px}
-.sprint-card .sp-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.sprint-card .sp-title b{font-size:14px}
-.sprint-card .sp-title .date{font-size:11px;color:var(--muted)}
-.sprint-card .sp-status{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
-.sprint-card .sp-status.done{color:var(--green)}
-.sprint-card .sp-status.now{color:var(--gold)}
-.sprint-card .sp-status.next{color:var(--muted)}
-.sprint-card ul{margin:0;padding:0 0 0 18px;font-size:13px}
-.sprint-card li{margin:3px 0}
+/* Metrics */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.metric .m-cat{background:var(--ink);color:#fff;padding:8px 14px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.metric .m-row{display:flex;padding:14px 16px;gap:10px;align-items:baseline;border-bottom:1px solid var(--line)}
+.metric .m-row:last-child{border-bottom:none}
+.metric .m-side{flex:0 0 auto;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;width:56px}
+.metric .m-val{font-size:22px;font-weight:700;flex:1;color:var(--ink)}
+.metric .m-val small{font-size:12px;color:var(--muted);font-weight:400}
+.metric .m-note{font-size:11px;color:var(--muted);margin-left:auto;text-align:right;max-width:140px;font-style:italic}
+.metric.pending .m-row.after .m-val{color:var(--pending);font-style:italic;font-weight:500;font-size:15px}
 
-/* Backlog */
-.backlog{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
-.backlog th{background:var(--ink);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
-.backlog td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-.backlog tr:last-child td{border-bottom:none}
-.p-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:.06em;font-weight:600;color:#fff;min-width:24px;text-align:center}
-.p-tag.p1{background:var(--red)}
-.p-tag.p2{background:var(--amber)}
-.p-tag.p3{background:var(--muted)}
+/* Work list */
+.work-list{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0}
+.work-list ul{margin:0;padding:0}
+.work-list li{list-style:none;padding:14px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
+.work-list li:last-child{border-bottom:none}
+.cat-tag{padding:3px 8px;border-radius:2px;font-size:10px;letter-spacing:.08em;font-weight:600;text-transform:uppercase;white-space:nowrap;min-width:78px;text-align:center;color:#fff}
+.cat-tag.geo{background:var(--ink)}
+.cat-tag.seo{background:var(--green)}
+.cat-tag.tech{background:var(--amber)}
+.cat-tag.content{background:var(--red)}
+.cat-tag.docs{background:var(--gold)}
+.work-list .desc{font-size:14px}
+.work-list .desc b{color:var(--ink)}
+.status-inline{display:inline-block;margin-left:8px;font-size:10px;padding:2px 6px;border-radius:2px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.status-inline.progress{background:#fef3c7;color:var(--amber)}
+.status-inline.pending{background:var(--line);color:var(--muted)}
+.status-inline.done{background:#d6ead9;color:var(--green)}
+.work-list .impact{font-size:11px;color:var(--muted);text-align:right;font-style:italic;white-space:nowrap}
 
-/* Callout */
+/* Progress */
+.progress-wrap{background:var(--card);border:1px solid var(--line);padding:14px 18px;border-radius:4px;margin-bottom:16px}
+.p-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.p-label b{color:var(--ink)}
+.p-bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.p-bar>span{display:block;height:100%;background:var(--gold)}
+
+/* Placeholder */
+.closing-placeholder{background:#fff8e1;border:1px dashed #f0e0a0;padding:20px 22px;border-radius:4px;color:var(--muted);font-size:13px;font-style:italic;text-align:center;margin-top:8px}
+.closing-placeholder b{color:var(--ink);font-style:normal;display:block;margin-bottom:4px}
+
+/* Overview */
+.overview-timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:20px 0}
+.ov-sprint{background:var(--card);border:1px solid var(--line);padding:14px 12px;border-radius:4px;text-align:center;font-size:12px}
+.ov-sprint.current{border-color:var(--ink);border-width:2px;background:rgba(10,37,64,.04)}
+.ov-sprint b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.ov-sprint .dates-mini{color:var(--muted);font-size:10px;letter-spacing:.04em;margin-bottom:6px}
+.ov-sprint .status{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--pending)}
+.ov-sprint.current .status{color:var(--gold)}
+
 .callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
 .callout b{color:var(--ink)}
+.callout.info{background:#f0f7fa;border-color:#c9dae2;border-left-color:#3d7a95}
 
-/* Toc */
-.toc{background:var(--card);border:1px solid var(--line);padding:16px 20px;border-radius:4px;margin-bottom:24px;font-size:13px;color:var(--muted)}
-.toc b{color:var(--ink);text-transform:uppercase;font-size:11px;letter-spacing:.12em;display:block;margin-bottom:6px}
-.toc a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--line);margin-right:12px}
-
-/* Sprint archive */
-.archive{background:var(--card);border:1px dashed var(--line);padding:20px;border-radius:4px;color:var(--muted);font-size:13px}
-.archive b{color:var(--ink)}
+.baseline-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.baseline-table th{background:var(--ink);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.baseline-table td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.baseline-table tr:last-child td{border-bottom:none}
+.baseline-table td:first-child{font-weight:600;color:var(--ink)}
 
 footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
 
 @media(max-width:820px){
-  .deltas{grid-template-columns:1fr}
-  .roadmap{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:1fr}
+  .overview-timeline{grid-template-columns:repeat(2,1fr)}
   h1{font-size:26px}
-  h2{flex-direction:column;align-items:flex-start;gap:4px}
-  .delivered-list li{grid-template-columns:1fr;gap:4px}
+  .work-list li{grid-template-columns:1fr;gap:4px}
+  .tabs label{padding:12px 14px;font-size:12px}
 }
 @media print{
   body{background:#fff}
-  .delta,.executive,.sprint-card,.callout{break-inside:avoid}
+  .tabs{display:none}
+  .tab-content{display:block!important;page-break-after:always}
+  .metric,.sprint-header,.callout{break-inside:avoid}
 }
 </style>
 </head>
 <body>
+
+<input type="radio" name="sprint-tab" id="tab-s1" checked>
+<input type="radio" name="sprint-tab" id="tab-s2">
+<input type="radio" name="sprint-tab" id="tab-s3">
+<input type="radio" name="sprint-tab" id="tab-s4">
+<input type="radio" name="sprint-tab" id="tab-s5">
+<input type="radio" name="sprint-tab" id="tab-s6">
+<input type="radio" name="sprint-tab" id="tab-ov">
+
 <div class="wrap">
 
 <header>
-<div class="kicker">Dashboard operativo · actualización quincenal</div>
-<h1>Eventos Barcelona — Estado y avances</h1>
-<div class="subtitle">Documento vivo. Se actualiza cada 2 semanas al cierre de sprint. Xavi puede consultarlo en cualquier momento.</div>
-<div class="sprint-meta"><span>Sprint activo</span><b>1 · 24 jun — 8 jul 2026</b><span>Corte</span><b>2 jul 2026</b></div>
+<div class="kicker">Dashboard operativo · retainer Eventos Barcelona</div>
+<h1>Estado y avances</h1>
+<div class="subtitle">Documento vivo. Cada sprint es una hoja con snapshot inicial, trabajo del sprint y actualización al cierre. Se actualiza cada 2 semanas.</div>
+<div class="meta-badges">
+  <span>Sprint activo · <b>1 · en curso</b></span>
+  <span>Fecha · <b>2 jul 2026</b></span>
+  <span>Próxima actualización · <b>15 jul 2026</b></span>
+</div>
 </header>
 
-<div class="toc">
-<b>Contenido</b>
-<a href="#resumen">Resumen ejecutivo</a>
-<a href="#deltas">Antes vs Ahora</a>
-<a href="#entregado">Trabajo entregado</a>
-<a href="#roadmap">Sprints próximos</a>
-<a href="#backlog">Backlog priorizado</a>
+<div class="tabs">
+  <label for="tab-s1">Sprint 1 <small>2-15 jul · en curso</small></label>
+  <label for="tab-s2">Sprint 2 <small>16-29 jul</small></label>
+  <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
+  <label for="tab-s4">Sprint 4 <small>13-26 ago</small></label>
+  <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
+  <label for="tab-s6">Sprint 6 <small>10-23 sep</small></label>
+  <label for="tab-ov">Overview <small>los 6 sprints</small></label>
 </div>
 
-<h2 id="resumen">Resumen ejecutivo <span class="sub">2 minutos de lectura</span></h2>
+<div class="contents">
 
-<div class="executive">
-<p>Este primer sprint (24 junio — 8 julio) se enfocó en <b>saneamiento GEO/AEO</b> — preparar el sitio para que los agentes de IA (ChatGPT, Claude, Perplexity, Gemini) puedan encontrar, entender y citar el contenido de Eventos Barcelona. Es la capa que crece en importancia con AI Overviews de Google y la migración de búsquedas hacia asistentes.</p>
-<p>Punto de partida: el sitio estaba <b>ausente del ecosistema AI</b> (sin llms.txt, sin agent-card, sin señales de consentimiento a crawlers de IA, 1.000+ imágenes sin texto alternativo, arquitectura de seguridad incompleta). El diagnóstico técnico interno arrojó <b>68/100</b> en el estándar de agent-readiness.</p>
-<p>Cierre parcial de sprint: <b>95/100</b>. El sitio ahora está en el techo de lo alcanzable sin subir a planes premium de plugins. Se cerraron además dos frentes secundarios: <b>arquitectura técnica base</b> (sitemap, hreflang bilingüe, security headers) y <b>documentación canónica</b> (pirámide SEO como fuente única de verdad para gestión de contenido).</p>
-<p><b>Próximas 2 semanas (Sprint 2, 9-22 julio):</b> arrancar publicación de contenido — 3 páginas de la pirámide bilingüe (ES+EN) por semana, empezando por los 3 gaps críticos (DMC Barcelona, team building, entretenimiento eventos empresariales). Análisis competitivo previo a cada artículo. Definition of Done aplicado a cada pieza.</p>
+<!-- SPRINT 1 -->
+<div class="tab-content" id="c-s1">
+
+<div class="sprint-header current">
+  <div class="sh-top">
+    <h2>Sprint 1 · Saneamiento GEO/AEO</h2>
+    <span class="status-tag current">En curso</span>
+  </div>
+  <div class="dates">2 julio — 15 julio 2026 · quincena 1 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> preparar el sitio para que los agentes de IA (ChatGPT, Claude, Perplexity, Gemini) puedan descubrir, entender y citar el contenido de Eventos Barcelona. Cerrar la capa técnica que hoy está ausente para que el trabajo de contenido de los sprints 2-5 caiga sobre infraestructura sólida.</p>
 </div>
 
-<h2 id="deltas">Antes vs Ahora <span class="sub">Snapshot 23-jun-2026 vs 02-jul-2026</span></h2>
-
-<div class="deltas">
-
-<div class="delta">
-<div class="cat">GEO / AEO Score</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">68<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Agent-Readiness bajo</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">95<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">+27 puntos · techo free</div></div>
+<div class="progress-wrap">
+  <div class="p-label"><span>Progreso del sprint</span><b>día 1 de 14</b></div>
+  <div class="p-bar"><span style="width:7%"></span></div>
 </div>
 
-<div class="delta">
-<div class="cat">SEO Técnico</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">~65<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Est. pre-audit</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">82<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Auditado 2-jul</div></div>
+<h3 class="section">Snapshot inicial <span class="sub">2 julio 2026 · día 1 del sprint</span></h3>
+
+<div class="metrics-grid">
+
+<div class="metric pending">
+<div class="m-cat">GEO / AEO Score</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">68<small>/100</small></div><div class="m-note">Agent-Readiness bajo</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 
-<div class="delta">
-<div class="cat">Cobertura pirámide</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">no medida</div><div class="note">Pirámide no existía</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">64<span style="font-size:14px;color:var(--muted)">% directa</span></div><div class="note">22% partial · 14% gap</div></div>
+<div class="metric pending">
+<div class="m-cat">Presencia AI</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">0<small> archivos</small></div><div class="m-note">Sin well-known / llms.txt</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 
-<div class="delta">
-<div class="cat">Presencia AI (llms.txt + agent-card)</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">0<span style="font-size:14px;color:var(--muted)"> archivos</span></div><div class="note">Ausente del estándar</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">9<span style="font-size:14px;color:var(--muted)"> archivos</span></div><div class="note">Cumple A2A + MCP + LLM standards</div></div>
+<div class="metric pending">
+<div class="m-cat">Imágenes con alt</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">~65<small>%</small></div><div class="m-note">1.000+ vacías</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 
-<div class="delta">
-<div class="cat">Imágenes con alt text</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">~65<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">1.000+ imgs vacías</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">100<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">Batch fix + fallback runtime</div></div>
+<div class="metric pending">
+<div class="m-cat">Robots.txt · reglas AI</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no</div><div class="m-note">Sin señales explícitas</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 
-<div class="delta">
-<div class="cat">Bilingüe ES + EN</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">operativo</div><div class="note">WPML activo</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">149 / 147</div><div class="note">EN / ES · equilibrio confirmado</div></div>
+<div class="metric pending">
+<div class="m-cat">Bilingüe ES + EN</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no medido</div><div class="m-note">WPML activo</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+</div>
+
+<div class="metric pending">
+<div class="m-cat">Cobertura pirámide</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no medida</div><div class="m-note">Pirámide no existía</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
 </div>
 
 </div>
 
-<div class="callout">
-<b>Nota sobre tráfico GSC.</b> Los baselines de abril 2026 son <b>2.600 impresiones/día, 23 clics/día, CTR 0,90%</b>. El trabajo de este sprint es <b>técnico y estructural</b> — no se espera impacto en tráfico orgánico dentro de la ventana del sprint (Google reprocesa infraestructura en 2-6 semanas, la aguja se mueve con Sprint 2+ una vez que sale contenido nuevo). Empezamos a trackear GSC 7d rolling desde este dashboard a partir del Sprint 2.
+<div class="callout info">
+<b>Baseline de tráfico orgánico (GSC, abril 2026):</b> 2.600 impresiones/día · 23 clics/día · CTR 0,90%. Trackeamos este número quincenalmente desde el Sprint 2 en adelante para ver el impacto del contenido en la aguja real.
 </div>
 
-<h2 id="entregado">Trabajo entregado · Sprint 1 <span class="sub">detalle por categoría</span></h2>
+<h3 class="section">Trabajo previsto en este sprint <span class="sub">se cierra 15 julio</span></h3>
 
-<div class="delivered-list">
+<div class="work-list">
 <ul>
 
 <li>
 <span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Instalación stack GEO completo</b> — LLMagnet AI SEO Optimizer + AEO God Mode + 3 snippets custom (EB-SEC-HEADERS, EB-SCHEMA-LOCALBUSINESS, EB-AUDIT-100). 17 abilities MCP listas.</div>
-<div class="impact">infraestructura AI</div>
+<div class="desc"><b>Instalar stack GEO completo</b> — LLMagnet AI SEO Optimizer + AEO God Mode + snippets custom para señales AI. <span class="status-inline progress">En curso</span></div>
+<div class="impact">infraestructura</div>
 </li>
 
 <li>
 <span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>9 archivos servidos en /.well-known/</b> — agent-card.json (formato A2A v0.3.0), agent-skills, mcp.json, security.txt, api-catalog, oauth-authorization-server, change-password, ai-agent.json, ai-plugin.json. El sitio cumple el estándar emergente para agentes AI.</div>
+<div class="desc"><b>Publicar 9 archivos en /.well-known/</b> — agent-card.json (A2A), agent-skills, mcp.json, security.txt, api-catalog + otros. Cumplir el estándar emergente para agentes AI. <span class="status-inline progress">En curso</span></div>
 <div class="impact">discoverability</div>
 </li>
 
 <li>
 <span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>llms.txt + llms-full.txt reales</b> — 22KB + 25KB de contexto estructurado para que LLMs entiendan qué es Eventos Barcelona y qué servicios ofrece. Cumple el estándar propuesto por Anthropic.</div>
+<div class="desc"><b>Generar llms.txt + llms-full.txt</b> — contexto estructurado para que LLMs entiendan qué es EB. Estándar propuesto por Anthropic. <span class="status-inline progress">En curso</span></div>
 <div class="impact">contexto AI</div>
 </li>
 
 <li>
 <span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Robots.txt con reglas explícitas para crawlers AI</b> — GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, anthropic-ai, cohere-ai. Content-Signal directive (IAB standard) declarando consentimiento para búsqueda + input a IA, sin entrenamiento.</div>
+<div class="desc"><b>Robots.txt AI-friendly</b> — reglas explícitas para GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot + Content-Signal directive. <span class="status-inline progress">En curso</span></div>
 <div class="impact">consent AI</div>
 </li>
 
 <li>
 <span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Score de agent-readiness 68 → 95</b> (+27 puntos, techo alcanzable sin plan Pro de LLMagnet). Discovery 96, Content 100, HTML 100, Security 95, Performance 93, Accessibility 100, Well-known 50.</div>
+<div class="desc"><b>Score de agent-readiness 68 → objetivo ≥90</b> con techo alcanzable sin plan Pro. <span class="status-inline progress">En curso</span></div>
 <div class="impact">ranking AI</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Batch alt-text fix</b> — 1.000+ attachments en la mediateca + 218 páginas Elementor con imágenes de alt vacío regeneradas desde el nombre de archivo. Además fallback runtime en el snippet EB-AUDIT-100 que añade alt="Eventos Barcelona" a cualquier img nueva que salga sin alt.</div>
+<div class="desc"><b>Batch alt-text fix</b> — 1.000+ imágenes en mediateca + páginas Elementor con alt vacío. Fallback runtime para las nuevas. <span class="status-inline progress">En curso</span></div>
 <div class="impact">accesibilidad + SEO</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Security headers en todas las páginas</b> — HSTS (max-age 1 año, includeSubDomains), X-Frame-Options SAMEORIGIN, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy configurada, CSP Report-Only para recolectar violaciones.</div>
+<div class="desc"><b>Security headers</b> — HSTS, X-Frame, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CSP Report-Only. <span class="status-inline progress">En curso</span></div>
 <div class="impact">seguridad</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Corrección de soft-404</b> — plugin "All 404 Redirect to Homepage" desactivado. URLs inexistentes ahora devuelven HTTP 404 real, no un redirect fake que confunde a Google.</div>
+<div class="desc"><b>Fix soft-404</b> — desactivar el plugin que redirige 404s a home. Google necesita 404 real, no fake redirect. <span class="status-inline progress">En curso</span></div>
 <div class="impact">indexabilidad</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>RSS feeds restaurados</b> — Perfmatters estaba bloqueando /feed/ redirigiéndolo a home. Reactivado. Ahora los agregadores y crawlers pueden acceder al feed correctamente.</div>
+<div class="desc"><b>Restaurar RSS feeds</b> — Perfmatters estaba bloqueando /feed/. Reactivar. <span class="status-inline progress">En curso</span></div>
 <div class="impact">discoverability</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Pirámide SEO canónica</b> — 46 keywords mapeadas en 3 niveles (marca / categoría / long-tail) con URLs reales del sitemap, cobertura por keyword, gaps priorizados P1/P2/P3, estrategia hub-and-spoke definida. Es la única fuente de verdad para cualquier acción SEO.</div>
+<span class="cat-tag docs">Docs</span>
+<div class="desc"><b>Pirámide SEO canónica</b> — 46 keywords en 3 niveles, mapping a URLs reales, gaps priorizados P1/P2/P3, estrategia hub-and-spoke. Única fuente de verdad para SEO/contenido. <span class="status-inline progress">En curso</span></div>
 <div class="impact">estrategia</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Regla bilingüe explícita ES + EN</b> — toda página nueva debe existir en ambos idiomas. Sin excepciones. WPML activo lo soporta. Documentado como norma del proyecto.</div>
+<span class="cat-tag docs">Docs</span>
+<div class="desc"><b>Regla bilingüe ES + EN documentada</b> — norma del proyecto. Toda página nueva en ambos idiomas. <span class="status-inline progress">En curso</span></div>
 <div class="impact">estrategia</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Plan de contenido Sprint 2-5 (jul-ago 2026)</b> — 12 gaps de la pirámide × ES+EN = 24 páginas. Workflow definido: análisis competitivo previo → brief → clonar template → copy validado → QA con Definition of Done → publicar bilingüe.</div>
+<span class="cat-tag docs">Docs</span>
+<div class="desc"><b>Plan de contenido Sprints 2-5</b> — 12 gaps de la pirámide × ES+EN = 24 páginas. Workflow con análisis competitivo previo. <span class="status-inline progress">En curso</span></div>
 <div class="impact">roadmap</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Definition of Done por artículo</b> — checklist en 3 fases (pre-publish · post-publish 24-48h · post-publish 7-14d) cubriendo metadata, schema, imágenes, internal linking, bilingüe, GEO/AEO, performance, tracking. Garantiza que cada artículo salga como activo SEO y no como "contenido publicado".</div>
+<span class="cat-tag docs">Docs</span>
+<div class="desc"><b>Definition of Done por artículo</b> — checklist 3 fases (pre-publish, 24-48h, 7-14d). Garantiza que cada pieza salga como activo SEO. <span class="status-inline progress">En curso</span></div>
 <div class="impact">calidad</div>
 </li>
 
 <li>
 <span class="cat-tag seo">SEO</span>
-<div class="desc"><b>Radiografía SEO técnica completa</b> — audit end-to-end con 9 categorías + arquitectura + SXO + E-E-A-T. Health score 82/100. 5 quick wins priorizados por impacto × facilidad. Documento entregado el 2 de julio (este mismo día).</div>
+<div class="desc"><b>Radiografía SEO técnica end-to-end</b> — 9 categorías + arquitectura + SXO + E-E-A-T. Health score inicial + quick wins priorizados. <span class="status-inline progress">En curso</span></div>
 <div class="impact">diagnóstico</div>
 </li>
 
 </ul>
 </div>
 
-<h2 id="roadmap">Sprints próximos <span class="sub">visibilidad hasta 30 septiembre</span></h2>
+<h3 class="section">Cierre del sprint <span class="sub">se publica 15 julio 2026</span></h3>
 
-<div class="roadmap">
+<div class="closing-placeholder">
+<b>Actualización pendiente</b>
+El 15 de julio esta hoja se actualiza con los deltas reales del sprint: métricas cerradas, evidencia de entregables, hallazgos de la radiografía SEO y decisiones tomadas.
+</div>
 
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 1</b><span class="date">24 jun — 8 jul</span></div>
-<div class="sp-status done">✓ En curso · corte hoy</div>
+</div>
+
+<!-- SPRINT 2 -->
+<div class="tab-content" id="c-s2">
+
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 2 · Contenido pirámide — arranque P1</h2>
+    <span class="status-tag pending">Planificado</span>
+  </div>
+  <div class="dates">16 julio — 29 julio 2026 · quincena 2 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> arrancar la publicación de contenido para cubrir los gaps críticos de la pirámide. 3 landings P1 en ES + EN (6 piezas), aplicando Definition of Done. Cerrar los quick wins técnicos que salgan del audit del Sprint 1.</p>
+</div>
+
+<h3 class="section">Trabajo planificado</h3>
+
+<div class="work-list">
 <ul>
-<li>Setup GEO/AEO completo</li>
-<li>Score 68 → 95</li>
-<li>Batch alt + security</li>
-<li>Radiografía SEO técnica</li>
-<li>Pirámide + DoD documentados</li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /dmc-barcelona/ ES + EN</b> — con análisis competitivo previo (top 5 SERPs). Keyword crítica MICE internacional. EB hoy no aparece en top 10 de esa SERP.</div><div class="impact">P1 · alto valor</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /team-building-barcelona/ ES + EN</b> — keyword alto volumen. Base del retainer plan v2.</div><div class="impact">P1 · alto volumen</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /entretenimiento-eventos-empresariales/ ES + EN</b> — hub que hoy no existe. Capta término común no especializado.</div><div class="impact">P1 · hub crítico</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Consolidar hub duplicado /musica/ ↔ /grupos-musica/</b> — 301 redirect + actualizar menú Elementor + canonical self. Bloquea autoridad de 20 páginas N3.</div><div class="impact">blocking · SEO</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Quick wins técnicos del audit</b> — fix broken link /.md, resolver LocalBusiness schema duplicado, activar IndexNow en Yoast Premium.</div><div class="impact">≤ 15 min combinados</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Primer análisis competitivo formal</b> — top 5 SERPs por keyword P1 con briefs de estructura recomendada para cada landing.</div><div class="impact">metodología</div></li>
 </ul>
 </div>
 
-<div class="sprint-card current">
-<div class="sp-title"><b>Sprint 2</b><span class="date">9 — 22 jul</span></div>
-<div class="sp-status now">▶ Próximo</div>
+<h3 class="section">Snapshot esperado al cierre</h3>
+<div class="closing-placeholder">
+<b>Métricas objetivo</b>
+GEO/AEO ≥95 (mantener). Cobertura pirámide 64% → 68% (+3 keywords P1 cubiertas). 6 nuevas piezas de contenido publicadas. Primer pull GSC 7d rolling establece nuevo baseline.
+</div>
+
+</div>
+
+<!-- SPRINT 3 -->
+<div class="tab-content" id="c-s3">
+
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 3 · Contenido pirámide — P2 hubs</h2>
+    <span class="status-tag pending">Planificado</span>
+  </div>
+  <div class="dates">30 julio — 12 agosto 2026 · quincena 3 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> continuar publicación con las 4 landings P2 (espectáculos cenas gala, experiencias corporativas, animación empresarial, circo hub). Primer pull GSC rolling 30d vs baseline abril para ver primer movimiento de aguja.</p>
+</div>
+
+<h3 class="section">Trabajo planificado</h3>
+<div class="work-list">
 <ul>
-<li>QW1-QW5 del audit (bugs)</li>
-<li>Análisis competitivo P1 DMC Barcelona</li>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Decisión hub /musica/ vs /grupos-musica/</li>
-<li>IndexNow activo</li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /espectaculos-cenas-de-gala/ ES + EN</b> — intent comercial alto.</div><div class="impact">P2</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /experiencias-eventos-corporativos/ ES + EN</b> — tendencia experiencial.</div><div class="impact">P2</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /animacion-eventos-empresariales/ ES + EN</b> — capta término común.</div><div class="impact">P2</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Hub /circo/ ES + EN</b> — re-agrupar espectáculos existentes bajo hub dedicado.</div><div class="impact">P2 · reorg</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Pull GSC 30 días</b> — primer delta contra baseline abril. Impresiones + clics + posiciones top keywords.</div><div class="impact">medición</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Handoff performance</b> — Combine CSS/JS en Perfmatters + brief para Cloudflare Polish (WebP automático).</div><div class="impact">LCP</div></li>
 </ul>
 </div>
 
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 3</b><span class="date">23 jul — 5 ago</span></div>
-<div class="sp-status next">— Planificado</div>
+<h3 class="section">Snapshot esperado al cierre</h3>
+<div class="closing-placeholder">
+<b>Métricas objetivo</b>
+Cobertura pirámide 68% → 76%. Primer delta GSC positivo esperado (pequeño, el contenido lleva ~4 semanas indexado). Base sólida para acelerar en Sprints 4-5.
+</div>
+
+</div>
+
+<!-- SPRINT 4 -->
+<div class="tab-content" id="c-s4">
+
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 4 · Long-tails + performance</h2>
+    <span class="status-tag pending">Planificado</span>
+  </div>
+  <div class="dates">13 agosto — 26 agosto 2026 · quincena 4 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> arrancar las 5 landings P3 (long-tails específicas) + activar Cloudflare Polish para WebP automático. Primeros rankings esperados para las páginas del Sprint 2.</p>
+</div>
+
+<h3 class="section">Trabajo planificado</h3>
+<div class="work-list">
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Cobertura pirámide 64% → 75%</li>
-<li>Primer pull GSC 7d con delta</li>
-<li>Handoff performance a Perfmatters</li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /alquiler-pantallas-led/ ES + EN</b> — vertical técnico.</div><div class="impact">P3</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /musica/violinista-cena-gala/ ES + EN</b> — solista (hoy solo trío).</div><div class="impact">P3</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /musica/bandas-versiones-fiesta-empresa/ ES + EN</b> — sin página exacta.</div><div class="impact">P3</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Cloudflare Polish activación</b> — WebP automático + CDN gratis. Impacto directo en LCP y en el check image_formats del audit.</div><div class="impact">performance</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Empezar a trackear bot AI traffic</b> — GPTBot, ClaudeBot, PerplexityBot con LLMagnet analytics. Evidencia de que estamos ganando presencia AI.</div><div class="impact">medición GEO</div></li>
 </ul>
 </div>
 
+<h3 class="section">Snapshot esperado al cierre</h3>
+<div class="closing-placeholder">
+<b>Métricas objetivo</b>
+Cobertura pirámide 76% → 82%. Primeros rankings top 20 en keywords P1 del Sprint 2. Bot AI traffic empieza a medirse. LCP mejorado por Polish.
 </div>
 
-<div class="roadmap">
+</div>
 
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 4</b><span class="date">6 — 19 ago</span></div>
-<div class="sp-status next">— Planificado</div>
+<!-- SPRINT 5 -->
+<div class="tab-content" id="c-s5">
+
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 5 · Cierre pirámide gaps</h2>
+    <span class="status-tag pending">Planificado</span>
+  </div>
+  <div class="dates">27 agosto — 9 septiembre 2026 · quincena 5 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> cerrar las 2 landings P3 restantes + baseline GSC formal vs abril. Consolidar el plan de contenido y prepararlo para revisión trimestral.</p>
+</div>
+
+<h3 class="section">Trabajo planificado</h3>
+<div class="work-list">
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Primeros rankings esperados</li>
-<li>Cloudflare Polish (WebP conversion)</li>
-<li>Bot AI traffic empieza a medirse</li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /espectaculos/percusion-led/ ES + EN</b> — nicho específico.</div><div class="impact">P3</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /danza/charleston-eventos-tematicos/ ES + EN</b> — nicho temático.</div><div class="impact">P3</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Baseline nuevo GSC vs abril</b> — 2 meses después del arranque. Cierre de gaps pirámide 85%+.</div><div class="impact">medición</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Disavow file → GSC</b> — análisis backlinks tóxicos (backlog del arranque).</div><div class="impact">salud dominio</div></li>
 </ul>
 </div>
 
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 5</b><span class="date">20 ago — 2 sep</span></div>
-<div class="sp-status next">— Planificado</div>
+<h3 class="section">Snapshot esperado al cierre</h3>
+<div class="closing-placeholder">
+<b>Métricas objetivo</b>
+Cobertura pirámide ≥85%. 22 de 24 páginas publicadas (12 keywords cubiertas + ES/EN). GSC impresiones esperadas ≥25% sobre baseline abril.
+</div>
+
+</div>
+
+<!-- SPRINT 6 -->
+<div class="tab-content" id="c-s6">
+
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 6 · Consolidación y refresh trimestral</h2>
+    <span class="status-tag pending">Planificado</span>
+  </div>
+  <div class="dates">10 septiembre — 23 septiembre 2026 · quincena 6 de 6</div>
+  <p class="focus"><b>Objetivo del sprint:</b> refresh de páginas del Sprint 2 (ya llevan 8 semanas indexadas, análisis de qué keywords están rankeando), refresh trimestral de la pirámide contra GSC real, y preparar propuesta de continuación Q4 para Xavi.</p>
+</div>
+
+<h3 class="section">Trabajo planificado</h3>
+<div class="work-list">
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Cobertura pirámide 85%+</li>
-<li>Cierre gaps P1 + P2</li>
-<li>Baseline nuevo GSC vs abril</li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Refresh de páginas Sprint 2</b> — 8 semanas indexadas, ver qué keywords secundarias están capturando y expandir contenido según GSC data real.</div><div class="impact">iteración</div></li>
+<li><span class="cat-tag docs">Docs</span><div class="desc"><b>Refresh trimestral pirámide</b> — cruzar keywords contra GSC top 100 queries reales. Actualizar priorización.</div><div class="impact">estrategia</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Análisis 12 semanas de datos</b> — evolución rankings, tráfico, presencia AI. Insights para Q4.</div><div class="impact">medición</div></li>
+<li><span class="cat-tag docs">Docs</span><div class="desc"><b>Propuesta continuación Q4</b> — argumentario para renovación del retainer con evidencia de 3 meses.</div><div class="impact">comercial</div></li>
 </ul>
 </div>
 
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 6</b><span class="date">3 — 16 sep</span></div>
-<div class="sp-status next">— Planificado</div>
-<ul>
-<li>Buffer + refresh de páginas Sprint 2</li>
-<li>Análisis 12 semanas de datos</li>
-<li>Refresh trimestral pirámide con GSC real</li>
-<li>Propuesta continuación Q4 a Xavi</li>
-</ul>
+<h3 class="section">Snapshot esperado al cierre</h3>
+<div class="closing-placeholder">
+<b>Métricas objetivo</b>
+Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de datos consolidada de 3 meses para decidir el enfoque Q4.
 </div>
 
 </div>
 
-<h2 id="backlog">Backlog priorizado <span class="sub">acciones pendientes ordenadas</span></h2>
+<!-- OVERVIEW -->
+<div class="tab-content" id="c-ov">
 
-<table class="backlog">
-<tr><th>Prioridad</th><th>Acción</th><th>Sprint</th><th>Esfuerzo</th></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Consolidar duplicate hub <code>/musica/</code> ↔ <code>/grupos-musica/</code> (canonical cruzado)</td><td>Sprint 2</td><td>1h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/dmc-barcelona/</code> ES + EN (análisis competitivo previo)</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/team-building-barcelona/</code> ES + EN</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/entretenimiento-eventos-empresariales/</code> ES + EN</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Fix broken link <code>/.md</code> en snippet EB-AUDIT-100 (bug menor)</td><td>Sprint 2</td><td>5min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Desactivar snippet EB-SCHEMA-LOCALBUSINESS (Yoast ya lo cubre)</td><td>Sprint 2</td><td>5min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Activar IndexNow en Yoast Premium</td><td>Sprint 2</td><td>2min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>4 landings P2 pirámide (cenas gala, experiencias, animación, circo)</td><td>Sprint 3</td><td>~16h</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Cloudflare Polish activación (WebP automático + CDN gratis)</td><td>Sprint 4</td><td>~2h + DNS</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Combine CSS/JS en Perfmatters (mejora LCP)</td><td>Sprint 4</td><td>~1h + QA</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>5 landings P3 pirámide (long-tails: pantallas LED, violinista, etc.)</td><td>Sprint 4-5</td><td>~20h</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Disavow file → GSC (backlog abril)</td><td>Sprint 5</td><td>~2h con Ahrefs</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Reforzar CSP a enforce (actualmente Report-Only)</td><td>Sprint 6</td><td>~1h</td></tr>
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Overview · los 6 sprints</h2>
+  </div>
+  <div class="dates">2 julio 2026 — 23 septiembre 2026 · 12 semanas · 6 sprints</div>
+  <p class="focus"><b>Vista global del retainer.</b> Los 3 primeros sprints se enfocan en <b>infraestructura + arranque de contenido P1</b>. Los 3 siguientes en <b>expansión + medición + iteración</b>. Al final, base para propuesta de continuación con evidencia de valor.</p>
+</div>
+
+<h3 class="section">Timeline de los 6 sprints</h3>
+
+<div class="overview-timeline">
+<div class="ov-sprint current"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status">En curso</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">GEO/AEO setup</div></div>
+<div class="ov-sprint"><b>Sprint 2</b><div class="dates-mini">16-29 jul</div><div class="status">Próximo</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 landings P1</div></div>
+<div class="ov-sprint"><b>Sprint 3</b><div class="dates-mini">30 jul-12 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">4 landings P2</div></div>
+<div class="ov-sprint"><b>Sprint 4</b><div class="dates-mini">13-26 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 P3 + Cloudflare</div></div>
+<div class="ov-sprint"><b>Sprint 5</b><div class="dates-mini">27 ago-9 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Cierre gaps 85%+</div></div>
+<div class="ov-sprint"><b>Sprint 6</b><div class="dates-mini">10-23 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Refresh + Q4 plan</div></div>
+</div>
+
+<h3 class="section">Métricas clave al inicio del retainer <span class="sub">baseline oficial</span></h3>
+
+<table class="baseline-table">
+<tr><th>Métrica</th><th>Valor inicial</th><th>Fuente</th><th>Objetivo Sprint 6</th></tr>
+<tr><td>GEO/AEO Score</td><td>68/100</td><td>LLMagnet audit</td><td>≥95/100</td></tr>
+<tr><td>Impresiones/día (GSC)</td><td>~2.600</td><td>GSC abril 2026</td><td>+30% vs baseline</td></tr>
+<tr><td>Clics/día (GSC)</td><td>~23</td><td>GSC abril 2026</td><td>+50% vs baseline</td></tr>
+<tr><td>CTR</td><td>0,90%</td><td>GSC abril 2026</td><td>≥1,40%</td></tr>
+<tr><td>Cobertura pirámide</td><td>64% directa</td><td>Pirámide biblia</td><td>≥90%</td></tr>
+<tr><td>Presencia AI (well-known)</td><td>0 archivos</td><td>Crawl directo</td><td>≥9 archivos</td></tr>
+<tr><td>Bot AI traffic detectado</td><td>no medido</td><td>—</td><td>Medición estable</td></tr>
 </table>
 
+<h3 class="section">Cómo se lee este dashboard</h3>
+
 <div class="callout">
-<b>Cómo se lee este backlog.</b> Los P1 son las 4 acciones que bloquean el crecimiento orgánico este mes. Los P2 son fixes o piezas de contenido que suman pero no bloquean. Los P3 son optimizaciones diferidas.
+<b>Cada 2 semanas.</b> Al cierre de cada sprint (viernes cada 2 semanas) actualizamos la hoja de ese sprint con los deltas reales, evidencias y decisiones tomadas. La hoja del siguiente sprint pasa a "en curso". Las hojas anteriores quedan como archivo histórico consultable.
+<br><br>
+<b>Sección estable.</b> Baseline oficial, roadmap y objetivos no cambian sprint a sprint — son el norte del retainer. Si cambian, es una decisión formal que Xavi valida.
+<br><br>
+<b>Para Xavi.</b> Un solo enlace, siempre la misma URL. Se ve bien en móvil, imprime a PDF, y refleja el ritmo real de trabajo.
 </div>
 
-<h2 id="archive">Snapshots anteriores</h2>
-<div class="archive">
-<b>Sprint 0 · pre-24 junio 2026.</b> Estado documentado en <code>memory/project_llmagnet_audit_setup.md</code>. Score GEO/AEO 68/100, 1.000+ imgs sin alt, sin /.well-known/ files, sin llms.txt, plugin All-404 redirect activo, Perfmatters bloqueando feeds. No hay snapshots visuales de este período — se reconstruye desde memoria del proyecto.
-<br><br>
-<i>A partir del cierre de Sprint 2 (23 julio 2026) este bloque incluirá el diff quincenal completo.</i>
 </div>
+
+</div><!-- /.contents -->
 
 <footer>
-Dashboard generado 2026-07-02 · Sprint 1 corte parcial · próxima actualización 8-jul-2026 (cierre Sprint 1) y luego cada 2 semanas<br>
-Archivo: <code>OUTPUTS/eventos-barcelona/dashboard-xavi.html</code> · versionado en git
+Dashboard generado 2026-07-02 · Sprint 1 en curso · próxima actualización 15 jul 2026<br>
+URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
 </div>
