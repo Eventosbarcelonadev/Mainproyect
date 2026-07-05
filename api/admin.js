@@ -365,6 +365,102 @@ async function duplicateProposal(req, res, env) {
   return res.status(200).json({ success: true, id: newRow.id, sourceId: id, proposal: newRow });
 }
 
+// Busca contactos en GHL por texto (para el picker de artistas). GHL es la
+// fuente de la verdad: hay artistas que están en GHL pero no en Supabase (ej.
+// creados directo en GHL, sin tag). El picker antes solo miraba Supabase y
+// decía "no existe". Devuelve candidatos + flag inSupabase (por ghl_contact_id
+// o email) para que el frontend ofrezca "importar" solo los que faltan.
+async function searchGhlArtistas(req, res, env) {
+  const q = (req.query.q || '').trim();
+  if (q.length < 2) return res.status(200).json({ success: true, contacts: [] });
+  if (!env.GHL_TOKEN || !env.GHL_LOC) return res.status(200).json({ success: true, contacts: [], skipped: 'no_ghl' });
+
+  const r = await fetch(`${GHL_API}/contacts/?locationId=${env.GHL_LOC}&query=${encodeURIComponent(q)}&limit=20`, {
+    headers: ghlHeaders(env)
+  });
+  if (!r.ok) return res.status(502).json({ error: 'GHL search failed', detail: (await r.text()).slice(0, 200) });
+  const d = await r.json();
+  const contacts = d.contacts || [];
+  if (!contacts.length) return res.status(200).json({ success: true, contacts: [] });
+
+  // Dedup contra Supabase por ghl_contact_id y por email
+  const ghlIds = contacts.map(c => c.id).filter(Boolean);
+  const emails = contacts.map(c => (c.email || '').toLowerCase().trim()).filter(Boolean);
+  const existing = new Set(); const existingEmails = new Set();
+  const sbAuth = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+  try {
+    if (ghlIds.length) {
+      const q1 = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?ghl_contact_id=in.(${ghlIds.map(encodeURIComponent).join(',')})&select=ghl_contact_id`, { headers: sbAuth });
+      if (q1.ok) (await q1.json()).forEach(a => existing.add(a.ghl_contact_id));
+    }
+    if (emails.length) {
+      const q2 = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?email=in.(${emails.map(encodeURIComponent).join(',')})&select=email`, { headers: sbAuth });
+      if (q2.ok) (await q2.json()).forEach(a => existingEmails.add((a.email || '').toLowerCase().trim()));
+    }
+  } catch (e) { /* si falla el dedup, devolvemos todo como importable */ }
+
+  const out = contacts.map(c => {
+    const name = [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || c.contactName || c.companyName || '';
+    const email = (c.email || '').toLowerCase().trim();
+    return {
+      ghlContactId: c.id,
+      name,
+      email: c.email || '',
+      phone: c.phone || '',
+      company: c.companyName || '',
+      inSupabase: existing.has(c.id) || (email && existingEmails.has(email))
+    };
+  });
+  return res.status(200).json({ success: true, contacts: out });
+}
+
+// Importa un contacto GHL → crea/upsert la fila en Supabase artistas (con
+// ghl_contact_id) para poder vincularlo a shows. Marca tag artista_ok en GHL.
+async function importArtistaFromGhl(req, res, env) {
+  const ghlContactId = (req.body && req.body.ghlContactId || '').trim();
+  if (!ghlContactId) return res.status(400).json({ error: 'Missing ghlContactId' });
+  if (!env.GHL_TOKEN || !env.GHL_LOC) return res.status(500).json({ error: 'Missing GHL config' });
+
+  // 1. Leer contacto GHL
+  const r = await fetch(`${GHL_API}/contacts/${encodeURIComponent(ghlContactId)}`, { headers: ghlHeaders(env) });
+  if (!r.ok) return res.status(502).json({ error: 'GHL contact fetch failed', detail: (await r.text()).slice(0, 200) });
+  const cd = await r.json();
+  const c = cd.contact || cd;
+  const nombre = [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || c.contactName || c.companyName || '';
+
+  // 2. Insertar / upsert en Supabase (dedup por ghl_contact_id)
+  const row = {
+    nombre,
+    nombre_artistico: nombre,
+    compania: c.companyName || '',
+    email: c.email || `no-email-${ghlContactId}@placeholder.eventosbarcelona.local`,
+    telefono: c.phone || '',
+    ciudad: c.city || '',
+    disciplinas: [],
+    tipo: 'artista',
+    ghl_contact_id: ghlContactId,
+    origen: 'import-ghl'
+  };
+  const ins = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?on_conflict=ghl_contact_id`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates,return=representation'
+    },
+    body: JSON.stringify(row)
+  });
+  if (!ins.ok) return res.status(ins.status).json({ error: await ins.text() });
+  const created = await ins.json();
+  const artista = Array.isArray(created) ? created[0] : created;
+
+  // 3. Tag artista_ok en GHL (best-effort)
+  try { await ghlAddTag(env, ghlContactId, 'artista_ok'); } catch (e) { /* no bloquea */ }
+
+  return res.status(200).json({ success: true, artista });
+}
+
 async function getArtistaDetail(req, res, env) {
   const id = (req.query.id || '').trim();
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -2094,6 +2190,7 @@ export default async function handler(req, res) {
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
+      if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
       if (action === 'geo-metrics') return geoMetrics(req, res, env);
     }
     if (req.method === 'POST') {
@@ -2111,6 +2208,7 @@ export default async function handler(req, res) {
       if (action === 'edit-artista') return editArtista(req, res, env);
       if (action === 'delete-artista') return deleteArtista(req, res, env);
       if (action === 'create-show-from-artista') return createShowFromArtista(req, res, env);
+      if (action === 'import-artista-from-ghl') return importArtistaFromGhl(req, res, env);
       if (action === 'delete-proposal') return deleteProposal(req, res, env);
       if (action === 'duplicate-proposal') return duplicateProposal(req, res, env);
     }

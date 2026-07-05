@@ -1310,6 +1310,50 @@
       } catch (e) { return []; }
     }
 
+    // Fallback GHL para los pickers: busca en GHL contactos que matcheen la
+    // query y que NO estén en Supabase, y los muestra como "importables". Al
+    // clickear, importa el contacto a Supabase (crea la fila artista con
+    // ghl_contact_id) y llama onImport(artista) para vincularlo. Resuelve el
+    // caso "está en GHL pero el picker dice que no existe" (Anna Pujol/Neuma).
+    async function appendGhlPickerResults(results, q, onImport) {
+      try {
+        const r = await fetch('/api/admin?action=search-ghl-artistas&q=' + encodeURIComponent(q));
+        if (!r.ok) return;
+        const d = await r.json();
+        const ghOnly = (d.contacts || []).filter(c => !c.inSupabase);
+        if (!ghOnly.length) return;
+        results.classList.remove('empty');
+        const hdr = document.createElement('div');
+        hdr.className = 'picker-result';
+        hdr.style.cssText = 'color:var(--gray);font-size:10px;text-transform:uppercase;letter-spacing:.06em;cursor:default;border-top:1px solid var(--border);';
+        hdr.textContent = 'En GHL — click para importar y vincular';
+        results.appendChild(hdr);
+        ghOnly.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'picker-result';
+          el.innerHTML = `${escapeHtml(c.name || '(sin nombre)')} <small>GHL${c.company ? ' · ' + escapeHtml(c.company) : ''}${c.email ? ' · ' + escapeHtml(c.email) : ''}</small>`;
+          let done = false;
+          el.addEventListener('mousedown', async (e) => {
+            e.preventDefault();
+            if (done) return; done = true;
+            el.style.opacity = '0.5';
+            try {
+              const imp = await fetch('/api/admin?action=import-artista-from-ghl', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ghlContactId: c.ghlContactId })
+              });
+              const impd = await imp.json();
+              if (!imp.ok || !impd.artista) { showError(impd.error || 'Error importando de GHL'); done = false; el.style.opacity = ''; return; }
+              allArtistasCache = null; // refrescar cache
+              results.classList.add('empty');
+              onImport(impd.artista);
+            } catch (err) { showError(err.message); done = false; el.style.opacity = ''; }
+          });
+          results.appendChild(el);
+        });
+      } catch (e) { /* silencioso */ }
+    }
+
     // Refresca el badge "Pending review" con la cantidad de shows pendientes.
     // Idempotente — llamarla siempre que cambie el listado de shows.
     async function refreshPendingReviewBadge() {
@@ -2353,6 +2397,11 @@
             $('art-nombre').value = q;
           });
         }
+        // Fallback GHL: contactos en GHL que no están en Supabase (importar+vincular)
+        await appendGhlPickerResults(results, q, async (artista) => {
+          const next = [...currentList, artista];
+          await mutateEditShowArtistas(show.id, next);
+        });
       }, 200);
       input.addEventListener('input', onInput);
       input.addEventListener('blur', () => setTimeout(() => results.classList.add('empty'), 200));
@@ -2404,26 +2453,29 @@
           const hay = [a.nombre, a.nombre_artistico, a.compania, a.email].map(x => (x || '').toLowerCase()).join(' ');
           return hay.includes(q);
         }).slice(0, 12);
-        if (!matches.length) {
-          results.classList.remove('empty');
-          results.innerHTML = '<div class="picker-result" style="color:var(--gray);">Sin resultados</div>';
-          return;
-        }
         results.classList.remove('empty');
-        results.innerHTML = matches.map(a => `
-          <div class="picker-result" data-pick="${escapeHtml(a.id)}">
-            ${escapeHtml(artistaDisplayName(a))}
-            <small>${escapeHtml(a.compania || '')}${a.email && !isPlaceholderEmail(a.email) ? ' · ' + escapeHtml(shortEmail(a.email, 40)) : ''}</small>
-          </div>
-        `).join('');
+        results.innerHTML = matches.length
+          ? matches.map(a => `
+            <div class="picker-result" data-pick="${escapeHtml(a.id)}">
+              ${escapeHtml(artistaDisplayName(a))}
+              <small>${escapeHtml(a.compania || '')}${a.email && !isPlaceholderEmail(a.email) ? ' · ' + escapeHtml(shortEmail(a.email, 40)) : ''}</small>
+            </div>
+          `).join('')
+          : '<div class="picker-result" style="color:var(--gray);cursor:default;">Sin resultados en Supabase</div>';
         results.querySelectorAll('[data-pick]').forEach(el => {
-          el.addEventListener('click', async () => {
+          el.addEventListener('mousedown', async (e) => {
+            e.preventDefault();
             results.classList.add('empty');
             const picked = all.find(x => x.id === el.dataset.pick);
             if (!picked) return;
             const next = [...(currentArtistas || []), picked];
             await setShowArtistas(show.id, next);
           });
+        });
+        // Fallback GHL: contactos que están en GHL pero no en Supabase
+        await appendGhlPickerResults(results, q, async (artista) => {
+          const next = [...(currentArtistas || []), artista];
+          await setShowArtistas(show.id, next);
         });
       }, 200);
       input.addEventListener('input', onInput);
