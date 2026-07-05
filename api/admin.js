@@ -316,6 +316,55 @@ async function deleteProposal(req, res, env) {
   return res.status(200).json({ success: true, id, pdf_deleted: !!pdfPath });
 }
 
+// Duplica una propuesta: crea una copia nueva (id fresco que genera Postgres)
+// con todo el contenido, pero status='revision' y sin datos de aprobación/PDF.
+// Mantiene client + ghl_contact_id/opportunity_id → la copia es una NUEVA
+// VERSIÓN del mismo cliente (encaja con el listado agrupado por cliente).
+async function duplicateProposal(req, res, env) {
+  const id = (req.body && req.body.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+
+  const sbHeaders = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Leer la propuesta origen completa
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&limit=1`,
+    { headers: sbHeaders }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+  if (!rows.length) return res.status(404).json({ error: 'Propuesta no encontrada' });
+  const src = rows[0];
+
+  // 2. Construir la copia: quitar id/timestamps/aprobación/PDF, forzar revision.
+  //    Postgres genera el id nuevo (default). created_at/updated_at por default.
+  const copy = { ...src };
+  delete copy.id;
+  delete copy.created_at;
+  delete copy.updated_at;
+  delete copy.approved_at;
+  delete copy.approved_by;
+  delete copy.pdf_url;
+  delete copy.pdf_path;
+  copy.status = 'revision';
+
+  // 3. Insertar
+  const ins = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals`, {
+    method: 'POST',
+    headers: { ...sbHeaders, Prefer: 'return=representation' },
+    body: JSON.stringify(copy)
+  });
+  if (!ins.ok) return res.status(ins.status).json({ error: await ins.text() });
+  const created = await ins.json();
+  const newRow = Array.isArray(created) ? created[0] : created;
+
+  return res.status(200).json({ success: true, id: newRow.id, sourceId: id, proposal: newRow });
+}
+
 async function getArtistaDetail(req, res, env) {
   const id = (req.query.id || '').trim();
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -2017,10 +2066,11 @@ export default async function handler(req, res) {
       if (action === 'delete-artista') return deleteArtista(req, res, env);
       if (action === 'create-show-from-artista') return createShowFromArtista(req, res, env);
       if (action === 'delete-proposal') return deleteProposal(req, res, env);
+      if (action === 'duplicate-proposal') return duplicateProposal(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

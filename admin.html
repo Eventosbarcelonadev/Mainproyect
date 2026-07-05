@@ -2552,6 +2552,7 @@
 
         const rowActions = (p) => `
           <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
+          <button class="btn btn-secondary" data-dup-proposal="${escapeHtml(p.id)}" title="Duplicar como nueva versión">Duplicar</button>
           <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
           ${p.status !== 'approved'
             ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>`
@@ -2627,6 +2628,29 @@
             const isHidden = vers.length && vers[0].classList.contains('hidden');
             vers.forEach(v => v.classList.toggle('hidden', !isHidden));
             b.innerHTML = (isHidden ? '▾ ' : '▸ ') + b.innerHTML.replace(/^[▸▾]\s*/, '');
+          });
+        });
+
+        // Duplicar propuesta → crea nueva versión y abre el editor en pestaña nueva
+        $('propuestas-table-wrap').querySelectorAll('[data-dup-proposal]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const pid = b.dataset.dupProposal;
+            b.disabled = true;
+            const orig = b.textContent;
+            b.textContent = 'Duplicando…';
+            try {
+              const r = await fetch('/api/admin?action=duplicate-proposal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: pid })
+              });
+              const d = await r.json();
+              if (!r.ok || !d.id) { showError(d.error || 'Error duplicando'); b.disabled = false; b.textContent = orig; return; }
+              // Abrir la copia en el editor
+              window.open(`/propuesta.html?id=${encodeURIComponent(d.id)}&admin=1`, '_blank');
+              loadPropuestas();
+            } catch (err) { showError(err.message); b.disabled = false; b.textContent = orig; }
           });
         });
 
