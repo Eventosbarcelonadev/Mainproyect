@@ -1853,6 +1853,26 @@ async function toggleFavorite(req, res, env) {
   return res.status(200).json({ success: true, show, ghl });
 }
 
+// Busca en GHL un record de custom_objects.shows que ya represente a este
+// show. Clave: url_admin termina en "?show=<show.id>" (único por show). Sirve
+// para NO crear un duplicado al aprobar si el record ya existe (doble-click,
+// re-aprobación, ghl_show_id perdido). Devuelve el id GHL o null.
+async function findGhlShowRecordId(env, show) {
+  if (!env.GHL_TOKEN || !env.GHL_LOC || !show || !show.id) return null;
+  const suffix = `?show=${show.id}`;
+  const query = show.name || show.id;
+  try {
+    const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/search`, env, {
+      locationId: env.GHL_LOC, query, page: 1, pageLimit: 20
+    });
+    if (!g.ok) return null;
+    let recs = [];
+    try { recs = (JSON.parse(g.body).records) || []; } catch { return null; }
+    const match = recs.find(rec => String((rec.properties || {}).url_admin || '').endsWith(suffix));
+    return match ? match.id : null;
+  } catch (e) { return null; }
+}
+
 async function reviewShow(req, res, env) {
   const { id, action, patch } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -1894,6 +1914,32 @@ async function reviewShow(req, res, env) {
   // aprobar = publicar en el catálogo + sincronizar a GHL.
   let ghl = null;
   if (show && env.GHL_TOKEN && env.GHL_LOC) {
+    // Idempotencia anti-duplicado: si vamos a crear (approve sin ghl_show_id),
+    // primero re-leemos ghl_show_id fresco de Supabase (otra request concurrente
+    // —doble-click en Aprobar— pudo haberlo creado) y buscamos un record GHL
+    // existente para este show. Si existe, lo adoptamos en vez de crear otro.
+    if (!show.ghl_show_id && action === 'approve') {
+      let existingId = null;
+      try {
+        const fr = await fetch(
+          `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(show.id)}&select=ghl_show_id`,
+          { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+        );
+        if (fr.ok) { const rr = await fr.json(); existingId = rr[0]?.ghl_show_id || null; }
+      } catch (e) { /* sigue */ }
+      if (!existingId) existingId = await findGhlShowRecordId(env, show);
+      if (existingId) {
+        // Adoptar el record existente (no crear duplicado)
+        if (existingId !== show.ghl_show_id) {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(show.id)}`, {
+            method: 'PATCH',
+            headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ghl_show_id: existingId })
+          });
+        }
+        show.ghl_show_id = existingId;
+      }
+    }
     if (!show.ghl_show_id && action === 'approve') {
       // CREATE en GHL custom_objects.shows
       const props = {

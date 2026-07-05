@@ -1515,7 +1515,7 @@
       if (pickerInput) wirePicker(card, s, artistasList);
 
       card.querySelectorAll('[data-action]').forEach(b => {
-        b.addEventListener('click', () => reviewShow(b.dataset.id, b.dataset.action));
+        b.addEventListener('click', () => reviewShow(b.dataset.id, b.dataset.action, b));
       });
 
       const favBtn = card.querySelector('[data-fav]');
@@ -2461,7 +2461,16 @@
       }
     }
 
-    async function reviewShow(id, action) {
+    let _reviewInFlight = new Set();
+    async function reviewShow(id, action, btn) {
+      // Guard anti doble-submit: si ya hay una review en curso para este show,
+      // ignorar. El doble-click en "Aprobar" disparaba 2 llamadas concurrentes
+      // que creaban 2 records GHL (duplicado). Fix Xavi 2026-06-18.
+      const key = id + ':' + action;
+      if (_reviewInFlight.has(key)) return;
+      _reviewInFlight.add(key);
+      let orig;
+      if (btn) { orig = btn.textContent; btn.disabled = true; btn.textContent = '…'; }
       try {
         const r = await fetch('/api/admin?action=review-show', {
           method: 'POST',
@@ -2469,10 +2478,13 @@
           body: JSON.stringify({ id, action })
         });
         const d = await r.json();
-        if (!r.ok) { showError(d.error || 'Error'); return; }
+        if (!r.ok) { showError(d.error || 'Error'); if (btn) { btn.disabled = false; btn.textContent = orig; } return; }
         loadShows();
       } catch (err) {
         showError(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+      } finally {
+        _reviewInFlight.delete(key);
       }
     }
 
