@@ -3514,13 +3514,12 @@
       document.getElementById('approveModalIcon').innerHTML = '&#9989;';
       document.getElementById('approveModalTitle').textContent = 'Propuesta aprobada';
       document.getElementById('approveModalText').innerHTML =
-        `Guardada como versión final.<br><br>Link para el cliente:<br>` +
+        `Guardada como versión final. GHL enviará el email al cliente <strong>automáticamente</strong>.<br><br>Link para el cliente:<br>` +
         `<a href="${clientUrl}" target="_blank" style="color: var(--accent); word-break: break-all;">${clientUrl}</a><br><br>` +
-        `<small>El link se copió al portapapeles. Usá <strong>Enviar por email</strong> para abrir tu correo con el mensaje listo.</small>`;
+        `<small>El link se copió al portapapeles — útil para enviarlo también por WhatsApp.</small>`;
       document.getElementById('approveModalActions').innerHTML =
         `<button class="btn-cancel" onclick="copyProposalLink('${clientUrl}', this)">Copiar link</button>` +
-        `<button class="btn-confirm" onclick="openProposalEmail('${clientUrl}')">Enviar por email</button>` +
-        `<button class="btn-cancel" onclick="closeModal()">Cerrar</button>`;
+        `<button class="btn-confirm" onclick="closeModal()">Listo</button>`;
       document.getElementById('modalOverlay').classList.add('show');
       document.getElementById('approveModal').classList.add('show');
     }
@@ -3528,23 +3527,6 @@
     async function copyProposalLink(url, btn) {
       try { await navigator.clipboard.writeText(url); if (btn) { const t = btn.textContent; btn.textContent = 'Copiado \u2713'; setTimeout(() => btn.textContent = t, 1500); } }
       catch (e) { prompt('Copia el link:', url); }
-    }
-
-    // Abre el cliente de correo con un borrador pre-rellenado al cliente + link.
-    // No manda nada solo: Xavi revisa y envia desde su propio correo.
-    function openProposalEmail(clientUrl) {
-      const c = proposalState.client || {};
-      const evName = (proposalState.event && proposalState.event.name) || '';
-      const to = c.email || '';
-      let subject, body;
-      if (LANG === 'en') {
-        subject = `Your Eventos Barcelona proposal${evName ? ' \u2014 ' + evName : ''}`;
-        body = `Hi ${c.name || ''},\n\nThank you for your interest. Here is your personalized proposal${evName ? ' for ' + evName : ''}:\n\n${clientUrl}\n\nYou can review it online and approve the budget directly from the page. We remain at your disposal for any questions.\n\nBest regards,\nEventos Barcelona`;
-      } else {
-        subject = `Tu propuesta de Eventos Barcelona${evName ? ' \u2014 ' + evName : ''}`;
-        body = `Hola ${c.name || ''},\n\nGracias por tu interés. Aquí tienes tu propuesta personalizada${evName ? ' para ' + evName : ''}:\n\n${clientUrl}\n\nPuedes revisarla online y aprobar el presupuesto directamente desde la página. Quedamos a tu disposición para cualquier duda.\n\nUn saludo,\nEventos Barcelona`;
-      }
-      window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
 
     function closeModal() {
