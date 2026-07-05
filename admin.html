@@ -214,6 +214,9 @@
     .btn-secondary:hover, .btn-video:hover { color: var(--dark); border-color: var(--dark); }
     .btn-primary { background: var(--dark); color: #fff; }
     .btn-primary:hover { background: #000; }
+    .btn-danger-outline { color: #c0392b; border-color: #e0a0a0; background: #fff; }
+    .btn-danger-outline:hover { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .btn-danger-outline:disabled { opacity: 0.5; cursor: progress; }
     .assign-row { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border); background: #faf9f6; }
     .assign-row label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; }
     .assign-row .picker {
@@ -621,6 +624,7 @@
     <!-- TAB: PROPUESTAS -->
     <section id="tab-propuestas" class="tab-panel hidden">
       <div class="toolbar">
+        <a class="btn btn-primary" href="/propuesta.html?mode=builder&admin=1" target="_blank" style="font-weight:600;text-decoration:none;">+ Nueva propuesta</a>
         <input id="propuestas-q" type="search" placeholder="Buscar por cliente, empresa, evento…">
         <select id="propuestas-status">
           <option value="">Todos los estados</option>
@@ -2507,7 +2511,7 @@
       const params = new URLSearchParams();
       if (state.propuestas.q) params.set('q', state.propuestas.q);
       if (state.propuestas.status) params.set('status', state.propuestas.status);
-      params.set('limit', '100');
+      params.set('limit', '200');
 
       try {
         params.set('action', 'list-proposals');
@@ -2517,39 +2521,92 @@
         if (!res.ok) { showError(data.error || 'Error'); return; }
 
         state.propuestas.items = data.proposals || [];
-        $('propuestas-summary').textContent = `${data.total} propuestas`;
-        if (!state.propuestas.items.length) { $('propuestas-empty').classList.remove('hidden'); return; }
+        if (!state.propuestas.items.length) {
+          $('propuestas-summary').textContent = '0 propuestas';
+          $('propuestas-empty').classList.remove('hidden');
+          return;
+        }
 
-        const rows = state.propuestas.items.map(p => {
-          const showsArr = Array.isArray(p.shows) ? p.shows : [];
-          const created = p.created_at ? new Date(p.created_at).toLocaleDateString('es-ES') : '—';
-          const evDate = p.event_date ? new Date(p.event_date).toLocaleDateString('es-ES') : '';
-          const badge = p.status === 'approved' ? 'badge-approved' : 'badge-revision';
-          return `
-            <tr data-pid="${escapeHtml(p.id)}">
+        // Agrupar por cliente: 1 fila principal por cliente (última versión) +
+        // versiones anteriores colapsables. Clave = email; fallback a
+        // nombre+teléfono si no hay email. Spec Xavi 2026-06-18: "1 propuesta
+        // por cliente con sus versiones".
+        const groupsMap = new Map();
+        for (const p of state.propuestas.items) {
+          const key = (p.client_email || '').toLowerCase().trim()
+            || `${(p.client_name || '').toLowerCase().trim()}|${(p.client_phone || '').trim()}`
+            || p.id;
+          if (!groupsMap.has(key)) groupsMap.set(key, []);
+          groupsMap.get(key).push(p);
+        }
+        // Cada grupo ordenado por fecha desc (la última versión primero)
+        const groups = [...groupsMap.values()].map(versions => {
+          versions.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+          return versions;
+        });
+        // Grupos ordenados por la propuesta más reciente de cada uno
+        groups.sort((a, b) => new Date(b[0].created_at || 0) - new Date(a[0].created_at || 0));
+
+        $('propuestas-summary').textContent =
+          `${groups.length} cliente${groups.length === 1 ? '' : 's'} · ${data.total} propuesta${data.total === 1 ? '' : 's'}`;
+
+        const rowActions = (p) => `
+          <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
+          <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
+          ${p.status !== 'approved'
+            ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>`
+            : (p.pdf_url
+                ? `<a class="btn btn-secondary" href="${escapeHtml(p.pdf_url)}" target="_blank">PDF</a>
+                   <button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Regenerar</button>`
+                : `<button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Generar PDF</button>`)}
+          <button class="btn btn-danger-outline" data-del-proposal="${escapeHtml(p.id)}" title="Eliminar esta versión">Eliminar</button>
+        `;
+
+        const rowsHtml = groups.map((versions, gi) => {
+          const latest = versions[0];
+          const older = versions.slice(1);
+          const showsArr = Array.isArray(latest.shows) ? latest.shows : [];
+          const created = latest.created_at ? new Date(latest.created_at).toLocaleDateString('es-ES') : '—';
+          const evDate = latest.event_date ? new Date(latest.event_date).toLocaleDateString('es-ES') : '';
+          const badge = latest.status === 'approved' ? 'badge-approved' : 'badge-revision';
+          const verLabel = versions.length > 1
+            ? `<button class="btn btn-secondary" data-toggle-versions="${gi}" style="font-size:11px;padding:4px 10px;">▸ ${versions.length} versiones</button>`
+            : `<span style="color:var(--gray);font-size:12px;">1 versión</span>`;
+
+          // Fila principal (última versión)
+          let html = `
+            <tr data-group="${gi}" class="propuesta-main">
               <td>${escapeHtml(created)}</td>
               <td>
-                <strong>${escapeHtml(p.client_name || '—')}</strong>
-                ${p.client_company ? `<br><small style="color:var(--gray);">${escapeHtml(p.client_company)}</small>` : ''}
+                <strong>${escapeHtml(latest.client_name || '—')}</strong>
+                ${latest.client_company ? `<br><small style="color:var(--gray);">${escapeHtml(latest.client_company)}</small>` : ''}
+                ${latest.client_email ? `<br><small style="color:var(--gray);">${escapeHtml(latest.client_email)}</small>` : ''}
               </td>
               <td>
-                ${escapeHtml(p.event_name || p.event_type || '—')}
+                ${escapeHtml(latest.event_name || latest.event_type || '—')}
                 ${evDate ? `<br><small style="color:var(--gray);">${escapeHtml(evDate)}</small>` : ''}
+                <br>${verLabel}
               </td>
               <td>${showsArr.length}</td>
-              <td><span class="badge ${badge}">${escapeHtml(p.status || '—')}</span></td>
-              <td style="white-space:nowrap;">
-                <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
-                <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
-                ${p.status !== 'approved'
-                  ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>`
-                  : (p.pdf_url
-                      ? `<a class="btn btn-secondary" href="${escapeHtml(p.pdf_url)}" target="_blank">Descargar PDF</a>
-                         <button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Regenerar PDF</button>`
-                      : `<button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Generar PDF</button>`)}
-              </td>
+              <td><span class="badge ${badge}">${escapeHtml(latest.status || '—')}</span></td>
+              <td style="white-space:nowrap;">${rowActions(latest)}</td>
             </tr>
           `;
+          // Filas de versiones anteriores (ocultas por defecto)
+          older.forEach(p => {
+            const c = p.created_at ? new Date(p.created_at).toLocaleDateString('es-ES') + ' ' + new Date(p.created_at).toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}) : '—';
+            const b = p.status === 'approved' ? 'badge-approved' : 'badge-revision';
+            html += `
+              <tr data-version-of="${gi}" class="propuesta-version hidden" style="background:var(--light);">
+                <td style="color:var(--gray);font-size:12px;">${escapeHtml(c)}</td>
+                <td colspan="2" style="color:var(--gray);font-size:12px;padding-left:24px;">↳ versión anterior</td>
+                <td>${(Array.isArray(p.shows) ? p.shows : []).length}</td>
+                <td><span class="badge ${b}">${escapeHtml(p.status || '—')}</span></td>
+                <td style="white-space:nowrap;">${rowActions(p)}</td>
+              </tr>
+            `;
+          });
+          return html;
         }).join('');
 
         $('propuestas-table-wrap').innerHTML = `
@@ -2557,9 +2614,42 @@
             <thead>
               <tr><th>Fecha</th><th>Cliente</th><th>Evento</th><th>Shows</th><th>Status</th><th>Acciones</th></tr>
             </thead>
-            <tbody>${rows}</tbody>
+            <tbody>${rowsHtml}</tbody>
           </table>
         `;
+
+        // Expandir/colapsar versiones
+        $('propuestas-table-wrap').querySelectorAll('[data-toggle-versions]').forEach(b => {
+          b.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const gi = b.dataset.toggleVersions;
+            const vers = $('propuestas-table-wrap').querySelectorAll(`[data-version-of="${gi}"]`);
+            const isHidden = vers.length && vers[0].classList.contains('hidden');
+            vers.forEach(v => v.classList.toggle('hidden', !isHidden));
+            b.innerHTML = (isHidden ? '▾ ' : '▸ ') + b.innerHTML.replace(/^[▸▾]\s*/, '');
+          });
+        });
+
+        // Eliminar propuesta (versión)
+        $('propuestas-table-wrap').querySelectorAll('[data-del-proposal]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const pid = b.dataset.delProposal;
+            if (!confirm('¿Eliminar esta propuesta?\n\nSe borra de Supabase junto con su PDF. No se puede deshacer.')) return;
+            b.disabled = true;
+            b.textContent = 'Eliminando…';
+            try {
+              const r = await fetch('/api/admin?action=delete-proposal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: pid })
+              });
+              const d = await r.json();
+              if (!r.ok) { showError(d.error || 'Error eliminando'); b.disabled = false; b.textContent = 'Eliminar'; return; }
+              loadPropuestas();
+            } catch (err) { showError(err.message); b.disabled = false; b.textContent = 'Eliminar'; }
+          });
+        });
 
         $('propuestas-table-wrap').querySelectorAll('[data-copy]').forEach(b => {
           b.addEventListener('click', async (e) => {

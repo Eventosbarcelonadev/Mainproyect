@@ -269,6 +269,53 @@ async function listProposals(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
+// Borra una propuesta de Supabase. Best-effort: borra también el PDF del
+// storage si tenía uno. NO toca GHL (la opportunity/contact viven aparte y
+// las propuestas se regeneran; solo se limpia el registro Supabase). El link
+// url_propuesta_validada en GHL puede quedar apuntando a un id inexistente,
+// pero eso es aceptable — es un registro histórico.
+async function deleteProposal(req, res, env) {
+  const id = (req.body && req.body.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+
+  const sbHeaders = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Leer pdf_path para limpiar el storage
+  let pdfPath = null;
+  try {
+    const r = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&select=pdf_path`,
+      { headers: sbHeaders }
+    );
+    if (r.ok) {
+      const rows = await r.json();
+      if (!rows.length) return res.status(404).json({ error: 'Propuesta no encontrada' });
+      pdfPath = rows[0].pdf_path || null;
+    }
+  } catch (e) { /* sigue: el delete es lo crítico */ }
+
+  // 2. Borrar el PDF del bucket (best-effort)
+  if (pdfPath) {
+    try {
+      await fetch(`${env.SUPABASE_URL}/storage/v1/object/propuestas-pdf/${pdfPath}`, {
+        method: 'DELETE', headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` }
+      });
+    } catch (e) { /* no bloquea */ }
+  }
+
+  // 3. Borrar la fila
+  const del = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE', headers: sbHeaders
+  });
+  if (!del.ok) return res.status(del.status).json({ error: await del.text() });
+
+  return res.status(200).json({ success: true, id, pdf_deleted: !!pdfPath });
+}
+
 async function getArtistaDetail(req, res, env) {
   const id = (req.query.id || '').trim();
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -1969,10 +2016,11 @@ export default async function handler(req, res) {
       if (action === 'edit-artista') return editArtista(req, res, env);
       if (action === 'delete-artista') return deleteArtista(req, res, env);
       if (action === 'create-show-from-artista') return createShowFromArtista(req, res, env);
+      if (action === 'delete-proposal') return deleteProposal(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
