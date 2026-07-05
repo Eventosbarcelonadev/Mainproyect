@@ -1133,6 +1133,53 @@
 
     .about-section h2 .highlight { color: var(--accent); }
 
+    /* === CLIENTES / PRUEBA SOCIAL === */
+    .clients-section {
+      padding: 20px 40px 90px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .clients-section .section-label {
+      display: block;
+      margin-bottom: 40px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 28px 36px;
+      align-items: center;
+      justify-items: center;
+    }
+    .clients-grid img {
+      max-width: 100%;
+      max-height: 46px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      filter: grayscale(100%);
+      opacity: 0.55;
+      transition: filter 0.25s ease, opacity 0.25s ease;
+    }
+    .clients-grid img:hover {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+    @media (max-width: 900px) {
+      .clients-section { padding: 10px 24px 60px; }
+      .clients-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    }
+    @media (max-width: 480px) {
+      .clients-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    /* En el PDF los logos van a color completo (más profesional impreso) */
+    body.print-mode .clients-grid img { filter: grayscale(0%); opacity: 0.85; }
+
     /* === CTA FINAL === */
     .cta-section {
       text-align: center;
@@ -1681,6 +1728,7 @@
     body.print-mode .about-section,
     body.print-mode .concept-section,
     body.print-mode .conditions-section,
+    body.print-mode .clients-section,
     body.print-mode .footer { page-break-inside: avoid; break-inside: avoid; }
     /* Forzar salto de página antes de bloques grandes para evitar cortes feos */
     body.print-mode .stats-section,
@@ -1950,6 +1998,13 @@
     const LANG = (new URLSearchParams(location.search).get('lang') === 'en') ? 'en' : 'es';
     document.documentElement.lang = LANG;
 
+    // Logos de clientes ("han confiado en nosotros"). Hosteados en el WP de
+    // eventosbarcelona.com (mismos que la home y los mails automáticos). Para
+    // actualizar la lista, subir los nuevos a WP media y añadir la URL acá.
+    const CLIENT_LOGOS = Array.from({ length: 18 }, (_, i) =>
+      `https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_${String(i + 1).padStart(2, '0')}.gif`
+    );
+
     const I18N = {
       es: {
         navCta: 'Solicita presupuesto',
@@ -1966,6 +2021,7 @@
         marginLabel: 'Margen global aplicado',
         marginHint: 'Ajusta el margen sobre los precios base. El cliente verá los precios finales.',
         aboutText: 'Gracias a los <span class="highlight">15 años de experiencia</span> en el sector de la organización de eventos, hemos evolucionado para encontrar el <span class="highlight">equilibrio perfecto entre producción artística y técnica</span>, con el propósito de emocionar e impresionar con un único objetivo, <span class="highlight">crear momentos memorables.</span>',
+        clientsTitle: 'Algunos de los clientes que han confiado en nosotros',
         conditionsLabel: 'Condiciones generales',
         conditions: [
           'Pre-reserva válida durante 5 días, tras los cuales la reserva podrá ser liberada',
@@ -2001,6 +2057,7 @@
         marginLabel: 'Global margin applied',
         marginHint: 'Adjust the markup on base prices. The client sees the final prices.',
         aboutText: 'Thanks to <span class="highlight">15 years of experience</span> in the events industry, we have evolved to find the <span class="highlight">perfect balance between artistic and technical production</span>, aiming to move and impress with a single goal: <span class="highlight">creating memorable moments.</span>',
+        clientsTitle: 'Some of the clients who have trusted us',
         conditionsLabel: 'General conditions',
         conditions: [
           'Pre-booking valid for 5 days, after which the reservation may be released',
@@ -2688,6 +2745,14 @@
         <!-- ABOUT -->
         <div class="about-section">
           <h2>${T.aboutText}</h2>
+        </div>
+
+        <!-- CLIENTES / PRUEBA SOCIAL -->
+        <div class="clients-section">
+          <span class="section-label">${T.clientsTitle}</span>
+          <div class="clients-grid">
+            ${CLIENT_LOGOS.map((url, i) => `<img src="${url}" alt="Cliente ${i + 1}" loading="lazy">`).join('')}
+          </div>
         </div>
 
         <!-- CONDICIONES -->
