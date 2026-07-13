@@ -162,6 +162,49 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .objective li b{color:var(--ink)}
 .objective li .o-detail{color:var(--muted);font-size:12px;margin-top:2px;display:block}
 
+/* Evolution comparison (Sprint 1 close) */
+.evolution{background:linear-gradient(135deg,rgba(47,125,58,.08),rgba(201,154,58,.08));border:1px solid var(--line);border-radius:6px;padding:24px 28px;margin:16px 0 24px}
+.ev-label{color:var(--green);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ev-headline{display:flex;align-items:center;gap:22px;margin-bottom:20px;flex-wrap:wrap}
+.ev-num-block{display:flex;flex-direction:column;align-items:center}
+.ev-num-block .ev-cat{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
+.ev-num-block .ev-num{font-size:52px;font-weight:800;line-height:1;color:var(--ink)}
+.ev-num-block.after .ev-num{color:var(--green)}
+.ev-num-block .ev-date{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.ev-arrow{font-size:36px;color:var(--gold);font-weight:300;line-height:1}
+.ev-delta{background:var(--green);color:#fff;padding:6px 14px;border-radius:20px;font-weight:700;font-size:16px;letter-spacing:.02em;display:inline-flex;align-items:center;gap:4px}
+.ev-comparison{background:var(--card);border-radius:4px;padding:16px 20px;margin-top:14px;border:1px solid var(--line)}
+.ev-comparison table{width:100%;border-collapse:collapse;font-size:13px}
+.ev-comparison th{text-align:left;padding:8px 6px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line)}
+.ev-comparison td{padding:9px 6px;border-bottom:1px solid #f6f2ea;vertical-align:middle}
+.ev-comparison td:first-child{font-weight:500;color:var(--ink)}
+.ev-comparison tr:last-child td{border-bottom:none}
+.ev-comparison td.num{text-align:right;font-weight:600}
+.ev-comparison td.delta{text-align:right;font-weight:700;font-size:12px}
+.ev-comparison td.delta.up{color:var(--green)}
+.ev-comparison td.delta.down{color:var(--red)}
+.ev-comparison td.delta.flat{color:var(--muted)}
+@media(max-width:820px){
+  .ev-headline{gap:12px}
+  .ev-num-block .ev-num{font-size:40px}
+}
+
+/* Actionables planning table (Sprint 2+) */
+.actionables{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:16px 0}
+.actionables table{width:100%;border-collapse:collapse;font-size:13px}
+.actionables th{background:var(--ink);color:#fff;padding:10px 12px;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.actionables td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.actionables tr:last-child td{border-bottom:none}
+.actionables td:first-child{font-weight:700;color:var(--gold);white-space:nowrap;font-size:11px;letter-spacing:.06em}
+.actionables .act-desc{font-size:13px}
+.actionables .act-desc b{color:var(--ink)}
+.actionables .act-owner{font-size:11px;color:var(--muted);white-space:nowrap}
+.actionables .act-owner b{color:var(--ink)}
+.actionables .act-deadline{white-space:nowrap;font-size:11px;color:var(--muted)}
+.actionables .act-deadline b{color:var(--ink)}
+.actionables .act-kpi{font-size:11px;color:var(--muted);font-style:italic}
+.act-week-header{background:rgba(10,37,64,.04) !important;font-weight:700 !important;color:var(--ink) !important;font-size:12px !important;padding:8px 12px !important;letter-spacing:.02em !important;text-transform:none !important;text-align:left !important}
+
 /* Score breakdown inside hero */
 .score-breakdown{margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
 .sb-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px}
@@ -281,51 +324,83 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </div>
 
 <div class="hero-metric">
-<div class="h-label">Scale Score · cierre Sprint 1</div>
+<div class="h-label">Scale Score · punto de partida del retainer</div>
 <div class="h-value">
-  <span class="h-num">76</span>
-  <span class="h-unit">/ 100 · <b style="color:var(--gold)">+20 pts vs inicio (56)</b> · objetivo Sprint 6: 96</span>
+  <span class="h-num">56</span>
+  <span class="h-unit">/ 100 · estado al arranque (2 jul 2026) · objetivo Sprint 6: <b style="color:var(--gold)">96</b></span>
 </div>
-<div class="h-context"><b>De qué se compone:</b> score 0-100 que combina 5 dimensiones ponderadas — presencia orgánica (GEO/AEO + SEO técnico, 35%), estructura de contenido (cobertura pirámide, 20%), impacto comercial real (leads GHL, 30%) e infraestructura AI (well-known files, 15%). Recalculado 13 jul 2026 con datos reales.</div>
+<div class="h-context"><b>De qué se compone:</b> score 0-100 que combina 5 dimensiones ponderadas — presencia orgánica (GEO/AEO + SEO técnico, 35%), estructura de contenido (cobertura pirámide, 20%), impacto comercial real (leads GHL, 30%) e infraestructura AI (well-known files, 15%). Se recalcula al cierre de cada sprint con datos reales.</div>
 
 <div class="score-breakdown">
-<div class="sb-title">Componentes del Scale Score · cierre Sprint 1 (variación vs inicio)</div>
+<div class="sb-title">Componentes del Scale Score · arranque Sprint 1</div>
 
 <div class="sb-row">
 <div class="sb-name">GEO / AEO Score</div>
 <div class="sb-weight">peso 20%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:95%"></div></div>
-<div class="sb-val">95 <small>· aporta 19,0 · <b style="color:var(--gold)">+27</b></small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:68%"></div></div>
+<div class="sb-val">68 <small>· aporta 13,6</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">SEO técnico</div>
 <div class="sb-weight">peso 15%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:82%"></div></div>
-<div class="sb-val">82 <small>· aporta 12,3 · <b style="color:var(--gold)">+17</b></small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:65%"></div></div>
+<div class="sb-val">65 <small>· aporta 9,8</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Cobertura pirámide SEO</div>
 <div class="sb-weight">peso 20%</div>
 <div class="sb-bar"><div class="sb-fill" style="width:64%"></div></div>
-<div class="sb-val">64 <small>· aporta 12,8 · 0 (no publicamos aún)</small></div>
+<div class="sb-val">64 <small>· aporta 12,8</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Leads inbound / semana (vs meta 5,5)</div>
 <div class="sb-weight">peso 30%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:55%"></div></div>
-<div class="sb-val">55 <small>· aporta 16,4 · <b style="color:var(--red)">-10</b> (3,0/sem vs 3,6 anterior · ventana ampliada a 10 sem)</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:65%"></div></div>
+<div class="sb-val">65 <small>· aporta 19,5</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Presencia AI (well-known files)</div>
 <div class="sb-weight">peso 15%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:100%"></div></div>
-<div class="sb-val">100 <small>· aporta 15,0 · <b style="color:var(--gold)">+100</b></small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:0%"></div></div>
+<div class="sb-val">0 <small>· aporta 0</small></div>
 </div>
 
+</div>
+</div>
+
+<div class="evolution">
+<div class="ev-label">▲ Evolución del Sprint 1 · resultado real medido 13 jul 2026</div>
+
+<div class="ev-headline">
+  <div class="ev-num-block">
+    <span class="ev-cat">Arranque</span>
+    <span class="ev-num">56</span>
+    <span class="ev-date">2 jul 2026</span>
+  </div>
+  <span class="ev-arrow">→</span>
+  <div class="ev-num-block after">
+    <span class="ev-cat">Cierre</span>
+    <span class="ev-num">76</span>
+    <span class="ev-date">13 jul 2026</span>
+  </div>
+  <span class="ev-delta">+20 pts</span>
+</div>
+
+<div class="ev-comparison">
+<table>
+<tr><th>Componente</th><th>Peso</th><th style="text-align:right">Arranque</th><th style="text-align:right">Cierre</th><th style="text-align:right">Delta</th></tr>
+<tr><td>GEO / AEO Score</td><td>20%</td><td class="num">68</td><td class="num">95</td><td class="delta up">+27</td></tr>
+<tr><td>SEO técnico</td><td>15%</td><td class="num">65</td><td class="num">82</td><td class="delta up">+17</td></tr>
+<tr><td>Cobertura pirámide SEO</td><td>20%</td><td class="num">64</td><td class="num">64</td><td class="delta flat">0</td></tr>
+<tr><td>Leads inbound / semana (vs meta 5,5)</td><td>30%</td><td class="num">65</td><td class="num">55</td><td class="delta down">−10*</td></tr>
+<tr><td>Presencia AI (well-known files)</td><td>15%</td><td class="num">0</td><td class="num">100</td><td class="delta up">+100</td></tr>
+<tr><td style="font-weight:700">Scale Score compuesto</td><td>100%</td><td class="num" style="font-weight:700">56</td><td class="num" style="font-weight:700;color:var(--green)">76</td><td class="delta up" style="font-size:14px">+20</td></tr>
+</table>
+<div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">* Leads/semana: el promedio pasa de 3,6 a 3,0 no por regresión sino por ampliar la ventana de medición de 8 a 10 semanas (se sumaron W28-W29 y se recuenta el histórico). La aguja real de leads se ataca desde Sprint 2 con los 3 landings P1.</div>
 </div>
 </div>
 
@@ -471,9 +546,9 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 </div>
 
-<h3 class="section">Qué haremos en este sprint <span class="sub">14 acciones agrupadas en 4 objetivos · cierre 15 julio</span></h3>
+<h3 class="section">Trabajo entregado en este sprint <span class="sub">14 acciones · 14 completadas ✓ con evidencia</span></h3>
 
-<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Cada objetivo ataca una de las 4 dimensiones diagnosticadas arriba. Al cierre del sprint mostraremos el delta antes/después por dimensión.</p>
+<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Cada acción va con la evidencia concreta que la cierra (número, archivo, resultado medible). Cada objetivo ataca una de las 4 dimensiones del diagnóstico.</p>
 
 <div class="objective">
 <div class="o-header">
@@ -482,11 +557,11 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <span class="o-goal">Ataca dimensión 1</span>
 </div>
 <ul>
-<li><span class="cat-tag geo">GEO/AEO</span><div><b>Instalar stack GEO completo</b><span class="o-detail">LLMagnet AI SEO Optimizer + AEO God Mode + snippets custom para señales AI. Base de la presencia AI.</span></div></li>
-<li><span class="cat-tag geo">GEO/AEO</span><div><b>Publicar 9 archivos en /.well-known/</b><span class="o-detail">agent-card.json (formato A2A), agent-skills, mcp.json, security.txt, api-catalog + oauth + change-password. Cumplir el estándar emergente para agentes AI.</span></div></li>
-<li><span class="cat-tag geo">GEO/AEO</span><div><b>Generar llms.txt + llms-full.txt</b><span class="o-detail">Contexto estructurado (22KB + 25KB) para que LLMs entiendan qué es Eventos Barcelona y qué servicios ofrece.</span></div></li>
-<li><span class="cat-tag geo">GEO/AEO</span><div><b>Robots.txt AI-friendly</b><span class="o-detail">Reglas explícitas para GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot + Content-Signal directive declarando consentimiento para búsqueda e input AI, sin entrenamiento.</span></div></li>
-<li><span class="cat-tag geo">GEO/AEO</span><div><b>Score agent-readiness 68 → objetivo ≥90</b><span class="o-detail">Techo alcanzable sin plan Pro. Medible via LLMagnet audit reproducible.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Instalar stack GEO completo</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">LLMagnet AI SEO Optimizer v3.4.1 + AEO God Mode v1.6.15 + 3 snippets custom (EB-SEC-HEADERS, EB-SCHEMA-LOCALBUSINESS, EB-AUDIT-100). Verificable en wp-admin.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Publicar 9 archivos en /.well-known/</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">agent-card.json (A2A v0.3.0), agent-skills, mcp.json, security.txt, api-catalog, oauth-authorization-server, change-password, ai-agent.json, ai-plugin.json. Todos servidos con HTTP 200 real.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Generar llms.txt + llms-full.txt</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Archivos físicos en raíz. llms.txt: 22.752 bytes · llms-full.txt: 25.239 bytes. 44 documentos indexados. Pull vía LLMagnet endpoint.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Robots.txt AI-friendly</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Archivo físico servido con reglas explícitas para 15 crawlers AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, anthropic-ai, cohere-ai, Bytespider). Content-Signal directive activa: search=yes, ai-input=yes, ai-train=no.</span></div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>Score agent-readiness 68 → 95/100</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Objetivo era ≥90. Superado. Techo alcanzable sin plan Pro. Visibility Score subió 67 → 76. Bot AI visits 1.000 → 1.820/mes (+82%).</span></div></li>
 </ul>
 </div>
 
@@ -497,10 +572,10 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <span class="o-goal">Ataca dimensiones 2 + 4</span>
 </div>
 <ul>
-<li><span class="cat-tag tech">Técnico</span><div><b>Batch alt-text fix — 1.000+ imágenes</b><span class="o-detail">Mediateca + páginas Elementor con alt vacío. Generación automática desde el título de cada archivo + fallback runtime para las nuevas.</span></div></li>
-<li><span class="cat-tag tech">Técnico</span><div><b>Security headers completos</b><span class="o-detail">HSTS (1 año, includeSubDomains), X-Frame SAMEORIGIN, X-Content-Type nosniff, Referrer-Policy strict-origin, Permissions-Policy, CSP Report-Only para recolectar violaciones.</span></div></li>
-<li><span class="cat-tag tech">Técnico</span><div><b>Fix soft-404</b><span class="o-detail">Desactivar plugin "All 404 Redirect to Homepage". Las URLs inexistentes ahora devuelven 404 real, no redirect fake que penaliza el dominio.</span></div></li>
-<li><span class="cat-tag tech">Técnico</span><div><b>Restaurar RSS feeds</b><span class="o-detail">Perfmatters estaba bloqueando /feed/ redirigiendo a home. Reactivar. Agregadores y bots pueden acceder al feed correctamente.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Batch alt-text fix — 1.000+ imágenes</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">1.000+ attachments de la mediateca + 218 páginas Elementor con alt vacío regeneradas desde nombre de archivo. Fallback runtime en snippet 14 para imágenes nuevas. Verificación: 100% imgs con alt en HTML final.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Security headers completos</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">HSTS max-age=31536000 includeSubDomains, X-Frame SAMEORIGIN, X-Content-Type nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy, CSP Report-Only. Verificable con curl -sI.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Fix soft-404</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Plugin "All 404 Redirect to Homepage" desactivado vía REST. Test: /url-inexistente-xyz devuelve HTTP 404 real, no redirect fake.</span></div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>Restaurar RSS feeds</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Perfmatters config revertida (disable_rss_feeds="", remove_feed_links=""). Test: /feed/ devuelve 200 con RSS válido. Agregadores pueden descubrir novedades.</span></div></li>
 </ul>
 </div>
 
@@ -511,10 +586,10 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <span class="o-goal">Ataca dimensión 3</span>
 </div>
 <ul>
-<li><span class="cat-tag docs">Docs</span><div><b>Pirámide SEO canónica — la "biblia"</b><span class="o-detail">46 keywords en 3 niveles (marca / categoría / long-tail) mapeadas a URLs reales del sitemap. Cobertura por keyword, gaps priorizados P1/P2/P3, estrategia hub-and-spoke definida. Única fuente de verdad para cualquier acción SEO.</span></div></li>
-<li><span class="cat-tag docs">Docs</span><div><b>Regla bilingüe ES + EN documentada</b><span class="o-detail">Toda página nueva debe existir en ambos idiomas simultáneamente. Sin excepciones. WPML soporta la infraestructura. Norma del proyecto.</span></div></li>
-<li><span class="cat-tag docs">Docs</span><div><b>Plan de contenido Sprints 2-5</b><span class="o-detail">12 gaps de la pirámide × ES+EN = 24 páginas a crear. Workflow con análisis competitivo previo, briefs de estructura, y Definition of Done aplicable a cada pieza.</span></div></li>
-<li><span class="cat-tag docs">Docs</span><div><b>Definition of Done por artículo</b><span class="o-detail">Checklist obligatoria en 3 fases (pre-publish · post-publish 24-48h · post-publish 7-14d) cubriendo metadata, schema, imágenes, internal linking, bilingüe, GEO/AEO, performance y tracking. Garantiza que cada artículo salga como activo SEO, no como contenido publicado.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Pirámide SEO canónica — la "biblia"</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Entregada por Xavi 18 jun · convertida a Markdown canónico en <code>docs/SEO-PIRAMIDE-KEYWORDS.md</code>. 46 keywords en 3 niveles, mapping a URLs reales, cobertura por keyword, 12 gaps priorizados P1/P2/P3.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Regla bilingüe ES + EN documentada</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Memoria proyecto <code>feedback_seo_bilingue_obligatorio</code>. Toda página nueva debe existir en ambos idiomas. Baseline actual: 149 URLs EN / 147 URLs ES.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Plan de contenido Sprints 2-5</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Documentado en <code>project_content_plan_julagosto_2026</code>. 12 gaps × ES+EN = 24 páginas. Workflow con análisis competitivo previo + briefs de estructura + priorización P1/P2/P3.</span></div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Definition of Done por artículo</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Checklist obligatoria en 3 fases (pre-publish · post-publish 24-48h · post-publish 7-14d). Cubre metadata, schema, imágenes, internal linking, bilingüe, GEO/AEO, performance, tracking. Aplicable desde Sprint 2.</span></div></li>
 </ul>
 </div>
 
@@ -522,10 +597,10 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="o-header">
   <span class="o-num">D</span>
   <b>Diagnóstico técnico y línea base</b>
-  <span class="o-goal">Cierra el sprint</span>
+  <span class="o-goal">Cierre del sprint</span>
 </div>
 <ul>
-<li><span class="cat-tag seo">SEO</span><div><b>Radiografía SEO técnica end-to-end</b><span class="o-detail">9 categorías técnicas + arquitectura + SXO + E-E-A-T + content quality. Health score inicial documentado + 3-5 quick wins priorizados por impacto × facilidad para el Sprint 2.</span></div></li>
+<li><span class="cat-tag seo">SEO</span><div><b>Radiografía SEO técnica end-to-end</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Auditoría entregada 2 jul: <code>OUTPUTS/eventos-barcelona/2026-07-02-seo-audit.html</code>. Health Score 82/100 (9 categorías). 5 quick wins priorizados por impacto × facilidad para Sprint 2 (QW1-QW5 en el backlog).</span></div></li>
 </ul>
 </div>
 
@@ -598,24 +673,194 @@ Scale Score <b>56 → 76</b> (+20 pts). GEO/AEO Score <b>68 → 95</b> (objetivo
 </div>
 </div>
 
-<h3 class="section">Trabajo planificado</h3>
+<h3 class="section">Plan de trabajo · accionables ejecutables <span class="sub">14 días · dos semanas de sprint</span></h3>
 
-<div class="work-list">
-<ul>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /dmc-barcelona/ ES + EN</b> — con análisis competitivo previo (top 5 SERPs). Keyword crítica MICE internacional. EB hoy no aparece en top 10 de esa SERP.</div><div class="impact">P1 · alto valor</div></li>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /team-building-barcelona/ ES + EN</b> — keyword alto volumen. Base del retainer plan v2.</div><div class="impact">P1 · alto volumen</div></li>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /entretenimiento-eventos-empresariales/ ES + EN</b> — hub que hoy no existe. Capta término común no especializado.</div><div class="impact">P1 · hub crítico</div></li>
-<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Consolidar hub duplicado /musica/ ↔ /grupos-musica/</b> — 301 redirect + actualizar menú Elementor + canonical self. Bloquea autoridad de 20 páginas N3.</div><div class="impact">blocking · SEO</div></li>
-<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Quick wins técnicos del audit</b> — fix broken link /.md, resolver LocalBusiness schema duplicado, activar IndexNow en Yoast Premium.</div><div class="impact">≤ 15 min combinados</div></li>
-<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Primer análisis competitivo formal</b> — top 5 SERPs por keyword P1 con briefs de estructura recomendada para cada landing.</div><div class="impact">metodología</div></li>
-<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Setup tracking del funnel comercial</b> — UTM parameters en todos los CTAs de landings nuevas, campo "source SEO" configurado en el pipeline de GHL, evento GA4 de conversión (envío de formulario) atado a URL de origen. Primer paso hacia el dashboard unificado.</div><div class="impact">medición end-to-end</div></li>
-</ul>
+<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Cada tarea tiene owner, deadline concreto dentro del sprint, entregable verificable y KPI de éxito. Organizado en 2 semanas.</p>
+
+<div class="actionables">
+<table>
+<tr><th>#</th><th>Acción</th><th>Owner</th><th>Deadline</th><th>KPI de éxito</th></tr>
+
+<tr><td colspan="5" class="act-week-header">▸ Semana 1 · 16-22 jul · quick wins técnicos + análisis previo + hub música</td></tr>
+
+<tr>
+<td>A1</td>
+<td class="act-desc"><b>Fix broken link /.md</b> en snippet EB-AUDIT-100 (QW2 del audit)</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>16 jul</b><br>día 1</td>
+<td class="act-kpi">grep en HTML home: 0 matches de <code>href=".md"</code></td>
+</tr>
+
+<tr>
+<td>A2</td>
+<td class="act-desc"><b>Desactivar snippet EB-SCHEMA-LOCALBUSINESS</b> (QW3, Yoast ya lo cubre)</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>16 jul</b><br>día 1</td>
+<td class="act-kpi">1 sola instancia de LocalBusiness en head</td>
+</tr>
+
+<tr>
+<td>A3</td>
+<td class="act-desc"><b>Activar IndexNow en Yoast Premium</b> (QW5)</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>16 jul</b><br>día 1</td>
+<td class="act-kpi">/indexnow.txt devuelve 200</td>
+</tr>
+
+<tr>
+<td>A4</td>
+<td class="act-desc"><b>Análisis competitivo SERP "DMC Barcelona"</b> — top 10 URLs ES + EN · estructura H2/H3 · schema · gap · ángulo diferencial EB</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>17 jul</b><br>día 2</td>
+<td class="act-kpi">brief markdown entregado + validado con Xavi</td>
+</tr>
+
+<tr>
+<td>A5</td>
+<td class="act-desc"><b>Análisis competitivo SERP "team building Barcelona"</b> — top 10 · estructura · gap</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>18 jul</b><br>día 3</td>
+<td class="act-kpi">brief markdown entregado</td>
+</tr>
+
+<tr>
+<td>A6</td>
+<td class="act-desc"><b>Análisis competitivo SERP "entretenimiento eventos empresariales"</b></td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>18 jul</b><br>día 3</td>
+<td class="act-kpi">brief markdown entregado</td>
+</tr>
+
+<tr>
+<td>A7</td>
+<td class="act-desc"><b>Decisión hub música: /musica/ vs /grupos-musica/</b> (QW1 blocking). Elegir URL canónica.</td>
+<td class="act-owner"><b>Xavi + Philippe</b></td>
+<td class="act-deadline"><b>18 jul</b><br>día 3</td>
+<td class="act-kpi">decisión escrita + registrada en pirámide</td>
+</tr>
+
+<tr>
+<td>A8</td>
+<td class="act-desc"><b>Ejecutar consolidación hub música</b> — 301 redirect en Redirection plugin + actualizar menú Elementor + canonical self + regenerar sitemap</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>21 jul</b><br>día 6</td>
+<td class="act-kpi">/grupos-musica/ 301→/musica/ + 20 N3 apuntan al canónico</td>
+</tr>
+
+<tr>
+<td>A9</td>
+<td class="act-desc"><b>Redactar copy landing /dmc-barcelona/ ES</b> — usar brief A4. Aplicar Definition of Done pre-publish.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>22 jul</b><br>día 7</td>
+<td class="act-kpi">draft Word con 1.500+ palabras + FAQ + CTA + schema</td>
+</tr>
+
+<tr><td colspan="5" class="act-week-header">▸ Semana 2 · 23-29 jul · producción, publicación, tracking</td></tr>
+
+<tr>
+<td>A10</td>
+<td class="act-desc"><b>Validación de copy A9 por Xavi</b> — tono comercial, positioning, precios</td>
+<td class="act-owner"><b>Xavi</b></td>
+<td class="act-deadline"><b>23 jul</b><br>día 8</td>
+<td class="act-kpi">OK verbal o cambios devueltos</td>
+</tr>
+
+<tr>
+<td>A11</td>
+<td class="act-desc"><b>Publicar landing /dmc-barcelona/ ES en Elementor</b> — clonar template de /musica/ · imágenes del pool · Yoast SEO + FAQ + Service schema</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>24 jul</b><br>día 9</td>
+<td class="act-kpi">URL live · DoD 100% checked</td>
+</tr>
+
+<tr>
+<td>A12</td>
+<td class="act-desc"><b>Auto-traducir + revisar /en/dmc-barcelona/</b> con WPML</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>25 jul</b><br>día 10</td>
+<td class="act-kpi">hreflang reciprocal + URL EN live</td>
+</tr>
+
+<tr>
+<td>A13</td>
+<td class="act-desc"><b>Redactar + publicar landing /team-building-barcelona/ ES + EN</b> — brief A5 + Definition of Done</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>27 jul</b><br>día 12</td>
+<td class="act-kpi">2 URLs live · hreflang · schema OK</td>
+</tr>
+
+<tr>
+<td>A14</td>
+<td class="act-desc"><b>Redactar + publicar landing /entretenimiento-eventos-empresariales/ ES + EN</b> — brief A6 + Definition of Done</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>28 jul</b><br>día 13</td>
+<td class="act-kpi">2 URLs live · hreflang · schema OK</td>
+</tr>
+
+<tr>
+<td>A15</td>
+<td class="act-desc"><b>Setup UTM tracking en CTAs</b> de las 6 landings nuevas · añadir campo "source SEO" al pipeline "Clientes (ventas)" en GHL</td>
+<td class="act-owner"><b>Philippe + Ramiro</b></td>
+<td class="act-deadline"><b>28 jul</b><br>día 13</td>
+<td class="act-kpi">test lead completado con source registrado en GHL</td>
+</tr>
+
+<tr>
+<td>A16</td>
+<td class="act-desc"><b>Evento GA4 conversión</b> configurado — envío de formulario contacto atado a URL de origen (dimensión custom)</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>29 jul</b><br>día 14</td>
+<td class="act-kpi">evento visible en GA4 Debug + Realtime</td>
+</tr>
+
+<tr>
+<td>A17</td>
+<td class="act-desc"><b>Solicitar indexación GSC</b> de las 6 URLs nuevas · verificar hreflang + schema con Rich Results Test</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline"><b>29 jul</b><br>día 14</td>
+<td class="act-kpi">6 URLs "indexation requested" en GSC</td>
+</tr>
+
+</table>
 </div>
 
 <h3 class="section">Snapshot esperado al cierre <span class="sub">29 jul 2026</span></h3>
-<div class="closing-placeholder">
-<b>Métricas objetivo</b>
-Scale Score 82/100 (+6 vs inicio). Cobertura pirámide 64% → 68% (+3 keywords P1 cubiertas). 6 nuevas páginas publicadas (3 ES + 3 EN). Setup tracking del funnel operativo (UTM + GHL source + GA4 conversión). Bot AI visits ≥2.100/mes esperado (+15% vs cierre Sprint 1). Leads/semana: sin impacto directo — el efecto SEO de contenido nuevo llega Sprint 3-4.
+
+<div class="metrics-grid">
+<div class="metric pending">
+<div class="m-cat">Scale Score</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">76<small>/100</small></div><div class="m-note">Cierre Sprint 1</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">82<small>/100</small></div><div class="m-note">+6 · cobertura pirámide subiendo</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Cobertura pirámide</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">64<small>%</small></div><div class="m-note">Sin cambio en Sprint 1</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">68<small>%</small></div><div class="m-note">+3 keywords P1 cubiertas</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Páginas nuevas publicadas</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">0</div><div class="m-note">Ninguna en Sprint 1</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">6</div><div class="m-note">3 ES + 3 EN con DoD aplicada</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Hub música consolidado</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">no</div><div class="m-note">/musica/ ↔ /grupos-musica/ duplicado</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">sí</div><div class="m-note">301 + canonical unificado</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Tracking funnel end-to-end</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">0<small>%</small></div><div class="m-note">GSC + GA4 + GHL desconectados</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">100<small>%</small></div><div class="m-note">UTM + GHL source + GA4 evento</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Bot AI visits (30d)</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">1.820</div><div class="m-note">Cierre Sprint 1</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">≥ 2.100</div><div class="m-note">+15% vs cierre Sprint 1</div></div>
+</div>
+</div>
+
+<div class="callout info">
+<b>Nota sobre leads/semana:</b> este sprint no espera mover la aguja de leads inbound porque Google necesita 4-6 semanas para procesar y rankear contenido nuevo. El efecto real de las 6 páginas publicadas en este sprint aparecerá en el Sprint 3-4. Lo que sí se activa este sprint es el <b>tracking</b> para que cuando esos leads empiecen a llegar podamos atribuirlos correctamente.
 </div>
 
 </div>
