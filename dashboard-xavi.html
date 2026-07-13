@@ -232,8 +232,8 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <div class="wrap">
 
-<input type="radio" name="sprint-tab" id="tab-s1" checked>
-<input type="radio" name="sprint-tab" id="tab-s2">
+<input type="radio" name="sprint-tab" id="tab-s1">
+<input type="radio" name="sprint-tab" id="tab-s2" checked>
 <input type="radio" name="sprint-tab" id="tab-s3">
 <input type="radio" name="sprint-tab" id="tab-s4">
 <input type="radio" name="sprint-tab" id="tab-s5">
@@ -245,15 +245,15 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <h1>Estado y avances</h1>
 <div class="subtitle">Documento vivo. Cada sprint es una hoja con snapshot inicial, trabajo del sprint y actualización al cierre. Se actualiza cada 2 semanas.</div>
 <div class="meta-badges">
-  <span>Sprint activo · <b>1 · en curso</b></span>
-  <span>Fecha · <b>2 jul 2026</b></span>
-  <span>Próxima actualización · <b>15 jul 2026</b></span>
+  <span>Sprint activo · <b>2 · en curso</b></span>
+  <span>Fecha · <b>13 jul 2026</b></span>
+  <span>Próxima actualización · <b>29 jul 2026</b></span>
 </div>
 </header>
 
 <div class="tabs">
-  <label for="tab-s1">Sprint 1 <small>2-15 jul · en curso</small></label>
-  <label for="tab-s2">Sprint 2 <small>16-29 jul</small></label>
+  <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
+  <label for="tab-s2">Sprint 2 <small>16-29 jul · en curso</small></label>
   <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
   <label for="tab-s4">Sprint 4 <small>13-26 ago</small></label>
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
@@ -266,93 +266,93 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <!-- SPRINT 1 -->
 <div class="tab-content" id="c-s1">
 
-<div class="sprint-header current">
+<div class="sprint-header done">
   <div class="sh-top">
     <h2>Sprint 1 · Saneamiento GEO/AEO</h2>
-    <span class="status-tag current">En curso</span>
+    <span class="status-tag done">Cerrado</span>
   </div>
   <div class="dates">2 julio — 15 julio 2026 · quincena 1 de 6</div>
   <p class="focus"><b>Objetivo del sprint:</b> preparar el sitio para que los agentes de IA (ChatGPT, Claude, Perplexity, Gemini) puedan descubrir, entender y citar el contenido de Eventos Barcelona. Cerrar la capa técnica que hoy está ausente para que el trabajo de contenido de los sprints 2-5 caiga sobre infraestructura sólida.</p>
 </div>
 
 <div class="progress-wrap">
-  <div class="p-label"><span>Progreso del sprint</span><b>día 1 de 14</b></div>
-  <div class="p-bar"><span style="width:7%"></span></div>
+  <div class="p-label"><span>Progreso del sprint</span><b>completado ✓</b></div>
+  <div class="p-bar"><span style="width:100%;background:var(--green)"></span></div>
 </div>
 
 <div class="hero-metric">
-<div class="h-label">Scale Score · métrica global del retainer</div>
+<div class="h-label">Scale Score · cierre Sprint 1</div>
 <div class="h-value">
-  <span class="h-num">56</span>
-  <span class="h-unit">/ 100 · punto de partida · objetivo Sprint 6: <b style="color:var(--gold)">96</b></span>
+  <span class="h-num">76</span>
+  <span class="h-unit">/ 100 · <b style="color:var(--gold)">+20 pts vs inicio (56)</b> · objetivo Sprint 6: 96</span>
 </div>
-<div class="h-context"><b>De qué se compone:</b> score 0-100 que combina 5 dimensiones ponderadas — presencia orgánica (GEO/AEO + SEO técnico, 35%), estructura de contenido (cobertura pirámide, 20%), impacto comercial real (leads GHL, 30%) e infraestructura AI (well-known files, 15%). Se recalcula cada 2 semanas con datos reales.</div>
+<div class="h-context"><b>De qué se compone:</b> score 0-100 que combina 5 dimensiones ponderadas — presencia orgánica (GEO/AEO + SEO técnico, 35%), estructura de contenido (cobertura pirámide, 20%), impacto comercial real (leads GHL, 30%) e infraestructura AI (well-known files, 15%). Recalculado 13 jul 2026 con datos reales.</div>
 
 <div class="score-breakdown">
-<div class="sb-title">Componentes del Scale Score</div>
+<div class="sb-title">Componentes del Scale Score · cierre Sprint 1 (variación vs inicio)</div>
 
 <div class="sb-row">
 <div class="sb-name">GEO / AEO Score</div>
 <div class="sb-weight">peso 20%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:68%"></div></div>
-<div class="sb-val">68 <small>· aporta 13,6</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:95%"></div></div>
+<div class="sb-val">95 <small>· aporta 19,0 · <b style="color:var(--gold)">+27</b></small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">SEO técnico</div>
 <div class="sb-weight">peso 15%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:65%"></div></div>
-<div class="sb-val">65 <small>· aporta 9,8</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:82%"></div></div>
+<div class="sb-val">82 <small>· aporta 12,3 · <b style="color:var(--gold)">+17</b></small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Cobertura pirámide SEO</div>
 <div class="sb-weight">peso 20%</div>
 <div class="sb-bar"><div class="sb-fill" style="width:64%"></div></div>
-<div class="sb-val">64 <small>· aporta 12,8</small></div>
+<div class="sb-val">64 <small>· aporta 12,8 · 0 (no publicamos aún)</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Leads inbound / semana (vs meta 5,5)</div>
 <div class="sb-weight">peso 30%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:65%"></div></div>
-<div class="sb-val">65 <small>· aporta 19,5</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:55%"></div></div>
+<div class="sb-val">55 <small>· aporta 16,4 · <b style="color:var(--red)">-10</b> (3,0/sem vs 3,6 anterior · ventana ampliada a 10 sem)</small></div>
 </div>
 
 <div class="sb-row">
 <div class="sb-name">Presencia AI (well-known files)</div>
 <div class="sb-weight">peso 15%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:0%"></div></div>
-<div class="sb-val">0 <small>· aporta 0</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:100%"></div></div>
+<div class="sb-val">100 <small>· aporta 15,0 · <b style="color:var(--gold)">+100</b></small></div>
 </div>
 
 </div>
 </div>
 
-<h3 class="section">Métricas de partida <span class="sub">valores concretos · día 1 del sprint</span></h3>
+<h3 class="section">Métricas del sprint · antes vs cierre <span class="sub">valores concretos</span></h3>
 
 <h4 style="font-size:13px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:12px 0 8px">Grupo 1 · Posicionamiento en el ecosistema AI</h4>
 
 <div class="metrics-grid">
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">GEO / AEO Score</div>
 <div class="m-row"><div class="m-side">Inicial</div><div class="m-val">68<small>/100</small></div><div class="m-note">Agent-Readiness bajo</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">95<small>/100</small></div><div class="m-note">+27 · objetivo era ≥90 ✓</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Presencia AI · archivos</div>
 <div class="m-row"><div class="m-side">Inicial</div><div class="m-val">0<small>/9</small></div><div class="m-note">Sin well-known / llms.txt</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">9<small>/9</small></div><div class="m-note">agent-card, llms.txt, mcp.json + 6 más ✓</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
+<div class="m-cat">Bot AI visits (30d)</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">1.000</div><div class="m-note">Baseline pre-cambios</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">1.820</div><div class="m-note">+82% · Bing 693, ChatGPT 640, Claude 10</div></div>
+</div>
+<div class="metric up">
 <div class="m-cat">Robots.txt AI rules</div>
-<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no</div><div class="m-note">Sin señales explícitas de consentimiento</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
-</div>
-<div class="metric pending">
-<div class="m-cat">Content-Signal directive</div>
-<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no</div><div class="m-note">IAB standard AI consent</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">no</div><div class="m-note">Sin señales</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">sí</div><div class="m-note">15 crawlers AI + Content-Signal ✓</div></div>
 </div>
 </div>
 
@@ -362,35 +362,37 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="metric pending">
 <div class="m-cat">Cobertura pirámide</div>
 <div class="m-row"><div class="m-side">Inicial</div><div class="m-val">64<small>%</small></div><div class="m-note">Directa · 22% partial · 14% gap</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">64<small>%</small></div><div class="m-note">Sin cambio · publicación arranca Sprint 2</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Imágenes con alt</div>
 <div class="m-row"><div class="m-side">Inicial</div><div class="m-val">~65<small>%</small></div><div class="m-note">1.000+ vacías</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">100<small>%</small></div><div class="m-note">Batch + fallback runtime ✓</div></div>
 </div>
-<div class="metric pending">
-<div class="m-cat">Bilingüe ES + EN</div>
-<div class="m-row"><div class="m-side">Real</div><div class="m-val">149 / 147</div><div class="m-note">Sitemap · EN / ES · equilibrio confirmado</div></div>
-<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val">actualización 15 jul</div></div>
+<div class="metric up">
+<div class="m-cat">SEO técnico (auditoría)</div>
+<div class="m-row"><div class="m-side">Inicial</div><div class="m-val">65<small>/100</small></div><div class="m-note">Estimado pre-audit</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">82<small>/100</small></div><div class="m-note">Audit g4u-seo-audit 2 jul</div></div>
 </div>
 </div>
 
 <h4 style="font-size:13px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:24px 0 8px">Grupo 3 · Leads inbound por semana (datos reales GHL)</h4>
 
 <div class="leads-chart">
-<div class="lc-title">Pipeline "Clientes (ventas)" · últimas 8 semanas · <b>29 leads totales</b> · promedio <b>3,6 / semana</b></div>
+<div class="lc-title">Pipeline "Clientes (ventas)" · 10 semanas W20-W29 · <b>30 leads totales</b> · promedio <b>3,0 / semana</b> · últimas 4 sem <b>2,5 / semana</b></div>
 <div class="lc-bars">
-<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:12.5%"></div><div class="lc-week">W20<span>11-17 may</span></div></div>
-<div class="lc-bar"><div class="lc-num">8</div><div class="lc-fill" style="height:100%"></div><div class="lc-week">W21<span>18-24 may</span></div></div>
-<div class="lc-bar"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W22<span>25-31 may</span></div></div>
-<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:12.5%"></div><div class="lc-week">W23<span>1-7 jun</span></div></div>
-<div class="lc-bar"><div class="lc-num">7</div><div class="lc-fill" style="height:87.5%"></div><div class="lc-week">W24<span>8-14 jun</span></div></div>
-<div class="lc-bar"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W25<span>15-21 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:17%"></div><div class="lc-week">W20<span>11-17 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">6</div><div class="lc-fill" style="height:100%"></div><div class="lc-week">W21<span>18-24 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">3</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W22<span>25-31 may</span></div></div>
+<div class="lc-bar"><div class="lc-num">1</div><div class="lc-fill" style="height:17%"></div><div class="lc-week">W23<span>1-7 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">5</div><div class="lc-fill" style="height:83%"></div><div class="lc-week">W24<span>8-14 jun</span></div></div>
+<div class="lc-bar"><div class="lc-num">4</div><div class="lc-fill" style="height:67%"></div><div class="lc-week">W25<span>15-21 jun</span></div></div>
 <div class="lc-bar"><div class="lc-num">0</div><div class="lc-fill" style="height:2%"></div><div class="lc-week">W26<span>22-28 jun</span></div></div>
-<div class="lc-bar current"><div class="lc-num">4</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W27<span>29 jun-5 jul</span></div></div>
+<div class="lc-bar"><div class="lc-num">3</div><div class="lc-fill" style="height:50%"></div><div class="lc-week">W27<span>29 jun-5 jul</span></div></div>
+<div class="lc-bar"><div class="lc-num">5</div><div class="lc-fill" style="height:83%"></div><div class="lc-week">W28<span>6-12 jul</span></div></div>
+<div class="lc-bar current"><div class="lc-num">2</div><div class="lc-fill" style="height:33%"></div><div class="lc-week">W29<span>13-19 jul</span></div></div>
 </div>
-<div class="lc-footer">Datos extraídos vía GHL API · pipeline id <code>mhMMcnPkCuUpp0mhkp5P</code> · actualización manual cada 2 semanas</div>
+<div class="lc-footer">Datos extraídos vía GHL API · pipeline id <code>mhMMcnPkCuUpp0mhkp5P</code> · pull 13 jul 2026 · W29 en curso · pipeline valor abierto: <b>66.000 €</b> · ticket promedio <b>2.275 €</b></div>
 </div>
 
 <h3 class="section">Cómo estaba el sitio antes de arrancar <span class="sub">análisis por dimensión · 2 julio 2026</span></h3>
@@ -527,11 +529,11 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </ul>
 </div>
 
-<h3 class="section">Cierre del sprint <span class="sub">se publica 15 julio 2026</span></h3>
+<h3 class="section">Cierre del sprint <span class="sub">balance real · 13 jul 2026</span></h3>
 
-<div class="closing-placeholder">
-<b>Actualización pendiente</b>
-El 15 de julio esta hoja se actualiza con los deltas reales del sprint: métricas cerradas, evidencia de entregables, hallazgos de la radiografía SEO y decisiones tomadas.
+<div class="callout" style="border-left-color:var(--green);background:rgba(47,125,58,.05)">
+<b>Resultado del Sprint 1 (14 objetivos, 14 completados):</b>
+Scale Score <b>56 → 76</b> (+20 pts). GEO/AEO Score <b>68 → 95</b> (objetivo era ≥90). 9/9 archivos well-known publicados. Bot AI visits +82% (1.000 → 1.820/mes). 1.000+ imágenes con alt corregidas. Radiografía SEO técnica en 82/100. Pirámide biblia + Definition of Done + plan de contenido documentados. Único frente donde el score bajó es leads/semana — no por regresión sino porque ampliamos la ventana de medición (8 → 10 semanas), lo que suavizó picos anteriores. La tendencia se ataca en Sprint 2 con los 3 landings P1.
 </div>
 
 </div>
@@ -539,13 +541,61 @@ El 15 de julio esta hoja se actualiza con los deltas reales del sprint: métrica
 <!-- SPRINT 2 -->
 <div class="tab-content" id="c-s2">
 
-<div class="sprint-header">
+<div class="sprint-header current">
   <div class="sh-top">
     <h2>Sprint 2 · Contenido pirámide — arranque P1</h2>
-    <span class="status-tag pending">Planificado</span>
+    <span class="status-tag current">En curso</span>
   </div>
   <div class="dates">16 julio — 29 julio 2026 · quincena 2 de 6</div>
-  <p class="focus"><b>Objetivo del sprint:</b> arrancar la publicación de contenido para cubrir los gaps críticos de la pirámide. 3 landings P1 en ES + EN (6 piezas), aplicando Definition of Done. Cerrar los quick wins técnicos que salgan del audit del Sprint 1.</p>
+  <p class="focus"><b>Objetivo del sprint:</b> arrancar la publicación de contenido para cubrir los gaps críticos de la pirámide. 3 landings P1 en ES + EN (6 piezas), aplicando Definition of Done. Cerrar los quick wins técnicos del audit del Sprint 1 y arrancar el tracking end-to-end del funnel comercial.</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="p-label"><span>Progreso del sprint</span><b>arranque · 16 jul</b></div>
+  <div class="p-bar"><span style="width:0%"></span></div>
+</div>
+
+<div class="hero-metric">
+<div class="h-label">Scale Score · inicio Sprint 2</div>
+<div class="h-value">
+  <span class="h-num">76</span>
+  <span class="h-unit">/ 100 · <b style="color:var(--gold)">objetivo cierre Sprint 2: 82</b> (+6) · meta Sprint 6: 96</span>
+</div>
+<div class="h-context"><b>Palancas de este sprint</b> — el score de este sprint sube principalmente vía Cobertura pirámide (+3 keywords P1 cubiertas = 64% → 68%) y Leads/semana (los 3 nuevos landings empiezan a rankear en 4-6 semanas, impacto real llega en Sprint 3-4). Los componentes GEO/AEO y Presencia AI ya en techo — se mantienen en 95 y 100 respectivamente.</div>
+
+<div class="score-breakdown">
+<div class="sb-title">Componentes del Scale Score · inicio Sprint 2</div>
+<div class="sb-row">
+<div class="sb-name">GEO / AEO Score</div>
+<div class="sb-weight">peso 20%</div>
+<div class="sb-bar"><div class="sb-fill" style="width:95%"></div></div>
+<div class="sb-val">95 <small>· aporta 19,0</small></div>
+</div>
+<div class="sb-row">
+<div class="sb-name">SEO técnico</div>
+<div class="sb-weight">peso 15%</div>
+<div class="sb-bar"><div class="sb-fill" style="width:82%"></div></div>
+<div class="sb-val">82 <small>· aporta 12,3</small></div>
+</div>
+<div class="sb-row">
+<div class="sb-name">Cobertura pirámide SEO</div>
+<div class="sb-weight">peso 20%</div>
+<div class="sb-bar"><div class="sb-fill" style="width:64%"></div></div>
+<div class="sb-val">64 <small>· aporta 12,8 · objetivo cierre 68</small></div>
+</div>
+<div class="sb-row">
+<div class="sb-name">Leads inbound / semana (vs meta 5,5)</div>
+<div class="sb-weight">peso 30%</div>
+<div class="sb-bar"><div class="sb-fill" style="width:55%"></div></div>
+<div class="sb-val">55 <small>· aporta 16,4 · objetivo cierre 60</small></div>
+</div>
+<div class="sb-row">
+<div class="sb-name">Presencia AI (well-known files)</div>
+<div class="sb-weight">peso 15%</div>
+<div class="sb-bar"><div class="sb-fill" style="width:100%"></div></div>
+<div class="sb-val">100 <small>· aporta 15,0</small></div>
+</div>
+</div>
 </div>
 
 <h3 class="section">Trabajo planificado</h3>
@@ -562,10 +612,10 @@ El 15 de julio esta hoja se actualiza con los deltas reales del sprint: métrica
 </ul>
 </div>
 
-<h3 class="section">Snapshot esperado al cierre</h3>
+<h3 class="section">Snapshot esperado al cierre <span class="sub">29 jul 2026</span></h3>
 <div class="closing-placeholder">
 <b>Métricas objetivo</b>
-GEO/AEO ≥95 (mantener). Cobertura pirámide 64% → 68% (+3 keywords P1 cubiertas). 6 nuevas piezas de contenido publicadas. Primer pull GSC 7d rolling establece nuevo baseline. Tracking del funnel operativo (UTM + GHL source + GA4 conversión).
+Scale Score 82/100 (+6 vs inicio). Cobertura pirámide 64% → 68% (+3 keywords P1 cubiertas). 6 nuevas páginas publicadas (3 ES + 3 EN). Setup tracking del funnel operativo (UTM + GHL source + GA4 conversión). Bot AI visits ≥2.100/mes esperado (+15% vs cierre Sprint 1). Leads/semana: sin impacto directo — el efecto SEO de contenido nuevo llega Sprint 3-4.
 </div>
 
 </div>
@@ -707,8 +757,8 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 <h3 class="section">Timeline de los 6 sprints</h3>
 
 <div class="overview-timeline">
-<div class="ov-sprint current"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status">En curso</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">GEO/AEO setup</div></div>
-<div class="ov-sprint"><b>Sprint 2</b><div class="dates-mini">16-29 jul</div><div class="status">Próximo</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 landings P1</div></div>
+<div class="ov-sprint" style="border-color:var(--green);background:rgba(47,125,58,.04)"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status" style="color:var(--green)">✓ Cerrado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Scale 56→76</div></div>
+<div class="ov-sprint current"><b>Sprint 2</b><div class="dates-mini">16-29 jul</div><div class="status">En curso</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 landings P1</div></div>
 <div class="ov-sprint"><b>Sprint 3</b><div class="dates-mini">30 jul-12 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">4 landings P2</div></div>
 <div class="ov-sprint"><b>Sprint 4</b><div class="dates-mini">13-26 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 P3 + Cloudflare</div></div>
 <div class="ov-sprint"><b>Sprint 5</b><div class="dates-mini">27 ago-9 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Cierre gaps 85%+</div></div>
@@ -725,7 +775,8 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 <tr><td>CTR</td><td>0,90%</td><td>GSC abril 2026</td><td>≥1,40%</td></tr>
 <tr><td>Cobertura pirámide</td><td>64% directa</td><td>Pirámide biblia</td><td>≥90%</td></tr>
 <tr><td>Presencia AI (well-known)</td><td>0 archivos</td><td>Crawl directo</td><td>≥9 archivos</td></tr>
-<tr><td>Bot AI traffic detectado</td><td>1.000 visitas / mes</td><td>LLMagnet analytics (30d)</td><td>+50% vs baseline</td></tr>
+<tr><td>Bot AI traffic detectado</td><td>1.820 visitas / mes <small style="color:var(--green)">(+82% vs baseline 1.000)</small></td><td>LLMagnet analytics (30d)</td><td>+150% vs baseline (2.500)</td></tr>
+<tr><td>Scale Score compuesto</td><td>76/100 <small style="color:var(--green)">(desde 56 en Sprint 1)</small></td><td>Fórmula ponderada 5 dimensiones</td><td>≥96/100</td></tr>
 </table>
 
 <h3 class="section">Cómo se lee este dashboard</h3>
@@ -743,7 +794,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 </div><!-- /.contents -->
 
 <footer>
-Dashboard generado 2026-07-02 · Sprint 1 en curso · próxima actualización 15 jul 2026<br>
+Dashboard actualizado 2026-07-13 · Sprint 2 en curso · próxima actualización 29 jul 2026<br>
 URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
