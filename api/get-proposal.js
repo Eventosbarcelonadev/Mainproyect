@@ -68,6 +68,10 @@ export default async function handler(req, res) {
       conditions: Array.isArray(p.conditions) ? p.conditions : null,
       createdAt: p.created_at,
       approvedAt: p.approved_at,
+      // pdf_url: lo usa el botón "Descargar PDF" de la vista cliente en las
+      // propuestas validadas. Sin esto el front lo regeneraba cada vez aunque
+      // el PDF ya existiera en Storage. (Xavi 2026-07-17)
+      pdf_url: p.pdf_url || null,
       ghl_contact_id: p.ghl_contact_id,
       ghl_opportunity_id: p.ghl_opportunity_id
     };
