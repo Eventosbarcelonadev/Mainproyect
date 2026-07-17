@@ -209,15 +209,19 @@ export default async function handler(req, res) {
       ]
     };
 
-    // Save proposal to Supabase and get URL
+    // La URL del generador se construye SOLO desde `data` (no depende del id
+    // de la propuesta). Por eso se calcula ANTES y fuera del try de Supabase:
+    // si el insert falla, la URL igual tiene que llegar a la opportunity.
+    // Bug 2026-07-13 (Sanjeev De): proposalUrl estaba atado a spData[0]?.id,
+    // así que cualquier fallo de Supabase dejaba la opp sin url_generador.
+    const proposalData = btoa(encodeURIComponent(JSON.stringify(data)));
+    const langParam = lang === 'en' ? '&lang=en' : '';
+    const proposalUrl = `${SITE_URL}/propuesta.html?mode=auto&data=${proposalData}${langParam}`;
+
+    // Save proposal to Supabase
     let proposalId = null;
-    let proposalUrl = '';
     if (SUPABASE_URL && SUPABASE_KEY) {
       try {
-        // Build proposal data with auto-matched shows encoded
-        const proposalData = btoa(encodeURIComponent(JSON.stringify(data)));
-        const langParam = lang === 'en' ? '&lang=en' : '';
-        const adminUrl = `${SITE_URL}/propuesta.html?mode=auto&data=${proposalData}${langParam}`;
 
         // Save to Supabase
         const proposalRow = {
@@ -250,7 +254,8 @@ export default async function handler(req, res) {
         const spData = await spRes.json();
         if (spData[0]?.id) {
           proposalId = spData[0].id;
-          proposalUrl = adminUrl;
+        } else {
+          console.error('Proposal save: sin id en la respuesta', JSON.stringify(spData).slice(0, 200));
         }
       } catch (e) {
         console.error('Proposal save error:', e.message);
@@ -259,15 +264,38 @@ export default async function handler(req, res) {
 
     // (url_generador_propuesta se añade al opportunity más abajo, no al contact)
 
-    const contactRes = await fetch(`${API}/contacts/upsert`, {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify(contactBody)
-    });
-    const contactData = await contactRes.json();
+    // Upsert del contacto CON REINTENTO. Si esto falla, abajo se hace early
+    // return y el lead se queda sin url_generador_propuesta en la opportunity
+    // (la propuesta ya quedó creada en Supabase → huérfana). Un fallo
+    // transitorio de GHL (429/5xx) rompía el lead entero, en silencio.
+    // Bug 2026-07-13 (Sanjeev De). 3 intentos con backoff.
+    let contactData = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const contactRes = await fetch(`${API}/contacts/upsert`, {
+          method: 'POST',
+          headers: HEADERS,
+          body: JSON.stringify(contactBody)
+        });
+        contactData = await contactRes.json();
+        if (contactData?.contact?.id) break;
+        console.error(`contacts/upsert intento ${attempt + 1} sin id:`, contactRes.status, JSON.stringify(contactData).slice(0, 200));
+      } catch (e) {
+        console.error(`contacts/upsert intento ${attempt + 1} error:`, e.message);
+      }
+      if (attempt < 2) await new Promise(r => setTimeout(r, 400 * (attempt + 1)));
+    }
 
-    if (!contactData.contact?.id) {
-      return res.status(500).json({ error: 'Failed to create contact', details: contactData });
+    if (!contactData?.contact?.id) {
+      // Devolvemos la URL igual: aunque GHL falle, el lead ya tiene su
+      // propuesta en Supabase y Xavi puede abrirla con este link.
+      console.error('contacts/upsert falló tras 3 intentos — lead sin sync GHL');
+      return res.status(500).json({
+        error: 'Failed to create contact',
+        details: contactData,
+        proposalId,
+        proposalUrl
+      });
     }
 
     const contactId = contactData.contact.id;
