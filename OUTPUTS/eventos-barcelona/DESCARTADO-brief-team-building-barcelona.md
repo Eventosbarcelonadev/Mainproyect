@@ -1,3 +1,11 @@
+# ⛔ BRIEF DESCARTADO · 2026-07-17
+
+**Motivo**: cruce con `Informe estratégico EB.pdf` (jul 2026) confirmó que team building **NO figura como formato core** de EB. Los 3 leads ideales son: (1) gala dinners con espectáculo + producción técnica, (2) convenciones internacionales con entretenimiento continuo, (3) contratación directa de artistas.
+
+Reemplazado por: `brief-gala-dinners-corporativos.md`
+
+---
+
 # Brief · Landing `/team-building-barcelona/` (ES + EN)
 
 **Sprint 2 · A5 análisis competitivo + estructura recomendada**

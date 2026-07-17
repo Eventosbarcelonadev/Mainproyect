@@ -1,7 +1,15 @@
-# Brief · Landing `/dmc-barcelona/` (ES + EN)
+# Brief · Landing `/partner-dmc-agencias-eventos-barcelona/` (ES + EN)
 
-**Sprint 2 · A4 análisis competitivo + estructura recomendada**
-**Fecha**: 2026-07-13 · **Autor**: Philippe (Scale IT) · **Estado**: Draft para revisión Xavi
+**Sprint 2 · Landing P1 · ICP Top of Mind del Informe estratégico EB**
+**Fecha**: 2026-07-17 · **Autor**: Philippe (Scale IT) · **Estado**: Pivot alineado al informe
+
+## Contexto del pivot
+El brief original apuntaba a la keyword "DMC Barcelona". Cruzando con el Informe estratégico EB:
+- EB **NO es DMC** (no gestiona hoteles/transporte/logística)
+- Los DMC son **CLIENTES** de EB · están en el ICP Top of Mind junto a agencias, OPC y marketing corporativo
+- EB actúa como **partner artístico + técnico** para esos actores
+
+Por eso pivotamos el ángulo: la landing atrae a DMCs y agencias que necesitan un partner local para la producción del evento en Barcelona. Sigue capturando la keyword "DMC Barcelona" (por proximidad semántica y positioning explícito en H1/copy), pero sin fingir ser DMC.
 
 ---
 

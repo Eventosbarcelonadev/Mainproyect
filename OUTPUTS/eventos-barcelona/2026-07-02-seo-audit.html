@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Radiografía SEO — Eventos Barcelona · 2026-07-02</title>
+<style>
+:root{
+  --ink:#0a2540;
+  --gold:#c99a3a;
+  --bg:#faf8f4;
+  --line:#e8e2d5;
+  --card:#fff;
+  --red:#c1272d;
+  --amber:#d18416;
+  --green:#2f7d3a;
+  --muted:#5b6473;
+}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.55;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 32px}
+header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:36px}
+header .kicker{color:var(--gold);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
+header h1{font-size:36px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+header .meta{color:var(--muted);font-size:13px}
+h2{font-size:22px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.01em}
+h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
+.score-hero{display:grid;grid-template-columns:auto 1fr;gap:28px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--ink);padding:24px 28px;margin-bottom:24px;border-radius:4px}
+.score-hero .num{font-size:72px;font-weight:700;color:var(--ink);line-height:1}
+.score-hero .num small{font-size:24px;color:var(--muted);font-weight:400}
+.score-hero .label{color:var(--gold);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.score-hero p{margin:8px 0 0;color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}
+.card{background:var(--card);border:1px solid var(--line);padding:16px 18px;border-radius:4px}
+.card .cat{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.card .val{font-size:28px;font-weight:700;margin:4px 0}
+.card .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px}
+.card .bar>span{display:block;height:100%;background:var(--ink)}
+.card.pass .val{color:var(--green)}
+.card.pass .bar>span{background:var(--green)}
+.card.warn .val{color:var(--amber)}
+.card.warn .bar>span{background:var(--amber)}
+.card.fail .val{color:var(--red)}
+.card.fail .bar>span{background:var(--red)}
+.qw{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:18px 22px;margin:12px 0;border-radius:4px}
+.qw h4{margin:0 0 8px;font-size:17px}
+.qw .qw-meta{display:flex;gap:16px;color:var(--muted);font-size:12px;margin-bottom:12px;flex-wrap:wrap}
+.qw .qw-meta span{display:inline-flex;align-items:center;gap:4px}
+.qw .qw-meta b{color:var(--ink);font-weight:600}
+.qw.blocking{border-left-color:var(--red)}
+.qw.important{border-left-color:var(--amber)}
+.qw.nice{border-left-color:var(--muted)}
+.qw p{margin:6px 0;font-size:14px}
+.qw code{background:#f0ede4;padding:2px 5px;border-radius:2px;font-size:12px;font-family:ui-monospace,SFMono-Regular,monospace}
+.qw .fix{margin-top:10px;padding:12px 14px;background:#f6f1e6;border-radius:3px}
+.qw .fix b{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.qw .fix ol,.qw .fix ul{margin:6px 0 0;padding-left:20px}
+.qw .fix li{margin:3px 0;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+th{background:var(--ink);color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:12px;letter-spacing:.06em}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:.06em;font-weight:600;text-transform:uppercase}
+.tag.blocking{background:#f7d5d7;color:var(--red)}
+.tag.important{background:#fce6cc;color:var(--amber)}
+.tag.nice{background:#e5e7eb;color:var(--muted)}
+.tag.pass{background:#d6ead9;color:var(--green)}
+.tag.warn{background:#fce6cc;color:var(--amber)}
+.tag.fail{background:#f7d5d7;color:var(--red)}
+.callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
+.callout b{color:var(--ink)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr}
+  header h1{font-size:26px}
+  .score-hero .num{font-size:56px}
+}
+@media print{
+  body{background:#fff}
+  .qw,.card,.callout,.score-hero{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kicker">Radiografía SEO técnica + orgánica · pedido de Xavi</div>
+<h1>Eventos Barcelona — Estado actual y prioridades</h1>
+<div class="meta">Audit ejecutado: 2 de julio de 2026 · Dominio: eventosbarcelona.com · Stack: WordPress + Elementor + Yoast Premium + WPML + Perfmatters + WP-Optimize / Hosting CDmon</div>
+</header>
+
+<h2>Resumen ejecutivo</h2>
+
+<div class="score-hero">
+  <div>
+    <div class="label">Health Score</div>
+    <div class="num">82<small>/100</small></div>
+  </div>
+  <div>
+    <p><b>Contexto:</b> Este score es la lectura clásica SEO (técnico + arquitectura + on-page). El score AI/GEO ya está en 95/100 vía LLMagnet, medido y documentado.</p>
+    <p><b>Estado general:</b> El sitio está saneado en infraestructura y ha subido mucho el frente GEO en las últimas dos semanas. Los hallazgos críticos son <b>arquitectura de contenido</b> (duplicados de hub, canonicalización cruzada) y <b>gaps de páginas</b> que la pirámide biblia ya identificó. No hay problemas de indexabilidad, seguridad ni mobile.</p>
+    <p><b>Corregir prioritariamente (Xavi):</b> 5 hallazgos accionables — de los cuales <b>3 se cierran en menos de 30 min cada uno</b> (bugs) y <b>2 son proyectos de contenido</b> ya planificados (jul-ago) que dependen de decisión editorial.</p>
+  </div>
+</div>
+
+<h2>Scores por dominio</h2>
+<div class="grid">
+  <div class="card pass">
+    <div class="cat">Crawlability</div>
+    <div class="val">95</div>
+    <div class="bar"><span style="width:95%"></span></div>
+  </div>
+  <div class="card pass">
+    <div class="cat">Indexability</div>
+    <div class="val">88</div>
+    <div class="bar"><span style="width:88%"></span></div>
+  </div>
+  <div class="card pass">
+    <div class="cat">Security</div>
+    <div class="val">92</div>
+    <div class="bar"><span style="width:92%"></span></div>
+  </div>
+  <div class="card pass">
+    <div class="cat">Mobile</div>
+    <div class="val">95</div>
+    <div class="bar"><span style="width:95%"></span></div>
+  </div>
+  <div class="card warn">
+    <div class="cat">Structured Data</div>
+    <div class="val">75</div>
+    <div class="bar"><span style="width:75%"></span></div>
+  </div>
+  <div class="card warn">
+    <div class="cat">Architecture</div>
+    <div class="val">70</div>
+    <div class="bar"><span style="width:70%"></span></div>
+  </div>
+  <div class="card warn">
+    <div class="cat">Content / SXO</div>
+    <div class="val">68</div>
+    <div class="bar"><span style="width:68%"></span></div>
+  </div>
+  <div class="card pass">
+    <div class="cat">GEO / AEO</div>
+    <div class="val">95</div>
+    <div class="bar"><span style="width:95%"></span></div>
+  </div>
+  <div class="card warn">
+    <div class="cat">Performance CWV</div>
+    <div class="val">70</div>
+    <div class="bar"><span style="width:70%"></span></div>
+  </div>
+</div>
+
+<div class="callout">
+<b>Nota metodológica.</b> Performance CWV está en Tier 2 (aproximado): la API pública de PageSpeed devolvió quota exceeded en la ejecución. Score estimado en 70 vía proxies técnicos (30 archivos CSS y 21 archivos JS externos en home = render-blocking sensible, HTML 193KB, imgs no-WebP mayoritarias). Recomendación: <b>medir con GSC Web Vitals report</b> (accesible vía tu propia cuenta) o volver a ejecutar PSI mañana con quota reseteada. Este número es el que menos confianza tiene.
+</div>
+
+<h2>Top 5 quick wins — orden de ejecución recomendado</h2>
+
+<div class="qw blocking">
+  <h4>QW1 — Consolidar duplicate hub <code>/musica/</code> ↔ <code>/grupos-musica/</code></h4>
+  <div class="qw-meta">
+    <span><b>Severidad:</b> <span class="tag blocking">Blocking</span></span>
+    <span><b>Esfuerzo:</b> 30-60 min (decisión) + 15 min ejecución</span>
+    <span><b>Impacto:</b> Alto · afecta N2 principal + 20 páginas N3</span>
+  </div>
+  <p><b>Qué encontramos:</b> Existen dos hubs de música con el <b>mismo title</b>, <b>mismo H1</b> y <b>ambos apuntan su canonical a <code>/grupos-musica/</code></b>. Es decir, <code>/musica/</code> es SEO-invisible aunque exista físicamente. La pirámide biblia dice que <code>/musica/</code> es el N2 primario — hay contradicción entre lo que el doc canónico afirma y lo que Google ve.</p>
+  <p>El menú del header linkea a <code>/grupos-musica/</code>. Las 19 de 20 páginas N3 de música están linkadas desde <code>/musica/</code> (la muerta) y también desde <code>/grupos-musica/</code>. La autoridad se está dispersando.</p>
+  <div class="fix">
+    <b>Fix (decisión editorial primero, ejecución después)</b>
+    <ol>
+      <li>Decidir cuál es la URL oficial. Opción recomendada: <b>consolidar en <code>/musica/</code></b> (más corta, coherente con la pirámide biblia, coherente con <code>/danza/</code>, <code>/artistas/</code>, <code>/espectaculos/</code>). Alternativa: aceptar <code>/grupos-musica/</code> como canonical y actualizar la pirámide.</li>
+      <li>Configurar 301 redirect <code>/grupos-musica/</code> → <code>/musica/</code> (via Redirection plugin o Yoast Redirect).</li>
+      <li>Actualizar el menú Elementor del header para linkear a <code>/musica/</code>.</li>
+      <li>Actualizar el canonical del contenido consolidado a self.</li>
+      <li>Regenerar sitemap y forzar re-crawl vía GSC.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="qw important">
+  <h4>QW2 — Broken link <code>/.md</code> en TODAS las páginas</h4>
+  <div class="qw-meta">
+    <span><b>Severidad:</b> <span class="tag important">Important</span></span>
+    <span><b>Esfuerzo:</b> 5 min</span>
+    <span><b>Impacto:</b> Bajo por página · alto por volumen (296 URLs)</span>
+  </div>
+  <p><b>Qué encontramos:</b> Cada página del sitio emite en el head <code>&lt;link rel="alternate" type="text/markdown" href="https://www.eventosbarcelona.com/.md"&gt;</code>. Esa URL devuelve <b>HTTP 404</b>. Es un bug del snippet Code Snippets <code>EB-AUDIT-100</code> (id 13) — la variable de URL quedó vacía y concatenó <code>/.md</code>.</p>
+  <p>Efecto real: broken link en el head de las 296 URLs → warning menor en crawlers, y podría confundir a agentes AI que sigan el link markdown.</p>
+  <div class="fix">
+    <b>Fix</b>
+    <ol>
+      <li>Editar snippet <code>EB-AUDIT-100</code> en <code>/wp-admin/admin.php?page=snippets</code>.</li>
+      <li>Corregir la línea que emite el <code>&lt;link rel="alternate" type="text/markdown"&gt;</code> para que use la URL actual + <code>.md</code> (o quitarlo — el markdown endpoint real está en <code>/wp-json/eb/v1/page-md</code>).</li>
+      <li>Guardar. Purgar cache WP-Optimize.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="qw important">
+  <h4>QW3 — LocalBusiness schema duplicado en todas las páginas</h4>
+  <div class="qw-meta">
+    <span><b>Severidad:</b> <span class="tag important">Important</span></span>
+    <span><b>Esfuerzo:</b> 5 min</span>
+    <span><b>Impacto:</b> Medio · schema warnings en Google Search Console</span>
+  </div>
+  <p><b>Qué encontramos:</b> En el head del sitio hay <b>2 bloques JSON-LD de tipo LocalBusiness</b>. Uno viene del snippet <code>EB-SCHEMA-LOCALBUSINESS</code> (id 10) que añadimos, otro viene de Yoast en su <code>@graph</code>. Ambos son sintácticamente válidos pero Google recomienda un único LocalBusiness por página.</p>
+  <div class="fix">
+    <b>Fix</b>
+    <ol>
+      <li>Desactivar snippet <code>EB-SCHEMA-LOCALBUSINESS</code> (id 10) desde <code>/wp-admin/admin.php?page=snippets</code>. Yoast ya emite un LocalBusiness completo dentro del <code>@graph</code>, no hace falta el redundante.</li>
+      <li>Validar en <a href="https://search.google.com/test/rich-results" target="_blank">Rich Results Test</a> post-cambio.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="qw important">
+  <h4>QW4 — 3 páginas P1 de la pirámide no existen (404)</h4>
+  <div class="qw-meta">
+    <span><b>Severidad:</b> <span class="tag important">Important</span></span>
+    <span><b>Esfuerzo:</b> Proyecto (jul-ago 2026, ya planificado)</span>
+    <span><b>Impacto:</b> Alto · keywords crítica MICE internacional</span>
+  </div>
+  <p><b>Qué encontramos:</b> Las 3 páginas marcadas como P1 en la pirámide devuelven 404:</p>
+  <ul>
+    <li><code>/dmc-barcelona/</code> — keyword <b>DMC Barcelona</b> (Xavi no aparece en top 10 de esta SERP)</li>
+    <li><code>/team-building/</code> — keyword <b>team building en Barcelona</b> (alto volumen)</li>
+    <li><code>/eventos-corporativos/</code> — keyword genérica, hay artículos blog cubriendo el tema pero no landing hub</li>
+  </ul>
+  <p>El plan de contenido jul-ago ya cubre esto: 12 keywords gap × ES+EN = 24 páginas a crear con análisis competitivo previo y Definition of Done checklist.</p>
+  <div class="fix">
+    <b>Fix</b>
+    <ol>
+      <li>Arrancar el plan de contenido documentado en <code>project_content_plan_julagosto_2026</code> (memoria del proyecto).</li>
+      <li>Primer artículo: análisis competitivo de "DMC Barcelona" (SERP muestra 10 competidores especializados con dominios exact-match; requiere landing hub con casos éxito internacionales para competir).</li>
+    </ol>
+  </div>
+</div>
+
+<div class="qw nice">
+  <h4>QW5 — Activar IndexNow en Yoast Premium</h4>
+  <div class="qw-meta">
+    <span><b>Severidad:</b> <span class="tag nice">Nice</span></span>
+    <span><b>Esfuerzo:</b> 2 min</span>
+    <span><b>Impacto:</b> Medio · notificación instantánea Bing/Yandex de nuevo contenido</span>
+  </div>
+  <p><b>Qué encontramos:</b> <code>/indexnow.txt</code> devuelve 404 — el key file de IndexNow no está publicado. Yoast Premium incluye IndexNow como toggle y no está activado.</p>
+  <p>Especialmente relevante para la fase de publicación jul-ago (24 páginas nuevas): con IndexNow activo, Bing/Yandex descubren el contenido en minutos vs días.</p>
+  <div class="fix">
+    <b>Fix</b>
+    <ol>
+      <li>WordPress admin → Yoast SEO → <b>General</b> → tab <b>IndexNow</b>.</li>
+      <li>Activar el toggle. Yoast genera el key file automáticamente.</li>
+      <li>Verificar <code>curl -sI https://www.eventosbarcelona.com/indexnow.txt</code> devuelve 200.</li>
+    </ol>
+  </div>
+</div>
+
+<h2>Hallazgos detallados por dominio</h2>
+
+<h3>Crawlability (95/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>robots.txt válido</td><td><span class="tag pass">Pass</span></td><td>Includes explicit rules para GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot + Content-Signal directive</td></tr>
+<tr><td>Sitemap XML</td><td><span class="tag pass">Pass</span></td><td>7 sitemaps hijos, 296 URLs indexables, 60 URLs random muestreadas devuelven 200</td></tr>
+<tr><td>Crawl depth</td><td><span class="tag pass">Pass</span></td><td>Todas las URLs a depth ≤2 desde home (regla 3-click cumple con margen)</td></tr>
+<tr><td>llms.txt + llms-full.txt</td><td><span class="tag pass">Pass</span></td><td>Ambos servidos con 200. Documentación real de 22KB + 25KB</td></tr>
+<tr><td>Well-known endpoints</td><td><span class="tag pass">Pass</span></td><td>agent-card.json, agent-skills, mcp.json, security.txt, api-catalog — todos 200</td></tr>
+</table>
+
+<h3>Indexability (88/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>Canonical self</td><td><span class="tag warn">Warn</span></td><td>Sample 15 URLs: 1 caso de canonical cruzado (/musica/ → /grupos-musica/) — ver QW1</td></tr>
+<tr><td>Hreflang ES/EN/x-default</td><td><span class="tag pass">Pass</span></td><td>Presente en todas las páginas indexadas · 149 URLs EN vs 147 URLs ES (equilibrio bilingüe)</td></tr>
+<tr><td>www + HTTPS canonicalization</td><td><span class="tag pass">Pass</span></td><td>301 permanente non-www→www y http→https</td></tr>
+<tr><td>Soft-404 detection</td><td><span class="tag pass">Pass</span></td><td>URLs inexistentes devuelven 404 real (plugin All 404 Redirect ya desactivado)</td></tr>
+<tr><td>Duplicate hub /musica/</td><td><span class="tag fail">Fail</span></td><td>QW1 — hub principal duplicado con canonical cruzado</td></tr>
+</table>
+
+<h3>Security (92/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>HTTPS + HSTS</td><td><span class="tag pass">Pass</span></td><td>max-age=31536000; includeSubDomains</td></tr>
+<tr><td>X-Frame-Options</td><td><span class="tag pass">Pass</span></td><td>SAMEORIGIN</td></tr>
+<tr><td>X-Content-Type-Options</td><td><span class="tag pass">Pass</span></td><td>nosniff</td></tr>
+<tr><td>Referrer-Policy</td><td><span class="tag pass">Pass</span></td><td>strict-origin-when-cross-origin</td></tr>
+<tr><td>Permissions-Policy</td><td><span class="tag pass">Pass</span></td><td>camera=(), microphone=(), geolocation=(self)</td></tr>
+<tr><td>CSP</td><td><span class="tag warn">Warn</span></td><td>Report-Only, no enforce. Aceptable si aún se están recolectando reportes. Reforzar cuando policy sea estable.</td></tr>
+</table>
+
+<h3>Structured Data (75/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>JSON-LD válido</td><td><span class="tag pass">Pass</span></td><td>3 bloques en home: LocalBusiness × 2 (duplicado), Yoast @graph (WebPage, ImageObject, BreadcrumbList, WebSite, Organization)</td></tr>
+<tr><td>Schema types cobertura</td><td><span class="tag pass">Pass</span></td><td>Organization, LocalBusiness, WebSite, WebPage, BreadcrumbList, ImageObject en home</td></tr>
+<tr><td>LocalBusiness duplicado</td><td><span class="tag warn">Warn</span></td><td>QW3 — snippet EB-SCHEMA-LOCALBUSINESS emite un LocalBusiness que Yoast ya cubre</td></tr>
+<tr><td>schemamap.xml</td><td><span class="tag pass">Pass</span></td><td>Archivo físico publicado</td></tr>
+</table>
+
+<h3>Architecture (70/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>Depth ≤ 3 clicks</td><td><span class="tag pass">Pass</span></td><td>0 URLs a depth ≥3</td></tr>
+<tr><td>Hub-and-spoke N2 categoría</td><td><span class="tag warn">Warn</span></td><td>Home linkea a /danza/, /artistas/, /espectaculos/ ✅ · NO linkea a /musica/ ❌ (linkea a /grupos-musica/ el duplicate)</td></tr>
+<tr><td>Cobertura N2 → N3</td><td><span class="tag pass">Pass</span></td><td>Muestra /musica/: 19 de 20 N3 linkeadas (95%)</td></tr>
+<tr><td>Broken link <code>/.md</code></td><td><span class="tag fail">Fail</span></td><td>QW2 — link inválido en head de las 296 URLs</td></tr>
+<tr><td>Gaps de páginas P1 pirámide</td><td><span class="tag fail">Fail</span></td><td>QW4 — /dmc-barcelona/, /team-building/, /eventos-corporativos/ no existen</td></tr>
+</table>
+
+<h3>Content quality / SXO (68/100)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>Titles único por página</td><td><span class="tag warn">Warn</span></td><td>Todas las páginas tienen 1 title, pero se detectó al menos 1 caso empezando con <code>&amp;gt;</code> HTML mal escapado en /musica/grupo-jazz-barcelona/ — bug de template</td></tr>
+<tr><td>Meta description</td><td><span class="tag pass">Pass</span></td><td>Presente en todas las muestras (fallback vía snippet 14 para páginas que Yoast omita, e.g. noindex)</td></tr>
+<tr><td>H1 único por página</td><td><span class="tag pass">Pass</span></td><td>Muestra 8 URLs = 8 H1 correctos</td></tr>
+<tr><td>Word count categoría</td><td><span class="tag warn">Warn</span></td><td>Home 769 · /musica/ 977 · /danza/ 852 · /artistas/ 978. Competidores MICE en Barcelona rondan 1500+ palabras para hubs</td></tr>
+<tr><td>Word count N3 servicios</td><td><span class="tag warn">Warn</span></td><td>/musica/dj-barcelona/ 600 · /musica/grupo-jazz-barcelona/ 548 · /artistas/magos-en-barcelona/ 541. Competidores 800-1200 palabras + FAQ</td></tr>
+<tr><td>SERP position "DMC Barcelona"</td><td><span class="tag fail">Fail</span></td><td>No aparece en top 10. SERP dominada por dominios exact-match (dmcbarcelona.es, dmcspain.org, tuseteventos.com)</td></tr>
+<tr><td>SERP position "agencia eventos corporativos Barcelona MICE"</td><td><span class="tag pass">Pass</span></td><td>Home /en/ aparece en posición 3</td></tr>
+</table>
+
+<h3>Mobile (95/100) · Performance CWV (70/100 · Tier 2)</h3>
+<table>
+<tr><th>Check</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>Viewport meta</td><td><span class="tag pass">Pass</span></td><td>width=device-width, initial-scale=1</td></tr>
+<tr><td>Doctype HTML5</td><td><span class="tag pass">Pass</span></td><td>&lt;!doctype html&gt;</td></tr>
+<tr><td>Charset UTF-8</td><td><span class="tag pass">Pass</span></td><td>Declarado en primeros 1KB</td></tr>
+<tr><td>html lang</td><td><span class="tag pass">Pass</span></td><td>es-ES</td></tr>
+<tr><td>Render-blocking assets</td><td><span class="tag warn">Warn</span></td><td>30 archivos CSS + 21 JS externos en home. Perfmatters no está agrupando. Ver Handoff Brief 1.</td></tr>
+<tr><td>Image formats</td><td><span class="tag warn">Warn</span></td><td>Solo 54 de 7984 JPG + 5 de 573 PNG tienen versión WebP adjacent (<1%). Sin conversor.</td></tr>
+<tr><td>LCP / INP / CLS</td><td><span class="tag nice">N/A</span></td><td>PageSpeed API quota exceeded. Medir vía GSC Web Vitals report o volver a ejecutar PSI.</td></tr>
+</table>
+
+<h3>GEO / AEO (95/100)</h3>
+<p>Ya medido y auditado end-to-end via LLMagnet. Score 95/100 con Content 100, HTML 100, Accessibility 100 — el techo alcanzable sin Pro plan. Documentado en <code>project_llmagnet_audit_setup</code> (memoria del proyecto). No requiere acción esta semana.</p>
+
+<h2>Handoff briefs · Accessibility + Performance code</h2>
+
+<h3>Handoff Brief 1 — Render-blocking CSS/JS (impacto en LCP)</h3>
+<div class="qw important">
+  <div class="qw-meta">
+    <span><b>Métricas:</b> LCP (Core Web Vitals)</span>
+    <span><b>Location:</b> Home + todas las páginas Elementor</span>
+    <span><b>Stack:</b> WordPress + Elementor + Perfmatters</span>
+  </div>
+  <p><b>Root cause:</b> Home carga 30 archivos CSS + 21 archivos JS externos. Perfmatters está activo pero no está agrupando los assets. Elementor genera CSS por widget, WPML añade su propio CSS, Yoast agrega otros. El navegador debe descargar y parsear todo antes del first render.</p>
+  <p><b>Fix:</b></p>
+  <ol>
+    <li>WP admin → Perfmatters → tab <b>Assets</b> → activar <b>"Combine CSS"</b> y <b>"Combine JS"</b> (validar en staging que no rompa layout Elementor).</li>
+    <li>Perfmatters → tab <b>Assets</b> → <b>Script Manager</b>: identificar plugins que cargan JS en el frontend innecesariamente (WooCommerce si aún está instalado sin usarse, Contact Form 7 en páginas sin form, etc.) y desactivarlos por página.</li>
+    <li>Elementor → Settings → Performance → activar <b>"CSS Print Method: External file"</b> + <b>"Google Fonts Load: Swap"</b>.</li>
+  </ol>
+  <p><b>Verification:</b> Volver a correr PageSpeed en 24h. Objetivo: mobile score ≥85.</p>
+  <p><b>Files probables:</b> <code>wp-content/plugins/perfmatters/perfmatters.php</code> (settings via admin, no edición directa). Elementor: <code>wp-admin</code> → Elementor → Settings.</p>
+</div>
+
+<h3>Handoff Brief 2 — Conversión masiva de imágenes a WebP (impacto en LCP + AI visibility)</h3>
+<div class="qw nice">
+  <div class="qw-meta">
+    <span><b>Métricas:</b> LCP, page weight, GEO image_formats check</span>
+    <span><b>Location:</b> /wp-content/uploads/ (7984 JPG + 573 PNG)</span>
+    <span><b>Stack:</b> WordPress · hosting CDmon (sin ImageMagick automático)</span>
+  </div>
+  <p><b>Root cause:</b> Solo &lt;1% de las imágenes del sitio tienen versión WebP. El resto siguen sirviéndose como JPG/PNG. Peso de página 193KB en home a pesar de que el HTML es limpio — el problema es imagen.</p>
+  <p><b>Fix (opciones ordenadas por coste):</b></p>
+  <ol>
+    <li><b>Cloudflare gratis (recomendado):</b> poner el dominio detrás de Cloudflare (DNS proxy). Con Polish activo (free tier) convierte imágenes on-the-fly a WebP según Accept-Encoding del browser. Cero coste, cero cambio en WP.</li>
+    <li><b>WebP Express</b> (plugin gratis WP): instala convertidor local + .htaccess rewrite. Requiere binarios de imagen en el hosting (verificar con CDmon).</li>
+    <li><b>Imagify / ShortPixel</b> (freemium): 100-500 imgs/mes gratis, luego pago. Para 8000+ imgs sale a pagar.</li>
+  </ol>
+  <p><b>Files probables:</b> Cloudflare no toca WP. WebP Express instala en <code>wp-content/plugins/webp-express/</code>.</p>
+</div>
+
+<h2>Lo que NO es problema</h2>
+<div class="two-col">
+<div>
+<p><b>Confirmado en buen estado:</b></p>
+<ul>
+<li>HTTPS + HSTS + security headers (excepto CSP en report-only)</li>
+<li>Sitemap XML completo y accesible</li>
+<li>Robots.txt con reglas AI crawler correctas</li>
+<li>Hreflang ES/EN/x-default consistente</li>
+<li>Canonicalization www + HTTPS</li>
+<li>Soft-404 arreglado</li>
+<li>Depth ≤2 (arquitectura plana)</li>
+<li>Mobile: viewport + doctype + lang + charset</li>
+<li>llms.txt + agent-card.json + schemamap.xml servidos</li>
+<li>Sin URLs rotas en muestra 60 random del sitemap</li>
+<li>WPML sincronizado (149 EN vs 147 ES)</li>
+</ul>
+</div>
+<div>
+<p><b>Fuera del scope inmediato (proyectos, no bugs):</b></p>
+<ul>
+<li>Volumen de contenido por página (word count) — proyecto de reescritura editorial</li>
+<li>Backlinks tóxicos (mencionado en backlog abril) — necesita Ahrefs/Semrush</li>
+<li>Disavow file → GSC (backlog abril)</li>
+<li>Traducción EN pareja perfecta (WPML auto-translate + revisión)</li>
+<li>CWV medición precisa (requiere GSC Web Vitals report o PSI con quota)</li>
+<li>WebMCP feature (requiere LLMagnet Pro)</li>
+</ul>
+</div>
+</div>
+
+<h2>Recomendación final para Xavi</h2>
+<div class="callout">
+<b>Esta semana (2-9 julio):</b> ejecutar QW2 + QW3 + QW5 (los 3 fixes chicos, &lt;15 min combinados) y decidir QW1 (consolidar hub música).
+<br><br>
+<b>Julio + agosto:</b> ejecutar el plan de contenido ya documentado (24 páginas ES+EN para cubrir gaps pirámide), arrancando por análisis competitivo de <code>/dmc-barcelona/</code> como P1.
+<br><br>
+<b>No urgente pero necesario:</b> handoff briefs de performance (combine CSS/JS + Cloudflare Polish para WebP).
+<br><br>
+<b>Diferido a Q4:</b> medición CWV precisa vía GSC + reforzar CSP a enforce cuando la policy sea estable.
+</div>
+
+<footer>
+Radiografía generada 2026-07-02 · Skill <code>g4u-seo-audit</code> · Datos GSC/GA4/CrUX real limitados (sin gog CLI ni PSI quota); análisis basado en crawl directo + WebSearch para SERP + memoria proyecto (baselines abril 2026)<br>
+Documento vive en <code>OUTPUTS/eventos-barcelona/2026-07-02-seo-audit.html</code>
+</footer>
+
+</div>
+</body>
+</html>
