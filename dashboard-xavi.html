@@ -310,9 +310,8 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <div class="wrap">
 
-<input type="radio" name="sprint-tab" id="tab-hoy" checked>
 <input type="radio" name="sprint-tab" id="tab-s1">
-<input type="radio" name="sprint-tab" id="tab-s2">
+<input type="radio" name="sprint-tab" id="tab-s2" checked>
 <input type="radio" name="sprint-tab" id="tab-s3">
 <input type="radio" name="sprint-tab" id="tab-s4">
 <input type="radio" name="sprint-tab" id="tab-s5">
@@ -331,7 +330,6 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </header>
 
 <div class="tabs">
-  <label for="tab-hoy">🎯 Reunión hoy <small>17 jul · decisiones</small></label>
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
   <label for="tab-s2">Sprint 2 <small>16-29 jul · en curso</small></label>
   <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
@@ -342,149 +340,6 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </div>
 
 <div class="contents">
-
-<!-- REUNIÓN HOY 17 JUL -->
-<div class="tab-content" id="c-hoy">
-
-<div class="meet-hero">
-<div class="mh-kicker">Reunión de trabajo · 17 julio 2026</div>
-<h2>4 decisiones para tomar juntos hoy</h2>
-<p class="mh-sub">El Sprint 2 arrancó con 3 correcciones técnicas ya hechas y 2 briefs de landings listos. Antes de escribir el copy definitivo necesitamos que valides 4 cosas. Ninguna te lleva más de 2 minutos.</p>
-<div class="mh-outcome">
-<b>Al final de la call salimos con:</b> las 4 decisiones tomadas, la próxima semana yo produzco los 2 landings de calidad, y el 22-24 jul están publicados en la web.
-</div>
-</div>
-
-<div class="decisions">
-
-<p class="d-intro">Cada decisión de abajo la explico en 30 segundos, te doy las opciones y mi recomendación. Vos decidís.</p>
-
-<!-- DECISIÓN 1 -->
-<div class="decision">
-<div class="dec-header">
-  <span class="dec-num">1</span>
-  <h4>¿Cuál es la URL oficial de música?</h4>
-</div>
-<div class="dec-body">
-<p class="dec-why"><b>Situación</b>: hoy tenés dos direcciones con el mismo contenido de música: <code>eventosbarcelona.com/musica/</code> y <code>eventosbarcelona.com/grupos-musica/</code>. Google no sabe cuál es la "buena" y termina eligiendo una, pero perdemos la mitad del posicionamiento porque están duplicadas. Hay que consolidar en una y redirigir la otra para que sume todo a la misma.</p>
-
-<div class="dec-opts">
-<div class="dec-opt recommended">
-<b>Opción A · /musica/</b>
-Más corta y consistente con el resto de categorías (/danza/, /artistas/, /espectaculos/). La que menciona tu pirámide SEO como oficial.
-</div>
-<div class="dec-opt">
-<b>Opción B · /grupos-musica/</b>
-La que Google ya eligió por su cuenta. Menos disruptivo pero URL más larga.
-</div>
-</div>
-
-<div class="dec-reco"><b>Recomiendo A</b> · queda más limpio, coherente con las otras categorías, y es lo que ya está en tu biblia de keywords. La consolidación tarda 30 minutos técnicos.</div>
-</div>
-</div>
-
-<!-- DECISIÓN 2 -->
-<div class="decision">
-<div class="dec-header">
-  <span class="dec-num">2</span>
-  <h4>Landing para DMCs y agencias · ¿URL nueva o refrescamos la vieja?</h4>
-</div>
-<div class="dec-body">
-<p class="dec-why"><b>Situación</b>: ya tenés una landing publicada que se llama <code>/agencia-eventos-corporativos-profesional-barcelona/</code>. Tiene 2.799 palabras de contenido sólido pero la URL es larga y "spam-friendly". Queremos crear una landing específica para captar a DMCs, agencias, OPC y departamentos de marketing (que según tu informe estratégico son el <b>Top of Mind objetivo</b> de EB).</p>
-
-<div class="dec-opts">
-<div class="dec-opt recommended">
-<b>Opción A · Crear URL limpia + redirigir la vieja</b>
-Nueva: <code>/partner-dmc-agencias-eventos-barcelona/</code><br>
-Redirigimos la vieja a la nueva para conservar toda la autoridad SEO acumulada.
-</div>
-<div class="dec-opt">
-<b>Opción B · Reescribir la vieja</b>
-Menos trabajo pero conservamos la URL fea. Menos apto para el ICP objetivo.
-</div>
-</div>
-
-<div class="dec-reco"><b>Recomiendo A</b> · URL profesional para el ICP core del informe (DMCs y agencias). El redirect 301 transfiere ~90% de la autoridad de la vieja a la nueva. Trabajo extra: ~1 hora de configuración.</div>
-</div>
-</div>
-
-<!-- DECISIÓN 3 -->
-<div class="decision">
-<div class="dec-header">
-  <span class="dec-num">3</span>
-  <h4>Landing de gala dinners · ya tenés un artículo · ¿cómo lo combinamos?</h4>
-</div>
-<div class="dec-body">
-<p class="dec-why"><b>Situación</b>: ya tenés publicado un artículo largo (2.641 palabras + versión inglés) titulado "Cena de Gala Corporativa: cómo crear una experiencia sofisticada e interactiva". Es un artículo educativo (cómo hacer una gala dinner). Ahora vamos a crear una landing COMERCIAL distinta: quién nos contrate para producir su gala dinner con casos reales (Huawei, HP, MNAC, Spribe).</p>
-
-<div class="dec-opts">
-<div class="dec-opt recommended">
-<b>Plan propuesto · las dos conviven</b>
-Blog artículo queda como educativo (guía). Landing nueva es comercial con casos reales y CTA de contacto. Se linkean entre sí: "guía completa" ↔ "contratanos".
-</div>
-<div class="dec-opt">
-<b>Alternativa · fusionar todo en una sola URL</b>
-Menos flexibilidad. Perdemos la intent educativa que trae tráfico distinto.
-</div>
-</div>
-
-<div class="dec-reco"><b>Recomiendo el plan propuesto</b> · cada URL tiene un propósito distinto (educar vs vender) y así capturamos dos tipos de búsqueda. Bonus: aprovechamos para arreglar un bug técnico que detectamos — la URL corta <code>/cena-de-gala/</code> hoy apunta a una imagen JPG por error histórico. Al publicar la nueva landing la redirigimos ahí.</div>
-</div>
-</div>
-
-<!-- DECISIÓN 4 -->
-<div class="decision">
-<div class="dec-header">
-  <span class="dec-num">4</span>
-  <h4>¿Podemos mencionar nombres reales de clientes en las nuevas landings?</h4>
-</div>
-<div class="dec-body">
-<p class="dec-why"><b>Situación</b>: en las 2 landings queremos poner casos concretos con nombre de marca. Casos que YA están publicados en tu web y son verificables: <b>Huawei, Allianz India, Criteo, Gartner, Hewlett Packard, Spribe, Royale Century Ply, Diputación Sevilla</b>. Es la prueba más fuerte para convencer a un nuevo cliente ("estas marcas confían en EB").</p>
-
-<div class="dec-opts">
-<div class="dec-opt recommended">
-<b>Opción A · Nombres + logos visibles</b>
-Ya están en tu web pública, no hay NDA violado. Prueba de autoridad máxima.
-</div>
-<div class="dec-opt">
-<b>Opción B · Descriptor genérico</b>
-"Multinacional tecnológica", "escudería de F1", etc. Menor credibilidad.
-</div>
-</div>
-
-<div class="dec-reco"><b>Recomiendo A</b> con una lista tuya de "OK mencionar" vs "no mencionar" si hay excepciones (SpaceX, F1 podrían tener NDA aunque figuran en propuestas — confirmá vos).</div>
-</div>
-</div>
-
-</div>
-
-<h3 class="section">Lo que ya está hecho y no requiere tu decisión <span class="sub">para tu contexto</span></h3>
-
-<div class="work-list">
-<ul>
-<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>3 correcciones técnicas del audit SEO</b> (broken link, esquema duplicado, activación IndexNow para que Bing detecte el sitio más rápido)</div><div class="impact">día 0 · 15 min</div></li>
-<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>Análisis competitivo de las 2 landings</b>: top 10 de Google en cada búsqueda, estructura que funciona, dónde hay hueco para diferenciarnos</div><div class="impact">día 1-4</div></li>
-<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>2 briefs completos escritos</b>: estructura de cada landing, casos a usar, palabras clave, todo listo para escribir copy en cuanto valides las decisiones</div><div class="impact">día 4 · ~2.500 palabras</div></li>
-</ul>
-</div>
-
-<h3 class="section">Lo que viene esta semana y la próxima <span class="sub">calendario simple</span></h3>
-
-<div class="work-list">
-<ul>
-<li><span class="cat-tag content">18-20 jul</span><div class="desc"><b>Escribo el copy de las 2 landings</b> (fin de semana + lunes). Cada una ~2.000 palabras con casos concretos, FAQ, CTAs.</div><div class="impact">Philippe</div></li>
-<li><span class="cat-tag content">21 jul</span><div class="desc"><b>Te paso los 2 drafts para revisar</b>. Tú validas tono, positioning, precios, casos.</div><div class="impact">Xavi</div></li>
-<li><span class="cat-tag content">22-24 jul</span><div class="desc"><b>Publico las 2 landings en Elementor</b> (español + inglés = 4 páginas). Aplico la checklist de calidad (SEO, esquema, imágenes, tracking).</div><div class="impact">Philippe</div></li>
-<li><span class="cat-tag tech">25-28 jul</span><div class="desc"><b>Sistema de medición operativo</b>: por primera vez vamos a poder decir "este lead vino de la página X". Setup de UTMs, campo custom en GHL, evento en Analytics.</div><div class="impact">Philippe + Ramiro</div></li>
-<li><span class="cat-tag seo">29 jul</span><div class="desc"><b>Cierre de sprint</b>: revisión, pedimos indexación a Google, arranque de brief para Sprint 3.</div><div class="impact">Philippe</div></li>
-</ul>
-</div>
-
-<div class="callout info" style="margin-top:24px">
-<b>Al final del sprint (29 jul) vas a poder ver</b>: 4 URLs nuevas publicadas + hub música consolidado + un dashboard donde por primera vez sabrás qué keyword y qué página trae cada lead a GHL. Todo lo demás (análisis SEO detallado, evolución de métricas, plan de sprints futuros) está en las otras pestañas de este documento para tu consulta.
-</div>
-
-</div>
 
 <!-- SPRINT 1 -->
 <div class="tab-content" id="c-s1">
@@ -851,6 +706,98 @@ Scale Score <b>56 → 76</b> (+20 pts). GEO/AEO Score <b>68 → 95</b> (objetivo
 <div class="sb-val">100 <small>· aporta 15,0</small></div>
 </div>
 </div>
+</div>
+
+<h3 class="section">🎯 Decisiones a validar en la reunión del 17 jul <span class="sub">4 preguntas · 2 minutos cada una · desbloquean todo el sprint</span></h3>
+
+<p style="color:var(--muted);font-size:14px;margin:6px 0 16px">Antes de escribir el copy definitivo de las 2 landings necesitamos que Xavi valide 4 cosas. Cada una está planteada con contexto simple, 2 opciones y una recomendación. Al final de la call salimos con las 4 decisiones tomadas y arrancamos producción.</p>
+
+<div class="decisions">
+
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">1</span>
+  <h4>¿Cuál es la URL oficial de música?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: hoy existen dos direcciones con el mismo contenido de música: <code>eventosbarcelona.com/musica/</code> y <code>eventosbarcelona.com/grupos-musica/</code>. Google no sabe cuál es la "buena" y termina eligiendo una, pero se pierde la mitad del posicionamiento por estar duplicadas. Hay que consolidar en una y redirigir la otra para que toda la autoridad sume a la misma.</p>
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · /musica/</b>
+Más corta y consistente con el resto de categorías (/danza/, /artistas/, /espectaculos/). La que menciona la pirámide SEO como oficial.
+</div>
+<div class="dec-opt">
+<b>Opción B · /grupos-musica/</b>
+La que Google eligió por su cuenta. Menos disruptivo pero URL más larga.
+</div>
+</div>
+<div class="dec-reco"><b>Recomendación · A</b>. Queda más limpio, coherente con las otras categorías, y es lo que ya figura en la biblia de keywords. La consolidación técnica tarda 30 minutos.</div>
+</div>
+</div>
+
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">2</span>
+  <h4>Landing para DMCs y agencias · ¿URL nueva o refrescar la vieja?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: ya hay una landing publicada <code>/agencia-eventos-corporativos-profesional-barcelona/</code> con 2.799 palabras de contenido sólido pero URL larga y "spam-friendly". Queremos crear una landing específica para captar a DMCs, agencias, OPC y departamentos de marketing (que según el informe estratégico son el <b>Top of Mind objetivo</b> de EB).</p>
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · URL limpia + redirigir la vieja</b>
+Nueva: <code>/partner-dmc-agencias-eventos-barcelona/</code>. Redirigimos la vieja para conservar toda la autoridad SEO acumulada.
+</div>
+<div class="dec-opt">
+<b>Opción B · Reescribir la vieja</b>
+Menos trabajo pero conservamos la URL fea. Menos apto para el ICP objetivo.
+</div>
+</div>
+<div class="dec-reco"><b>Recomendación · A</b>. URL profesional para el ICP core del informe (DMCs y agencias). El redirect 301 transfiere ~90% de la autoridad de la vieja a la nueva. Trabajo extra: ~1 hora de configuración.</div>
+</div>
+</div>
+
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">3</span>
+  <h4>Landing de gala dinners · ya hay un artículo · ¿cómo se combina?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: ya existe un artículo largo publicado (2.641 palabras + versión inglés) titulado "Cena de Gala Corporativa: cómo crear una experiencia sofisticada e interactiva". Es un artículo educativo (cómo hacer una gala dinner). Ahora vamos a crear una landing COMERCIAL distinta: quién nos contrate para producir su gala dinner con casos reales (Huawei, HP, MNAC, Spribe).</p>
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Plan propuesto · las dos conviven</b>
+Blog artículo queda como educativo (guía). Landing nueva es comercial con casos reales y CTA de contacto. Se linkean entre sí: "guía completa" ↔ "contratanos".
+</div>
+<div class="dec-opt">
+<b>Alternativa · fusionar todo en una sola URL</b>
+Menos flexibilidad. Perdemos la intent educativa que trae otro tipo de tráfico.
+</div>
+</div>
+<div class="dec-reco"><b>Recomendación · plan propuesto</b>. Cada URL tiene un propósito distinto (educar vs vender) y así capturamos dos tipos de búsqueda. Aprovechamos además para arreglar un bug técnico detectado — la URL corta <code>/cena-de-gala/</code> hoy apunta a una imagen JPG por un error histórico. Al publicar la nueva landing la redirigimos ahí.</div>
+</div>
+</div>
+
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">4</span>
+  <h4>¿Podemos mencionar nombres reales de clientes en las nuevas landings?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: en las 2 landings queremos incluir casos concretos con nombre de marca. Casos que YA están publicados en la web y son verificables: <b>Huawei, Allianz India, Criteo, Gartner, Hewlett Packard, Spribe, Royale Century Ply, Diputación Sevilla</b>. Es la prueba más fuerte para convencer a un nuevo cliente ("estas marcas confían en EB").</p>
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · Nombres + logos visibles</b>
+Ya están en la web pública, no hay NDA violado. Prueba de autoridad máxima.
+</div>
+<div class="dec-opt">
+<b>Opción B · Descriptor genérico</b>
+"Multinacional tecnológica", "escudería de F1", etc. Menor credibilidad.
+</div>
+</div>
+<div class="dec-reco"><b>Recomendación · A</b>, con una lista tuya de "OK mencionar" vs "no mencionar" si hay excepciones (SpaceX, F1 podrían tener NDA aunque figuran en propuestas — confirmar).</div>
+</div>
+</div>
+
 </div>
 
 <h3 class="section">Plan de trabajo · accionables ejecutables <span class="sub">16 días · 14-29 jul · Opción B: 2 landings de calidad</span></h3>
