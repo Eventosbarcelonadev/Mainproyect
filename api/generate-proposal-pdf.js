@@ -64,10 +64,16 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const SB_URL = process.env.SUPABASE_URL;
-  const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
+  // Trim defensivo: las env vars de Vercel vienen con \n al final. Sin esto,
+  // publicUrl quedaba como "https://...supabase.co\n/storage/..." → la URL
+  // guardada en proposals.pdf_url y en el campo GHL url_propuesta_pdf salía
+  // rota (curl/clients no la resuelven). Mismo patrón que api/admin.js.
+  // Bug detectado 2026-07-17: los 11 PDFs generados tenían la URL corrupta.
+  const trim = (v) => (typeof v === 'string' ? v.trim() : v);
+  const SB_URL = trim(process.env.SUPABASE_URL);
+  const SB_KEY = trim(process.env.SUPABASE_SERVICE_KEY);
   const GHL_API = 'https://services.leadconnectorhq.com';
-  const GHL_TOKEN = process.env.GHL_API_KEY;
+  const GHL_TOKEN = trim(process.env.GHL_API_KEY);
   if (!SB_URL || !SB_KEY) {
     return res.status(500).json({ error: 'Missing env config' });
   }
