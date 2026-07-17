@@ -58,6 +58,11 @@ input[name="sprint-tab"]{position:absolute;left:-9999px}
 #tab-ov:checked~.tabs label[for="tab-ov"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
 #tab-ov:checked~.tabs label[for="tab-ov"] small{color:var(--gold);font-weight:700}
 #tab-ov:checked~.contents #c-ov{display:block}
+#tab-hoy:checked~.tabs label[for="tab-hoy"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.15)}
+#tab-hoy:checked~.tabs label[for="tab-hoy"] small{color:var(--gold);font-weight:700}
+#tab-hoy:checked~.contents #c-hoy{display:block}
+.tabs label[for="tab-hoy"]{background:linear-gradient(90deg,rgba(201,154,58,.12),rgba(201,154,58,.04));border-left:3px solid var(--gold);color:var(--ink);font-weight:700}
+.tabs label[for="tab-hoy"] small{color:var(--gold)}
 
 /* Sprint header */
 .sprint-header{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:24px 28px;border-radius:4px;margin-bottom:24px}
@@ -161,6 +166,36 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .objective li:last-child{border-bottom:none}
 .objective li b{color:var(--ink)}
 .objective li .o-detail{color:var(--muted);font-size:12px;margin-top:2px;display:block}
+
+/* Reunión hoy · presentación tab */
+.meet-hero{background:linear-gradient(135deg,#fff9ec 0%,#fef3d8 100%);border:2px solid var(--gold);border-radius:8px;padding:28px 32px;margin:16px 0 24px;position:relative}
+.meet-hero .mh-kicker{color:var(--gold);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.meet-hero h2{font-size:30px;line-height:1.15;margin:0 0 12px;letter-spacing:-.01em;padding:0;border:none;color:var(--ink)}
+.meet-hero .mh-sub{color:var(--ink);font-size:16px;line-height:1.55;margin:0 0 14px}
+.meet-hero .mh-outcome{background:rgba(10,37,64,.06);border-radius:4px;padding:12px 16px;margin-top:14px;font-size:13.5px;color:var(--ink)}
+.meet-hero .mh-outcome b{color:var(--ink)}
+
+/* Decisión blocks */
+.decisions{margin-top:24px}
+.decisions .d-intro{color:var(--muted);font-size:14.5px;margin-bottom:16px;line-height:1.6}
+.decision{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:16px}
+.decision .dec-header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.decision .dec-num{background:var(--gold);color:#fff;width:34px;height:34px;border-radius:17px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
+.decision .dec-header h4{margin:0;font-size:16px;font-weight:600;letter-spacing:-.005em}
+.decision .dec-body{padding:18px 22px}
+.decision .dec-why{font-size:14px;color:var(--ink);line-height:1.6;margin:0 0 14px}
+.decision .dec-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.decision .dec-opt{background:#faf8f4;border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:13px}
+.decision .dec-opt.recommended{border-color:var(--green);background:rgba(47,125,58,.04);position:relative}
+.decision .dec-opt.recommended::after{content:"RECOMENDADO";position:absolute;top:-8px;right:8px;background:var(--green);color:#fff;font-size:9px;font-weight:800;letter-spacing:.14em;padding:2px 7px;border-radius:3px}
+.decision .dec-opt b{color:var(--ink);display:block;margin-bottom:4px;font-size:13px}
+.decision .dec-reco{background:rgba(201,154,58,.08);border-left:4px solid var(--gold);padding:10px 14px;border-radius:2px;font-size:13px;color:var(--ink)}
+.decision .dec-reco b{color:var(--ink)}
+.decision .dec-status{margin-top:10px;font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+@media(max-width:820px){
+  .decision .dec-opts{grid-template-columns:1fr}
+  .meet-hero h2{font-size:24px}
+}
 
 /* Evolution comparison (Sprint 1 close) */
 .evolution{background:linear-gradient(135deg,rgba(47,125,58,.08),rgba(201,154,58,.08));border:1px solid var(--line);border-radius:6px;padding:24px 28px;margin:16px 0 24px}
@@ -275,8 +310,9 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <div class="wrap">
 
+<input type="radio" name="sprint-tab" id="tab-hoy" checked>
 <input type="radio" name="sprint-tab" id="tab-s1">
-<input type="radio" name="sprint-tab" id="tab-s2" checked>
+<input type="radio" name="sprint-tab" id="tab-s2">
 <input type="radio" name="sprint-tab" id="tab-s3">
 <input type="radio" name="sprint-tab" id="tab-s4">
 <input type="radio" name="sprint-tab" id="tab-s5">
@@ -295,6 +331,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </header>
 
 <div class="tabs">
+  <label for="tab-hoy">🎯 Reunión hoy <small>17 jul · decisiones</small></label>
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
   <label for="tab-s2">Sprint 2 <small>16-29 jul · en curso</small></label>
   <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
@@ -305,6 +342,149 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 </div>
 
 <div class="contents">
+
+<!-- REUNIÓN HOY 17 JUL -->
+<div class="tab-content" id="c-hoy">
+
+<div class="meet-hero">
+<div class="mh-kicker">Reunión de trabajo · 17 julio 2026</div>
+<h2>4 decisiones para tomar juntos hoy</h2>
+<p class="mh-sub">El Sprint 2 arrancó con 3 correcciones técnicas ya hechas y 2 briefs de landings listos. Antes de escribir el copy definitivo necesitamos que valides 4 cosas. Ninguna te lleva más de 2 minutos.</p>
+<div class="mh-outcome">
+<b>Al final de la call salimos con:</b> las 4 decisiones tomadas, la próxima semana yo produzco los 2 landings de calidad, y el 22-24 jul están publicados en la web.
+</div>
+</div>
+
+<div class="decisions">
+
+<p class="d-intro">Cada decisión de abajo la explico en 30 segundos, te doy las opciones y mi recomendación. Vos decidís.</p>
+
+<!-- DECISIÓN 1 -->
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">1</span>
+  <h4>¿Cuál es la URL oficial de música?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: hoy tenés dos direcciones con el mismo contenido de música: <code>eventosbarcelona.com/musica/</code> y <code>eventosbarcelona.com/grupos-musica/</code>. Google no sabe cuál es la "buena" y termina eligiendo una, pero perdemos la mitad del posicionamiento porque están duplicadas. Hay que consolidar en una y redirigir la otra para que sume todo a la misma.</p>
+
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · /musica/</b>
+Más corta y consistente con el resto de categorías (/danza/, /artistas/, /espectaculos/). La que menciona tu pirámide SEO como oficial.
+</div>
+<div class="dec-opt">
+<b>Opción B · /grupos-musica/</b>
+La que Google ya eligió por su cuenta. Menos disruptivo pero URL más larga.
+</div>
+</div>
+
+<div class="dec-reco"><b>Recomiendo A</b> · queda más limpio, coherente con las otras categorías, y es lo que ya está en tu biblia de keywords. La consolidación tarda 30 minutos técnicos.</div>
+</div>
+</div>
+
+<!-- DECISIÓN 2 -->
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">2</span>
+  <h4>Landing para DMCs y agencias · ¿URL nueva o refrescamos la vieja?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: ya tenés una landing publicada que se llama <code>/agencia-eventos-corporativos-profesional-barcelona/</code>. Tiene 2.799 palabras de contenido sólido pero la URL es larga y "spam-friendly". Queremos crear una landing específica para captar a DMCs, agencias, OPC y departamentos de marketing (que según tu informe estratégico son el <b>Top of Mind objetivo</b> de EB).</p>
+
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · Crear URL limpia + redirigir la vieja</b>
+Nueva: <code>/partner-dmc-agencias-eventos-barcelona/</code><br>
+Redirigimos la vieja a la nueva para conservar toda la autoridad SEO acumulada.
+</div>
+<div class="dec-opt">
+<b>Opción B · Reescribir la vieja</b>
+Menos trabajo pero conservamos la URL fea. Menos apto para el ICP objetivo.
+</div>
+</div>
+
+<div class="dec-reco"><b>Recomiendo A</b> · URL profesional para el ICP core del informe (DMCs y agencias). El redirect 301 transfiere ~90% de la autoridad de la vieja a la nueva. Trabajo extra: ~1 hora de configuración.</div>
+</div>
+</div>
+
+<!-- DECISIÓN 3 -->
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">3</span>
+  <h4>Landing de gala dinners · ya tenés un artículo · ¿cómo lo combinamos?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: ya tenés publicado un artículo largo (2.641 palabras + versión inglés) titulado "Cena de Gala Corporativa: cómo crear una experiencia sofisticada e interactiva". Es un artículo educativo (cómo hacer una gala dinner). Ahora vamos a crear una landing COMERCIAL distinta: quién nos contrate para producir su gala dinner con casos reales (Huawei, HP, MNAC, Spribe).</p>
+
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Plan propuesto · las dos conviven</b>
+Blog artículo queda como educativo (guía). Landing nueva es comercial con casos reales y CTA de contacto. Se linkean entre sí: "guía completa" ↔ "contratanos".
+</div>
+<div class="dec-opt">
+<b>Alternativa · fusionar todo en una sola URL</b>
+Menos flexibilidad. Perdemos la intent educativa que trae tráfico distinto.
+</div>
+</div>
+
+<div class="dec-reco"><b>Recomiendo el plan propuesto</b> · cada URL tiene un propósito distinto (educar vs vender) y así capturamos dos tipos de búsqueda. Bonus: aprovechamos para arreglar un bug técnico que detectamos — la URL corta <code>/cena-de-gala/</code> hoy apunta a una imagen JPG por error histórico. Al publicar la nueva landing la redirigimos ahí.</div>
+</div>
+</div>
+
+<!-- DECISIÓN 4 -->
+<div class="decision">
+<div class="dec-header">
+  <span class="dec-num">4</span>
+  <h4>¿Podemos mencionar nombres reales de clientes en las nuevas landings?</h4>
+</div>
+<div class="dec-body">
+<p class="dec-why"><b>Situación</b>: en las 2 landings queremos poner casos concretos con nombre de marca. Casos que YA están publicados en tu web y son verificables: <b>Huawei, Allianz India, Criteo, Gartner, Hewlett Packard, Spribe, Royale Century Ply, Diputación Sevilla</b>. Es la prueba más fuerte para convencer a un nuevo cliente ("estas marcas confían en EB").</p>
+
+<div class="dec-opts">
+<div class="dec-opt recommended">
+<b>Opción A · Nombres + logos visibles</b>
+Ya están en tu web pública, no hay NDA violado. Prueba de autoridad máxima.
+</div>
+<div class="dec-opt">
+<b>Opción B · Descriptor genérico</b>
+"Multinacional tecnológica", "escudería de F1", etc. Menor credibilidad.
+</div>
+</div>
+
+<div class="dec-reco"><b>Recomiendo A</b> con una lista tuya de "OK mencionar" vs "no mencionar" si hay excepciones (SpaceX, F1 podrían tener NDA aunque figuran en propuestas — confirmá vos).</div>
+</div>
+</div>
+
+</div>
+
+<h3 class="section">Lo que ya está hecho y no requiere tu decisión <span class="sub">para tu contexto</span></h3>
+
+<div class="work-list">
+<ul>
+<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>3 correcciones técnicas del audit SEO</b> (broken link, esquema duplicado, activación IndexNow para que Bing detecte el sitio más rápido)</div><div class="impact">día 0 · 15 min</div></li>
+<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>Análisis competitivo de las 2 landings</b>: top 10 de Google en cada búsqueda, estructura que funciona, dónde hay hueco para diferenciarnos</div><div class="impact">día 1-4</div></li>
+<li><span class="cat-tag done" style="background:var(--green)">Hecho</span><div class="desc"><b>2 briefs completos escritos</b>: estructura de cada landing, casos a usar, palabras clave, todo listo para escribir copy en cuanto valides las decisiones</div><div class="impact">día 4 · ~2.500 palabras</div></li>
+</ul>
+</div>
+
+<h3 class="section">Lo que viene esta semana y la próxima <span class="sub">calendario simple</span></h3>
+
+<div class="work-list">
+<ul>
+<li><span class="cat-tag content">18-20 jul</span><div class="desc"><b>Escribo el copy de las 2 landings</b> (fin de semana + lunes). Cada una ~2.000 palabras con casos concretos, FAQ, CTAs.</div><div class="impact">Philippe</div></li>
+<li><span class="cat-tag content">21 jul</span><div class="desc"><b>Te paso los 2 drafts para revisar</b>. Tú validas tono, positioning, precios, casos.</div><div class="impact">Xavi</div></li>
+<li><span class="cat-tag content">22-24 jul</span><div class="desc"><b>Publico las 2 landings en Elementor</b> (español + inglés = 4 páginas). Aplico la checklist de calidad (SEO, esquema, imágenes, tracking).</div><div class="impact">Philippe</div></li>
+<li><span class="cat-tag tech">25-28 jul</span><div class="desc"><b>Sistema de medición operativo</b>: por primera vez vamos a poder decir "este lead vino de la página X". Setup de UTMs, campo custom en GHL, evento en Analytics.</div><div class="impact">Philippe + Ramiro</div></li>
+<li><span class="cat-tag seo">29 jul</span><div class="desc"><b>Cierre de sprint</b>: revisión, pedimos indexación a Google, arranque de brief para Sprint 3.</div><div class="impact">Philippe</div></li>
+</ul>
+</div>
+
+<div class="callout info" style="margin-top:24px">
+<b>Al final del sprint (29 jul) vas a poder ver</b>: 4 URLs nuevas publicadas + hub música consolidado + un dashboard donde por primera vez sabrás qué keyword y qué página trae cada lead a GHL. Todo lo demás (análisis SEO detallado, evolución de métricas, plan de sprints futuros) está en las otras pestañas de este documento para tu consulta.
+</div>
+
+</div>
 
 <!-- SPRINT 1 -->
 <div class="tab-content" id="c-s1">
