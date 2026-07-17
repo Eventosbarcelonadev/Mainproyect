@@ -113,6 +113,27 @@
     .btn-approve-client:hover { background: #27ae60; }
     .btn-approve-client:disabled { opacity: 0.7; cursor: default; }
 
+    /* Descargar PDF — vista CLIENTE de propuestas aprobadas. Secundario
+       (outline) para no competir con el verde de "Aprobar presupuesto". */
+    .btn-pdf-client {
+      display: inline-block;
+      padding: 10px 24px;
+      background: transparent;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-pdf-client:hover { background: rgba(255,255,255,0.14); border-color: #fff; }
+    .btn-pdf-client:disabled { opacity: 0.6; cursor: progress; }
+    .btn-pdf-client.large { padding: 16px 40px; font-size: 15px; }
+    body.print-mode .btn-pdf-client { display: none !important; }
+
     .btn-approve-client.large {
       padding: 16px 48px;
       font-size: 15px;
@@ -2050,6 +2071,8 @@
         ctaSub: 'Acepta esta propuesta o cuéntanos qué necesitas para tu evento',
         ctaConfirm: 'Aprobar presupuesto',
         ctaConfirmed: 'Presupuesto aprobado',
+        ctaDownloadPdf: 'Descargar PDF',
+        ctaPdfGenerating: 'Generando PDF\u2026',
         ctaConfirmError: 'No se pudo aprobar. Intenta de nuevo en unos minutos.',
         footerTitle: 'Tu equipo de gestión de eventos',
         roleDirector: 'Director de Eventos y Co-Fundador',
@@ -2086,6 +2109,8 @@
         ctaSub: 'Accept this proposal or tell us what you need for your event',
         ctaConfirm: 'Approve budget',
         ctaConfirmed: 'Budget approved',
+        ctaDownloadPdf: 'Download PDF',
+        ctaPdfGenerating: 'Generating PDF\u2026',
         ctaConfirmError: 'Could not approve. Please try again in a few minutes.',
         footerTitle: 'Your event management team',
         roleDirector: 'Head of Events & Co-Founder',
@@ -2436,6 +2461,9 @@
         proposalState.status = p.status || 'revision';
         proposalState.ghlContactId = p.ghl_contact_id || null;
         proposalState.ghlOpportunityId = p.ghl_opportunity_id || null;
+        // pdf_url del PDF generado al validar. Habilita el botón "Descargar PDF"
+        // en la vista CLIENTE de las propuestas aprobadas (Xavi 2026-07-17).
+        proposalState.pdfUrl = p.pdf_url || null;
 
         // Rebuild shows from saved data (array of {id, currentPrice, contextLabel})
         const showsData = {
@@ -2693,7 +2721,7 @@
             <div class="nav-right">
               ${isAdmin
                 ? `<button class="hero-image-change" onclick="openHeroImagePicker()">Cambiar imagen</button>`
-                : `<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
+                : `${clientPdfBtn()}<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
             </div>
           </div>
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
@@ -2791,6 +2819,7 @@
           <p>${T.ctaSub}</p>
           <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
             <button id="ctaConfirmBtn" class="btn-approve-client large" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>
+            ${clientPdfBtn('large')}
           </div>
         </div>
 
@@ -3478,6 +3507,40 @@
     // =============================================
     // CLIENT CONFIRMATION (público)
     // =============================================
+    // Botón "Descargar PDF" para la vista CLIENTE de propuestas ya validadas.
+    // Solo se renderiza si NO es admin (el admin ya tiene "Exportar PDF" en su
+    // barra) y la propuesta está aprobada. Xavi 2026-07-17.
+    function clientPdfBtn(cls) {
+      if (proposalState.isAdmin || proposalState.showAdminBar) return '';
+      if (proposalState.status !== 'approved') return '';
+      return `<button class="btn-pdf-client ${cls || ''}" onclick="downloadProposalPdf(this)">${T.ctaDownloadPdf}</button>`;
+    }
+
+    // Descarga el PDF de la propuesta validada. Si ya se generó al validar
+    // (pdf_url), abre ese directo. Si no existe (propuestas aprobadas viejas
+    // sin PDF), lo genera on-demand y después lo abre.
+    async function downloadProposalPdf(btn) {
+      if (proposalState.pdfUrl) { window.open(proposalState.pdfUrl, '_blank'); return; }
+      const orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = T.ctaPdfGenerating; }
+      try {
+        const r = await fetch('/api/generate-proposal-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proposalId: proposalState.proposalId, lang: LANG })
+        });
+        const d = await r.json();
+        if (!r.ok || !d.url) throw new Error(d.error || 'PDF error');
+        proposalState.pdfUrl = d.url;
+        window.open(d.url, '_blank');
+      } catch (e) {
+        console.error('downloadProposalPdf:', e);
+        showToast(T.ctaConfirmError || 'Error', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+      }
+    }
+
     async function confirmProposalByEmail() {
       const btns = ['ctaConfirmBtn', 'ctaConfirmBtnTop']
         .map(id => document.getElementById(id))
