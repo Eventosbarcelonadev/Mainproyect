@@ -3,6 +3,24 @@
 **Sprint 2 · Landing P1 · Lead Ideal #1 del Informe estratégico EB**
 **Fecha**: 2026-07-17 · **Autor**: Philippe (Scale IT) · **Estado**: Draft para revisión Xavi
 
+## ⚠️ Contenido existente que se solapa · REQUIERE VALIDACIÓN XAVI
+
+Al crawlear el sitemap detectamos 2 URLs existentes relacionadas:
+
+1. **Blog post ES**: `/cena-de-gala-corporativa-como-crear-una-experiencia-sofisticada-e-interactiva-para-tu-empresa/` (2.641 palabras · intent informacional "cómo crear")
+2. **Blog post EN**: `/en/corporate-gala-dinner-create-sophisticated-interactive-experience-company/`
+3. **Redirect roto**: `/cena-de-gala/` (301) apunta a un archivo de imagen `.jpg` — bug histórico
+
+**Decisión propuesta (a validar con Xavi)**:
+- **Mantener los 2 blog posts** como contenido INFORMACIONAL (cómo crear una gala dinner) · útil para GEO/AEO citations
+- **Crear la nueva landing** `/gala-dinners-corporativos-barcelona/` con intent COMERCIAL (contratanos para producir tu gala dinner) · CTAs directos
+- **Cross-link**: la landing linkea al blog post como "guía completa" · el blog post linkea a la landing como "contratanos ahora"
+- **Fix redirect roto**: cambiar `/cena-de-gala/` → 301 a la nueva landing (aprovecha URL corta con posible autoridad histórica)
+
+**Riesgo**: si los blog posts ya rankean para "cena de gala corporativa", puede haber canibalización temporal. La resolución es dar intent claro a cada uno (informacional vs comercial) para que Google los diferencie.
+
+**Owner decisión**: Xavi (aprobación del planteo) + Philippe (ejecuta técnicamente el 301 al publicar).
+
 ---
 
 ## 1 · Por qué esta landing (según Informe estratégico EB · jul 2026)

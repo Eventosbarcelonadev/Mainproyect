@@ -11,6 +11,23 @@ El brief original apuntaba a la keyword "DMC Barcelona". Cruzando con el Informe
 
 Por eso pivotamos el ángulo: la landing atrae a DMCs y agencias que necesitan un partner local para la producción del evento en Barcelona. Sigue capturando la keyword "DMC Barcelona" (por proximidad semántica y positioning explícito en H1/copy), pero sin fingir ser DMC.
 
+## ⚠️ Landing existente que se solapa · REQUIERE VALIDACIÓN XAVI
+
+Al crawlear el sitemap detectamos que existe:
+- **URL**: `/agencia-eventos-corporativos-profesional-barcelona/` (HTTP 200)
+- **Title**: "Qué esperar de una agencia profesional de eventos corporativos"
+- **Contenido**: 2.799 palabras · producción técnica, entretenimiento en directo, gestión de eventos
+- **Problema**: URL larga y "spammy", pero contenido sólido. Se solapa parcialmente con la nueva landing propuesta.
+
+**Decisión propuesta (Opción A · a validar con Xavi)**:
+1. **Crear** nueva `/partner-dmc-agencias-eventos-barcelona/` con foco B2B (DMCs, OPC, agencias, marketing corporativo — el ICP Top of Mind del informe)
+2. **301 redirect** `/agencia-eventos-corporativos-profesional-barcelona/` → `/partner-dmc-agencias-eventos-barcelona/` para consolidar autoridad SEO y eliminar la URL fea
+3. **Alternativa Opción B** (menos work): refresh in-place de la URL vieja + no crear nueva. Perdemos URL limpia pero conservamos historial de indexación.
+
+**Riesgo Opción A**: si la URL vieja tiene ranking o backlinks activos, el redirect 301 transfiere ~90% de autoridad — algún gap temporal posible. Necesita verificación GSC del ranking actual de esa URL antes de ejecutar.
+
+**Owner decisión**: Xavi (impacta URL histórica) + Philippe (ejecuta técnicamente).
+
 ---
 
 ## 1 · Keyword target y volumen estimado
