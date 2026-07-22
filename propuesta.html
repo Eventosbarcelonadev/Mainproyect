@@ -1775,6 +1775,22 @@
     body.print-mode .block-image,
     body.print-mode .hero-bg-image,
     body.print-mode .stat-number { page-break-inside: avoid; break-inside: avoid; }
+
+    /* === CIERRE DEL PDF: compactar clientes + condiciones + footer ===
+       Xavi 2026-07-22: juntar el footer con los clientes en la misma página
+       (antes el footer caía solo en una página casi vacía) y que el footer
+       quede SIEMPRE igual y sin cortar. Los paddings web son muy grandes para
+       A4; acá los reducimos SOLO en print para que el cierre entre junto. */
+    body.print-mode .about-section { padding: 48px 24px !important; }
+    body.print-mode .clients-section { padding: 8px 24px 20px !important; }
+    body.print-mode .clients-section .section-label { margin-bottom: 18px !important; }
+    body.print-mode .clients-grid { gap: 16px 24px !important; }
+    body.print-mode .clients-grid img { max-height: 38px !important; }
+    body.print-mode .conditions-section { padding: 20px 24px 24px !important; }
+    body.print-mode .conditions-section li { margin-bottom: 10px !important; }
+    body.print-mode .footer { padding: 28px 24px 32px !important; }
+    /* El footer es un bloque atómico: nunca se parte entre páginas. */
+    body.print-mode .footer { page-break-inside: avoid !important; break-inside: avoid !important; }
   </style>
 </head>
 <body>
