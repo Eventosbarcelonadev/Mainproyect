@@ -1781,24 +1781,29 @@
        (antes el footer caía solo en una página casi vacía) y que el footer
        quede SIEMPRE igual y sin cortar. Los paddings web son muy grandes para
        A4; acá los reducimos SOLO en print para que el cierre entre junto. */
-    body.print-mode .about-section { padding: 48px 24px !important; }
-    body.print-mode .clients-section { padding: 8px 24px 20px !important; }
-    body.print-mode .clients-section .section-label { margin-bottom: 18px !important; }
-    body.print-mode .clients-grid { gap: 16px 24px !important; }
-    body.print-mode .clients-grid img { max-height: 38px !important; }
-    body.print-mode .conditions-section { padding: 20px 24px 24px !important; }
-    body.print-mode .conditions-section li { margin-bottom: 10px !important; }
-    body.print-mode .footer { padding: 28px 24px 32px !important; }
+    /* about compacto (más chico y menos alto) para que quepa junto al resto
+       del cierre en una sola página. */
+    body.print-mode .about-section { padding: 28px 24px !important; }
+    body.print-mode .about-section h2 { font-size: 22px !important; line-height: 1.45 !important; }
+    body.print-mode .clients-section { padding: 6px 24px 16px !important; }
+    body.print-mode .clients-section .section-label { margin-bottom: 14px !important; }
+    body.print-mode .clients-grid { gap: 12px 24px !important; }
+    body.print-mode .clients-grid img { max-height: 32px !important; }
+    body.print-mode .conditions-section { padding: 14px 24px 18px !important; }
+    body.print-mode .conditions-section li { margin-bottom: 7px !important; }
+    body.print-mode .footer { padding: 22px 24px 26px !important; }
     /* El footer es un bloque atómico: nunca se parte entre páginas. */
     body.print-mode .footer { page-break-inside: avoid !important; break-inside: avoid !important; }
-    /* GARANTÍA de última página fija: el cierre (clientes → condiciones →
-       footer) SIEMPRE arranca en una página nueva, sin importar cuánto
-       contenido tenga la propuesta. Así ese bloque queda siempre como la
-       última página completa. Xavi 2026-07-22: "todo esto tiene que quedar
-       en la última página siempre". */
-    body.print-mode .clients-section { page-break-before: always !important; break-before: page !important; }
+    /* ÚLTIMA PÁGINA FIJA: about + clientes + condiciones + footer SIEMPRE
+       juntos en la última página. El salto se fuerza ANTES del about, y el
+       resto queda pegado (page-break-before: avoid). Xavi 2026-07-22: "todo
+       el cierre junto en la última página". */
+    body.print-mode .about-section { page-break-before: always !important; break-before: page !important; }
+    body.print-mode .clients-section,
     body.print-mode .conditions-section,
     body.print-mode .footer { page-break-before: avoid !important; break-before: avoid !important; }
+    /* Evitar que el propio about deje un salto después que separe los clientes. */
+    body.print-mode .about-section { page-break-after: avoid !important; break-after: avoid !important; }
   </style>
 </head>
 <body>
