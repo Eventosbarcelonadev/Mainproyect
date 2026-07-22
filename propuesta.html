@@ -1791,6 +1791,14 @@
     body.print-mode .footer { padding: 28px 24px 32px !important; }
     /* El footer es un bloque atómico: nunca se parte entre páginas. */
     body.print-mode .footer { page-break-inside: avoid !important; break-inside: avoid !important; }
+    /* GARANTÍA de última página fija: el cierre (clientes → condiciones →
+       footer) SIEMPRE arranca en una página nueva, sin importar cuánto
+       contenido tenga la propuesta. Así ese bloque queda siempre como la
+       última página completa. Xavi 2026-07-22: "todo esto tiene que quedar
+       en la última página siempre". */
+    body.print-mode .clients-section { page-break-before: always !important; break-before: page !important; }
+    body.print-mode .conditions-section,
+    body.print-mode .footer { page-break-before: avoid !important; break-before: avoid !important; }
   </style>
 </head>
 <body>
