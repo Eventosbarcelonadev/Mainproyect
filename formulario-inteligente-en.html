@@ -1278,7 +1278,8 @@
           email: document.getElementById('f-email')?.value || '',
           telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
           webEmpresa: document.getElementById('f-web')?.value || '',
-          cargo: document.getElementById('f-cargo')?.value || ''
+          cargo: document.getElementById('f-cargo')?.value || '',
+          origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
         };
         fetch('/api/lead-cliente', {
           method: 'POST',
@@ -1439,7 +1440,8 @@
         presupuesto,
         necesitaProduccion: document.getElementById('produccion-check')?.checked || false,
         comentarios: document.getElementById('f-comentarios')?.value || '',
-        comoNosConocio: document.getElementById('f-conocido')?.value || ''
+        comoNosConocio: document.getElementById('f-conocido')?.value || '',
+        origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
       };
 
       try {
@@ -1481,6 +1483,50 @@
         goToStep(2);
       }
     })();
+    // Origin capture: referrer + UTMs + landing URL on load.
+    // Persisted in sessionStorage across internal navigation.
+    // submitForm() reads it and sends it to the backend to populate contact.source.
+    function captureOriginInfo() {
+      const KEY = 'eb_origin_info_v1';
+      const stored = sessionStorage.getItem(KEY);
+      if (stored) { try { return JSON.parse(stored); } catch (e) {} }
+      const params = new URLSearchParams(window.location.search);
+      const referrer = document.referrer || '';
+      let referrerSlug = '';
+      let referrerHost = '';
+      if (referrer) {
+        try {
+          const u = new URL(referrer);
+          referrerHost = u.hostname;
+          if (u.hostname.includes('eventosbarcelona.com')) {
+            referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
+          }
+        } catch (e) {}
+      }
+      const info = {
+        referrer, referrerHost, referrerSlug,
+        landingUrl: window.location.href,
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+        fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
+      };
+      // Fallback UTM cross-page (WP snippet EB-UTM-TRACKING)
+      try {
+        const wpUtm = JSON.parse(sessionStorage.getItem('eb_utm') || '{}');
+        ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k => {
+          if (!info[k] && wpUtm[k]) info[k] = wpUtm[k];
+        });
+        if (wpUtm.landing_page && info.landingUrl.includes('formulario-inteligente')) {
+          info.landingUrl = window.location.origin + wpUtm.landing_page;
+        }
+      } catch (e) {}
+      try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
+      return info;
+    }
+    captureOriginInfo();
   </script>
 
 </body>

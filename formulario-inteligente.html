@@ -1546,6 +1546,19 @@
         // del referrer (que algunas políticas bloquean).
         fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
       };
+      // Fallback UTM cross-page: el snippet WP EB-UTM-TRACKING guarda UTMs de
+      // la primera landing con params en sessionStorage.eb_utm. Al llegar el
+      // user al formulario tras hacer click desde la landing, la URL propia
+      // ya no lleva UTMs — sin este fallback los perderíamos.
+      try {
+        const wpUtm = JSON.parse(sessionStorage.getItem('eb_utm') || '{}');
+        ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k => {
+          if (!info[k] && wpUtm[k]) info[k] = wpUtm[k];
+        });
+        if (wpUtm.landing_page && info.landingUrl.includes('formulario-inteligente')) {
+          info.landingUrl = window.location.origin + wpUtm.landing_page;
+        }
+      } catch (e) {}
       try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
       return info;
     }

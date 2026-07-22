@@ -61,6 +61,26 @@ export default async function handler(req, res) {
     if (origen.fromParam) lines.push(`From: ${origen.fromParam}`);
     return lines.length > 1 ? lines.join('\n') : '';
   };
+  // Custom fields UTM estructurados en GHL (creados 2026-07-22 via A15).
+  // Cada key coincide con el fieldKey del custom field (contact.<key>) creado
+  // por API — GHL acepta `key` en el mismo formato que los picklists (contact_*).
+  const buildUtmCustomFields = (origen) => {
+    if (!origen || typeof origen !== 'object') return [];
+    const fields = [];
+    const map = {
+      utm_source: 'utm_source',
+      utm_medium: 'utm_medium',
+      utm_campaign: 'utm_campaign',
+      utm_term: 'utm_term',
+      utm_content: 'utm_content',
+      landingUrl: 'landing_page'
+    };
+    for (const [srcKey, ghlKey] of Object.entries(map)) {
+      const val = origen[srcKey];
+      if (val) fields.push({ key: ghlKey, field_value: String(val) });
+    }
+    return fields;
+  };
   const postContactNote = async (contactId, body) => {
     if (!contactId || !body) return;
     try {
@@ -127,7 +147,8 @@ export default async function handler(req, res) {
           { key: 'contact_type', field_value: 'Cliente' },
           { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
           { key: 'contact_score', field_value: 'COLD' },
-          ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : [])
+          ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : []),
+          ...buildUtmCustomFields(data.origen)
         ]
       };
 
@@ -205,7 +226,8 @@ export default async function handler(req, res) {
         { key: 'contact_type', field_value: 'Cliente' },
         { key: 'contact_idioma', field_value: lang === 'en' ? 'English' : 'Español' },
         { key: 'contact_score', field_value: score },
-        ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : [])
+        ...(data.cargo ? [{ key: 'cargo', field_value: data.cargo }] : []),
+        ...buildUtmCustomFields(data.origen)
       ]
     };
 
