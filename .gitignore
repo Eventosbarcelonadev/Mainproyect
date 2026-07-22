@@ -17,3 +17,6 @@ Presentaciones viejas/
 
 # Node
 node_modules/
+.env.local
+Showlaser/*.MP4
+Showlaser/
