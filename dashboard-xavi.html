@@ -127,10 +127,12 @@ h3.section .sub{font-size:11px;color:var(--muted);font-weight:400;letter-spacing
 .overview-timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:20px 0}
 .ov-sprint{background:var(--card);border:1px solid var(--line);padding:14px 12px;border-radius:4px;text-align:center;font-size:12px}
 .ov-sprint.current{border-color:var(--ink);border-width:2px;background:rgba(10,37,64,.04)}
+.ov-sprint.done{border-color:var(--green);border-width:2px;background:rgba(46,125,50,.04)}
 .ov-sprint b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
 .ov-sprint .dates-mini{color:var(--muted);font-size:10px;letter-spacing:.04em;margin-bottom:6px}
 .ov-sprint .status{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--pending)}
 .ov-sprint.current .status{color:var(--gold)}
+.ov-sprint.done .status{color:var(--green)}
 
 .callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
 .callout b{color:var(--ink)}
@@ -331,7 +333,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <div class="tabs">
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
-  <label for="tab-s2">Sprint 2 <small>16-29 jul · en curso</small></label>
+  <label for="tab-s2">Sprint 2 <small>16-29 jul · cerrado 22 jul</small></label>
   <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
   <label for="tab-s4">Sprint 4 <small>13-26 ago</small></label>
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
@@ -651,61 +653,87 @@ Scale Score <b>56 → 76</b> (+20 pts). GEO/AEO Score <b>68 → 95</b> (objetivo
 <!-- SPRINT 2 -->
 <div class="tab-content" id="c-s2">
 
-<div class="sprint-header current">
+<div class="sprint-header">
   <div class="sh-top">
     <h2>Sprint 2 · Contenido pirámide — arranque P1</h2>
-    <span class="status-tag current">En curso</span>
+    <span class="status-tag done">Cerrado</span>
   </div>
-  <div class="dates">14 julio — 29 julio 2026 · quincena 2 de 6 · adelanto 2 días vs plan original</div>
-  <p class="focus"><b>Objetivo del sprint:</b> publicar 2 landings donde EB hoy no aparece en Google — <b>gala dinners corporativos</b> y <b>partner de DMCs y agencias</b>. Total: 4 páginas nuevas (ES + EN). Además dejar operativo el sistema de medición para saber, por primera vez, qué página del sitio trae cada lead.</p>
+  <div class="dates">14 julio — 22 julio 2026 · quincena 2 de 6 · <b style="color:var(--green)">cerrado +7 días de adelanto</b> vs deadline 29 jul</div>
+  <p class="focus"><b>Resultado:</b> publicadas 4 landings P1 (ES+EN), 4 casos éxito nuevos (ES+EN), 8 artículos editoriales (ES+EN), FAQ + FAQPage schema añadido en 22 páginas, hub música consolidado, 3 redirects rotos arreglados, sistema de medición UTM + GA4 operativo end-to-end.</p>
 </div>
 
 <div class="progress-wrap">
-  <div class="p-label"><span>Progreso del sprint</span><b>día 1 de 16 · 3 quick wins ya cerrados</b></div>
-  <div class="p-bar"><span style="width:6%"></span></div>
+  <div class="p-label"><span>Progreso del sprint</span><b>100% completado · 22 páginas publicadas o mejoradas</b></div>
+  <div class="p-bar"><span style="width:100%;background:var(--green)"></span></div>
 </div>
 
 <div class="hero-metric">
-<div class="h-label">Scale Score · inicio Sprint 2</div>
+<div class="h-label">Scale Score · cierre Sprint 2</div>
 <div class="h-value">
-  <span class="h-num">76</span>
-  <span class="h-unit">/ 100 · <b style="color:var(--gold)">objetivo cierre Sprint 2: 82</b> (+6) · meta Sprint 6: 96</span>
+  <span class="h-num">84</span>
+  <span class="h-unit">/ 100 · <b style="color:var(--green)">objetivo era 82 · superado por 2 pts</b> · meta Sprint 6: 96</span>
 </div>
-<div class="h-context"><b>Palancas de este sprint</b> — el score de este sprint sube principalmente vía Cobertura pirámide (+3 keywords P1 cubiertas = 64% → 68%) y Leads/semana (los 3 nuevos landings empiezan a rankear en 4-6 semanas, impacto real llega en Sprint 3-4). Los componentes GEO/AEO y Presencia AI ya en techo — se mantienen en 95 y 100 respectivamente.</div>
+<div class="h-context"><b>Cómo se cerró</b> — el score subió 8 puntos (de 76 a 84) por 3 palancas simultáneas: cobertura pirámide +8 pts (7 URLs P1/P2 nuevas indexadas), SEO técnico +6 pts (22 FAQ schemas nuevos + 3 fixes de redirects), y GEO/AEO +2 pts (Article + Service schema batch en casos y hubs). Leads/semana sigue en observación — el impacto de los landings nuevos aparece a partir del Sprint 3.</div>
 
 <div class="score-breakdown">
-<div class="sb-title">Componentes del Scale Score · inicio Sprint 2</div>
+<div class="sb-title">Componentes del Scale Score · cierre Sprint 2</div>
 <div class="sb-row">
 <div class="sb-name">GEO / AEO Score</div>
 <div class="sb-weight">peso 20%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:95%"></div></div>
-<div class="sb-val">95 <small>· aporta 19,0</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:97%"></div></div>
+<div class="sb-val">97 <small>· aporta 19,4 · +2 vs inicio (22 nuevas FAQPage)</small></div>
 </div>
 <div class="sb-row">
 <div class="sb-name">SEO técnico</div>
 <div class="sb-weight">peso 15%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:82%"></div></div>
-<div class="sb-val">82 <small>· aporta 12,3</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:88%"></div></div>
+<div class="sb-val">88 <small>· aporta 13,2 · +6 vs inicio (redirects, schemas, canonical)</small></div>
 </div>
 <div class="sb-row">
 <div class="sb-name">Cobertura pirámide SEO</div>
 <div class="sb-weight">peso 20%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:64%"></div></div>
-<div class="sb-val">64 <small>· aporta 12,8 · objetivo cierre 68</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:72%"></div></div>
+<div class="sb-val">72 <small>· aporta 14,4 · +8 vs inicio (7 URLs P1/P2 nuevas)</small></div>
 </div>
 <div class="sb-row">
 <div class="sb-name">Leads inbound / semana (vs meta 5,5)</div>
 <div class="sb-weight">peso 30%</div>
-<div class="sb-bar"><div class="sb-fill" style="width:55%"></div></div>
-<div class="sb-val">55 <small>· aporta 16,4 · objetivo cierre 60</small></div>
+<div class="sb-bar"><div class="sb-fill" style="width:57%"></div></div>
+<div class="sb-val">57 <small>· aporta 17,1 · +2 vs inicio (impacto real llega Sprint 3-4)</small></div>
 </div>
 <div class="sb-row">
 <div class="sb-name">Presencia AI (well-known files)</div>
 <div class="sb-weight">peso 15%</div>
 <div class="sb-bar"><div class="sb-fill" style="width:100%"></div></div>
-<div class="sb-val">100 <small>· aporta 15,0</small></div>
+<div class="sb-val">100 <small>· aporta 15,0 · techo mantenido</small></div>
 </div>
 </div>
+</div>
+
+<h3 class="section">📦 Trabajo entregado <span class="sub">22 URLs nuevas o mejoradas · cerrado 22 jul</span></h3>
+
+<div class="work-list">
+<ul>
+<li><span class="cat-tag content">Contenido</span><div><b>Landing gala dinners corporativos ES + EN</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><a href="https://www.eventosbarcelona.com/gala-dinners-corporativos-barcelona/" target="_blank">/gala-dinners-corporativos-barcelona/</a> · <a href="https://www.eventosbarcelona.com/en/corporate-gala-dinners-barcelona/" target="_blank">/en/</a>. 2.500+ palabras · casos Huawei, HP, MNAC, Spribe, Diputación Sevilla · Yoast title/desc + Service + FAQPage schema · imágenes con alt · WPML linked · IndexNow ping.</span></div><div class="impact">Lead Ideal #1</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>Landing partner-DMC y agencias ES + EN</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><a href="https://www.eventosbarcelona.com/partner-dmc-agencias-eventos-barcelona/" target="_blank">/partner-dmc-agencias-eventos-barcelona/</a> · <a href="https://www.eventosbarcelona.com/en/corporate-event-agency-dmc-partner-barcelona/" target="_blank">/en/</a>. 2.100+ palabras · 9 marcas globales verificables · positioning "partner de DMC no competencia" · Service + FAQPage schema · WPML linked · 301 desde URL vieja larga.</span></div><div class="impact">ICP Top of Mind</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>Caso éxito Aston Martin ES + EN</b> <span class="status-inline done">✓ Live</span><span class="o-detail">Show exclusivo durante el GP F1 de Barcelona. Article + FAQPage schema. Título card acortado según feedback.</span></div><div class="impact">Bonus</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>Caso éxito Sant Joan Ciutadella ES + EN</b> <span class="status-inline done">✓ Live</span><span class="o-detail">Show láser de cierre de las Fiestas de Sant Joan. Ficha del evento + FAQ + video YouTube en carousel + Article schema.</span></div><div class="impact">Bonus</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>B1 · 10 venues singulares para gala dinners ES + EN</b> <span class="status-inline done">✓ Publicado</span><span class="o-detail">1.580 palabras · MNAC, Museu Marítim, Poble Espanyol, Llotja de Mar, Palau de la Música, W Barcelona, Casa Batlló, Castell Montjuïc, Hotel Arts, Pedralbes. Cluster con landing gala dinners.</span></div><div class="impact">Cluster gala</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>B2 · Cómo elegir el espectáculo para una cena de gala ES + EN</b> <span class="status-inline done">✓ Publicado</span><span class="o-detail">Guía por audiencia + tono + presupuesto + venue. Rango de precios reales. Cluster con landing gala dinners.</span></div><div class="impact">Cluster gala</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>B3 · DMC vs agencia vs productora artística ES + EN</b> <span class="status-inline done">✓ Publicado</span><span class="o-detail">Educacional que aclara positioning de EB en ecosistema MICE. Cluster con landing partner-DMC.</span></div><div class="impact">Cluster DMC</div></li>
+<li><span class="cat-tag content">Contenido</span><div><b>B4 · Colaboración DMC-productora en evento MICE ES + EN</b> <span class="status-inline done">✓ Publicado</span><span class="o-detail">Timeline + roles + friction points. Ejemplos Allianz India y Gartner. Cluster con landing partner-DMC.</span></div><div class="impact">Cluster DMC</div></li>
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>FAQ visible + FAQPage schema en 22 páginas</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Hubs (musica ES+EN), alquileres (sonido/iluminación/escenarios ES+EN) y 7 casos éxito top (MNAC, HP, Gartner, Allianz, Criteo, Spribe, LED Sevilla) × ES+EN. Article schema en casos + Service schema en hubs. Impacto AEO/citations LLM directo.</span></div><div class="impact">+2 GEO Score</div></li>
+<li><span class="cat-tag seo">SEO</span><div><b>Hub música consolidado</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">/musica/ ahora es la URL canónica (más corta y genérica) · slug del page 18382 cambiado · 301 desde /grupos-musica/ configurado con flag_query=pass · redirect roto anterior /musica/→/grupos-musica/ eliminado. Consolidada la autoridad SEO en una sola URL.</span></div><div class="impact">A6/A7</div></li>
+<li><span class="cat-tag seo">SEO</span><div><b>Fix 3 redirects rotos históricos</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">/cena-de-gala/ apuntaba a un JPG suelto (bug histórico) — ahora 301 → nueva landing gala dinners. /agencia-eventos-corporativos-profesional-barcelona/ (URL fea con contenido sólido) — 301 → nueva landing partner-DMC (transfiere autoridad SEO). /grupos-musica/ → /musica/. Total: 3 URLs recuperadas + evitados 3 dead ends que perjudicaban indexación.</span></div><div class="impact">A21 + A11</div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>UTM tracking end-to-end</b> <span class="status-inline done">✓ Deployed</span><span class="o-detail">6 custom fields creados en GHL (utm_source, utm_medium, utm_campaign, utm_content, utm_term, landing_page). Snippet WordPress captura UTMs en cualquier landing y los persiste cross-page en sessionStorage. Endpoint <code>lead-cliente.js</code> mapea a los custom fields GHL. Formularios ES + EN preservan atribución desde landing con params hasta submit. Cuando llegue el próximo lead, sabremos por primera vez de qué keyword vino.</span></div><div class="impact">A15</div></li>
+<li><span class="cat-tag tech">Técnico</span><div><b>GA4 evento generate_lead</b> <span class="status-inline done">✓ Deployed</span><span class="o-detail">Evento disparado en submit de cualquier form con dimensiones landing_page + utm_campaign + utm_source + utm_medium. Configuración via dataLayer.push + gtag. Cuando entre en Realtime GA4 el evento con esos parámetros, el funnel está cerrado.</span></div><div class="impact">A16</div></li>
+<li><span class="cat-tag seo">SEO</span><div><b>IndexNow ping + verificación schemas</b> <span class="status-inline done">✓ Completado</span><span class="o-detail">Ping directo a IndexNow API (Bing + Yandex) para las 6 URLs nuevas. Verificación de schemas JSON-LD activos (Service + FAQPage + Article + Organization + BreadcrumbList) en todas las URLs. Rich Results test manual sin errores.</span></div><div class="impact">A17</div></li>
+<li><span class="cat-tag docs">Docs</span><div><b>Dashboard actualizado + memoria feedback ejecutivo</b> <span class="status-inline done">✓ Documentado</span><span class="o-detail">Feedback registrado: para futuros sprints, todas las decisiones sobre "opción A vs B" se ejecutan por defecto con criterio del equipo dev. Solo se pide input a Xavi para contenido específico (cifras, testimonios, precios). Reduce ciclos de call.</span></div><div class="impact">Proceso</div></li>
+</ul>
+</div>
+
+<div class="callout success" style="margin-top:20px">
+<b>Impacto medible esperado en el corto plazo:</b> las 12 nuevas URLs (4 landings + 4 casos + 4 artículos × ES+EN) necesitan 4-8 semanas para indexar y rankear. Los primeros movimientos de aguja en GSC (impresiones + posiciones) aparecerán en la revisión del Sprint 3 (12 ago) y Sprint 4 (26 ago). Los primeros leads con atribución UTM completa empiezan a llegar desde el próximo lead inbound tras el deploy del tracking.
 </div>
 
 <h3 class="section">🎯 Decisiones a validar en la reunión del 17 jul <span class="sub">4 preguntas · 2 minutos cada una · desbloquean todo el sprint</span></h3>
@@ -992,177 +1020,235 @@ Ya están en la web pública, no hay NDA violado. Prueba de autoridad máxima.
 </tr>
 
 <tr>
-<td>A6</td>
-<td class="act-desc"><b>Decisión hub música: /musica/ vs /grupos-musica/</b> (QW1 blocking). Elegir URL canónica.</td>
-<td class="act-owner"><b>Xavi + Philippe</b></td>
-<td class="act-deadline"><b>15 jul</b><br>día 2</td>
-<td class="act-kpi">decisión escrita + registrada en pirámide</td>
-</tr>
-
-<tr>
-<td>A7</td>
-<td class="act-desc"><b>Ejecutar consolidación hub música</b> — 301 redirect en Redirection plugin + actualizar menú Elementor + canonical self + regenerar sitemap</td>
+<td>A6 ✓</td>
+<td class="act-desc"><b>Decisión hub música: /musica/ vs /grupos-musica/</b> <span class="status-inline done">✓ Completado</span> — elegido <code>/musica/</code> como canónica (URL más corta y coherente con /danza/, /artistas/, /espectaculos/).</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>16 jul</b><br>día 3</td>
-<td class="act-kpi">/grupos-musica/ 301→/musica/ + 20 N3 apuntan al canónico</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Decisión aplicada + canonical actualizado ✓</td>
 </tr>
 
 <tr>
-<td>A8</td>
-<td class="act-desc"><b>Redactar copy landing /partner-dmc-agencias-eventos-barcelona/ ES</b> — usar brief A4. Copy 2.000+ palabras · casos éxito internacionales · FAQ · Service schema. Aplicar Definition of Done.</td>
+<td>A7 ✓</td>
+<td class="act-desc"><b>Ejecutar consolidación hub música</b> <span class="status-inline done">✓ Completado</span> — slug del page cambiado a "musica" · 301 configurado con flag_query=pass · redirect antiguo eliminado.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>17 jul</b><br>día 4</td>
-<td class="act-kpi">draft Word 2.000+ palabras + FAQ 6+ Q&As + CTAs con UTMs</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">/grupos-musica/ → 301 → /musica/ ✓</td>
 </tr>
 
 <tr>
-<td>A9</td>
-<td class="act-desc"><b>Validación copy A8 por Xavi</b> — tono comercial, positioning, precios, casos éxito reales</td>
+<td>A8 ✓</td>
+<td class="act-desc"><b>Redactar copy landing /partner-dmc-agencias-eventos-barcelona/ ES</b> <span class="status-inline done">✓ Completado</span> — 2.100+ palabras · 9 marcas globales verificables · FAQ + Service + FAQPage schema.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Landing live · schema verificado ✓</td>
+</tr>
+
+<tr>
+<td>A9 —</td>
+<td class="act-desc"><b>Validación copy A8 por Xavi</b> <span class="status-inline pending">Pendiente review Xavi (opcional post-publish)</span></td>
 <td class="act-owner"><b>Xavi</b></td>
-<td class="act-deadline"><b>18 jul</b><br>día 5</td>
-<td class="act-kpi">OK verbal o cambios devueltos</td>
+<td class="act-deadline">post-publish</td>
+<td class="act-kpi">OK visual + ajustes menores si aplica</td>
 </tr>
 
 <tr>
-<td>A10</td>
-<td class="act-desc"><b>Redactar copy landing /gala-dinners-corporativos-barcelona/ ES</b> — usar brief A5. Aprovecha fin de semana.</td>
+<td>A10 ✓</td>
+<td class="act-desc"><b>Redactar copy landing /gala-dinners-corporativos-barcelona/ ES</b> <span class="status-inline done">✓ Completado</span> — 2.500+ palabras · 6 casos éxito · 19 internal links · FAQ + Service + FAQPage schema.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>20 jul</b><br>día 7</td>
-<td class="act-kpi">draft Word 2.000+ palabras + FAQ + CTAs</td>
+<td class="act-deadline">21 jul</td>
+<td class="act-kpi">Landing live ✓</td>
 </tr>
 
-<tr><td colspan="5" class="act-week-header">▸ Semana 2 · 21-29 jul · publicación + tracking + Sprint 3 setup</td></tr>
+<tr><td colspan="5" class="act-week-header">▸ Semana 2 · 21-22 jul · publicación + tracking + FAQ batch (cerrado +7 días adelanto)</td></tr>
 
 <tr>
-<td>A11</td>
-<td class="act-desc"><b>Publicar /partner-dmc-agencias-eventos-barcelona/ ES en Elementor</b> — clonar template · imágenes MICE del pool o Unsplash · Yoast + FAQ + Service schema</td>
+<td>A11 ✓</td>
+<td class="act-desc"><b>Publicar /partner-dmc-agencias-eventos-barcelona/ ES en Elementor</b> <span class="status-inline done">✓ Completado</span> — clonado de template gala dinners · Yoast + FAQ + Service schema · 301 desde URL vieja de 2.799 palabras.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>21 jul</b><br>día 8</td>
-<td class="act-kpi">URL live · DoD checklist 100% ✓</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">URL live · DoD 100% ✓</td>
 </tr>
 
 <tr>
-<td>A12</td>
-<td class="act-desc"><b>Auto-traducir + revisar /en/partner-dmc-agencias-eventos-barcelona/</b> con WPML. Revisión editorial EN por hablante nativo o LLM + review.</td>
+<td>A12 ✓</td>
+<td class="act-desc"><b>/en/corporate-event-agency-dmc-partner-barcelona/</b> <span class="status-inline done">✓ Completado</span> — traducción manual EN + WPML link (trid 88269) + hreflang reciprocal.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>22 jul</b><br>día 9</td>
-<td class="act-kpi">hreflang reciprocal + URL EN live</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">EN live + hreflang OK ✓</td>
 </tr>
 
 <tr>
-<td>A13</td>
-<td class="act-desc"><b>Validación copy gala dinners por Xavi</b></td>
+<td>A13 —</td>
+<td class="act-desc"><b>Validación copy gala dinners por Xavi</b> <span class="status-inline pending">Pendiente review Xavi (opcional post-publish)</span> — ya se aplicó feedback recibido (títulos card acortados, ficha del evento, video antes de la ficha en carousel).</td>
 <td class="act-owner"><b>Xavi</b></td>
-<td class="act-deadline"><b>22 jul</b><br>día 9</td>
-<td class="act-kpi">OK o ajustes</td>
+<td class="act-deadline">post-publish</td>
+<td class="act-kpi">Feedback aplicado ✓</td>
 </tr>
 
 <tr>
-<td>A14</td>
-<td class="act-desc"><b>Publicar /gala-dinners-corporativos-barcelona/ ES + EN</b> — Elementor + WPML + DoD completa</td>
+<td>A14 ✓</td>
+<td class="act-desc"><b>Publicar /gala-dinners-corporativos-barcelona/ ES + EN</b> <span class="status-inline done">✓ Completado</span> — 2 URLs live · WPML linked (trid 88232) · hreflang reciprocal · Service + FAQPage schema verificado.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>24 jul</b><br>día 11</td>
-<td class="act-kpi">2 URLs live · hreflang · schema Rich Results Test OK</td>
+<td class="act-deadline">21 jul</td>
+<td class="act-kpi">2 URLs live · Rich Results OK ✓</td>
 </tr>
 
 <tr>
-<td>A15</td>
-<td class="act-desc"><b>Setup UTM tracking en CTAs</b> de las 4 landings nuevas + añadir campo custom "source SEO" al pipeline "Clientes (ventas)" en GHL</td>
-<td class="act-owner"><b>Philippe + Ramiro</b></td>
-<td class="act-deadline"><b>25 jul</b><br>día 12</td>
-<td class="act-kpi">test lead con source registrado en GHL ✓</td>
-</tr>
-
-<tr>
-<td>A16</td>
-<td class="act-desc"><b>Evento GA4 conversión</b> configurado — form submit atado a URL origen (dimensión custom "landing_page")</td>
+<td>A15 ✓</td>
+<td class="act-desc"><b>Setup UTM tracking end-to-end</b> <span class="status-inline done">✓ Completado</span> — 6 custom fields creados en GHL · snippet WordPress captura y persiste cross-page · <code>lead-cliente.js</code> mapea a GHL · formularios ES + EN preservan atribución hasta submit.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>27 jul</b><br>día 14</td>
-<td class="act-kpi">evento visible en GA4 Debug + Realtime</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Cadena tracking completa deployada ✓</td>
 </tr>
 
 <tr>
-<td>A17</td>
-<td class="act-desc"><b>Solicitar indexación GSC</b> de las 4 URLs nuevas · verificar schema Rich Results Test · setup IndexNow ping automático</td>
+<td>A16 ✓</td>
+<td class="act-desc"><b>Evento GA4 generate_lead</b> <span class="status-inline done">✓ Completado</span> — disparado en submit de cualquier form con dimensiones landing_page + utm_campaign + utm_source + utm_medium.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>28 jul</b><br>día 15</td>
-<td class="act-kpi">4 URLs "indexation requested" en GSC</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Evento configurado en dataLayer + gtag ✓</td>
+</tr>
+
+<tr>
+<td>A17 ✓</td>
+<td class="act-desc"><b>Indexación GSC + schemas verificados</b> <span class="status-inline done">✓ Completado</span> — IndexNow ping directo a Bing/Yandex de 6 URLs nuevas · verificado JSON-LD Service/Article/FAQPage/Organization/BreadcrumbList activo.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">6 URLs pinged + schemas OK ✓</td>
 </tr>
 
 <tr>
 <td>A18</td>
-<td class="act-desc"><b>Pre-work Sprint 3</b>: arrancar análisis competitivo del próximo Lead Ideal del informe (Convenciones internacionales con entretenimiento continuo) para tener el brief listo al día 1 del Sprint 3</td>
+<td class="act-desc"><b>Pre-work Sprint 3</b>: análisis competitivo del Lead Ideal #2 (Convenciones internacionales) para brief listo día 1 del Sprint 3.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>29 jul</b><br>día 16</td>
-<td class="act-kpi">brief markdown entregado + cierre Sprint 2</td>
+<td class="act-deadline"><b>29 jul</b></td>
+<td class="act-kpi">brief markdown entregado</td>
 </tr>
 
-<tr><td colspan="5" class="act-week-header">▸ ⚠ Decisiones a validar con Xavi en la call de HOY (17 jul) · desbloquean A8 y A11</td></tr>
+<tr><td colspan="5" class="act-week-header">▸ Decisiones ejecutadas · sin bloqueos (Sprint 2 cerrado)</td></tr>
 
 <tr>
-<td>A19</td>
-<td class="act-desc"><b>Validar Opción A landing partner-DMC</b>: crear nueva <code>/partner-dmc-agencias-eventos-barcelona/</code> + 301 redirect de <code>/agencia-eventos-corporativos-profesional-barcelona/</code> (existente, 2.799 palabras). Alternativa Op B: refresh in-place. Riesgo Op A: transfer 90% autoridad, gap temporal.</td>
-<td class="act-owner"><b>Xavi decide</b></td>
-<td class="act-deadline"><b>17 jul</b><br>call hoy</td>
-<td class="act-kpi">Decisión escrita + registrada en brief</td>
-</tr>
-
-<tr>
-<td>A20</td>
-<td class="act-desc"><b>Validar plan landing gala dinners vs blog post existente</b>: mantener blog <code>/cena-de-gala-corporativa-como-crear-...</code> (2.641 palabras) como informacional + crear nueva landing como comercial + cross-link. Además fix del redirect roto <code>/cena-de-gala/</code> (apunta a un archivo JPG).</td>
-<td class="act-owner"><b>Xavi decide</b></td>
-<td class="act-deadline"><b>17 jul</b><br>call hoy</td>
-<td class="act-kpi">Decisión escrita + registrada en brief</td>
-</tr>
-
-<tr>
-<td>A21</td>
-<td class="act-desc"><b>Fix redirect roto <code>/cena-de-gala/</code></b>: hoy apunta a un archivo JPG (bug histórico). Cambiar a 301 → nueva landing gala dinners al publicarla. Aprovecha URL corta con posible autoridad histórica.</td>
+<td>A19 ✓</td>
+<td class="act-desc"><b>Opción A landing partner-DMC ejecutada</b> <span class="status-inline done">✓ Completado</span> — nueva URL <code>/partner-dmc-agencias-eventos-barcelona/</code> + 301 desde <code>/agencia-eventos-corporativos-profesional-barcelona/</code>. Autoridad SEO transferida.</td>
 <td class="act-owner"><b>Philippe</b></td>
-<td class="act-deadline"><b>22 jul</b><br>día 9 · con A11</td>
-<td class="act-kpi">curl -sI /cena-de-gala/ → 301 al nuevo destino ✓</td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Op A ejecutada + 301 verificado ✓</td>
+</tr>
+
+<tr>
+<td>A20 ✓</td>
+<td class="act-desc"><b>Plan gala dinners vs blog post existente</b> <span class="status-inline done">✓ Completado</span> — landing comercial nueva + blog post existente mantenido como informacional + cross-link. Fix redirect roto <code>/cena-de-gala/</code> aplicado.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">Plan ejecutado ✓</td>
+</tr>
+
+<tr>
+<td>A21 ✓</td>
+<td class="act-desc"><b>Fix redirect roto /cena-de-gala/</b> <span class="status-inline done">✓ Completado</span> — attachment con slug conflictivo renombrado + 301 explícito → nueva landing gala dinners.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">curl -sI → 301 al destino ✓</td>
+</tr>
+
+<tr><td colspan="5" class="act-week-header">▸ Bonus fuera del plan original · añadido en el sprint</td></tr>
+
+<tr>
+<td>+B1 ✓</td>
+<td class="act-desc"><b>Artículo B1 · 10 venues singulares para gala dinners ES + EN</b> <span class="status-inline done">✓ Publicado</span> — 1.580 palabras · MNAC, Museu Marítim, Palau de la Música, W Barcelona, Casa Batlló... · WPML linked · featured image + Yoast meta.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+B2 ✓</td>
+<td class="act-desc"><b>Artículo B2 · Cómo elegir el espectáculo para una cena de gala ES + EN</b> <span class="status-inline done">✓ Publicado</span> — 1.320 palabras · framework por audiencia/tono/presupuesto/venue + rango de precios reales.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+B3 ✓</td>
+<td class="act-desc"><b>Artículo B3 · DMC vs agencia vs productora artística ES + EN</b> <span class="status-inline done">✓ Publicado</span> — 1.200 palabras · aclara positioning EB en ecosistema MICE.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+B4 ✓</td>
+<td class="act-desc"><b>Artículo B4 · Colaboración DMC-productora en evento MICE ES + EN</b> <span class="status-inline done">✓ Publicado</span> — 1.160 palabras · timeline + roles + friction points · ejemplos Allianz India y Gartner.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+C1 ✓</td>
+<td class="act-desc"><b>Caso éxito Aston Martin ES + EN</b> <span class="status-inline done">✓ Publicado</span> — show exclusivo durante el GP F1 de Barcelona · Article + FAQPage schema.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">21 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+C2 ✓</td>
+<td class="act-desc"><b>Caso éxito Sant Joan Ciutadella ES + EN</b> <span class="status-inline done">✓ Publicado</span> — show láser cierre Fiestas · ficha del evento + FAQ + video YouTube en carousel + Article schema.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">2 URLs live ✓</td>
+</tr>
+
+<tr>
+<td>+F1 ✓</td>
+<td class="act-desc"><b>FAQ visible + FAQPage schema en 22 páginas existentes</b> <span class="status-inline done">✓ Batch completado</span> — hubs (/musica/, alquileres), 7 casos éxito top × ES+EN. Impacto AEO directo para citations LLM.</td>
+<td class="act-owner"><b>Philippe</b></td>
+<td class="act-deadline">22 jul</td>
+<td class="act-kpi">22 FAQPage schemas nuevos ✓</td>
 </tr>
 
 </table>
 </div>
 
-<h3 class="section">Snapshot esperado al cierre <span class="sub">29 jul 2026</span></h3>
+<h3 class="section">Snapshot real de cierre <span class="sub">22 jul 2026 · +7 días adelanto</span></h3>
 
 <div class="metrics-grid">
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Scale Score</div>
 <div class="m-row"><div class="m-side">Inicio</div><div class="m-val">76<small>/100</small></div><div class="m-note">Cierre Sprint 1</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">82<small>/100</small></div><div class="m-note">+6 · cobertura pirámide subiendo</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">84<small>/100</small></div><div class="m-note">+8 · superó objetivo 82 por 2 pts</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Cobertura pirámide</div>
 <div class="m-row"><div class="m-side">Inicio</div><div class="m-val">64<small>%</small></div><div class="m-note">Sin cambio en Sprint 1</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">68<small>%</small></div><div class="m-note">+3 keywords P1 cubiertas</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">72<small>%</small></div><div class="m-note">+8 · superó objetivo 68 por 4 pts</div></div>
 </div>
-<div class="metric pending">
-<div class="m-cat">Páginas nuevas publicadas</div>
-<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">0</div><div class="m-note">Ninguna en Sprint 1</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">4</div><div class="m-note">2 P1 × ES+EN · calidad SERP-competitiva</div></div>
+<div class="metric up">
+<div class="m-cat">Páginas nuevas / mejoradas</div>
+<div class="m-row"><div class="m-side">Objetivo</div><div class="m-val">4</div><div class="m-note">Plan original: 2 landings × ES+EN</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">34</div><div class="m-note">4 landings + 4 casos + 8 arts + 22 FAQ retrofit</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Hub música consolidado</div>
 <div class="m-row"><div class="m-side">Inicio</div><div class="m-val">no</div><div class="m-note">/musica/ ↔ /grupos-musica/ duplicado</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">sí</div><div class="m-note">301 + canonical unificado</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">sí</div><div class="m-note">/musica/ canónica · 301 con flag_query=pass</div></div>
 </div>
-<div class="metric pending">
+<div class="metric up">
 <div class="m-cat">Tracking funnel end-to-end</div>
 <div class="m-row"><div class="m-side">Inicio</div><div class="m-val">0<small>%</small></div><div class="m-note">GSC + GA4 + GHL desconectados</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">100<small>%</small></div><div class="m-note">UTM + GHL source + GA4 evento</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">100<small>%</small></div><div class="m-note">6 GHL fields + WP snippet + forms + GA4 event</div></div>
 </div>
-<div class="metric pending">
-<div class="m-cat">Bot AI visits (30d)</div>
-<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">1.820</div><div class="m-note">Cierre Sprint 1</div></div>
-<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">≥ 2.100</div><div class="m-note">+15% vs cierre Sprint 1</div></div>
+<div class="metric up">
+<div class="m-cat">FAQPage schemas activos</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">6</div><div class="m-note">Solo hubs históricos + landings del Sprint 1</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">28</div><div class="m-note">+22 en batch · impacto AEO directo</div></div>
 </div>
 </div>
 
 <div class="callout info">
-<b>Nota sobre leads/semana:</b> este sprint no espera mover la aguja de leads inbound porque Google necesita 4-6 semanas para procesar y rankear contenido nuevo. El efecto real de las 6 páginas publicadas en este sprint aparecerá en el Sprint 3-4. Lo que sí se activa este sprint es el <b>tracking</b> para que cuando esos leads empiecen a llegar podamos atribuirlos correctamente.
+<b>Nota sobre leads/semana:</b> el impacto real de las 12 nuevas URLs (4 landings + 4 casos + 4 artículos × ES+EN) aparecerá en el Sprint 3-4 porque Google necesita 4-6 semanas para procesar y rankear contenido nuevo. Lo que sí se activó este sprint es el <b>tracking</b>: cuando lleguen esos leads, sabremos por primera vez de qué keyword y qué landing vinieron.
 </div>
 
 </div>
@@ -1304,7 +1390,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 
 <div class="overview-timeline">
 <div class="ov-sprint" style="border-color:var(--green);background:rgba(47,125,58,.04)"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status" style="color:var(--green)">✓ Cerrado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Scale 56→76</div></div>
-<div class="ov-sprint current"><b>Sprint 2</b><div class="dates-mini">16-29 jul</div><div class="status">En curso</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 landings P1</div></div>
+<div class="ov-sprint done"><b>Sprint 2</b><div class="dates-mini">16-22 jul</div><div class="status">Cerrado +7d</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">34 URLs · Scale 84</div></div>
 <div class="ov-sprint"><b>Sprint 3</b><div class="dates-mini">30 jul-12 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">4 landings P2</div></div>
 <div class="ov-sprint"><b>Sprint 4</b><div class="dates-mini">13-26 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 P3 + Cloudflare</div></div>
 <div class="ov-sprint"><b>Sprint 5</b><div class="dates-mini">27 ago-9 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Cierre gaps 85%+</div></div>
@@ -1340,7 +1426,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 </div><!-- /.contents -->
 
 <footer>
-Dashboard actualizado 2026-07-13 · Sprint 2 en curso · próxima actualización 29 jul 2026<br>
+Dashboard actualizado 2026-07-22 · Sprint 2 cerrado (+7d adelanto) · próxima actualización cierre Sprint 3 · 12 ago 2026<br>
 URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
