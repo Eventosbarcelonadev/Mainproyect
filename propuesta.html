@@ -1804,6 +1804,17 @@
     body.print-mode .footer { page-break-before: avoid !important; break-before: avoid !important; }
     /* Evitar que el propio about deje un salto después que separe los clientes. */
     body.print-mode .about-section { page-break-after: avoid !important; break-after: avoid !important; }
+    /* Como el cierre se fuerza a la última página, el resumen queda solo en su
+       página. Lo centramos verticalmente para que el espacio sobrante quede
+       equilibrado (arriba y abajo) en vez de un hueco al pie. Si el resumen es
+       largo (muchos shows) simplemente llena y el centrado no tiene efecto. */
+    body.print-mode .summary-section {
+      min-height: 82vh;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
