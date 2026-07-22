@@ -23,6 +23,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const GHL_SHOWS_OBJECT_KEY = 'custom_objects.shows';
 const GHL_SHOW_CONTACT_ASSOCIATION_ID = '6a018a66c4c95715fde952f9';
 const GHL_API = 'https://services.leadconnectorhq.com';
+// Custom field url_generador_propuesta en el modelo OPPORTUNITY (pipeline
+// Clientes). Es el link que Xavi abre desde GHL para armar/editar la propuesta.
+const OPP_URL_GENERADOR_PROPUESTA = 'LJMLhmfJN6W9xHZFXVpB';
 
 // IDs de custom fields GHL (sync admin↔GHL en cada CRUD). Spec en memoria
 // project_ghl_spec.md. Si añades un campo nuevo, actualiza también ese memo.
@@ -363,6 +366,104 @@ async function duplicateProposal(req, res, env) {
   const newRow = Array.isArray(created) ? created[0] : created;
 
   return res.status(200).json({ success: true, id: newRow.id, sourceId: id, proposal: newRow });
+}
+
+// Asegura que un lead tenga propuesta + URL en la opportunity. Pensado para
+// llamarse desde Make (u otra automatización) al crear un lead: los leads que
+// entran por Make no pasan por lead-cliente, así que quedan sin propuesta y sin
+// url_generador_propuesta. Idempotente:
+//   - Si el lead YA tiene propuesta (por ghl_contact_id o email), la reusa.
+//   - Si no, crea una propuesta shell (status=revision, sin shows) linkeada.
+//   - Siempre (re)escribe la URL en la opp.
+// Body flexible: { contactId?, opportunityId?, email?, name? }. Con cualquiera
+// que permita resolver el contacto alcanza.
+async function ensureProposalForLead(req, res, env) {
+  const body = req.body || {};
+  let contactId = String(body.contactId || body.contact_id || '').trim();
+  let opportunityId = String(body.opportunityId || body.opportunity_id || '').trim();
+  const emailIn = String(body.email || '').trim().toLowerCase();
+  const nameIn = String(body.name || body.nombre || '').trim();
+
+  const sbHdr = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
+
+  // 1. Resolver contactId desde opp si hace falta
+  if (opportunityId && !contactId) {
+    const g = await ghlFetch('GET', `/opportunities/${encodeURIComponent(opportunityId)}`, env);
+    if (g.ok) contactId = parse(g).opportunity?.contactId || contactId;
+  }
+  // Resolver por email si aún no hay contacto
+  let contact = null;
+  if (!contactId && emailIn) {
+    const s = await ghlFetch('GET', `/contacts/search/duplicate?locationId=${env.GHL_LOC}&email=${encodeURIComponent(emailIn)}`, env);
+    if (s.ok) { contact = parse(s).contact; contactId = contact?.id || ''; }
+  }
+  if (!contactId) return res.status(400).json({ error: 'No se pudo resolver el contacto. Pasá contactId, opportunityId o email.' });
+
+  // Datos del contacto para nombre/email/empresa
+  if (!contact) {
+    const cr = await ghlFetch('GET', `/contacts/${encodeURIComponent(contactId)}`, env);
+    if (cr.ok) contact = parse(cr).contact;
+  }
+  const clientName = nameIn || [contact?.firstName, contact?.lastName].filter(Boolean).join(' ').trim() || contact?.contactName || contact?.companyName || 'Cliente';
+  const clientEmail = emailIn || contact?.email || '';
+  const clientCompany = contact?.companyName || '';
+
+  // 2. Resolver opp si no vino: la del contacto en el pipeline
+  if (!opportunityId) {
+    const o = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
+    if (o.ok) opportunityId = (parse(o).opportunities || [])[0]?.id || '';
+  }
+
+  // 3. ¿Ya existe propuesta para este lead? (por ghl_contact_id o email)
+  let proposalId = null, reused = false;
+  try {
+    const orParts = [`ghl_contact_id.eq.${contactId}`];
+    if (clientEmail) orParts.push(`client_email.eq.${clientEmail}`);
+    const q = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/proposals?or=(${orParts.join(',')})&select=id&order=created_at.desc&limit=1`,
+      { headers: sbHdr }
+    );
+    if (q.ok) { const rows = await q.json(); if (rows[0]?.id) { proposalId = rows[0].id; reused = true; } }
+  } catch (e) { /* sigue: crea una nueva */ }
+
+  // 4. Crear shell si no existe
+  if (!proposalId) {
+    const row = {
+      status: 'revision',
+      client_name: clientName,
+      client_email: clientEmail,
+      client_company: clientCompany,
+      event_name: `Propuesta — ${clientName}`,
+      category: 'shows',
+      shows: '[]',
+      ghl_contact_id: contactId,
+      ghl_opportunity_id: opportunityId || null
+    };
+    const ins = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals`, {
+      method: 'POST', headers: { ...sbHdr, Prefer: 'return=representation' }, body: JSON.stringify(row)
+    });
+    if (!ins.ok) return res.status(ins.status).json({ error: await ins.text() });
+    proposalId = (await ins.json())[0]?.id;
+  }
+
+  const url = `${siteUrl(env)}/propuesta.html?id=${encodeURIComponent(proposalId)}&admin=1`;
+
+  // 5. Escribir url_generador_propuesta en la opp (si hay opp)
+  let oppSync = { skipped: 'no_opp' };
+  if (opportunityId) {
+    const g = await ghlFetch('PUT', `/opportunities/${encodeURIComponent(opportunityId)}`, env, {
+      customFields: [{ id: OPP_URL_GENERADOR_PROPUESTA, field_value: url }]
+    });
+    oppSync = { ok: g.ok, status: g.status };
+    if (!g.ok) oppSync.error = g.body.slice(0, 160);
+  }
+
+  return res.status(200).json({ success: true, proposalId, url, reused, contactId, opportunityId: opportunityId || null, oppSync });
 }
 
 // Busca contactos en GHL por texto (para el picker de artistas). GHL es la
@@ -2211,10 +2312,11 @@ export default async function handler(req, res) {
       if (action === 'import-artista-from-ghl') return importArtistaFromGhl(req, res, env);
       if (action === 'delete-proposal') return deleteProposal(req, res, env);
       if (action === 'duplicate-proposal') return duplicateProposal(req, res, env);
+      if (action === 'ensure-proposal-for-lead') return ensureProposalForLead(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
