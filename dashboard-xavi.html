@@ -334,7 +334,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="tabs">
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
   <label for="tab-s2">Sprint 2 <small>16-29 jul · cerrado 22 jul</small></label>
-  <label for="tab-s3">Sprint 3 <small>30 jul-12 ago</small></label>
+  <label for="tab-s3">Sprint 3 <small>30 jul-12 ago · en curso</small></label>
   <label for="tab-s4">Sprint 4 <small>13-26 ago</small></label>
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
   <label for="tab-s6">Sprint 6 <small>10-23 sep</small></label>
@@ -1256,30 +1256,77 @@ Ya están en la web pública, no hay NDA violado. Prueba de autoridad máxima.
 <!-- SPRINT 3 -->
 <div class="tab-content" id="c-s3">
 
-<div class="sprint-header">
+<div class="sprint-header current">
   <div class="sh-top">
-    <h2>Sprint 3 · Lead Ideal #2 · Convenciones + entretenimiento continuo</h2>
-    <span class="status-tag pending">Planificado</span>
+    <h2>Sprint 3 · Lead Ideal #2 · Convenciones + frontload editorial</h2>
+    <span class="status-tag current">En curso</span>
   </div>
-  <div class="dates">30 julio — 12 agosto 2026 · quincena 3 de 6</div>
-  <p class="focus"><b>Objetivo del sprint:</b> atacar el <b>Lead Ideal #2 del Informe estratégico</b> (convenciones internacionales con entretenimiento continuo). 2 landings nuevas + refresh de páginas P2 aplicables al informe. Primer pull GSC 30d vs baseline abril para ver primer movimiento de aguja post Sprint 2.</p>
+  <div class="dates">30 julio — 12 agosto 2026 · quincena 3 de 6 · <b>arranca hoy</b></div>
+  <p class="focus"><b>Objetivo del sprint:</b> atacar el <b>Lead Ideal #2 del Informe estratégico</b> (convenciones internacionales con entretenimiento continuo) con 2 landings nuevas, hacer <b>frontload de 8 artículos editoriales</b> antes del corte de agosto para tener masa crítica de contenido, y hacer el <b>primer pull GSC 30d</b> vs baseline abril para medir el impacto real del Sprint 2 en Google.</p>
 </div>
 
-<h3 class="section">Trabajo planificado <span class="sub">post-pivot · alineado al informe</span></h3>
+<div class="progress-wrap">
+  <div class="p-label"><span>Progreso del sprint</span><b>día 1 de 14 · arranque</b></div>
+  <div class="p-bar"><span style="width:7%"></span></div>
+</div>
+
+<div class="hero-metric">
+<div class="h-label">Scale Score · inicio Sprint 3</div>
+<div class="h-value">
+  <span class="h-num">84</span>
+  <span class="h-unit">/ 100 · <b style="color:var(--gold)">objetivo cierre Sprint 3: 88</b> (+4) · meta Sprint 6: 96</span>
+</div>
+<div class="h-context"><b>Palancas de este sprint</b> — el score sube principalmente vía Cobertura pirámide (+6 pts esperados por 2 landings P1 nuevas + 8 artículos que cubren keywords informacionales) y Leads/semana (empieza a moverse porque las URLs del Sprint 2 ya llevan 2-3 semanas indexadas). GEO/AEO y Presencia AI mantienen su techo.</div>
+</div>
+
+<h3 class="section">Trabajo planificado <span class="sub">2 landings + 8 artículos frontload + medición SEO</span></h3>
 <div class="work-list">
 <ul>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing convenciones corporativas internacionales Barcelona ES + EN</b> — Lead Ideal #2 del informe. Casos: Allianz India, Gartner (60 artistas), Criteo. Foco en "entretenimiento continuo durante varios días".</div><div class="impact">P1 · Lead Ideal #2</div></li>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing hub /espectaculos/ · refresh y reforzar</b> ES + EN — captura el Lead Ideal #3 (contratación directa de artistas/espectáculos). Alto ROI comercial.</div><div class="impact">P2 · refresh</div></li>
-<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Pull GSC 30 días</b> — primer delta contra baseline abril. Impresiones + clics + posiciones top keywords. Ver impacto Sprint 2.</div><div class="impact">medición</div></li>
-<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Refresh pirámide biblia</b> cruzada contra Informe estratégico + top queries GSC reales. Descartar keywords que no calzan (team building, animación, experiencias) y añadir las que traen tráfico real hoy.</div><div class="impact">estrategia</div></li>
-<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Handoff performance</b> — Combine CSS/JS en Perfmatters + brief para Cloudflare Polish (WebP automático).</div><div class="impact">LCP</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing convenciones corporativas internacionales Barcelona ES + EN</b> — Lead Ideal #2 del informe. Casos: Allianz India (500 asistentes/3 días), Gartner (60 artistas rotando), Criteo (brass band clausura). Foco en "entretenimiento continuo durante varios días" — el core que EB monetiza mejor.</div><div class="impact">P1 · Lead Ideal #2</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Refresh landing /espectaculos/ ES + EN</b> — captura el Lead Ideal #3 (contratación directa de artistas/espectáculos). Actualizar copy + FAQ + Service schema + linking hub-and-spoke con los 4 artículos del Sprint 2 y los 8 nuevos del Sprint 3.</div><div class="impact">P2 · refresh</div></li>
+<li><span class="cat-tag content">Contenido</span><div class="desc"><b>8 artículos editoriales frontload × ES+EN = 16 posts</b> — B5 "500 personas 3 días entretenimiento", B6 "60 artistas Gartner deep-dive", B7 "5 shows WOW effect", B8 "guía contratar artistas", B9 "cuánto cuesta espectáculo corporativo", B10 "menú + espectáculo coordinación", B11 "opening/closing convenciones", B12 "errores comunes eventos internacionales". Cluster hub-and-spoke con las landings.</div><div class="impact">Autoridad temática</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Pull GSC 30 días</b> vs baseline abril 2026 (2.6k imp/día, 23 clics/día, CTR 0,90%). Primer delta REAL post Sprint 2 — impresiones + clics + posiciones de las 12 nuevas URLs. Nos dice qué está funcionando y dónde iterar.</div><div class="impact">medición</div></li>
+<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Refresh pirámide biblia</b> cruzada contra Informe estratégico + top queries GSC reales. Descartar keywords que no calzan (team building, animación, experiencias vagas) y añadir las que traen tráfico real hoy. La pirámide viva.</div><div class="impact">estrategia</div></li>
+<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Handoff performance</b> — Combine CSS/JS en Perfmatters + brief para Cloudflare Polish (WebP automático). LCP objetivo &lt; 2,5s en móvil para las 4 landings del Sprint 2.</div><div class="impact">LCP</div></li>
 </ul>
 </div>
 
-<h3 class="section">Snapshot esperado al cierre</h3>
-<div class="closing-placeholder">
-<b>Métricas objetivo</b>
-Cobertura pirámide 68% → 72% (2 landings core del informe cubiertas). Pirámide biblia refrescada y alineada al informe estratégico. Primer delta GSC positivo esperado (contenido Sprint 2 con ~2 semanas indexado).
+<h3 class="section">Snapshot esperado al cierre <span class="sub">12 ago 2026</span></h3>
+<div class="metrics-grid">
+<div class="metric pending">
+<div class="m-cat">Scale Score</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">84<small>/100</small></div><div class="m-note">Cierre Sprint 2</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">88<small>/100</small></div><div class="m-note">+4 · masa crítica de contenido</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Cobertura pirámide</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">72<small>%</small></div><div class="m-note">Cierre Sprint 2</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">78<small>%</small></div><div class="m-note">+6 · Lead Ideal #2 + cluster editorial</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">URLs publicadas este sprint</div>
+<div class="m-row"><div class="m-side">Objetivo</div><div class="m-val">4</div><div class="m-note">2 landings × ES+EN</div></div>
+<div class="m-row after"><div class="m-side">+ frontload</div><div class="m-val" style="color:var(--gold)">16</div><div class="m-note">8 artículos × ES+EN</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Primer delta GSC 30d</div>
+<div class="m-row"><div class="m-side">Baseline abr</div><div class="m-val">23<small>/día</small></div><div class="m-note">Clics orgánicos promedio</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">≥ 30<small>/día</small></div><div class="m-note">+30% con contenido Sprint 2 indexado</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">LCP móvil landings</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">3,1<small>s</small></div><div class="m-note">Estimado sin Polish</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">&lt; 2,5<small>s</small></div><div class="m-note">Post Perfmatters + Polish</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">Pirámide biblia refresh</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">v1.0</div><div class="m-note">Estática desde 18 jun</div></div>
+<div class="m-row after"><div class="m-side">Objetivo</div><div class="m-val" style="color:var(--gold)">v2.0</div><div class="m-note">Cruzada con GSC real + informe</div></div>
+</div>
+</div>
+
+<div class="callout info">
+<b>Frontload editorial deliberado:</b> concentrar 8 artículos en el Sprint 3 (en lugar de repartir 4-4-4 en Sprint 3-4-5) tiene una razón — antes del corte de agosto tenemos que dejar publicada la masa crítica de contenido para que Google indexe los clusters juntos y las landings comerciales reciban señales de autoridad temática a la vez. Es el momento del sprint donde más output editorial vamos a hacer.
 </div>
 
 </div>
@@ -1391,7 +1438,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 <div class="overview-timeline">
 <div class="ov-sprint" style="border-color:var(--green);background:rgba(47,125,58,.04)"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status" style="color:var(--green)">✓ Cerrado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Scale 56→76</div></div>
 <div class="ov-sprint done"><b>Sprint 2</b><div class="dates-mini">16-22 jul</div><div class="status">Cerrado +7d</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">34 URLs · Scale 84</div></div>
-<div class="ov-sprint"><b>Sprint 3</b><div class="dates-mini">30 jul-12 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">4 landings P2</div></div>
+<div class="ov-sprint current"><b>Sprint 3</b><div class="dates-mini">30 jul-12 ago</div><div class="status">En curso</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">2 landings + 8 arts + GSC pull</div></div>
 <div class="ov-sprint"><b>Sprint 4</b><div class="dates-mini">13-26 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 P3 + Cloudflare</div></div>
 <div class="ov-sprint"><b>Sprint 5</b><div class="dates-mini">27 ago-9 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Cierre gaps 85%+</div></div>
 <div class="ov-sprint"><b>Sprint 6</b><div class="dates-mini">10-23 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Refresh + Q4 plan</div></div>
@@ -1426,7 +1473,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 </div><!-- /.contents -->
 
 <footer>
-Dashboard actualizado 2026-07-22 · Sprint 2 cerrado (+7d adelanto) · próxima actualización cierre Sprint 3 · 12 ago 2026<br>
+Dashboard actualizado 2026-07-30 · Sprint 2 cerrado (+7d adelanto) · Sprint 3 arranca hoy · próxima actualización cierre Sprint 3 · 12 ago 2026<br>
 URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
