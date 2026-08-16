@@ -1,0 +1,152 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Catálogo Eventos Barcelona",
+    "description": "Catálogo real de shows y artistas de Eventos Barcelona. Permite al asistente proponer conceptos de evento usando únicamente lo que la agencia puede producir de verdad.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://propuestas.eventosbarcelona.com" }
+  ],
+  "paths": {
+    "/api/gpt/catalogo": {
+      "get": {
+        "operationId": "buscarCatalogo",
+        "summary": "Lista el catálogo de shows de Eventos Barcelona",
+        "description": "Llama a esta operación SIEMPRE, antes de proponer cualquier idea o concepto de evento, antes de responder qué shows hay disponibles y antes de mencionar cualquier artista. Sin llamarla no sabes qué puede producir la agencia y cualquier show que menciones estará inventado. Llámala sin parámetros para ver el catálogo completo, que es lo normal cuando el cliente da un concepto abierto. Devuelve también las fuentes de referencia del sector que sigue la agencia.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Filtro de texto libre sobre nombre, categoría y descripción. Úsalo solo cuando busques algo muy concreto. Ante la duda, no lo uses: es mejor ver el catálogo entero y elegir tú.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "categoria",
+            "in": "query",
+            "required": false,
+            "description": "Filtra por una categoría exacta. Las categorías válidas vienen en el campo 'categorias' de la respuesta.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "incluir_descripciones",
+            "in": "query",
+            "required": false,
+            "description": "Pon 'true' para incluir la descripción de cada show. Útil cuando ya has acotado a una categoría concreta.",
+            "schema": { "type": "string", "enum": ["true", "false"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catálogo de shows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_catalogo": { "type": "integer" },
+                    "devueltos": { "type": "integer" },
+                    "categorias": { "type": "array", "items": { "type": "string" } },
+                    "shows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "description": "Identificador exacto. Úsalo al citar el show." },
+                          "nombre": { "type": "string" },
+                          "categoria": { "type": "string" },
+                          "subcategoria": { "type": "string" },
+                          "artistas": { "type": "array", "items": { "type": "string" } },
+                          "descripcion": { "type": "string" }
+                        }
+                      }
+                    },
+                    "referencias": {
+                      "type": "array",
+                      "description": "Webs del sector que sigue la agencia, como inspiración de formatos.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nombre": { "type": "string" },
+                          "url": { "type": "string" },
+                          "notas": { "type": "string" }
+                        }
+                      }
+                    },
+                    "instrucciones": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gpt/show": {
+      "get": {
+        "operationId": "detalleShows",
+        "summary": "Detalle completo de shows concretos",
+        "description": "Llama a esta operación cuando ya has elegido shows con buscarCatalogo y necesitas detalle para argumentar la propuesta: descripción larga, precio base, vídeo, y los artistas con su biografía. También sirve para comprobar que un id existe de verdad. Devuelve la lista 'no_encontrados' con los ids que no existen en el catálogo.",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "description": "Ids de show separados por comas, máximo 12. Ejemplo: acrobacias-aereas,laser-show",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle de los shows pedidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "nombre": { "type": "string" },
+                          "categoria": { "type": "string" },
+                          "subcategoria": { "type": "string" },
+                          "descripcion": { "type": "string" },
+                          "precio_base": { "type": "number" },
+                          "nota_precio": { "type": "string" },
+                          "video": { "type": "string" },
+                          "imagen": { "type": "string" },
+                          "url_ficha": { "type": "string" },
+                          "artistas": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "nombre": { "type": "string" },
+                                "compania": { "type": "string" },
+                                "ciudad": { "type": "string" },
+                                "bio": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "no_encontrados": {
+                      "type": "array",
+                      "description": "Ids que no existen en el catálogo. Si aparece alguno, no lo menciones como show disponible.",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

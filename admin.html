@@ -530,6 +530,106 @@
       background: #fff4e5; color: #a3691e; font-size: 9px; font-weight: 700;
       margin-left: 6px; text-transform: uppercase; letter-spacing: 0.05em;
     }
+
+    /* ---- Tab Ideas ---- */
+    .ideas-layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .ideas-layout { grid-template-columns: 1fr; } }
+    .ideas-col-form { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; }
+    @media (max-width: 900px) { .ideas-col-form { position: static; } }
+    .ideas-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+    .ideas-box h3 {
+      margin: 0 0 14px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--gray);
+    }
+    .ideas-count { color: var(--accent); font-weight: 700; }
+    .ideas-box textarea, .ideas-box input, .ideas-box select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-family: inherit; font-size: 13px; background: #fff; color: var(--dark); resize: vertical;
+    }
+    .ideas-box textarea:focus, .ideas-box input:focus, .ideas-box select:focus {
+      outline: none; border-color: var(--accent);
+    }
+    .ideas-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .ideas-hint { font-size: 11px; color: var(--gray); margin: 10px 0 0; line-height: 1.4; }
+    .ideas-ref-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .ideas-ref { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .ideas-ref:last-of-type { border-bottom: none; }
+    .ideas-ref.off { opacity: 0.45; }
+    .ideas-ref-main { flex: 1; min-width: 0; }
+    .ideas-ref-main a { font-size: 13px; font-weight: 600; color: var(--dark); text-decoration: none; }
+    .ideas-ref-main a:hover { color: var(--accent); }
+    .ideas-ref-main .notas { font-size: 11px; color: var(--gray); line-height: 1.35; }
+    .ideas-ref-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .ideas-ref-actions button {
+      background: none; border: none; cursor: pointer; font-size: 13px;
+      padding: 2px 4px; color: var(--gray); line-height: 1;
+    }
+    .ideas-ref-actions button:hover { color: var(--accent); }
+    .radar-que-es {
+      background: var(--light); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0;
+      padding: 14px 16px; margin-bottom: 18px; font-size: 13px; line-height: 1.55;
+    }
+    .radar-que-es strong { display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .radar-que-es p { margin: 0 0 8px; }
+    .radar-que-es ol { margin: 0 0 8px; padding-left: 18px; }
+    .radar-que-es li { margin-bottom: 4px; }
+    .radar-aviso { color: var(--gray); font-size: 12px; margin-bottom: 0 !important; }
+    .radar-vacio { color: var(--gray); font-size: 13px; padding: 14px 0; }
+    .radar-seccion { margin-top: 18px; }
+    .radar-seccion h4 {
+      margin: 0 0 10px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--gray);
+    }
+    .hueco {
+      border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px;
+    }
+    .hueco-cab { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .hueco-cab strong { font-size: 14px; }
+    .prio { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
+    .prio-alta { background: #fff4f0; color: var(--accent); }
+    .prio-media { background: #fff8ee; color: #a3691e; }
+    .prio-baja { background: var(--light); color: var(--gray); }
+    .hueco p { margin: 0 0 4px; font-size: 13px; line-height: 1.5; }
+    .hueco .falta { font-size: 12px; color: var(--gray); }
+    .radar-idea { border-left: 2px solid var(--border); padding-left: 12px; margin-bottom: 12px; }
+    .radar-idea strong { font-size: 14px; }
+    .radar-idea p { margin: 3px 0 0; font-size: 13px; line-height: 1.5; }
+    .radar-fuentes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .radar-fuente {
+      font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border);
+    }
+    .radar-fuente.ok { background: #ecf7e8; color: #35701c; border-color: #cfe6c6; }
+    .radar-fuente.parcial { background: #fff8ee; color: #a3691e; border-color: #f0dcc0; }
+    .radar-fuente.fallo { background: #fff4f0; color: #a33; border-color: #f0cdc5; }
+    .radar-hallazgo {
+      background: #fff8ee; border: 1px solid #f0dcc0; border-radius: 6px;
+      padding: 12px 14px; margin-bottom: 4px;
+    }
+    .radar-hallazgo strong {
+      display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+      color: #a3691e; margin-bottom: 4px;
+    }
+    .radar-hallazgo p { margin: 0; font-size: 13px; line-height: 1.55; }
+    .radar-descartes { margin: 0; padding-left: 18px; font-size: 12px; color: var(--gray); line-height: 1.55; }
+    .radar-descartes li { margin-bottom: 5px; }
+    .gpt-check {
+      display: flex; flex-direction: column; gap: 3px; padding: 12px 14px;
+      border-radius: 6px; margin-bottom: 16px; font-size: 13px;
+    }
+    .gpt-check.ok { background: #ecf7e8; color: #35701c; }
+    .gpt-check.ko { background: #fff4f0; color: #a33; }
+    .gpt-check span { color: inherit; opacity: 0.8; font-size: 12px; }
+    .gpt-endpoints { display: flex; flex-direction: column; gap: 8px; }
+    .gpt-endpoint {
+      display: flex; flex-direction: column; gap: 2px; padding: 10px 12px;
+      background: var(--light); border: 1px solid var(--border); border-radius: 6px;
+    }
+    .gpt-endpoint code { font-size: 12px; font-weight: 600; color: var(--dark); }
+    .gpt-endpoint span { font-size: 11px; color: var(--gray); }
+    .ideas-box code {
+      background: var(--light); border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 5px; font-size: 11px;
+    }
   </style>
 </head>
 <body>
@@ -540,6 +640,7 @@
       <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
+      <button class="tab" data-tab="ideas">Ideas</button>
     </div>
   </div>
 
@@ -636,6 +737,105 @@
       <div id="propuestas-loading" class="loading">Cargando…</div>
       <div id="propuestas-empty" class="empty hidden">No hay propuestas.</div>
       <div id="propuestas-table-wrap"></div>
+    </section>
+
+    <!-- TAB: IDEAS -->
+    <section id="tab-ideas" class="tab-panel hidden">
+      <div class="ideas-layout">
+        <div class="ideas-col-form">
+          <div class="ideas-box">
+            <h3>Fuentes de referencia <span id="refs-count" class="ideas-count"></span></h3>
+            <p class="ideas-hint" style="margin-top:0;">Webs y perfiles del sector que viajan al GPT junto con el catálogo. Inspiración de formatos, nunca copiamos textos.</p>
+            <div id="refs-list"></div>
+            <button class="btn btn-secondary" id="ref-add-btn" style="width:100%;margin-top:10px;">+ Añadir fuente</button>
+            <form id="ref-form" class="ideas-ref-form hidden">
+              <input type="hidden" id="ref-id">
+              <div class="field-row">
+                <label for="ref-nombre">Nombre *</label>
+                <input id="ref-nombre" type="text" placeholder="Scarlett Entertainment">
+              </div>
+              <div class="field-row">
+                <label for="ref-url">URL *</label>
+                <input id="ref-url" type="url" placeholder="https://...">
+              </div>
+              <div class="field-row">
+                <label for="ref-tipo">Tipo</label>
+                <select id="ref-tipo">
+                  <option value="web">Web</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="pinterest">Pinterest</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <label for="ref-notas">Qué mirar aquí</label>
+                <textarea id="ref-notas" rows="2" placeholder="Catálogo enorme, buena referencia de amplitud"></textarea>
+              </div>
+              <div class="field-row">
+                <label for="ref-tags">Tags (separados por coma)</label>
+                <input id="ref-tags" type="text" placeholder="catalogo-grande, mice">
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Guardar</button>
+                <button type="button" class="btn btn-secondary" id="ref-cancel">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="ideas-col-results">
+          <div class="ideas-box">
+            <h3>Radar del sector <span id="radar-fecha" class="ideas-count"></span></h3>
+
+            <div class="radar-que-es">
+              <strong>Qué es esto y de dónde sale</strong>
+              <p>
+                Un análisis que se lanza <strong>a demanda</strong>, cuando Xavi lo pide o cuando toca
+                revisar por dónde ampliar catálogo. No es un informe automático semanal: se hace cuando
+                sirve para algo. Cada vez recorre estos pasos:
+              </p>
+              <ol>
+                <li>Lee el catálogo activo de Eventos Barcelona, los shows aprobados en ese momento.</li>
+                <li>Lee cómo clasifican su oferta las agencias de referencia del sector, sacando su taxonomía de los sitemaps públicos.</li>
+                <li>Cruza las dos listas y busca <strong>familias de entretenimiento que ellos venden y aquí no hay</strong>.</li>
+                <li>Descarta lo que no encaja con el posicionamiento. Eventos Barcelona es boutique premium para clientes MICE, no un directorio: un hueco no vale por existir, vale si tiene sentido para evento corporativo premium en Barcelona.</li>
+              </ol>
+              <p class="radar-aviso">
+                Son pistas para decidir a quién fichar y qué empaquetar, no una lista de la compra.
+                El criterio sigue siendo de Xavi. Abajo se ve también lo que se descartó y por qué,
+                que suele ser tan útil como lo que se propone.
+              </p>
+            </div>
+
+            <div id="radar-contenido"></div>
+          </div>
+
+          <div class="ideas-box" style="margin-top:16px;">
+            <h3>Conexión con el GPT</h3>
+            <p style="font-size:14px;margin:0 0 16px;line-height:1.55;">
+              La ideación vive en el GPT de Xavi, que llama a este panel para leer el catálogo real.
+              Así trabaja con lo que Eventos Barcelona puede producir de verdad, en vez de inventarse shows.
+            </p>
+            <div id="gpt-status"></div>
+            <div class="gpt-endpoints">
+              <div class="gpt-endpoint"><code>GET /api/gpt/catalogo</code><span>Catálogo activo + fuentes de referencia</span></div>
+              <div class="gpt-endpoint"><code>GET /api/gpt/show?ids=…</code><span>Detalle: precio, vídeo, biografía del artista</span></div>
+            </div>
+            <p class="ideas-hint">
+              Solo lectura. No exponen contactos, propuestas ni datos de clientes.
+              Para montar o revisar el GPT: <code>docs/gpt-asistente-instrucciones.md</code> en el repo.
+            </p>
+          </div>
+
+          <div class="ideas-box" style="margin-top:16px;">
+            <h3>Qué ve el GPT</h3>
+            <p class="ideas-hint" style="margin-top:0;">
+              Los shows en estado <strong>Activo</strong>. Lo que Xavi apruebe en el tab Shows aparece
+              en el GPT al momento, sin tocar nada. Lo archivado desaparece.
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -880,7 +1080,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'ideas'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -913,7 +1113,8 @@
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
       shows: { substatus: 'active', artistaFilter: null, items: [], q: '', lang: 'es' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
-      propuestas: { q: '', status: '', items: [] }
+      propuestas: { q: '', status: '', items: [] },
+      ideas: { referencias: [], gpt: null, refsLoaded: false }
     };
     state.artistas.statusFilter = '';
     state.artistas.tipo = 'artista';
@@ -2835,6 +3036,208 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
     // ---------- HASH ROUTER ----------
+    // ---------- IDEAS (fuentes + estado del GPT) ----------
+
+    async function loadReferencias() {
+      try {
+        const r = await fetch('/api/admin?action=list-referencias');
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error cargando fuentes');
+        state.ideas.referencias = d.items || [];
+        state.ideas.gpt = d.gpt || null;
+        state.ideas.refsLoaded = true;
+        renderReferencias();
+        renderGptStatus();
+        if (d.radar) renderRadar(d.radar);
+        else $('radar-contenido').innerHTML =
+          '<p class="radar-vacio">Todavía no se ha publicado ningún informe. Se genera a demanda desde el repo.</p>';
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    function renderGptStatus() {
+      const g = state.ideas.gpt;
+      if (!g) { $('gpt-status').innerHTML = ''; return; }
+      const ok = g.token_configurado;
+      $('gpt-status').innerHTML = `
+        <div class="gpt-check ${ok ? 'ok' : 'ko'}">
+          <strong>${ok ? 'Token configurado' : 'Falta GPT_ACTION_TOKEN'}</strong>
+          <span>${ok
+            ? `El GPT puede leer el catálogo. ${g.shows_activos} shows activos disponibles.`
+            : 'Setear la env var en Vercel y redeployar, o la Action devolverá 500.'}</span>
+        </div>`;
+    }
+
+    function renderReferencias() {
+      const refs = state.ideas.referencias;
+      const activas = refs.filter(r => r.activa).length;
+      $('refs-count').textContent = refs.length ? `${activas}/${refs.length}` : '';
+      if (!refs.length) {
+        $('refs-list').innerHTML = '<p class="ideas-hint" style="margin:0;">Todavía no hay fuentes. Añade las webs del sector que quieras usar de inspiración.</p>';
+        return;
+      }
+      $('refs-list').innerHTML = refs.map(r => `
+        <div class="ideas-ref ${r.activa ? '' : 'off'}">
+          <div class="ideas-ref-main">
+            <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.nombre)}</a>
+            ${r.notas ? `<div class="notas">${escapeHtml(r.notas)}</div>` : ''}
+          </div>
+          <div class="ideas-ref-actions">
+            <button title="${r.activa ? 'Desactivar' : 'Activar'}" data-ref-toggle="${r.id}">${r.activa ? '\u25c9' : '\u25cb'}</button>
+            <button title="Editar" data-ref-edit="${r.id}">\u270e</button>
+            <button title="Eliminar" data-ref-del="${r.id}">\u00d7</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openRefForm(ref) {
+      $('ref-id').value = ref ? ref.id : '';
+      $('ref-nombre').value = ref ? ref.nombre : '';
+      $('ref-url').value = ref ? ref.url : '';
+      $('ref-tipo').value = ref ? (ref.tipo || 'web') : 'web';
+      $('ref-notas').value = ref ? (ref.notas || '') : '';
+      $('ref-tags').value = ref && Array.isArray(ref.tags) ? ref.tags.join(', ') : '';
+      $('ref-form').classList.remove('hidden');
+      $('ref-add-btn').classList.add('hidden');
+      $('ref-nombre').focus();
+    }
+
+    function closeRefForm() {
+      $('ref-form').classList.add('hidden');
+      $('ref-add-btn').classList.remove('hidden');
+    }
+
+    async function saveReferenciaFromForm(ev) {
+      ev.preventDefault();
+      const id = $('ref-id').value;
+      const body = {
+        nombre: $('ref-nombre').value.trim(),
+        url: $('ref-url').value.trim(),
+        tipo: $('ref-tipo').value,
+        notas: $('ref-notas').value.trim(),
+        tags: $('ref-tags').value.split(',').map(t => t.trim()).filter(Boolean)
+      };
+      if (id) body.id = id;
+      if (!body.nombre || !body.url) { showError('Nombre y URL son obligatorios'); return; }
+      try {
+        const r = await fetch('/api/admin?action=save-referencia', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error guardando');
+        closeRefForm();
+        await loadReferencias();
+      } catch (e) { showError(e.message); }
+    }
+
+    async function toggleReferencia(id) {
+      const ref = state.ideas.referencias.find(r => r.id === id);
+      if (!ref) return;
+      try {
+        const r = await fetch('/api/admin?action=save-referencia', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...ref, activa: !ref.activa })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        await loadReferencias();
+      } catch (e) { showError(e.message); }
+    }
+
+    async function deleteReferenciaById(id) {
+      const ref = state.ideas.referencias.find(r => r.id === id);
+      if (!confirm(`¿Eliminar la fuente "${ref ? ref.nombre : id}"?`)) return;
+      try {
+        const r = await fetch('/api/admin?action=delete-referencia', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        await loadReferencias();
+      } catch (e) { showError(e.message); }
+    }
+
+    function renderRadar(d) {
+      if (d.generado) {
+        const f = new Date(d.generado);
+        if (!isNaN(f)) $('radar-fecha').textContent = f.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+      }
+      const huecos = d.huecos || [];
+      const ideas = d.ideas || [];
+      const nuevo = d.nuevo_esta_semana || [];
+      let html = '';
+
+      if (d.hallazgo_principal) {
+        html += `<div class="radar-hallazgo"><strong>Hallazgo principal</strong><p>${escapeHtml(d.hallazgo_principal)}</p></div>`;
+      }
+
+      if (nuevo.length) {
+        html += `<div class="radar-seccion"><h4>Nuevo esta semana</h4><ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6;">
+          ${nuevo.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul></div>`;
+      }
+
+      html += '<div class="radar-seccion"><h4>Huecos de catálogo</h4>';
+      html += huecos.length ? huecos.map(h => {
+        const p = (h.prioridad || 'baja').toLowerCase();
+        return `<div class="hueco">
+          <div class="hueco-cab"><strong>${escapeHtml(h.familia)}</strong><span class="prio prio-${escapeHtml(p)}">${escapeHtml(p)}</span></div>
+          <p>${escapeHtml(h.por_que_encaja || '')}</p>
+          ${h.que_haria_falta ? `<p class="falta"><strong>Haría falta:</strong> ${escapeHtml(h.que_haria_falta)}</p>` : ''}
+        </div>`;
+      }).join('') : '<p class="radar-vacio">Ningún hueco relevante esta semana.</p>';
+      html += '</div>';
+
+      if (ideas.length) {
+        html += '<div class="radar-seccion"><h4>Ideas</h4>';
+        html += ideas.map(i => `<div class="radar-idea">
+          <strong>${escapeHtml(i.titulo)}</strong>
+          <p>${escapeHtml(i.descripcion || '')}</p>
+          ${(i.shows_eb_relacionados || []).length
+            ? `<p class="falta">Con lo que ya tenemos: ${i.shows_eb_relacionados.map(escapeHtml).join(', ')}</p>` : ''}
+        </div>`).join('');
+        html += '</div>';
+      }
+
+      if ((d.descartado_a_proposito || []).length) {
+        html += `<div class="radar-seccion"><h4>Descartado a propósito</h4>
+          <ul class="radar-descartes">${d.descartado_a_proposito.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+      }
+
+      if ((d.avisos_de_datos || []).length) {
+        html += `<div class="radar-seccion"><h4>Avisos sobre los datos</h4>
+          <ul class="radar-descartes">${d.avisos_de_datos.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+      }
+
+      if ((d.fuentes_leidas || []).length) {
+        html += `<div class="radar-seccion"><h4>Fuentes leídas</h4><div class="radar-fuentes">
+          ${d.fuentes_leidas.map(f => {
+            const est = (f.estado || 'ok').toLowerCase();
+            const n = f.categorias_encontradas ? ` · ${f.categorias_encontradas}` : '';
+            return `<span class="radar-fuente ${escapeHtml(est)}">${escapeHtml(f.nombre)}${n}</span>`;
+          }).join('')}</div>
+          ${d.catalogo_eb ? `<p class="radar-aviso" style="margin-top:8px;">Comparado contra ${d.catalogo_eb.shows} shows propios en ${(d.catalogo_eb.categorias || []).length} categorías.</p>` : ''}
+        </div>`;
+      }
+
+      $('radar-contenido').innerHTML = html;
+    }
+
+    $('ref-add-btn').addEventListener('click', () => openRefForm(null));
+    $('ref-cancel').addEventListener('click', closeRefForm);
+    $('ref-form').addEventListener('submit', saveReferenciaFromForm);
+    $('refs-list').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+      if (btn.dataset.refToggle) return toggleReferencia(btn.dataset.refToggle);
+      if (btn.dataset.refDel) return deleteReferenciaById(btn.dataset.refDel);
+      if (btn.dataset.refEdit) {
+        const ref = state.ideas.referencias.find(r => r.id === btn.dataset.refEdit);
+        if (ref) openRefForm(ref);
+      }
+    });
+
     async function applyHash() {
       const { tab, sub, query } = parseHash();
       activateTab(tab);
@@ -2893,6 +3296,8 @@
         }
       } else if (tab === 'propuestas') {
         loadPropuestas();
+      } else if (tab === 'ideas') {
+        if (!state.ideas.refsLoaded) loadReferencias();
       }
     }
 

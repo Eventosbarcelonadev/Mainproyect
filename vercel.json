@@ -2,9 +2,14 @@
   "functions": {
     "api/generate-proposal-pdf.js": {
       "maxDuration": 60
+    },
+    "api/admin.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
+    { "source": "/api/gpt/catalogo", "destination": "/api/admin?action=gpt-catalogo" },
+    { "source": "/api/gpt/show", "destination": "/api/admin?action=gpt-show" },
     { "source": "/formulario-cliente", "destination": "/formulario-inteligente.html" },
     { "source": "/formulario-artista", "destination": "/formulario-artistas.html" },
     { "source": "/propuesta/:path*", "destination": "/propuesta.html" },

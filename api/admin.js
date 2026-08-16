@@ -15,6 +15,13 @@
 // POST /api/admin?action=toggle-favorite  body: {id, is_favorite: bool}
 // POST /api/admin?action=add-artista  body: {nombre, nombre_artistico?, compania?, email?, telefono?, ciudad?, tipo, disciplinas?[], bio_show?}
 // POST /api/admin?action=edit-artista  body: {id, patch: {nombre?, ...}}
+// --- Motor de ideas (tab Ideas) ---
+// GET  /api/admin?action=list-referencias   -> fuentes del sector que mantiene Xavi
+// POST /api/admin?action=save-referencia    body: {id?, nombre, url, tipo?, notas?, tags?, activa?}
+// POST /api/admin?action=delete-referencia  body: {id}
+// POST /api/admin?action=save-radar       body: {resultado}  -> publica informe del radar
+// GET  /api/gpt/catalogo   (rewrite -> action=gpt-catalogo)  auth: Bearer GPT_ACTION_TOKEN
+// GET  /api/gpt/show        (rewrite -> action=gpt-show)      auth: Bearer GPT_ACTION_TOKEN
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -2262,6 +2269,252 @@ async function geoMetrics(req, res, env) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// MOTOR DE IDEAS — endpoints para el GPT de Xavi (GPT Actions)
+//
+// El cerebro vive en el GPT de Xavi: la inferencia la paga su suscripción de
+// ChatGPT, así que esto NO llama a ninguna API de pago ni genera coste.
+// Aquí solo servimos el catálogo REAL de Supabase para que el GPT deje de
+// inventarse shows y trabaje con lo que Eventos Barcelona puede producir.
+//
+// Rutas limpias vía rewrites en vercel.json (no suman función, siguen siendo
+// este mismo handler, que el plan Hobby está a 12/12):
+//   GET /api/gpt/catalogo -> action=gpt-catalogo
+//   GET /api/gpt/show     -> action=gpt-show
+//
+// Auth: bearer token en GPT_ACTION_TOKEN. Aquí sí tiene sentido, porque el
+// token vive en la config del GPT y no en una página pública.
+// ---------------------------------------------------------------------------
+
+function ideasSbHeaders(env) {
+  return { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+}
+
+async function ideasSbGet(env, path) {
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/${path}`, { headers: ideasSbHeaders(env) });
+  if (!r.ok) throw new Error(`Supabase GET ${path.split('?')[0]}: ${await r.text()}`);
+  return r.json();
+}
+
+// Comparación en tiempo constante para no filtrar el token carácter a carácter.
+function tokenValido(recibido, esperado) {
+  if (!recibido || !esperado || recibido.length !== esperado.length) return false;
+  let diff = 0;
+  for (let i = 0; i < recibido.length; i++) diff |= recibido.charCodeAt(i) ^ esperado.charCodeAt(i);
+  return diff === 0;
+}
+
+function gptAuthOk(req, env) {
+  if (!env.GPT_TOKEN) return { ok: false, code: 500, error: 'Falta GPT_ACTION_TOKEN en el servidor' };
+  const raw = req.headers && (req.headers.authorization || req.headers.Authorization);
+  const bearer = typeof raw === 'string' ? raw.replace(/^Bearer\s+/i, '').trim() : '';
+  if (!tokenValido(bearer, env.GPT_TOKEN)) return { ok: false, code: 401, error: 'Token inválido' };
+  return { ok: true };
+}
+
+// ---------- referencias (CRUD que usa Xavi desde el tab Ideas) ----------
+
+// El handler hace `return fn(...)` sin await, así que un throw asíncrono se
+// escapa de su try/catch y Vercel lo convierte en un crash sin cuerpo. Las
+// acciones del motor de ideas capturan aquí para devolver JSON legible.
+async function listReferencias(req, res, env) {
+  try {
+    // Devolvemos también el estado de la conexión con el GPT para que el tab
+    // pueda decir si está listo sin exponer el token al browser.
+    // El radar vive en Supabase, no en un fichero: `data/` está en .gitignore,
+    // así que un JSON ahí nunca llegaría a producción. Y así refrescarlo no
+    // obliga a redesplegar.
+    const [rows, activos, radar] = await Promise.all([
+      ideasSbGet(env, 'referencias?select=*&order=created_at.asc'),
+      ideasSbGet(env, 'shows?status=eq.active&select=id'),
+      ideasSbGet(env, 'ideas_sesiones?brief->>tipo=eq.radar-sector&select=resultado,created_at&order=created_at.desc&limit=1')
+    ]);
+    return res.status(200).json({
+      items: rows,
+      gpt: { token_configurado: !!env.GPT_TOKEN, shows_activos: activos.length },
+      radar: radar[0] ? radar[0].resultado : null
+    });
+  } catch (err) {
+    const falta = /Could not find the table/i.test(err.message);
+    return res.status(500).json({
+      error: falta ? 'Falta la tabla `referencias`: aplica supabase/migrations/20260816_referencias_ideas.sql' : err.message
+    });
+  }
+}
+
+async function saveReferencia(req, res, env) {
+  const b = req.body || {};
+  const nombre = (b.nombre || '').trim();
+  const url = (b.url || '').trim();
+  if (!nombre || !url) return res.status(400).json({ error: 'nombre y url son obligatorios' });
+  if (!/^https?:\/\//i.test(url)) return res.status(400).json({ error: 'La url tiene que empezar por http:// o https://' });
+
+  const row = {
+    nombre,
+    url,
+    tipo: (b.tipo || 'web').trim(),
+    notas: (b.notas || '').trim() || null,
+    tags: Array.isArray(b.tags) ? b.tags.filter(Boolean) : [],
+    activa: b.activa !== false
+  };
+
+  const isEdit = b.id && UUID_RE.test(b.id);
+  const endpoint = isEdit
+    ? `${env.SUPABASE_URL}/rest/v1/referencias?id=eq.${encodeURIComponent(b.id)}`
+    : `${env.SUPABASE_URL}/rest/v1/referencias`;
+  if (isEdit) row.updated_at = new Date().toISOString();
+
+  const r = await fetch(endpoint, {
+    method: isEdit ? 'PATCH' : 'POST',
+    headers: { ...ideasSbHeaders(env), 'Content-Type': 'application/json', Prefer: 'return=representation' },
+    body: JSON.stringify(row)
+  });
+  if (!r.ok) return res.status(500).json({ error: await r.text() });
+  const saved = await r.json();
+  return res.status(200).json({ ok: true, referencia: saved[0] || null });
+}
+
+// Publica un informe de radar. Lo llama scripts/radar-publicar.js desde local,
+// que es donde hay salida a internet para leer los sitemaps.
+async function saveRadar(req, res, env) {
+  const resultado = req.body && req.body.resultado;
+  if (!resultado || typeof resultado !== 'object') {
+    return res.status(400).json({ error: 'Falta el objeto `resultado`' });
+  }
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/ideas_sesiones`, {
+    method: 'POST',
+    headers: { ...ideasSbHeaders(env), 'Content-Type': 'application/json', Prefer: 'return=representation' },
+    body: JSON.stringify({ brief: { tipo: 'radar-sector' }, resultado, modelo: 'claude-code-local' })
+  });
+  if (!r.ok) return res.status(500).json({ error: await r.text() });
+  const saved = await r.json();
+  return res.status(200).json({ ok: true, id: saved[0] && saved[0].id });
+}
+
+async function deleteReferencia(req, res, env) {
+  const id = (req.body && req.body.id) || '';
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: 'id inválido' });
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/referencias?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: ideasSbHeaders(env)
+  });
+  if (!r.ok) return res.status(500).json({ error: await r.text() });
+  return res.status(200).json({ ok: true });
+}
+
+// ---------- catálogo para el GPT ----------
+
+function nombreArtista(a) {
+  return a ? (a.nombre_artistico || a.nombre) : null;
+}
+
+// Sin esto "laser" no encuentra "Show Láser", y el catálogo está lleno de
+// acentos (Aéreas, Acróbatas, Dúo). El GPT escribe sin acentos la mitad de las
+// veces, así que normalizamos los dos lados.
+function sinAcentos(s) {
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function artistasDeShow(s) {
+  return uniq((Array.isArray(s.show_artistas) ? s.show_artistas : []).map(sa => nombreArtista(sa && sa.artista)));
+}
+
+// Ficha mínima. Las Actions meten la respuesta entera en el contexto del GPT,
+// así que por defecto va sin descripciones: 250 shows compactos ocupan poco y
+// el GPT los ve TODOS. Si necesita detalle de alguno, tira de /api/gpt/show.
+function showCompacto(s) {
+  return {
+    id: s.id,
+    nombre: s.name,
+    categoria: s.category || null,
+    subcategoria: s.subcategory || null,
+    artistas: artistasDeShow(s)
+  };
+}
+
+async function gptCatalogo(req, res, env) {
+  const auth = gptAuthOk(req, env);
+  if (!auth.ok) return res.status(auth.code).json({ error: auth.error });
+
+  try {
+    const showCols = 'id,name,category,subcategory,description,status,show_artistas(artista:artista_id(nombre,nombre_artistico))';
+    const [shows, referencias] = await Promise.all([
+      ideasSbGet(env, `shows?status=eq.active&select=${showCols}&order=category,name`),
+      ideasSbGet(env, 'referencias?activa=is.true&select=nombre,url,notas,tags&order=created_at.asc')
+    ]);
+
+    const q = sinAcentos((req.query.q || '').trim());
+    const categoria = sinAcentos((req.query.categoria || '').trim());
+    const conDescripcion = String(req.query.incluir_descripciones || '') === 'true';
+
+    let filtrados = shows;
+    if (categoria) {
+      filtrados = filtrados.filter(s => sinAcentos(s.category) === categoria);
+    }
+    if (q) {
+      // Filtro amplio a propósito: es mejor que al GPT le sobren shows a que le
+      // falten. La selección fina la hace él, que para eso ve la lista entera.
+      filtrados = filtrados.filter(s => sinAcentos([s.name, s.category, s.subcategory, s.description]
+        .filter(Boolean).join(' ')).includes(q));
+    }
+
+    const items = filtrados.map(s => {
+      const base = showCompacto(s);
+      if (conDescripcion && s.description) base.descripcion = s.description.replace(/\s+/g, ' ').trim().slice(0, 300);
+      return base;
+    });
+
+    return res.status(200).json({
+      total_catalogo: shows.length,
+      devueltos: items.length,
+      categorias: uniq(shows.map(s => s.category)).sort(),
+      shows: items,
+      referencias: referencias.map(r => ({ nombre: r.nombre, url: r.url, notas: r.notas, tags: r.tags })),
+      instrucciones: 'Estos son los unicos shows que Eventos Barcelona puede producir directamente. Usa el id exacto al citarlos. Si el concepto necesita algo que no esta en esta lista, dilo como "a producir a medida" y no lo presentes como show existente.'
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+async function gptShow(req, res, env) {
+  const auth = gptAuthOk(req, env);
+  if (!auth.ok) return res.status(auth.code).json({ error: auth.error });
+
+  const ids = String(req.query.ids || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 12);
+  if (!ids.length) return res.status(400).json({ error: 'Pasa al menos un id en ?ids=' });
+
+  try {
+    const cols = 'id,name,category,subcategory,description,base_price,price_note,video_url,image_url,'
+      + 'show_artistas(artista:artista_id(nombre,nombre_artistico,compania,ciudad,bio_show))';
+    const lista = ids.map(encodeURIComponent).join(',');
+    const shows = await ideasSbGet(env, `shows?id=in.(${lista})&select=${cols}`);
+
+    const encontrados = shows.map(s => ({
+      id: s.id,
+      nombre: s.name,
+      categoria: s.category || null,
+      subcategoria: s.subcategory || null,
+      descripcion: s.description || null,
+      precio_base: s.base_price || null,
+      nota_precio: s.price_note || null,
+      video: s.video_url || null,
+      imagen: s.image_url || null,
+      url_ficha: adminUrlShow(env, s.id),
+      artistas: (Array.isArray(s.show_artistas) ? s.show_artistas : [])
+        .map(sa => sa && sa.artista)
+        .filter(Boolean)
+        .map(a => ({ nombre: nombreArtista(a), compania: a.compania || null, ciudad: a.ciudad || null, bio: a.bio_show || null }))
+    }));
+
+    // Devolvemos los que no existen para que el GPT sepa que se los inventó.
+    const noExisten = ids.filter(id => !shows.some(s => s.id === id));
+    return res.status(200).json({ shows: encontrados, no_encontrados: noExisten });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -2277,7 +2530,8 @@ export default async function handler(req, res) {
     SUPABASE_URL: trim(process.env.SUPABASE_URL),
     SUPABASE_KEY: trim(process.env.SUPABASE_SERVICE_KEY),
     GHL_TOKEN: trim(process.env.GHL_API_KEY),
-    GHL_LOC: trim(process.env.GHL_LOCATION_ID)
+    GHL_LOC: trim(process.env.GHL_LOCATION_ID),
+    GPT_TOKEN: trim(process.env.GPT_ACTION_TOKEN)
   };
   if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
     return res.status(500).json({ error: 'Supabase not configured' });
@@ -2293,6 +2547,9 @@ export default async function handler(req, res) {
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
       if (action === 'geo-metrics') return geoMetrics(req, res, env);
+      if (action === 'list-referencias') return listReferencias(req, res, env);
+      if (action === 'gpt-catalogo') return gptCatalogo(req, res, env);
+      if (action === 'gpt-show') return gptShow(req, res, env);
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
@@ -2313,6 +2570,9 @@ export default async function handler(req, res) {
       if (action === 'delete-proposal') return deleteProposal(req, res, env);
       if (action === 'duplicate-proposal') return duplicateProposal(req, res, env);
       if (action === 'ensure-proposal-for-lead') return ensureProposalForLead(req, res, env);
+      if (action === 'save-referencia') return saveReferencia(req, res, env);
+      if (action === 'delete-referencia') return deleteReferencia(req, res, env);
+      if (action === 'save-radar') return saveRadar(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
