@@ -50,6 +50,6 @@ if (!r.ok) {
 }
 
 const [fila] = await r.json();
-console.log(`Publicado. ${resultado.huecos?.length || 0} huecos, ${resultado.ideas?.length || 0} ideas.`);
+console.log(`Publicado. ${resultado.descubrimientos?.length || 0} descubrimientos, ${resultado.accionables?.length || 0} accionables.`);
 console.log('Visible en https://propuestas.eventosbarcelona.com/admin.html#ideas');
 console.log('id:', fila.id);

@@ -601,17 +601,56 @@
     .radar-fuente.ok { background: #ecf7e8; color: #35701c; border-color: #cfe6c6; }
     .radar-fuente.parcial { background: #fff8ee; color: #a3691e; border-color: #f0dcc0; }
     .radar-fuente.fallo { background: #fff4f0; color: #a33; border-color: #f0cdc5; }
-    .radar-hallazgo {
-      background: #fff8ee; border: 1px solid #f0dcc0; border-radius: 6px;
-      padding: 12px 14px; margin-bottom: 4px;
+    .radar-bloque { margin-top: 22px; }
+    .radar-bloque:first-child { margin-top: 6px; }
+    .radar-bloque > h4 {
+      display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
+      font-size: 15px; font-weight: 700; letter-spacing: 0;
+      text-transform: none; color: var(--dark);
+      padding-bottom: 8px; border-bottom: 2px solid var(--dark);
     }
-    .radar-hallazgo strong {
-      display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
-      color: #a3691e; margin-bottom: 4px;
+    .radar-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%; background: var(--dark);
+      color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
     }
-    .radar-hallazgo p { margin: 0; font-size: 13px; line-height: 1.55; }
+    .descubrimiento {
+      background: #fff8ee; border-left: 3px solid #e0a94f; border-radius: 0 6px 6px 0;
+      padding: 12px 14px; margin-bottom: 10px;
+    }
+    .descubrimiento strong { display: block; font-size: 14px; line-height: 1.4; margin-bottom: 6px; }
+    .descubrimiento .dato { margin: 0 0 6px; font-size: 13px; line-height: 1.5; }
+    .descubrimiento .implicacion { margin: 0; font-size: 13px; line-height: 1.5; color: #7a5a1e; }
+    .descubrimiento .implicacion span { font-weight: 700; }
+    .accionable {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 14px 16px; margin-bottom: 10px; background: #fff;
+    }
+    .acc-cab { display: flex; align-items: baseline; gap: 9px; margin-bottom: 8px; }
+    .acc-cab strong { font-size: 15px; line-height: 1.35; }
+    .acc-n {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+      color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .acc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+    .accionable p { margin: 0 0 5px; font-size: 13px; line-height: 1.5; }
+    .accionable .etq { font-weight: 700; }
+    .acc-shows { color: var(--gray); font-size: 12px !important; margin-top: 7px !important; }
+    .prio, .esf, .fichar {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px; letter-spacing: 0.03em;
+    }
+    .prio-alta { background: #fff4f0; color: var(--accent); }
+    .prio-media { background: #fff8ee; color: #a3691e; }
+    .prio-baja { background: var(--light); color: var(--gray); }
+    .esf-bajo { background: #ecf7e8; color: #35701c; }
+    .esf-medio { background: #fff8ee; color: #a3691e; }
+    .esf-alto { background: #fff4f0; color: #a33; }
+    .fichar.no { background: #ecf7e8; color: #35701c; }
+    .fichar.si { background: var(--light); color: var(--gray); }
     .radar-descartes { margin: 0; padding-left: 18px; font-size: 12px; color: var(--gray); line-height: 1.55; }
-    .radar-descartes li { margin-bottom: 5px; }
+    .radar-descartes li { margin-bottom: 6px; }
     .gpt-check {
       display: flex; flex-direction: column; gap: 3px; padding: 12px 14px;
       border-radius: 6px; margin-bottom: 16px; font-size: 13px;
@@ -3164,40 +3203,48 @@
         const f = new Date(d.generado);
         if (!isNaN(f)) $('radar-fecha').textContent = f.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
       }
-      const huecos = d.huecos || [];
-      const ideas = d.ideas || [];
-      const nuevo = d.nuevo_esta_semana || [];
+      const desc = d.descubrimientos || [];
+      const acc = d.accionables || [];
       let html = '';
 
-      if (d.hallazgo_principal) {
-        html += `<div class="radar-hallazgo"><strong>Hallazgo principal</strong><p>${escapeHtml(d.hallazgo_principal)}</p></div>`;
-      }
-
-      if (nuevo.length) {
-        html += `<div class="radar-seccion"><h4>Nuevo esta semana</h4><ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6;">
-          ${nuevo.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul></div>`;
-      }
-
-      html += '<div class="radar-seccion"><h4>Huecos de catálogo</h4>';
-      html += huecos.length ? huecos.map(h => {
-        const p = (h.prioridad || 'baja').toLowerCase();
-        return `<div class="hueco">
-          <div class="hueco-cab"><strong>${escapeHtml(h.familia)}</strong><span class="prio prio-${escapeHtml(p)}">${escapeHtml(p)}</span></div>
-          <p>${escapeHtml(h.por_que_encaja || '')}</p>
-          ${h.que_haria_falta ? `<p class="falta"><strong>Haría falta:</strong> ${escapeHtml(h.que_haria_falta)}</p>` : ''}
-        </div>`;
-      }).join('') : '<p class="radar-vacio">Ningún hueco relevante esta semana.</p>';
-      html += '</div>';
-
-      if (ideas.length) {
-        html += '<div class="radar-seccion"><h4>Ideas</h4>';
-        html += ideas.map(i => `<div class="radar-idea">
-          <strong>${escapeHtml(i.titulo)}</strong>
-          <p>${escapeHtml(i.descripcion || '')}</p>
-          ${(i.shows_eb_relacionados || []).length
-            ? `<p class="falta">Con lo que ya tenemos: ${i.shows_eb_relacionados.map(escapeHtml).join(', ')}</p>` : ''}
-        </div>`).join('');
+      if (desc.length) {
+        html += '<div class="radar-bloque"><h4><span class="radar-num">1</span> Qué hemos descubierto</h4>';
+        html += desc.map((x, i) => `
+          <div class="descubrimiento">
+            <strong>${escapeHtml(x.titulo)}</strong>
+            <p class="dato">${escapeHtml(x.dato || '')}</p>
+            ${x.implicacion ? `<p class="implicacion"><span>Qué significa:</span> ${escapeHtml(x.implicacion)}</p>` : ''}
+          </div>`).join('');
         html += '</div>';
+      }
+
+      if (acc.length) {
+        html += '<div class="radar-bloque"><h4><span class="radar-num">2</span> Qué hacemos con esto</h4>';
+        html += acc.map((a, i) => {
+          const p = (a.prioridad || 'baja').toLowerCase();
+          const e = (a.esfuerzo || '').toLowerCase();
+          return `<div class="accionable">
+            <div class="acc-cab">
+              <span class="acc-n">${i + 1}</span>
+              <strong>${escapeHtml(a.accion)}</strong>
+            </div>
+            <div class="acc-tags">
+              <span class="prio prio-${escapeHtml(p)}">prioridad ${escapeHtml(p)}</span>
+              ${e ? `<span class="esf esf-${escapeHtml(e)}">esfuerzo ${escapeHtml(e)}</span>` : ''}
+              <span class="fichar ${a.requiere_fichar ? 'si' : 'no'}">${a.requiere_fichar ? 'hay que fichar' : 'con lo que ya hay'}</span>
+            </div>
+            ${a.por_que ? `<p><span class="etq">Por qué:</span> ${escapeHtml(a.por_que)}</p>` : ''}
+            ${a.como ? `<p><span class="etq">Cómo:</span> ${escapeHtml(a.como)}</p>` : ''}
+            ${(a.shows_implicados || []).length
+              ? `<p class="acc-shows">Usa: ${a.shows_implicados.map(escapeHtml).join(' · ')}</p>` : ''}
+          </div>`;
+        }).join('');
+        html += '</div>';
+      }
+
+      if ((d.nuevo_esta_semana || []).length) {
+        html += `<div class="radar-seccion"><h4>Nuevo desde el último informe</h4>
+          <ul class="radar-descartes">${d.nuevo_esta_semana.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
       }
 
       if ((d.descartado_a_proposito || []).length) {
