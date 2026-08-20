@@ -3126,8 +3126,25 @@
     // =============================================
     // Si la propuesta tiene `conditions` custom, las usa; si no, default del I18N.
     // Xavi adapta texto/orden/cantidad por cliente. Se persisten en save-proposal.
+    // Detecta si un array de condiciones es EXACTAMENTE el default (ES o EN) sin
+    // tocar: en ese caso NO es "custom" y debe renderizarse/guardarse según idioma.
+    // Corrige el bug de propuestas EN que mostraban condiciones en español (el
+    // flush de edición snapshotaba T.conditions del idioma del builder = ES).
+    function conditionsAreDefaultText(arr) {
+      if (!Array.isArray(arr)) return false;
+      const norm = a => JSON.stringify((a || []).map(s => String(s == null ? '' : s).trim()));
+      const t = norm(arr);
+      return t === norm(I18N.es.conditions) || t === norm(I18N.en.conditions);
+    }
+    // Condiciones a persistir: solo si son realmente custom; si coinciden con el
+    // default de cualquier idioma, se guarda null para que el render use el del idioma.
+    function getPersistableConditions() {
+      return (Array.isArray(proposalState.conditions) && !conditionsAreDefaultText(proposalState.conditions))
+        ? proposalState.conditions : null;
+    }
     function getActiveConditions() {
-      return Array.isArray(proposalState.conditions) ? proposalState.conditions : T.conditions;
+      return (Array.isArray(proposalState.conditions) && !conditionsAreDefaultText(proposalState.conditions))
+        ? proposalState.conditions : T.conditions;
     }
     function escapeHtmlText(s) {
       return String(s == null ? '' : s)
@@ -3531,7 +3548,7 @@
               globalMargin: proposalState.globalMargin,
               hideSummary: proposalState.hideSummary,
               heroImageUrl: proposalState.heroImageUrl || null,
-              conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
+              conditions: getPersistableConditions(),
               lang: target,
               ghlContactId: proposalState.ghlContactId || null,
               ghlOpportunityId: proposalState.ghlOpportunityId || null
@@ -3687,7 +3704,7 @@
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
         heroImageUrl: proposalState.heroImageUrl || null,
-        conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
+        conditions: getPersistableConditions(),
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };
@@ -3786,7 +3803,7 @@
         globalMargin: proposalState.globalMargin,
         hideSummary: proposalState.hideSummary,
         heroImageUrl: proposalState.heroImageUrl || null,
-        conditions: Array.isArray(proposalState.conditions) ? proposalState.conditions : null,
+        conditions: getPersistableConditions(),
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };
@@ -3944,7 +3961,31 @@
     function initBuilder() {
       document.getElementById('builderMode').style.display = 'block';
       document.getElementById('proposalContent').style.display = 'none';
+      updateBuilderTabs();
       renderBuilderGrid();
+    }
+
+    // Reconstruye las pestañas de categoría con los CONTEOS REALES del catálogo
+    // activo (antes estaban hardcodeadas: "Todos (68)"…). Incluye cualquier
+    // categoría presente para que ningún show quede sin pestaña.
+    function updateBuilderTabs() {
+      const tabsEl = document.getElementById('builderTabs');
+      if (!tabsEl) return;
+      const counts = {}; let total = 0;
+      Object.values(SHOW_CATALOG).forEach(s => {
+        const c = (s && s.category) ? s.category : 'otros';
+        counts[c] = (counts[c] || 0) + 1; total++;
+      });
+      const labels = { danza: 'Danza', musica: 'Música', circo: 'Circo', wow: 'WOW Effect' };
+      const order = ['danza', 'musica', 'circo', 'wow'];
+      const cats = order.filter(c => counts[c])
+        .concat(Object.keys(counts).filter(c => !order.includes(c)).sort());
+      let html = `<button class="builder-tab ${builderCurrentFilter === 'all' ? 'active' : ''}" data-cat="all" onclick="filterBuilderCat('all')">Todos (${total})</button>`;
+      cats.forEach(c => {
+        const lbl = labels[c] || (c.charAt(0).toUpperCase() + c.slice(1));
+        html += `<button class="builder-tab ${builderCurrentFilter === c ? 'active' : ''}" data-cat="${c}" onclick="filterBuilderCat('${c}')">${lbl} (${counts[c]})</button>`;
+      });
+      tabsEl.innerHTML = html;
     }
 
     function renderBuilderGrid() {
