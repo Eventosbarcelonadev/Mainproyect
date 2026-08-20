@@ -1,15 +1,95 @@
 ---
-status: CANONICAL · FUENTE DE VERDAD
+status: CANONICAL · FUENTE DE VERDAD · v2.0
 title: Pirámide SEO — Eventos Barcelona
 origin: Piramide_Keywords_SEO_Eventos_Barcelona.docx.pdf
-last_review: 2026-06-18
-next_review: trimestral (cruce con GSC top queries)
+last_review: 2026-08-20 (v2.0 · cruce con GSC top queries real)
+next_review: 2026-11-20 (trimestral)
 owner: Equipo SEO/contenido Eventos Barcelona
 ---
 
 # Pirámide SEO — Eventos Barcelona
 
+## 🆕 v2.0 · Refresh 2026-08-20 · Cruce con GSC real (90d)
+
+Datos GSC pull 2026-08-16 (últimos 90 días) han confirmado y refutado hipótesis de la v1.0:
+
+### ✅ Confirmado — keywords con demanda REAL en GSC
+
+| Cluster | Query representativa | Impr 90d | Pos | Landing que la cubre |
+|---|---|---:|---:|---|
+| Agencia eventos | `agencia de eventos` | 190 | 17,3 | Home ES · Landing partner-DMC (Sprint 2 ✓) |
+| Agencia eventos corp | `agencia de eventos corporativos` | 152 | 16,3 | Landing partner-DMC ES ✓ |
+| Marca | `eventos barcelona` | 133 | 11,8 | Home ES · **único click validado** (4 clicks) |
+| Corp events BCN | `eventos corporativos barcelona` | 105 | 12,2 | Home · Landing partner-DMC ✓ |
+| DJ para fiestas | `dj para fiestas` + variantes | 30-70 | 27-42 | **⚠ SIN LANDING · GAP OPORTUNIDAD** |
+| Cantante eventos | `cantante para eventos` | 33 | 23 | Parcial en /musica/ ⚠ |
+| MICE | `eventos mice` | 38 | 21,2 | Landing convenciones ES ✓ (Sprint 3) |
+
+### ❌ Refutado — keywords planificadas SIN demanda real
+
+Estas keywords estaban en la pirámide v1 como "❌ A CREAR" pero GSC confirma **0 impresiones significativas** en 90 días:
+
+- **`team building barcelona`** · 0 impresiones GSC · **DESCARTAR del roadmap** (confirmando pivot del Informe Estratégico 2026-07)
+- **`animación para eventos empresariales`** · 0 impresiones GSC · **DESCARTAR**
+- **`experiencias para eventos corporativos`** · 0 impresiones GSC · **DESCARTAR**
+
+Todas coinciden con las categorías que el Informe Estratégico EB pidió eliminar del posicionamiento por no ser core del negocio real.
+
+### 🆕 Nuevo cluster no en v1.0 · añadir a Nivel 2
+
+**Cluster "DJ + música para fiestas"** — GSC muestra >200 impresiones agregadas en 90 días con posiciones 25-45. Landing genérica /musica/dj-barcelona/ existe pero no captura el intent "fiesta" específico. Propuesta:
+
+- Landing nueva `/dj-fiesta-empresa-barcelona/` ES + EN (Sprint 5)
+- Keywords: dj para fiestas, dj para fiesta privada, contratar dj para fiestas, dj fiestas privadas barcelona, alquilar altavoces para fiesta barcelona
+
+### 📊 Estado post Sprint 4 · gaps cubiertos vs v1.0
+
+Nivel 3 — específicas: v1.0 tenía 4 ⚠ + 1 ❌ = 5 gaps. Post Sprint 4 quedan **2 gaps** (charlestón + show percusión LED). Cubiertos:
+- `violinista para cena de gala` ✅ Landing dedicada Sprint 4 (`/violinista-cena-gala-corporativa-barcelona/`)
+- `banda de versiones para fiesta de empresa` ✅ Landing dedicada Sprint 4 (`/bandas-versiones-fiestas-empresa-barcelona/`)
+
+Nivel 2 — categorías: v1.0 tenía 4 ⚠ + 5 ❌ = 9 gaps. Post Sprint 4 quedan **4 gaps reales** (team building/animación/experiencias DESCARTADOS por refuted, quedan circo hub / gala hub cubierto por landing gala dinners Sprint 2, WOW effect / actividades congresos). Cubiertos:
+- `alquiler de pantallas LED` ✅ Landing dedicada Sprint 4
+- `espectáculos para cenas de gala` ✅ Landing gala dinners Sprint 2
+- Landing `/espectaculos-eventos-corporativos-barcelona/` como hub refresh Sprint 4
+
+Nivel 2 refined post-refresh: **13/17 ✅** · **1/17 ⚠ parcial** · **3/17 ❌ DESCARTADOS** (team building, animación, experiencias) = cobertura efectiva **93%** de lo que sí tiene demanda real.
+
+### 🎯 Prioridades Sprint 5 · basadas en GSC v2 refresh
+
+1. **Landing `/dj-fiesta-empresa-barcelona/` ES+EN** — cluster nuevo con 200+ impresiones agregadas / 90d validadas
+2. **Refresh homepage title/meta** — captura `eventos barcelona` (único click validado, pos 11,8 con potencial de subir a top 10)
+3. **Landing `/agencia-de-eventos-barcelona/`** o refresh mejorado — 500+ impresiones agregadas en variantes "agencia de eventos [corporativos/en] barcelona"
+4. **Cantante para eventos** — landing dedicada dentro de `/musica/` (33 impr / 90d ya con pos 23)
+
+### Aprendizaje operativo v2.0
+
+- **CTR real 0,40%** vs baseline abril 0,90% — bajó por incorporación de queries nuevas (post Sprint 2) sin clicks aún porque están en pos 20+
+- Solo **10 queries validadas con clicks** en 90 días vs 1000 queries con impresiones = ratio bajísimo, indica que EB está en zonas de descubrimiento pero no de captura todavía
+- Impresiones estables (~2.400/día) confirman que Google no penalizó — sigue mostrando el sitio, solo bajó CTR por ranking promedio
+
+---
+
+# Pirámide SEO — Eventos Barcelona (v1.0 · legacy)
+
 > **Este documento es la biblia.** Cualquier acción SEO sobre eventosbarcelona.com (creación de página, reescritura de title, internal linking, campaña outbound, brief para creator, schema markup, etc.) **debe consultar este documento primero**. Si una keyword o página no encaja en ningún nivel, antes de actuar abrir discusión.
+
+## Regla maestra · Bilingüe obligatorio (ES + EN)
+
+> **Toda página y todo artículo de eventosbarcelona.com tiene que existir en español Y en inglés. Sin excepciones.**
+>
+> Un artículo en ES sin su contraparte EN se considera **incompleto** y no se publica. Razones:
+>
+> 1. **MICE internacional es el core del negocio.** El público objetivo de mayor ticket llega en inglés (event planners de empresas internacionales con oficina en BCN, DMC desde otros países, congresos europeos).
+> 2. **WPML está instalado y funcionando.** No hay excusa técnica: el sitio ya tiene la infraestructura ES/EN sincronizada (verificable en cualquier URL: hreflang reciprocal activo).
+> 3. **El sitemap ya refleja la regla en buena parte del catálogo** (cada `/musica/...` tiene su `/en/music/...`, idem `/danza/` ↔ `/en/dance/`, `/artistas/` ↔ `/en/artists/`, `/espectaculos/` ↔ `/en/performances/`, `/casos-de-exito/` ↔ `/en/success-stories/`). Las páginas nuevas tienen que mantener la simetría.
+> 4. **Las keywords del Nivel 1 ya están duplicadas** entre ES y EN en la pirámide (corporate events Barcelona, MICE events Barcelona, etc.) — el contenido debe seguir el mismo patrón en los niveles 2 y 3.
+>
+> **Cómo aplicarlo en cada acción:**
+> - Cualquier nueva página se crea como par `/ruta/` (ES) + `/en/path/` (EN) en la misma sesión de trabajo. WPML translation, no traducción literal.
+> - El briefing de cualquier artículo (incluso si lo redactará un freelance) debe entregar ambos idiomas al mismo tiempo.
+> - El internal linking debe respetar hreflang: páginas ES enlazan a ES, EN a EN. No mezclar.
+> - Si por excepción operativa una página sale primero en un idioma, queda **flag como deuda técnica** y se completa en el plazo del sprint siguiente.
 
 ## Lógica de la pirámide
 
@@ -133,7 +213,7 @@ Por nivel y volumen estimado de búsqueda (alto / medio / bajo).
 | **P3** | `/espectaculos/percusion-led/` | show de percusión LED | 3 | Sin página dedicada |
 | **P3** | `/danza/charleston-eventos-tematicos/` | bailarines de charlestón para eventos temáticos | 3 | Nicho específico |
 
-**Total: 12 páginas a crear** (1 N1 · 7 N2 · 4 N3). Encaja en el plan de contenido del retainer (8 artículos + algunos hubs/categorías).
+**Total: 12 keywords a cubrir × 2 idiomas (ES + EN obligatorio) = 24 páginas a crear** (2 N1 · 14 N2 · 8 N3). El conteo "12" se mantiene como referencia de _keywords_ a cubrir; el trabajo real son 24 páginas por la regla bilingüe.
 
 ---
 

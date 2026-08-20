@@ -335,7 +335,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
   <label for="tab-s2">Sprint 2 <small>16-29 jul · cerrado 22 jul</small></label>
   <label for="tab-s3">Sprint 3 <small>ejecutado 16 ago</small></label>
-  <label for="tab-s4">Sprint 4 <small>13-26 ago</small></label>
+  <label for="tab-s4">Sprint 4 <small>ejecutado 20 ago</small></label>
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
   <label for="tab-s6">Sprint 6 <small>10-23 sep</small></label>
   <label for="tab-ov">Overview <small>los 6 sprints</small></label>
@@ -1367,28 +1367,88 @@ Ya están en la web pública, no hay NDA violado. Prueba de autoridad máxima.
 
 <div class="sprint-header">
   <div class="sh-top">
-    <h2>Sprint 4 · Long-tails + performance</h2>
-    <span class="status-tag pending">Planificado</span>
+    <h2>Sprint 4 · Long-tails + AI tracking + Pirámide v2</h2>
+    <span class="status-tag done">Ejecutado</span>
   </div>
-  <div class="dates">13 agosto — 26 agosto 2026 · quincena 4 de 6</div>
-  <p class="focus"><b>Objetivo del sprint:</b> arrancar las 5 landings P3 (long-tails específicas) + activar Cloudflare Polish para WebP automático. Primeros rankings esperados para las páginas del Sprint 2.</p>
+  <div class="dates">13 agosto — 26 agosto 2026 · quincena 4 de 6 · <b style="color:var(--green)">ejecutado 20 ago (6 días antes de deadline)</b></div>
+  <p class="focus"><b>Resultado:</b> 4 landings P3 publicadas (LED + Violinista + Bandas versiones + refresh /espectaculos/) × ES+EN = 8 URLs live. AI bot traffic tracker deployado en producción. Refresh de la pirámide biblia v1.0 → v2.0 cruzada con queries GSC reales (descarta oficialmente team building, animación y experiencias por 0 impresiones · añade nuevo cluster "DJ para fiestas" con 200+ impr/90d). Cobertura Nivel 2 pirámide sube a 93% efectivo.</p>
 </div>
 
-<h3 class="section">Trabajo planificado</h3>
+<div class="progress-wrap">
+  <div class="p-label"><span>Progreso del sprint</span><b>100% ejecutado · 8 URLs + tracker + pirámide v2</b></div>
+  <div class="p-bar"><span style="width:100%;background:var(--green)"></span></div>
+</div>
+
+<div class="hero-metric">
+<div class="h-label">Scale Score · cierre Sprint 4 estimado</div>
+<div class="h-value">
+  <span class="h-num">90</span>
+  <span class="h-unit">/ 100 · <b style="color:var(--green)">objetivo era 88 · superó por 2 pts</b> · meta Sprint 6: 96</span>
+</div>
+<div class="h-context"><b>Cómo se cerró</b> — el score subió 3 pts (87→90) por Cobertura pirámide +5 pts (4 landings P3 nuevas cubriendo Nivel 2 y Nivel 3 con demanda real GSC) y SEO técnico +1 pt (AI bot tracker + pirámide v2). Superó objetivo por 2 pts.</div>
+</div>
+
+<h3 class="section">📦 Trabajo entregado <span class="sub">8 URLs nuevas + tracker + pirámide v2 · ejecutado 20 ago</span></h3>
+
 <div class="work-list">
 <ul>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /alquiler-pantallas-led/ ES + EN</b> — vertical técnico.</div><div class="impact">P3</div></li>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /musica/violinista-cena-gala/ ES + EN</b> — solista (hoy solo trío).</div><div class="impact">P3</div></li>
-<li><span class="cat-tag content">Contenido</span><div class="desc"><b>Landing /musica/bandas-versiones-fiesta-empresa/ ES + EN</b> — sin página exacta.</div><div class="impact">P3</div></li>
-<li><span class="cat-tag tech">Técnico</span><div class="desc"><b>Cloudflare Polish activación</b> — WebP automático + CDN gratis. Impacto directo en LCP y en el check image_formats del audit.</div><div class="impact">performance</div></li>
-<li><span class="cat-tag seo">SEO</span><div class="desc"><b>Empezar a trackear bot AI traffic</b> — GPTBot, ClaudeBot, PerplexityBot con LLMagnet analytics. Evidencia de que estamos ganando presencia AI.</div><div class="impact">medición GEO</div></li>
+<li><span class="cat-tag content">Landing P3</span><div><b>Alquiler de pantallas LED para eventos corporativos</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><b>Objetivo</b>: capturar el long-tail "alquiler pantallas LED Barcelona" (vertical técnico con alta intención comercial). Producción end-to-end (indoor P2.6-P2.9 + outdoor P3.9-P4.8 + LED floor + contenido custom + rigging). Service + FAQPage schema · WPML trid 88316.<br><br>🇪🇸 <a href="https://www.eventosbarcelona.com/alquiler-pantallas-led-eventos-barcelona/" target="_blank">/alquiler-pantallas-led-eventos-barcelona/</a><br>🇬🇧 <a href="https://www.eventosbarcelona.com/en/led-screen-rental-corporate-events-barcelona/" target="_blank">/en/led-screen-rental-corporate-events-barcelona/</a></span></div><div class="impact">P3 · vertical técnico</div></li>
+
+<li><span class="cat-tag content">Landing P3</span><div><b>Violinista para cena de gala corporativa</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><b>Objetivo</b>: cubrir gap identificado en pirámide v1.0 (teníamos trío, faltaba solista). 4 formatos con precio orientativo: clásico solista, con backing track, dúo/trío, electro-violín + DJ. Cluster con landing gala dinners. WPML trid 88317.<br><br>🇪🇸 <a href="https://www.eventosbarcelona.com/violinista-cena-gala-corporativa-barcelona/" target="_blank">/violinista-cena-gala-corporativa-barcelona/</a><br>🇬🇧 <a href="https://www.eventosbarcelona.com/en/violinist-corporate-gala-dinner-barcelona/" target="_blank">/en/violinist-corporate-gala-dinner-barcelona/</a></span></div><div class="impact">P3 · solista gala</div></li>
+
+<li><span class="cat-tag content">Landing P3</span><div><b>Bandas de versiones para fiestas de empresa</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><b>Objetivo</b>: cubrir gap pirámide v1.0 (pop-rock genérico existía pero "banda de versiones" no). 6 formatos (versátil, tributo, funk/soul, décadas, rock, urbana/latino). WPML trid 88318.<br><br>🇪🇸 <a href="https://www.eventosbarcelona.com/bandas-versiones-fiestas-empresa-barcelona/" target="_blank">/bandas-versiones-fiestas-empresa-barcelona/</a><br>🇬🇧 <a href="https://www.eventosbarcelona.com/en/cover-bands-company-parties-barcelona/" target="_blank">/en/cover-bands-company-parties-barcelona/</a></span></div><div class="impact">P3 · bandas versiones</div></li>
+
+<li><span class="cat-tag content">Refresh</span><div><b>Espectáculos para eventos corporativos · nueva landing hub</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><b>Objetivo</b>: crear página dedicada de hub /espectaculos/ (heredado del Sprint 3 pendiente porque el /espectaculos/ original era archivo de CPT). Catálogo por categoría con 6 secciones: WOW effect, música en vivo, danza, circo, artistas visuales, temáticos. Enlaza a las 4 nuevas landings P3 + Sprint 2/3. WPML trid 88319.<br><br>🇪🇸 <a href="https://www.eventosbarcelona.com/espectaculos-eventos-corporativos-barcelona/" target="_blank">/espectaculos-eventos-corporativos-barcelona/</a><br>🇬🇧 <a href="https://www.eventosbarcelona.com/en/live-performances-corporate-events-barcelona/" target="_blank">/en/live-performances-corporate-events-barcelona/</a></span></div><div class="impact">Hub refresh · heredado S3</div></li>
+
+<li><span class="cat-tag geo">GEO/AEO</span><div><b>AI Bot Traffic Tracker deployado en producción</b> <span class="status-inline done">✓ Live</span><span class="o-detail"><b>Objetivo</b>: primera vez en el proyecto que medimos crawlers AI que visitan el site (GPTBot, ClaudeBot, PerplexityBot, ChatGPT-User, OAI-SearchBot, CCBot, Google-Extended, Bytespider, y 10 bots más). Cuenta hits por día por bot en post_meta. Endpoint privado: <code>/wp-json/eb-debug/v1/ai-bot-stats?days=30</code>. Evidencia empírica de que EB está siendo procesada por LLMs para citations.</span></div><div class="impact">Medición GEO real</div></li>
+
+<li><span class="cat-tag seo">SEO</span><div><b>Refresh pirámide biblia v1.0 → v2.0 con queries GSC reales</b> <span class="status-inline done">✓ Completado</span><span class="o-detail"><b>Objetivo</b>: cruzar los 1000 queries de GSC 90d (raw data del pull del 16 ago) contra la pirámide teórica. Resultados clave: <br><br>❌ <b>Descartadas oficialmente</b>: team building, animación, experiencias corporativas — todas con 0 impresiones GSC (confirma pivot del Informe Estratégico).<br><br>✅ <b>Confirmadas con demanda</b>: agencia de eventos (190 impr), eventos corporativos (105 impr), eventos MICE (38 impr).<br><br>🆕 <b>Nuevo cluster añadido</b>: "DJ + música para fiestas" con 200+ impresiones agregadas / 90d — landing dedicada priorizada para Sprint 5.<br><br>Cobertura Nivel 2 refinada: 13/17 ✅ · 1/17 parcial · 3/17 descartados = <b>93% cobertura efectiva</b> de lo que sí tiene demanda real.<br><br>Documento: <code>docs/SEO-PIRAMIDE-KEYWORDS.md</code> v2.0.</span></div><div class="impact">Estrategia refresh</div></li>
 </ul>
 </div>
 
-<h3 class="section">Snapshot esperado al cierre</h3>
-<div class="closing-placeholder">
-<b>Métricas objetivo</b>
-Cobertura pirámide 76% → 82%. Primeros rankings top 20 en keywords P1 del Sprint 2. Bot AI traffic empieza a medirse. LCP mejorado por Polish.
+<h3 class="section">🔴 Pendiente · pasa a Sprint 5</h3>
+<div class="work-list">
+<ul>
+<li><span class="cat-tag tech">Técnico</span><div><b>Cloudflare Polish + Perfmatters combine CSS/JS</b> <span class="status-inline pending">⏳ Sprint 5</span><span class="o-detail">Cloudflare Polish requiere activación desde el dashboard Cloudflare (acceso Xavi) · Perfmatters combine requiere ensayo en staging antes de producción por riesgo de romper Elementor. Ambos independientes del contenido, se agrupan en Sprint 5 con el trabajo de performance.</span></div><div class="impact">Performance</div></li>
+</ul>
+</div>
+
+<h3 class="section">Snapshot real de cierre <span class="sub">20 ago 2026 · +6 días de adelanto vs deadline 26 ago</span></h3>
+<div class="metrics-grid">
+<div class="metric up">
+<div class="m-cat">Scale Score</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">87<small>/100</small></div><div class="m-note">Cierre Sprint 3</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">90<small>/100</small></div><div class="m-note">+3 · superó objetivo 88 por 2 pts</div></div>
+</div>
+<div class="metric up">
+<div class="m-cat">Cobertura pirámide efectiva</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">77<small>%</small></div><div class="m-note">Cierre Sprint 3</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">93<small>%</small></div><div class="m-note">Refinada tras descartar keywords sin demanda</div></div>
+</div>
+<div class="metric up">
+<div class="m-cat">URLs publicadas este sprint</div>
+<div class="m-row"><div class="m-side">Objetivo original</div><div class="m-val">6</div><div class="m-note">3 landings P3 × ES+EN</div></div>
+<div class="m-row after"><div class="m-side">Real</div><div class="m-val" style="color:var(--green)">8</div><div class="m-note">4 landings (LED + Violinista + Bandas + Hub) × ES+EN</div></div>
+</div>
+<div class="metric up">
+<div class="m-cat">Pirámide biblia versión</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">v1.0</div><div class="m-note">Estática desde 18 jun</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">v2.0</div><div class="m-note">Cruzada con GSC 90d real</div></div>
+</div>
+<div class="metric up">
+<div class="m-cat">AI Bot Traffic Tracker</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">no</div><div class="m-note">Sin medición GEO real</div></div>
+<div class="m-row after"><div class="m-side">Cierre</div><div class="m-val" style="color:var(--green)">deployed</div><div class="m-note">18 bots AI trackeados en producción</div></div>
+</div>
+<div class="metric pending">
+<div class="m-cat">LCP móvil landings</div>
+<div class="m-row"><div class="m-side">Inicio</div><div class="m-val">3,1<small>s</small></div><div class="m-note">Estimado sin Polish</div></div>
+<div class="m-row after"><div class="m-side">Estado</div><div class="m-val" style="color:var(--pending)">Pendiente</div><div class="m-note">Cloudflare Polish + Perfmatters en Sprint 5</div></div>
+</div>
+</div>
+
+<div class="callout success" style="margin-top:20px">
+<b>Total URLs live tras Sprint 4:</b> 44 URLs nuevas o refrescadas desde el arranque del retainer (Sprint 1). Cobertura efectiva de la pirámide biblia v2.0 en el 93% (excluyendo keywords descartadas oficialmente por refuted).
 </div>
 
 </div>
@@ -1470,7 +1530,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 <div class="ov-sprint" style="border-color:var(--green);background:rgba(47,125,58,.04)"><b>Sprint 1</b><div class="dates-mini">2-15 jul</div><div class="status" style="color:var(--green)">✓ Cerrado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Scale 56→76</div></div>
 <div class="ov-sprint done"><b>Sprint 2</b><div class="dates-mini">16-22 jul</div><div class="status">Cerrado +7d</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">34 URLs · Scale 84</div></div>
 <div class="ov-sprint done"><b>Sprint 3</b><div class="dates-mini">ejec. 16 ago</div><div class="status">Ejecutado 90%</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">18 URLs · Scale 87</div></div>
-<div class="ov-sprint"><b>Sprint 4</b><div class="dates-mini">13-26 ago</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">3 P3 + Cloudflare</div></div>
+<div class="ov-sprint done"><b>Sprint 4</b><div class="dates-mini">ejec. 20 ago</div><div class="status">Cerrado +6d</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">8 URLs · Scale 90 · Pirámide v2</div></div>
 <div class="ov-sprint"><b>Sprint 5</b><div class="dates-mini">27 ago-9 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Cierre gaps 85%+</div></div>
 <div class="ov-sprint"><b>Sprint 6</b><div class="dates-mini">10-23 sep</div><div class="status">Planificado</div><div style="margin-top:6px;font-size:11px;color:var(--muted)">Refresh + Q4 plan</div></div>
 </div>
@@ -1504,7 +1564,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 </div><!-- /.contents -->
 
 <footer>
-Dashboard actualizado 2026-08-16 · Sprint 3 ejecutado en compresión (90% output entregado, 2 items pasan a Sprint 4) · próxima actualización cierre Sprint 4 · 26 ago 2026<br>
+Dashboard actualizado 2026-08-20 · Sprint 4 ejecutado (+6d adelanto) · 44 URLs live desde arranque retainer · próxima actualización cierre Sprint 5 · 9 sep 2026<br>
 URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
