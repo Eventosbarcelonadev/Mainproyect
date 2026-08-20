@@ -1,0 +1,358 @@
+<meta charset="UTF-8">
+<title>Reunión Xavi · 20 ago 2026</title>
+<style>
+:root {
+  --ink: #0a2540;
+  --gold: #c99a3a;
+  --green: #2f7d3a;
+  --red: #c53030;
+  --amber: #d97706;
+  --line: #e5e7eb;
+  --muted: #6b7280;
+  --card: #fff;
+  --bg: #f9fafb;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; line-height: 1.5; }
+h1 { font-size: 2rem; font-weight: 800; margin: 0 0 4px; }
+h1 small { display: block; font-size: 0.95rem; font-weight: 500; color: var(--muted); margin-top: 4px; letter-spacing: 0.02em; }
+h2 { font-size: 1.35rem; font-weight: 700; margin: 40px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+h2 .badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: #fff; padding: 4px 10px; border-radius: 4px; margin-right: 10px; vertical-align: middle; }
+h3 { font-size: 1.05rem; font-weight: 700; margin: 24px 0 8px; }
+.hero { background: var(--ink); color: #fff; padding: 20px 24px; border-radius: 8px; margin-bottom: 32px; }
+.hero .stats { display: flex; gap: 24px; margin-top: 12px; flex-wrap: wrap; }
+.hero .stat { font-size: 0.85rem; }
+.hero .stat b { display: block; font-size: 1.4rem; color: var(--gold); }
+.block { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; margin-bottom: 16px; }
+.block.action { border-left: 4px solid var(--red); }
+.block.review { border-left: 4px solid var(--amber); }
+.block.decision { border-left: 4px solid var(--green); }
+.action-item { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.action-item:last-child { border-bottom: 0; }
+.action-item .who { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.action-item .who.xavi { color: var(--red); }
+.action-item .who.phil { color: var(--green); }
+.action-item h4 { font-size: 1rem; font-weight: 700; margin: 4px 0 6px; }
+.action-item p { margin: 6px 0; color: #374151; font-size: 0.92rem; }
+.list-articles { margin: 12px 0; padding: 0; list-style: none; font-size: 0.88rem; }
+.list-articles li { padding: 8px 12px; margin: 4px 0; background: var(--bg); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.list-articles li .titulo { flex: 1; min-width: 250px; }
+.list-articles li .titulo b { display: block; font-size: 0.9rem; }
+.list-articles li .titulo small { color: var(--muted); font-size: 0.78rem; }
+.list-articles li .langs { display: flex; gap: 6px; font-size: 0.8rem; }
+.list-articles li .langs a { text-decoration: none; padding: 3px 8px; background: #fff; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); font-weight: 600; }
+.list-articles li .langs a:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+.callout { padding: 14px 18px; border-radius: 4px; margin: 16px 0; font-size: 0.9rem; }
+.callout.red { background: rgba(197,48,48,0.08); border-left: 4px solid var(--red); }
+.callout.amber { background: rgba(217,119,6,0.08); border-left: 4px solid var(--amber); }
+.callout.green { background: rgba(47,125,58,0.08); border-left: 4px solid var(--green); }
+.big-ask { background: linear-gradient(135deg, #fff5f5 0%, #fee 100%); border: 2px dashed var(--red); padding: 20px 24px; border-radius: 8px; margin: 24px 0; }
+.big-ask h3 { color: var(--red); margin-top: 0; font-size: 1.1rem; }
+.tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+.tag.s2 { background: #dbeafe; color: #1e40af; }
+.tag.s3 { background: #dcfce7; color: #166534; }
+.tag.s4 { background: #fef3c7; color: #92400e; }
+.metric-row { display: flex; gap: 20px; margin: 12px 0; flex-wrap: wrap; }
+.metric-row .m { background: var(--bg); padding: 10px 14px; border-radius: 4px; min-width: 140px; }
+.metric-row .m b { display: block; font-size: 1.2rem; color: var(--ink); }
+.metric-row .m small { color: var(--muted); font-size: 0.78rem; }
+.timeline { margin-top: 20px; }
+.timeline .step { display: flex; gap: 14px; padding: 10px 0; align-items: flex-start; }
+.timeline .num { flex: 0 0 32px; height: 32px; background: var(--ink); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+.timeline .body { flex: 1; padding-top: 4px; }
+.timeline .body h4 { margin: 0 0 4px; font-size: 0.98rem; }
+.timeline .body p { margin: 2px 0 0; font-size: 0.86rem; color: var(--muted); }
+.duration { font-size: 0.72rem; color: var(--muted); float: right; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+</style>
+
+<h1>Reunión con Xavi
+  <small>Prep · 20 ago 2026 · agenda 20-25 min</small>
+</h1>
+
+<div class="hero">
+  <div style="font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8;">Estado del retainer · fin Sprint 4</div>
+  <div style="font-size: 1.4rem; font-weight: 700; margin-top: 4px;">44 URLs live · Scale Score 90/100 · Pirámide biblia v2 refrescada con GSC real</div>
+  <div class="stats">
+    <div class="stat"><b>90</b>Scale Score (objetivo cierre S6: 96)</div>
+    <div class="stat"><b>93%</b>Cobertura pirámide efectiva</div>
+    <div class="stat"><b>44</b>URLs nuevas desde S1</div>
+    <div class="stat"><b>+6d</b>Adelanto Sprint 4 vs deadline</div>
+    <div class="stat"><b>4</b>Sprints cerrados de 6</div>
+  </div>
+</div>
+
+<h2><span class="badge">Agenda</span>Cómo vamos a estructurar la call</h2>
+
+<div class="block">
+<div class="timeline">
+  <div class="step">
+    <div class="num">1</div>
+    <div class="body">
+      <span class="duration">3 min</span>
+      <h4>Update rápido de Sprint 4</h4>
+      <p>Qué se publicó, Scale Score, pirámide v2. Sin entrar en detalle — dashboard tiene todo.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div class="body">
+      <span class="duration">5 min</span>
+      <h4>🔴 Lo que necesitamos de él (2 asks concretos)</h4>
+      <p>Biblioteca de fotos + review de los artículos publicados. Sin resolver esto, Sprint 5 arranca cojo.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div class="body">
+      <span class="duration">10 min</span>
+      <h4>🟡 Feedback y validaciones estratégicas</h4>
+      <p>Descarte oficial de team building/animación · nuevo cluster DJ fiestas · precios orientativos en las landings.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">4</div>
+    <div class="body">
+      <span class="duration">5 min</span>
+      <h4>🟢 Plan Sprint 5 y arranque</h4>
+      <p>4 items, arranca 27 ago. Cerrar acuerdo y salir con próximos pasos.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<h2><span class="badge" style="background: var(--red)">🔴 Ask 1</span>Necesitamos tu biblioteca de fotos</h2>
+
+<div class="big-ask">
+<h3>Problema · 42 URLs, solo 7 imágenes distintas</h3>
+<p><b>El 90% de las URLs comparten fotos entre 5+ posts.</b> La imagen del gala dinner que nos pasaste está usada en 14 posts distintos (33% del total). Se ve pobre visualmente y Google lo penaliza en SEO por imágenes duplicadas.</p>
+
+<h3 style="margin-top: 18px;">Lo que necesitamos exactamente</h3>
+<p><b>Acceso a tu biblioteca de fotos de eventos EB.</b> Preferimos Drive o Dropbox con carpetas organizadas por caso/formato:</p>
+<ul style="margin: 12px 0; padding-left: 24px;">
+<li>Convenciones: Allianz India, Gartner Symposium, Criteo</li>
+<li>Cenas de gala: Huawei, HP en Museu Marítim, MNAC, Spribe, Royale Century Ply</li>
+<li>Casos con shows: Aston Martin GP F1 (ya tenemos algo), Diputación Sevilla LED Dancers</li>
+<li>Fotos de producción técnica: pantallas LED, escenarios grandes, iluminación arquitectónica</li>
+<li>Artistas en acción: violinistas, cuartetos, bandas, DJs, danza aérea, artistas urbanos</li>
+</ul>
+
+<h3 style="margin-top: 18px;">Compromiso nuestro</h3>
+<p>En cuanto tengamos el link a la biblioteca: <b>2-3 horas de trabajo</b> para mapear una foto real diferente a cada una de las 42 URLs Sprint 2/3/4. Alt text descriptivo con SEO. WebP optimizado. Todo antes del arranque del Sprint 5.</p>
+
+<div class="callout amber" style="margin-top: 16px;">
+<b>Si NO hay biblioteca organizada:</b> genero 15-20 hero images con IA prompted específicamente para cada formato (LED, violinista, banda de versiones, convención) — no son eventos reales pero rompen la duplicación. Segunda opción, no primera. La biblioteca real es infinitamente mejor.
+</div>
+</div>
+
+<h2><span class="badge" style="background: var(--amber)">🟡 Ask 2</span>Revisá los 32 artículos que publicamos</h2>
+
+<div class="block review">
+<p>Necesitamos tu ok, correcciones o input de contenido específico en las piezas donde entran <b>tus datos comerciales reales</b> (precios, casos, timing). Prioridad de revisión: <b>landings comerciales primero</b>, luego artículos.</p>
+
+<h3>🎯 Prioridad ALTA · 6 landings comerciales</h3>
+<p>Son las que un lead va a llegar directo desde Google. El copy, precios y casos mencionados tienen que reflejar exactamente cómo EB vende.</p>
+<ul class="list-articles">
+<li>
+  <div class="titulo"><b>Landing Gala Dinners corporativos</b> <span class="tag s2">S2</span><br><small>Lead Ideal #1 · casos Huawei, HP, MNAC, Spribe, Diputación Sevilla</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/gala-dinners-corporativos-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/corporate-gala-dinners-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Landing Partner DMC / agencias</b> <span class="tag s2">S2</span><br><small>ICP Top of Mind · 9 marcas globales · positioning "partner no competencia"</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/partner-dmc-agencias-eventos-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/corporate-event-agency-dmc-partner-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Landing Convenciones internacionales</b> <span class="tag s3">S3</span><br><small>Lead Ideal #2 · casos Allianz India, Gartner, Criteo</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/convenciones-corporativas-internacionales-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/international-corporate-conventions-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Landing Alquiler pantallas LED</b> <span class="tag s4">S4</span><br><small>Vertical técnico · rangos precio 1.800€ - 20.000€+</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/alquiler-pantallas-led-eventos-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/led-screen-rental-corporate-events-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Landing Violinista cena gala</b> <span class="tag s4">S4</span><br><small>Solista, dúo, trío, electro-violín · rangos 800€ - 4.500€</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/violinista-cena-gala-corporativa-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/violinist-corporate-gala-dinner-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Landing Bandas versiones fiesta empresa</b> <span class="tag s4">S4</span><br><small>6 formatos: pop-rock, tributo, funk/soul, décadas, rock, latino</small></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/bandas-versiones-fiestas-empresa-barcelona/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/cover-bands-company-parties-barcelona/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+</ul>
+
+<h3>📚 Prioridad MEDIA · 2 casos de éxito nuevos</h3>
+<p>Ver que los datos concretos (número de invitados, año, cliente) sean correctos.</p>
+<ul class="list-articles">
+<li>
+  <div class="titulo"><b>Aston Martin · GP F1 Barcelona 2026</b> <span class="tag s2">S2</span></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/casos-de-exito/aston-martin-concesionario-barcelona-espectaculo-f1/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/success-stories/aston-martin-showroom-barcelona-f1-show/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+<li>
+  <div class="titulo"><b>Sant Joan Ciutadella · show láser cierre fiestas</b> <span class="tag s2">S2</span></div>
+  <div class="langs">
+    <a href="https://www.eventosbarcelona.com/casos-de-exito/espectaculo-laser-cierre-fiestas-sant-joan-ciutadella/" target="_blank">🇪🇸 ES</a>
+    <a href="https://www.eventosbarcelona.com/en/success-stories/laser-show-closing-sant-joan-festival-ciutadella/" target="_blank">🇬🇧 EN</a>
+  </div>
+</li>
+</ul>
+
+<h3>📝 Prioridad BAJA · 12 artículos editoriales</h3>
+<p>Lectura rápida, corrección de tono si algo se aleja de cómo EB comunica. No prioridad urgente.</p>
+<ul class="list-articles">
+<li>
+  <div class="titulo"><b>B1 · 10 venues singulares para gala dinners</b> <span class="tag s2">S2</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/10-venues-singulares-gala-dinners-corporativas-barcelona/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/10-unique-venues-corporate-gala-dinners-barcelona/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B2 · Cómo elegir el espectáculo cena de gala</b> <span class="tag s2">S2</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/como-elegir-espectaculo-cena-gala-corporativa/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/how-to-choose-show-corporate-gala-dinner/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B3 · DMC vs agencia vs productora</b> <span class="tag s2">S2</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/dmc-agencia-eventos-productora-artistica-diferencias/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/dmc-event-agency-artistic-producer-differences/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B4 · Colaboración DMC-productora MICE</b> <span class="tag s2">S2</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/colaboracion-dmc-productora-artistica-evento-mice-barcelona/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/dmc-artistic-producer-collaboration-mice-event-barcelona/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B5 · 500 personas entretenidas 3 días</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/como-mantener-500-personas-entretenidas-3-dias-convencion/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/how-to-keep-500-people-entertained-3-day-convention/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B6 · 60 artistas Gartner Symposium deep-dive</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/60-artistas-gartner-symposium-como-lo-produjimos/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/60-artists-gartner-symposium-how-we-produced/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B7 · 5 espectáculos WOW effect</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/5-espectaculos-wow-effect-eventos-corporativos-barcelona/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/5-wow-effect-shows-corporate-events-barcelona/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B8 · Guía contratar artistas</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/guia-contratar-artistas-espectaculos-eventos-corporativos/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/guide-hiring-artists-shows-corporate-events/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B9 · Cuánto cuesta un espectáculo corporativo</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/cuanto-cuesta-espectaculo-corporativo-barcelona-rangos-factores/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/how-much-corporate-show-cost-barcelona-ranges-factors/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B10 · Menú + espectáculo coordinar gala</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/menu-espectaculo-coordinar-catering-show-gala-dinner/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/menu-show-coordinate-catering-corporate-gala-dinner/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B11 · Opening y closing de convenciones</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/opening-closing-convenciones-shows-marcan-diferencia/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/convention-opening-closing-shows-difference/" target="_blank">🇬🇧</a></div>
+</li>
+<li>
+  <div class="titulo"><b>B12 · 15 errores eventos internacionales</b> <span class="tag s3">S3</span></div>
+  <div class="langs"><a href="https://www.eventosbarcelona.com/errores-comunes-evento-corporativo-internacional-barcelona/" target="_blank">🇪🇸</a> <a href="https://www.eventosbarcelona.com/en/common-mistakes-international-corporate-event-barcelona/" target="_blank">🇬🇧</a></div>
+</li>
+</ul>
+
+<div class="callout amber">
+<b>Cómo darnos el feedback</b> (para no bloquear tu tiempo): abrí el link, leelo en 3-4 minutos, y respondenos con un WhatsApp: <b>OK · OK con ajustes menores · CAMBIAR</b>. Si es <i>OK con ajustes</i>, indicanos 1-3 líneas de qué cambiar. Si es <i>CAMBIAR</i>, hacemos una call específica de 15 min por landing.
+</div>
+</div>
+
+<h2><span class="badge" style="background: var(--green)">🟢 Validaciones</span>3 decisiones estratégicas</h2>
+
+<div class="block decision">
+<h3>Decisión 1 · Descartar oficialmente team building, animación, experiencias</h3>
+<p>La pirámide biblia v2 (refresh con datos reales GSC 90 días) confirmó lo que ya intuíamos con el Informe Estratégico: <b>estas 3 categorías no tienen demanda real de búsqueda en Google</b> (0 impresiones significativas). Propongo:</p>
+<ul>
+<li>Sacar oficialmente del roadmap SEO cualquier trabajo sobre estas categorías</li>
+<li>No crear nuevas landings ni artículos alrededor de estos términos</li>
+<li>Focalizar el 100% del esfuerzo editorial en las 3 categorías con demanda: MICE/convenciones, gala dinners, contratación directa de artistas</li>
+</ul>
+<p style="color: var(--muted); font-size: 0.86rem; margin-top: 8px;"><b>Necesitamos:</b> confirmación explícita (OK o no) para cerrar el debate.</p>
+</div>
+
+<div class="block decision">
+<h3>Decisión 2 · Nuevo cluster "DJ para fiestas de empresa"</h3>
+<p>GSC muestra <b>200+ impresiones agregadas / 90 días</b> en variantes de "DJ para fiestas" que hoy no estamos capturando bien (rankeamos en posiciones 25-45). Propongo:</p>
+<ul>
+<li>Sprint 5: crear landing dedicada <code>/dj-fiesta-empresa-barcelona/</code> ES + EN</li>
+<li>Cluster de 2-3 artículos editoriales alrededor (cómo elegir DJ, formatos, precios)</li>
+<li>Meterlo oficialmente en la pirámide biblia v2 como Nivel 2</li>
+</ul>
+<p style="color: var(--muted); font-size: 0.86rem; margin-top: 8px;"><b>Necesitamos:</b> tu confirmación de que EB tiene capacidad comercial + catálogo real de DJs para atender este perfil de cliente. Si no lo trabajás, mejor no atraerlo.</p>
+</div>
+
+<div class="block decision">
+<h3>Decisión 3 · Precios orientativos que ponemos en las landings</h3>
+<p>En varias landings (violinista, bandas, LED, cuánto cuesta un espectáculo corporativo) publicamos <b>rangos de precio orientativos por formato</b>. Basados en tarifas medias de mercado 2026 en Barcelona. Ejemplos:</p>
+<ul>
+<li>Violinista solista clásico: 800€ - 1.800€</li>
+<li>Banda pop-rock 5-6 músicos 2h: 3.500€ - 6.500€</li>
+<li>LED backdrop 4x2,5m indoor: 1.800€ - 3.500€</li>
+<li>Show WOW effect láser/mapping/immersive: 12.000€ - 45.000€+</li>
+</ul>
+<p style="color: var(--muted); font-size: 0.86rem; margin-top: 8px;"><b>Necesitamos:</b> confirmación de que esos rangos están alineados con tu precio real. Si no lo están, dinos cómo ajustarlos. Publicar precios que no encajan con tu tarifa real genera fricción comercial (leads que llegan esperando otro precio).</p>
+</div>
+
+<h2><span class="badge" style="background: var(--gold)">📅 Sprint 5</span>27 ago - 9 sep · plan propuesto</h2>
+
+<div class="block">
+<p>Cuatro items core, priorizados por impacto SEO/comercial:</p>
+
+<div class="action-item">
+<span class="who phil">Philippe · owner</span>
+<h4>1. Landing <code>/dj-fiesta-empresa-barcelona/</code> ES + EN</h4>
+<p>Cluster nuevo con demanda GSC validada (200+ impr/90d). Dependiente de tu confirmación de "sí atendemos ese perfil" (Decisión 2).</p>
+</div>
+
+<div class="action-item">
+<span class="who phil">Philippe · owner</span>
+<h4>2. Refresh homepage title + meta + copy hero</h4>
+<p>La query "eventos barcelona" ya trae clicks reales (pos 11,8 · 4 clicks / 133 impr / 90d). Un refresh del title y meta puede empujarnos a top 10 y multiplicar clicks. Sin cambiar diseño ni copy general — solo lo que Google ve.</p>
+</div>
+
+<div class="action-item">
+<span class="who phil">Philippe · owner</span>
+<h4>3. Landing cantante para eventos corporativos</h4>
+<p>Otro cluster con demanda validada (33 impr / 90d en "cantante para eventos" con posición 23 — potencial de subir a top 10 con landing dedicada).</p>
+</div>
+
+<div class="action-item">
+<span class="who xavi">Xavi + Philippe</span>
+<h4>4. Cloudflare Polish + Perfmatters combine CSS/JS</h4>
+<p>Heredado del Sprint 4. Cloudflare Polish activa WebP automático (mejora LCP 20-30% en móvil). Requiere que me pases <b>acceso al panel de Cloudflare</b> (o lo activás vos con instrucciones que te paso).</p>
+</div>
+</div>
+
+<h2><span class="badge">✅ Salida</span>Cierre de la call</h2>
+
+<div class="block green">
+<p>Salir con estos 4 puntos cerrados:</p>
+<ol>
+<li><b>Compromiso de fecha</b> para pasarnos la biblioteca de fotos (Drive/Dropbox link)</li>
+<li><b>Fecha</b> para review de las 6 landings comerciales de alta prioridad (idealmente 24-48h)</li>
+<li><b>Confirmación</b> de las 3 decisiones estratégicas (o cambios si aplica)</li>
+<li><b>Acceso Cloudflare</b> o commit de activarlo él mismo esta semana</li>
+</ol>
+<p style="margin-top: 12px;">Con estos 4 items cerrados, arrancamos Sprint 5 el miércoles 27 sin bloqueos.</p>
+</div>
+
+<div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); text-align: center;">
+Documento preparado 20 ago 2026 · Philippe · Scale IT<br>
+Dashboard operativo actualizado: <a href="https://propuestas.eventosbarcelona.com/xavi" style="color: var(--ink);">propuestas.eventosbarcelona.com/xavi</a>
+</div>
