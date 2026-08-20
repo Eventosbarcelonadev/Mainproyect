@@ -386,10 +386,14 @@ async function duplicateProposal(req, res, env) {
 // que permita resolver el contacto alcanza.
 async function ensureProposalForLead(req, res, env) {
   const body = req.body || {};
-  let contactId = String(body.contactId || body.contact_id || '').trim();
-  let opportunityId = String(body.opportunityId || body.opportunity_id || '').trim();
-  const emailIn = String(body.email || '').trim().toLowerCase();
-  const nameIn = String(body.name || body.nombre || '').trim();
+  const q = req.query || {};
+  // Acepta datos por body O por query string. El query string permite que un
+  // Workflow de GHL llame al endpoint con ?contactId={{contact.id}} sin depender
+  // del formato del payload (más robusto entre versiones de GHL / módulos de Make).
+  let contactId = String(body.contactId || body.contact_id || q.contactId || q.contact_id || '').trim();
+  let opportunityId = String(body.opportunityId || body.opportunity_id || q.opportunityId || q.opportunity_id || '').trim();
+  const emailIn = String(body.email || q.email || '').trim().toLowerCase();
+  const nameIn = String(body.name || body.nombre || q.name || q.nombre || '').trim();
 
   const sbHdr = {
     apikey: env.SUPABASE_KEY,
