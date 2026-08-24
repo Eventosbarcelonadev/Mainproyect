@@ -4,9 +4,13 @@
 .DS_Store
 
 # Data files (migrations, CSVs, exports)
-data/
+data/*
 *.csv
 *.vcf
+
+# Excepcion: serie historica GEO/SEO. GSC solo retiene 16 meses, asi que este
+# archivo ES el archivo. Si no se versiona, la historia se pierde.
+!data/geo-timeline.json
 
 # Sensitive
 scripts/service-account-key.json

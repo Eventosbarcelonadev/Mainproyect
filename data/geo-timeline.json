@@ -1,0 +1,546 @@
+{
+  "site": "https://www.eventosbarcelona.com/",
+  "months": {
+    "2024-01": {
+      "month": "2024-01",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1188,
+        "ai_sessions": 2,
+        "chatgpt_sessions": 0,
+        "ai_share": 0.0017,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-02": {
+      "month": "2024-02",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1110,
+        "ai_sessions": 0,
+        "chatgpt_sessions": 0,
+        "ai_share": 0,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-03": {
+      "month": "2024-03",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1037,
+        "ai_sessions": 1,
+        "chatgpt_sessions": 0,
+        "ai_share": 0.001,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-04": {
+      "month": "2024-04",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1032,
+        "ai_sessions": 2,
+        "chatgpt_sessions": 0,
+        "ai_share": 0.0019,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-05": {
+      "month": "2024-05",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1066,
+        "ai_sessions": 2,
+        "chatgpt_sessions": 0,
+        "ai_share": 0.0019,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-06": {
+      "month": "2024-06",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 830,
+        "ai_sessions": 0,
+        "chatgpt_sessions": 0,
+        "ai_share": 0,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-07": {
+      "month": "2024-07",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 771,
+        "ai_sessions": 4,
+        "chatgpt_sessions": 0,
+        "ai_share": 0.0052,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-08": {
+      "month": "2024-08",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 746,
+        "ai_sessions": 5,
+        "chatgpt_sessions": 3,
+        "ai_share": 0.0067,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-09": {
+      "month": "2024-09",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 977,
+        "ai_sessions": 9,
+        "chatgpt_sessions": 8,
+        "ai_share": 0.0092,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-10": {
+      "month": "2024-10",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1184,
+        "ai_sessions": 10,
+        "chatgpt_sessions": 10,
+        "ai_share": 0.0084,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-11": {
+      "month": "2024-11",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 907,
+        "ai_sessions": 9,
+        "chatgpt_sessions": 9,
+        "ai_share": 0.0099,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2024-12": {
+      "month": "2024-12",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 693,
+        "ai_sessions": 11,
+        "chatgpt_sessions": 11,
+        "ai_share": 0.0159,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2025-01": {
+      "month": "2025-01",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 901,
+        "ai_sessions": 14,
+        "chatgpt_sessions": 12,
+        "ai_share": 0.0155,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2025-02": {
+      "month": "2025-02",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 515,
+        "ai_sessions": 6,
+        "chatgpt_sessions": 6,
+        "ai_share": 0.0117,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2025-03": {
+      "month": "2025-03",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 852,
+        "ai_sessions": 23,
+        "chatgpt_sessions": 22,
+        "ai_share": 0.027,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": null
+    },
+    "2025-04": {
+      "month": "2025-04",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 660,
+        "ai_sessions": 18,
+        "chatgpt_sessions": 18,
+        "ai_share": 0.0273,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 36706,
+        "clicks": 203,
+        "ctr": 0.00553,
+        "position": 38.5
+      }
+    },
+    "2025-05": {
+      "month": "2025-05",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1097,
+        "ai_sessions": 28,
+        "chatgpt_sessions": 27,
+        "ai_share": 0.0255,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 62710,
+        "clicks": 444,
+        "ctr": 0.00708,
+        "position": 37.6
+      }
+    },
+    "2025-06": {
+      "month": "2025-06",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 629,
+        "ai_sessions": 29,
+        "chatgpt_sessions": 26,
+        "ai_share": 0.0461,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 60043,
+        "clicks": 308,
+        "ctr": 0.00513,
+        "position": 37.6
+      }
+    },
+    "2025-07": {
+      "month": "2025-07",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 745,
+        "ai_sessions": 26,
+        "chatgpt_sessions": 26,
+        "ai_share": 0.0349,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 59530,
+        "clicks": 360,
+        "ctr": 0.00605,
+        "position": 35.6
+      }
+    },
+    "2025-08": {
+      "month": "2025-08",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 570,
+        "ai_sessions": 36,
+        "chatgpt_sessions": 34,
+        "ai_share": 0.0632,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 65838,
+        "clicks": 312,
+        "ctr": 0.00474,
+        "position": 36.5
+      }
+    },
+    "2025-09": {
+      "month": "2025-09",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 964,
+        "ai_sessions": 78,
+        "chatgpt_sessions": 76,
+        "ai_share": 0.0809,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 50227,
+        "clicks": 493,
+        "ctr": 0.00982,
+        "position": 27.8
+      }
+    },
+    "2025-10": {
+      "month": "2025-10",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1260,
+        "ai_sessions": 98,
+        "chatgpt_sessions": 90,
+        "ai_share": 0.0778,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 43184,
+        "clicks": 583,
+        "ctr": 0.0135,
+        "position": 24.7
+      }
+    },
+    "2025-11": {
+      "month": "2025-11",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1344,
+        "ai_sessions": 50,
+        "chatgpt_sessions": 47,
+        "ai_share": 0.0372,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 47863,
+        "clicks": 599,
+        "ctr": 0.01251,
+        "position": 23.8
+      }
+    },
+    "2025-12": {
+      "month": "2025-12",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1119,
+        "ai_sessions": 70,
+        "chatgpt_sessions": 67,
+        "ai_share": 0.0626,
+        "leads": 0,
+        "ai_leads": 0,
+        "ai_lead_share": null
+      },
+      "gsc": {
+        "impressions": 61700,
+        "clicks": 508,
+        "ctr": 0.00823,
+        "position": 26.1
+      }
+    },
+    "2026-01": {
+      "month": "2026-01",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1164,
+        "ai_sessions": 83,
+        "chatgpt_sessions": 80,
+        "ai_share": 0.0713,
+        "leads": 572,
+        "ai_leads": 64,
+        "ai_lead_share": 0.1119
+      },
+      "gsc": {
+        "impressions": 82666,
+        "clicks": 704,
+        "ctr": 0.00852,
+        "position": 25.1
+      }
+    },
+    "2026-02": {
+      "month": "2026-02",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1097,
+        "ai_sessions": 108,
+        "chatgpt_sessions": 103,
+        "ai_share": 0.0985,
+        "leads": 504,
+        "ai_leads": 68,
+        "ai_lead_share": 0.1349
+      },
+      "gsc": {
+        "impressions": 75684,
+        "clicks": 665,
+        "ctr": 0.00879,
+        "position": 22.7
+      }
+    },
+    "2026-03": {
+      "month": "2026-03",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1320,
+        "ai_sessions": 74,
+        "chatgpt_sessions": 57,
+        "ai_share": 0.0561,
+        "leads": 488,
+        "ai_leads": 32,
+        "ai_lead_share": 0.0656
+      },
+      "gsc": {
+        "impressions": 80447,
+        "clicks": 804,
+        "ctr": 0.00999,
+        "position": 19.5
+      }
+    },
+    "2026-04": {
+      "month": "2026-04",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1060,
+        "ai_sessions": 80,
+        "chatgpt_sessions": 72,
+        "ai_share": 0.0755,
+        "leads": 800,
+        "ai_leads": 48,
+        "ai_lead_share": 0.06
+      },
+      "gsc": {
+        "impressions": 76601,
+        "clicks": 582,
+        "ctr": 0.0076,
+        "position": 22.6
+      }
+    },
+    "2026-05": {
+      "month": "2026-05",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 1020,
+        "ai_sessions": 74,
+        "chatgpt_sessions": 62,
+        "ai_share": 0.0725,
+        "leads": 416,
+        "ai_leads": 40,
+        "ai_lead_share": 0.0962
+      },
+      "gsc": {
+        "impressions": 86739,
+        "clicks": 600,
+        "ctr": 0.00692,
+        "position": 22.3
+      }
+    },
+    "2026-06": {
+      "month": "2026-06",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 597,
+        "ai_sessions": 39,
+        "chatgpt_sessions": 37,
+        "ai_share": 0.0653,
+        "leads": 220,
+        "ai_leads": 16,
+        "ai_lead_share": 0.0727
+      },
+      "gsc": {
+        "impressions": 82261,
+        "clicks": 329,
+        "ctr": 0.004,
+        "position": 26.7
+      }
+    },
+    "2026-07": {
+      "month": "2026-07",
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 573,
+        "ai_sessions": 60,
+        "chatgpt_sessions": 53,
+        "ai_share": 0.1047,
+        "leads": 296,
+        "ai_leads": 39,
+        "ai_lead_share": 0.1318
+      },
+      "gsc": {
+        "impressions": 79827,
+        "clicks": 271,
+        "ctr": 0.00339,
+        "position": 28.9
+      }
+    },
+    "2026-08": {
+      "month": "2026-08",
+      "partial": true,
+      "captured_at": "2026-08-24",
+      "ga4": {
+        "sessions": 346,
+        "ai_sessions": 32,
+        "chatgpt_sessions": 29,
+        "ai_share": 0.0925,
+        "leads": 227,
+        "ai_leads": 29,
+        "ai_lead_share": 0.1278
+      },
+      "gsc": {
+        "impressions": 52333,
+        "clicks": 173,
+        "ctr": 0.00331,
+        "position": 27.9
+      }
+    }
+  },
+  "meta": {
+    "last_run": "2026-08-24T13:49:23.832Z",
+    "last_mode": "update",
+    "note": "Archivo propio. GSC solo sirve 16 meses y GA4 tiene retención limitada: los meses guardados aquí no se borran nunca aunque la API deje de devolverlos.",
+    "gsc_data_starts": "2025-04",
+    "ga4_data_starts": "2024-01"
+  }
+}

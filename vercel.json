@@ -15,6 +15,8 @@
     { "source": "/propuesta/:path*", "destination": "/propuesta.html" },
     { "source": "/catalogo", "destination": "/propuesta-catalogo.html" },
     { "source": "/linkedin", "destination": "/propuesta-linkedin.html" },
+    { "source": "/metricas", "destination": "/dashboard-metricas.html" },
+    { "source": "/dashboard-metricas", "destination": "/dashboard-metricas.html" },
     { "source": "/xavi", "destination": "/dashboard-xavi.html" },
     { "source": "/dashboard-xavi", "destination": "/dashboard-xavi.html" },
     { "source": "/reunion", "destination": "/agenda-reunion-xavi.html" },

@@ -30,9 +30,12 @@ h1{font-size:36px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
 .meta-badges b{color:var(--gold)}
 
 /* Tabs (radio-based, no JS) */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:32px;overflow-x:auto;scrollbar-width:thin}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:32px;flex-wrap:wrap}
+.tabs .tab-link{display:block;padding:14px 15px;font-size:13px;font-weight:700;letter-spacing:.03em;color:var(--gold);text-decoration:none;border-bottom:3px solid transparent;margin-left:auto;background:linear-gradient(90deg,rgba(201,154,58,.10),rgba(201,154,58,.03));border-left:3px solid var(--gold);transition:all .15s}
+.tabs .tab-link:hover{background:rgba(201,154,58,.18);color:var(--ink)}
+.tabs .tab-link small{display:block;font-weight:400;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-top:2px;color:var(--muted)}
 input[name="sprint-tab"]{position:absolute;left:-9999px}
-.tabs label{display:block;padding:14px 22px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--muted);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tabs label{display:block;padding:14px 15px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--muted);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
 .tabs label:hover{color:var(--ink);background:rgba(201,154,58,.06)}
 .tabs label small{display:block;font-weight:400;font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
 
@@ -297,8 +300,13 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   .metrics-grid{grid-template-columns:1fr}
   .overview-timeline{grid-template-columns:repeat(2,1fr)}
   h1{font-size:26px}
-  .work-list li{grid-template-columns:1fr;gap:4px}
+  .work-list li{grid-template-columns:1fr;gap:6px}
+  .work-list li>*{min-width:0;max-width:none;overflow-wrap:anywhere}
+  .work-list .impact,.work-list .desc{white-space:normal;text-align:left}
   .tabs label{padding:12px 14px;font-size:12px}
+  .lc-bars{overflow-x:auto;overflow-y:hidden;gap:6px}
+  .lc-bar{flex:0 0 34px}
+  .lc-bar .lc-num{font-size:13px}
 }
 @media print{
   body{background:#fff}
@@ -333,12 +341,13 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <div class="tabs">
   <label for="tab-s1">Sprint 1 <small>2-15 jul · cerrado</small></label>
-  <label for="tab-s2">Sprint 2 <small>16-29 jul · cerrado 22 jul</small></label>
+  <label for="tab-s2">Sprint 2 <small>16-29 jul · cerrado</small></label>
   <label for="tab-s3">Sprint 3 <small>ejecutado 16 ago</small></label>
   <label for="tab-s4">Sprint 4 <small>ejecutado 20 ago</small></label>
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
   <label for="tab-s6">Sprint 6 <small>10-23 sep</small></label>
   <label for="tab-ov">Overview <small>los 6 sprints</small></label>
+  <a class="tab-link" href="/metricas">Métricas ↗ <small>SEO &amp; GEO</small></a>
 </div>
 
 <div class="contents">
@@ -1564,7 +1573,7 @@ Cobertura pirámide 90%+. Retainer con evidencia de valor entregado. Base de dat
 </div><!-- /.contents -->
 
 <footer>
-Dashboard actualizado 2026-08-20 · Sprint 4 ejecutado (+6d adelanto) · 44 URLs live desde arranque retainer · próxima actualización cierre Sprint 5 · 9 sep 2026<br>
+Dashboard actualizado 2026-08-24 · Sprint 4 ejecutado (+6d adelanto) · 44 URLs live desde arranque retainer · métricas SEO/GEO en <b>propuestas.eventosbarcelona.com/metricas</b> · próxima actualización cierre Sprint 5 · 9 sep 2026<br>
 URL corta: <b>propuestas.eventosbarcelona.com/xavi</b> · versionado en git
 </footer>
 
