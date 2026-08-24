@@ -18,6 +18,9 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const timeline = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'geo-timeline.json'), 'utf8'));
 const report = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'geo-report.json'), 'utf8'));
+const KWPATH = path.join(ROOT, 'data', 'seo-keywords.json');
+const kwStore = fs.existsSync(KWPATH) ? JSON.parse(fs.readFileSync(KWPATH, 'utf8')) : null;
+const kwAnalysis = require('./seo-keywords.js');
 const OUT = path.join(ROOT, 'dashboard-metricas.html');
 
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -334,6 +337,111 @@ ${table(['Elemento', 'Estado', 'Para qué sirve'], [
 Esta tabla se vuelve a comprobar en cada actualización. Un plugin nuevo o un cambio en el hosting pueden tumbar estos permisos sin avisar, y si eso pasa los asistentes dejan de leer la web sin que se note en ninguna otra métrica hasta semanas después.
 </div>`;
 
+
+// ================= HOJA 4 · KEYWORDS =================
+let hoja4 = '';
+if (kwStore) {
+  const kms = Object.keys(kwStore.months).sort();
+  const kClosed = kms.filter(m => !kwStore.months[m].partial);
+  const kLast = kClosed[kClosed.length - 1] || kms[kms.length - 1];
+  const kPrev = kClosed[kClosed.length - 2] || null;
+  const kw = kwStore.months[kLast].keywords;
+  const kwPrev = kPrev ? kwStore.months[kPrev].keywords : null;
+
+  const dist = kwAnalysis.distribution(kw);
+  const sd = kwAnalysis.strikingDistance(kw, kwPrev);
+  const anom = kwAnalysis.ctrAnomalies(kw);
+  const mv = kwAnalysis.movers(kw, kwPrev);
+
+  const totalKw = Object.keys(kw).length;
+  const sdImp = sd.reduce((s, r) => s + r.impressions, 0);
+  const sdClk = sd.reduce((s, r) => s + r.clicks, 0);
+  const ctrTop = dist.find(d => d.band === '4-10');
+  const potencial = Math.round(sdImp * (ctrTop ? ctrTop.ctr : 0.006));
+
+  const mov = m => m === null ? '<span class="nd">nuevo</span>'
+    : m > 0 ? `<b class="good">+${String(m).replace('.', ',')}</b>`
+    : m < 0 ? `<b class="bad">${String(m).replace('.', ',')}</b>` : '<span class="nd">=</span>';
+
+  hoja4 = `
+<div class="head-block">
+  <h2>Keywords</h2>
+  <p>Las ${n(totalKw)} búsquedas por las que aparecemos, con su posición congelada mes a mes. Esta hoja no es un informe: es la lista de trabajo, ordenada por dónde está el retorno.</p>
+</div>
+
+<div class="hero">
+  <div class="h-lab">La oportunidad concreta · ${mesLabel(kLast)}</div>
+  <div class="h-val"><span class="h-num">${sd.length}</span><span class="h-unit">búsquedas atascadas en la página 2 de Google (posición 11 a 20) con volumen real</span></div>
+  <div class="h-ctx">Suman <b>${n(sdImp)} impresiones</b> y hoy generan <b>${n(sdClk)} clics</b>. Si pasaran a la primera página, con el CTR que ya tenemos en posiciones 4 a 10 (${pct(ctrTop ? ctrTop.ctr : 0)}), serían del orden de <b>${n(potencial)} clics</b>. Es el trabajo con mejor relación esfuerzo/resultado que hay ahora mismo.</div>
+  <div class="h-subs">
+    <div class="h-sub"><div class="s-cat">Keywords seguidas</div><div class="s-val">${n(totalKw)}</div><div class="s-note">con ${kwStore.min_impressions}+ impresiones en el mes</div></div>
+    <div class="h-sub"><div class="s-cat">Histórico guardado</div><div class="s-val">${kms.length} meses</div><div class="s-note">desde ${mesLabel(kms[0])}</div></div>
+    <div class="h-sub"><div class="s-cat">Balance del mes</div><div class="s-val">${mv.up.length} ↑ / ${mv.down.length} ↓</div><div class="s-note">movimientos de 3+ puestos vs ${kPrev ? mesLabel(kPrev) : 'n/d'}</div></div>
+  </div>
+</div>
+
+${mv.down.length > mv.up.length * 2 ? `<div class="callout warn">
+<b>Atención al balance.</b> Este mes bajan ${mv.down.length} búsquedas y suben ${mv.up.length}. La media global de posición del sitio puede seguir mejorando año contra año, pero el movimiento reciente keyword a keyword es negativo. Las dos cosas son verdad a la vez y esta es la que hay que vigilar, porque va por delante.
+</div>` : ''}
+
+<h3 class="sec">Dónde estamos colocados <span class="sub">${mesLabel(kLast)} · reparto de las ${n(totalKw)} keywords</span></h3>
+${table(['Posición', 'Keywords', 'Impresiones', 'Clics', 'CTR', 'Lectura'],
+  dist.map(d => {
+    const lect = d.band === '1-3' ? 'Lo que ya funciona'
+      : d.band === '4-10' ? 'Primera página: aquí el clic todavía llega'
+      : d.band === '11-20' ? 'Página 2: mucha visibilidad, casi ningún clic'
+      : d.band === '21-50' ? 'Visible pero lejos. Trabajo de fondo'
+      : 'Prácticamente invisible';
+    return [`<td><b>${d.band}</b></td>`, `<td class="num">${n(d.keywords)}</td>`, `<td class="num">${n(d.impressions)}</td>`,
+      `<td class="num">${n(d.clicks)}</td>`, `<td class="num">${pct(d.ctr)}</td>`, `<td><small>${lect}</small></td>`];
+  }))}
+<div class="callout">
+<b>El salto de la página 2 a la 1 es el que paga.</b> En posiciones 4 a 10 el CTR es de ${pct(ctrTop ? ctrTop.ctr : 0)}. En 11 a 20 cae a ${pct(dist.find(d => d.band === '11-20').ctr)}, es decir prácticamente cero. No es que la gente vea el resultado y no entre: es que no llega a verlo.
+</div>
+
+<h3 class="sec">Lista de trabajo · a un empujón de la página 1 <span class="sub">posición 11-20 con 30+ impresiones · ordenadas por volumen</span></h3>
+${table(['Búsqueda', 'Posición', 'Movimiento', 'Impresiones', 'Clics'],
+  sd.slice(0, 30).map(r => [
+    `<td>${esc(r.query)}</td>`,
+    `<td class="num"><b>${String(r.position).replace('.', ',')}</b></td>`,
+    `<td class="num">${mov(r.movement)}</td>`,
+    `<td class="num">${n(r.impressions)}</td>`,
+    `<td class="num">${r.clicks || '<span class="nd">0</span>'}</td>`]))}
+<div class="callout">
+<b>Cómo se usa esta tabla.</b> Son búsquedas donde Google ya nos considera relevantes pero nos deja fuera de la primera página. Cada una es una página concreta que se puede mejorar. La columna de movimiento dice si el trabajo del mes anterior la ha empujado o si va cuesta abajo, así que el mes que viene se puede comprobar si lo que hicimos funcionó.
+</div>
+
+${anom.length ? `<h3 class="sec">Aparecemos arriba y no nos hacen clic <span class="sub">posición 10 o mejor, 80+ impresiones, menos del 1% de clics</span></h3>
+${table(['Búsqueda', 'Posición', 'Impresiones', 'Clics', 'CTR'],
+  anom.slice(0, 15).map(r => [`<td>${esc(r.query)}</td>`, `<td class="num"><b>${String(r.position).replace('.', ',')}</b></td>`,
+    `<td class="num">${n(r.impressions)}</td>`, `<td class="num">${r.clicks || '<span class="nd">0</span>'}</td>`,
+    `<td class="num"><b class="bad">${pct(r.ctr)}</b></td>`]))}
+<div class="callout warn">
+<b>Esto no se arregla subiendo posiciones.</b> Ya estamos arriba. Que no entre nadie significa que algo por encima del resultado resuelve la consulta: un resumen de IA, un bloque de imágenes, un mapa o el propio Google. La palanca aquí no es SEO clásico sino dar una respuesta que el resumen quiera citar, que es exactamente el trabajo de la hoja GEO.
+</div>` : ''}
+
+${kwPrev ? `<h3 class="sec">Qué se ha movido <span class="sub">${mesLabel(kPrev)} → ${mesLabel(kLast)} · 3+ puestos y 50+ impresiones</span></h3>
+<div class="two-col">
+<div>
+<div class="col-h good">Suben · ${mv.up.length}</div>
+${table(['Búsqueda', 'Antes', 'Ahora', 'Gana'],
+  mv.up.slice(0, 12).map(r => [`<td>${esc(r.query)}</td>`, `<td class="num nd">${String(r.prev_position).replace('.', ',')}</td>`,
+    `<td class="num"><b>${String(r.position).replace('.', ',')}</b></td>`, `<td class="num"><b class="good">+${String(r.movement).replace('.', ',')}</b></td>`]))}
+</div>
+<div>
+<div class="col-h bad">Bajan · ${mv.down.length}</div>
+${table(['Búsqueda', 'Antes', 'Ahora', 'Pierde'],
+  mv.down.slice(0, 12).map(r => [`<td>${esc(r.query)}</td>`, `<td class="num nd">${String(r.prev_position).replace('.', ',')}</td>`,
+    `<td class="num"><b>${String(r.position).replace('.', ',')}</b></td>`, `<td class="num"><b class="bad">${String(r.movement).replace('.', ',')}</b></td>`]))}
+</div>
+</div>` : ''}
+
+<h3 class="sec">Por qué este histórico se guarda aparte</h3>
+<div class="callout">
+Search Console borra los datos a los 16 meses. Sin un archivo propio no se puede responder la única pregunta que importa para saber si el trabajo SEO funciona: <b>¿esta búsqueda ha subido desde que tocamos su página?</b> Por eso cada mes se congelan las posiciones de todas las keywords con ${kwStore.min_impressions} o más impresiones. Hoy hay <b>${kms.length} meses</b> guardados, desde ${mesLabel(kms[0])}, y un mes guardado no se borra nunca.
+</div>`;
+}
+
 // ================= HTML =================
 const fechaDatos = new Date(report.generated_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 const html = `<!DOCTYPE html>
@@ -361,9 +469,9 @@ input[name=tab]{position:absolute;left:-9999px}
 .tabs label small{display:block;font-weight:400;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-top:2px;color:var(--muted)}
 .tabs label:hover{color:var(--ink);background:rgba(201,154,58,.06)}
 .pane{display:none}
-#t-hist:checked~.tabs label[for=t-hist],#t-seo:checked~.tabs label[for=t-seo],#t-geo:checked~.tabs label[for=t-geo]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
-#t-hist:checked~.tabs label[for=t-hist] small,#t-seo:checked~.tabs label[for=t-seo] small,#t-geo:checked~.tabs label[for=t-geo] small{color:var(--gold);font-weight:700}
-#t-hist:checked~.panes #p-hist,#t-seo:checked~.panes #p-seo,#t-geo:checked~.panes #p-geo{display:block}
+#t-hist:checked~.tabs label[for=t-hist],#t-seo:checked~.tabs label[for=t-seo],#t-geo:checked~.tabs label[for=t-geo],#t-kw:checked~.tabs label[for=t-kw]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#t-hist:checked~.tabs label[for=t-hist] small,#t-seo:checked~.tabs label[for=t-seo] small,#t-geo:checked~.tabs label[for=t-geo] small,#t-kw:checked~.tabs label[for=t-kw] small{color:var(--gold);font-weight:700}
+#t-hist:checked~.panes #p-hist,#t-seo:checked~.panes #p-seo,#t-geo:checked~.panes #p-geo,#t-kw:checked~.panes #p-kw{display:block}
 .head-block{border-left:4px solid var(--gold);padding:2px 0 2px 18px;margin-bottom:22px}
 .head-block h2{margin:0 0 6px;font-size:25px;letter-spacing:-.015em}
 .head-block p{margin:0;color:var(--muted);max-width:75ch}
@@ -417,7 +525,7 @@ td.delta.up{color:var(--green)}td.delta.down{color:var(--red)}td.delta.flat{colo
 .tag-warn{background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
 .callout.warn{background:#f0f7fa;border-color:#c9dae2;border-left-color:#3d7a95}
-.cards{display:grid;gap:12px}
+.cards{display:grid;gap:12px}\n.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}\n.col-h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:8px 0 2px}\n@media(max-width:900px){.two-col{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:14px 18px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
 .c-tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#fff;padding:4px 9px;border-radius:2px;white-space:nowrap}
 .c-tag.t1{background:var(--ink)}.c-tag.t2{background:var(--amber)}.c-tag.t3{background:var(--gold)}
@@ -445,6 +553,7 @@ footer a{color:var(--ink)}
 <div class="wrap">
 
 <input type="radio" name="tab" id="t-hist">
+${hoja4 ? '<input type="radio" name="tab" id="t-kw">' : ''}
 <input type="radio" name="tab" id="t-seo">
 <input type="radio" name="tab" id="t-geo" checked>
 
@@ -462,12 +571,14 @@ footer a{color:var(--ink)}
 <div class="tabs">
   <label for="t-geo">GEO <small>asistentes de IA</small></label>
   <label for="t-seo">SEO <small>búsqueda en Google</small></label>
+  ${hoja4 ? '<label for="t-kw">Keywords <small>lista de trabajo</small></label>' : ''}
   <label for="t-hist">Histórico <small>${months.length} meses de serie</small></label>
 </div>
 
 <div class="panes">
 <div class="pane" id="p-geo">${hoja3}</div>
 <div class="pane" id="p-seo">${hoja2}</div>
+${hoja4 ? `<div class="pane" id="p-kw">${hoja4}</div>` : ''}
 <div class="pane" id="p-hist">${hoja1}</div>
 </div>
 

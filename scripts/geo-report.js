@@ -255,6 +255,7 @@ async function main() {
   try {
     const { execFileSync } = require('child_process');
     execFileSync(process.execPath, [path.join(__dirname, 'geo-timeline.js'), 'update'], { stdio: 'inherit' });
+    execFileSync(process.execPath, [path.join(__dirname, 'seo-keywords.js'), 'update'], { stdio: 'inherit' });
   } catch (e) {
     console.log(`  aviso: no se pudo actualizar la serie histórica (${e.message.slice(0, 60)})`);
     console.log('  ejecuta a mano: node scripts/geo-timeline.js update');

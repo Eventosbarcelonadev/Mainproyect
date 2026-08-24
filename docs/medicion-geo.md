@@ -97,14 +97,29 @@ Tres hojas:
 | **GEO** | ChatGPT como 3ª fuente, desglose por asistente, volumen mensual, conversión, landing pages, qué se mide y qué no, infraestructura |
 | **SEO** | Impresiones / clics / CTR mes a mes, las tres causas de la caída de clics, top búsquedas con marca de "CTR anómalo", top páginas, ES vs EN |
 | **Histórico** | Curva de share **mes a mes** (la métrica que manda), comparativa año contra año, y la serie mensual completa de los 32 meses |
+| **Keywords** | Distribución por posición, lista de trabajo (pos 11-20 con volumen), top 10 sin clics, y qué subió y bajó vs el mes anterior |
 
 **No se edita a mano.** Lo genera `scripts/build-dashboard-metricas.js` leyendo los dos JSON. Si un dato
 no está en los JSON, no aparece en el dashboard.
 
 ```bash
-node scripts/geo-report.js 365            # refresca datos + congela el mes en la serie
+node scripts/geo-report.js 365            # refresca datos + congela mes en las dos series
 node scripts/build-dashboard-metricas.js  # regenera el HTML
 ```
+
+`geo-report.js` encadena por su cuenta `geo-timeline.js update` y `seo-keywords.js update`.
+
+### Posiciones por keyword
+
+`scripts/seo-keywords.js` (`backfill` | `update` | `show` | `oportunidades`) congela mes a mes la
+posición de cada keyword con 5 o más impresiones en `data/seo-keywords.json`. 17 meses guardados
+desde abril 2025, ~870 KB. Misma regla: un mes guardado no se borra nunca.
+
+Sin esto no se puede responder **"¿esta búsqueda ha subido desde que tocamos su página?"**, que es
+la única pregunta que dice si el trabajo SEO está funcionando.
+
+`node scripts/seo-keywords.js oportunidades` imprime la lista priorizada en terminal, sin abrir el
+dashboard.
 
 El dashboard de sprints (`/xavi`) no duplica estas métricas: enlaza aquí desde su barra de pestañas.
 

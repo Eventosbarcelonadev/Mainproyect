@@ -23,9 +23,9 @@ input[name=tab]{position:absolute;left:-9999px}
 .tabs label small{display:block;font-weight:400;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-top:2px;color:var(--muted)}
 .tabs label:hover{color:var(--ink);background:rgba(201,154,58,.06)}
 .pane{display:none}
-#t-hist:checked~.tabs label[for=t-hist],#t-seo:checked~.tabs label[for=t-seo],#t-geo:checked~.tabs label[for=t-geo]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
-#t-hist:checked~.tabs label[for=t-hist] small,#t-seo:checked~.tabs label[for=t-seo] small,#t-geo:checked~.tabs label[for=t-geo] small{color:var(--gold);font-weight:700}
-#t-hist:checked~.panes #p-hist,#t-seo:checked~.panes #p-seo,#t-geo:checked~.panes #p-geo{display:block}
+#t-hist:checked~.tabs label[for=t-hist],#t-seo:checked~.tabs label[for=t-seo],#t-geo:checked~.tabs label[for=t-geo],#t-kw:checked~.tabs label[for=t-kw]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#t-hist:checked~.tabs label[for=t-hist] small,#t-seo:checked~.tabs label[for=t-seo] small,#t-geo:checked~.tabs label[for=t-geo] small,#t-kw:checked~.tabs label[for=t-kw] small{color:var(--gold);font-weight:700}
+#t-hist:checked~.panes #p-hist,#t-seo:checked~.panes #p-seo,#t-geo:checked~.panes #p-geo,#t-kw:checked~.panes #p-kw{display:block}
 .head-block{border-left:4px solid var(--gold);padding:2px 0 2px 18px;margin-bottom:22px}
 .head-block h2{margin:0 0 6px;font-size:25px;letter-spacing:-.015em}
 .head-block p{margin:0;color:var(--muted);max-width:75ch}
@@ -80,6 +80,9 @@ td.delta.up{color:var(--green)}td.delta.down{color:var(--red)}td.delta.flat{colo
 .callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
 .callout.warn{background:#f0f7fa;border-color:#c9dae2;border-left-color:#3d7a95}
 .cards{display:grid;gap:12px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.col-h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:8px 0 2px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:14px 18px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
 .c-tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#fff;padding:4px 9px;border-radius:2px;white-space:nowrap}
 .c-tag.t1{background:var(--ink)}.c-tag.t2{background:var(--amber)}.c-tag.t3{background:var(--gold)}
@@ -107,6 +110,7 @@ footer a{color:var(--ink)}
 <div class="wrap">
 
 <input type="radio" name="tab" id="t-hist">
+<input type="radio" name="tab" id="t-kw">
 <input type="radio" name="tab" id="t-seo">
 <input type="radio" name="tab" id="t-geo" checked>
 
@@ -124,6 +128,7 @@ footer a{color:var(--ink)}
 <div class="tabs">
   <label for="t-geo">GEO <small>asistentes de IA</small></label>
   <label for="t-seo">SEO <small>búsqueda en Google</small></label>
+  <label for="t-kw">Keywords <small>lista de trabajo</small></label>
   <label for="t-hist">Histórico <small>32 meses de serie</small></label>
 </div>
 
@@ -374,6 +379,141 @@ Esta tabla se vuelve a comprobar en cada actualización. Un plugin nuevo o un ca
 </table></div>
 <div class="callout">
 <b>El inglés rinde más por página publicada.</b> Con el 13,8% de las impresiones se lleva el 20,8% de los clics. Y es también donde aterriza la mayoría del tráfico de asistentes AI. Dos señales independientes apuntando al mismo sitio.
+</div></div>
+<div class="pane" id="p-kw">
+<div class="head-block">
+  <h2>Keywords</h2>
+  <p>Las 1631 búsquedas por las que aparecemos, con su posición congelada mes a mes. Esta hoja no es un informe: es la lista de trabajo, ordenada por dónde está el retorno.</p>
+</div>
+
+<div class="hero">
+  <div class="h-lab">La oportunidad concreta · jul 26</div>
+  <div class="h-val"><span class="h-num">147</span><span class="h-unit">búsquedas atascadas en la página 2 de Google (posición 11 a 20) con volumen real</span></div>
+  <div class="h-ctx">Suman <b>14.320 impresiones</b> y hoy generan <b>14 clics</b>. Si pasaran a la primera página, con el CTR que ya tenemos en posiciones 4 a 10 (0,62%), serían del orden de <b>89 clics</b>. Es el trabajo con mejor relación esfuerzo/resultado que hay ahora mismo.</div>
+  <div class="h-subs">
+    <div class="h-sub"><div class="s-cat">Keywords seguidas</div><div class="s-val">1631</div><div class="s-note">con 5+ impresiones en el mes</div></div>
+    <div class="h-sub"><div class="s-cat">Histórico guardado</div><div class="s-val">17 meses</div><div class="s-note">desde abr 25</div></div>
+    <div class="h-sub"><div class="s-cat">Balance del mes</div><div class="s-val">21 ↑ / 112 ↓</div><div class="s-note">movimientos de 3+ puestos vs jun 26</div></div>
+  </div>
+</div>
+
+<div class="callout warn">
+<b>Atención al balance.</b> Este mes bajan 112 búsquedas y suben 21. La media global de posición del sitio puede seguir mejorando año contra año, pero el movimiento reciente keyword a keyword es negativo. Las dos cosas son verdad a la vez y esta es la que hay que vigilar, porque va por delante.
+</div>
+
+<h3 class="sec">Dónde estamos colocados <span class="sub">jul 26 · reparto de las 1631 keywords</span></h3>
+<div class="t-scroll"><table class="tbl ">
+<tr><th>Posición</th><th>Keywords</th><th>Impresiones</th><th>Clics</th><th>CTR</th><th>Lectura</th></tr>
+<tr><td><b>1-3</b></td><td class="num">20</td><td class="num">376</td><td class="num">1</td><td class="num">0,27%</td><td><small>Lo que ya funciona</small></td></tr>
+<tr><td><b>4-10</b></td><td class="num">144</td><td class="num">6104</td><td class="num">38</td><td class="num">0,62%</td><td><small>Primera página: aquí el clic todavía llega</small></td></tr>
+<tr><td><b>11-20</b></td><td class="num">329</td><td class="num">16.894</td><td class="num">16</td><td class="num">0,09%</td><td><small>Página 2: mucha visibilidad, casi ningún clic</small></td></tr>
+<tr><td><b>21-50</b></td><td class="num">692</td><td class="num">27.942</td><td class="num">9</td><td class="num">0,03%</td><td><small>Visible pero lejos. Trabajo de fondo</small></td></tr>
+<tr><td><b>51+</b></td><td class="num">363</td><td class="num">10.505</td><td class="num">0</td><td class="num">0,00%</td><td><small>Prácticamente invisible</small></td></tr>
+</table></div>
+<div class="callout">
+<b>El salto de la página 2 a la 1 es el que paga.</b> En posiciones 4 a 10 el CTR es de 0,62%. En 11 a 20 cae a 0,09%, es decir prácticamente cero. No es que la gente vea el resultado y no entre: es que no llega a verlo.
+</div>
+
+<h3 class="sec">Lista de trabajo · a un empujón de la página 1 <span class="sub">posición 11-20 con 30+ impresiones · ordenadas por volumen</span></h3>
+<div class="t-scroll"><table class="tbl ">
+<tr><th>Búsqueda</th><th>Posición</th><th>Movimiento</th><th>Impresiones</th><th>Clics</th></tr>
+<tr><td>agencia de eventos</td><td class="num"><b>16,3</b></td><td class="num"><b class="bad">-2,4</b></td><td class="num">858</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia de eventos corporativos</td><td class="num"><b>13,6</b></td><td class="num"><b class="good">+3</b></td><td class="num">771</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia de eventos barcelona</td><td class="num"><b>12,8</b></td><td class="num"><b class="bad">-2</b></td><td class="num">467</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia eventos</td><td class="num"><b>14,1</b></td><td class="num"><b class="bad">-4,7</b></td><td class="num">383</td><td class="num">1</td></tr>
+<tr><td>agencias de eventos barcelona</td><td class="num"><b>13,8</b></td><td class="num"><b class="bad">-1,8</b></td><td class="num">382</td><td class="num">1</td></tr>
+<tr><td>empresa de eventos</td><td class="num"><b>12</b></td><td class="num"><b class="bad">-3</b></td><td class="num">338</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia eventos barcelona</td><td class="num"><b>12</b></td><td class="num"><b class="bad">-2,3</b></td><td class="num">307</td><td class="num">1</td></tr>
+<tr><td>organizacion de eventos barcelona</td><td class="num"><b>18,1</b></td><td class="num"><b class="bad">-2,7</b></td><td class="num">291</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>evento corporativo</td><td class="num"><b>15</b></td><td class="num"><b class="good">+1,9</b></td><td class="num">290</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>empresas de eventos barcelona</td><td class="num"><b>12,8</b></td><td class="num"><b class="bad">-2,4</b></td><td class="num">282</td><td class="num">1</td></tr>
+<tr><td>empresas de eventos</td><td class="num"><b>13</b></td><td class="num"><b class="bad">-2,8</b></td><td class="num">258</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia de eventos en barcelona</td><td class="num"><b>11,9</b></td><td class="num"><b class="bad">-2,1</b></td><td class="num">251</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencias eventos barcelona</td><td class="num"><b>13,4</b></td><td class="num"><b class="bad">-2,6</b></td><td class="num">236</td><td class="num">3</td></tr>
+<tr><td>eventos para empresas barcelona</td><td class="num"><b>12,8</b></td><td class="num"><b class="bad">-3,1</b></td><td class="num">235</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>organizadores de eventos barcelona</td><td class="num"><b>17,4</b></td><td class="num"><b class="bad">-2</b></td><td class="num">224</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>bollywood barcelona</td><td class="num"><b>14,4</b></td><td class="num"><b class="good">+0,7</b></td><td class="num">206</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>musica para eventos</td><td class="num"><b>16,6</b></td><td class="num"><b class="good">+1,9</b></td><td class="num">197</td><td class="num">1</td></tr>
+<tr><td>organización de eventos barcelona</td><td class="num"><b>14,6</b></td><td class="num"><b class="bad">-1,7</b></td><td class="num">194</td><td class="num">1</td></tr>
+<tr><td>agencias de eventos en barcelona</td><td class="num"><b>16,4</b></td><td class="num"><b class="bad">-2</b></td><td class="num">193</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>empresas organizadoras de eventos</td><td class="num"><b>18,6</b></td><td class="num"><b class="bad">-5,8</b></td><td class="num">173</td><td class="num">1</td></tr>
+<tr><td>event agency barcelona</td><td class="num"><b>11,8</b></td><td class="num"><b class="bad">-2,2</b></td><td class="num">171</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia de organización de eventos en barcelona</td><td class="num"><b>16,8</b></td><td class="num"><b class="bad">-2,3</b></td><td class="num">164</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencias de comunicacion y eventos barcelona</td><td class="num"><b>14,4</b></td><td class="num"><b class="bad">-5,6</b></td><td class="num">164</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>producción de eventos corporativos</td><td class="num"><b>19,4</b></td><td class="num"><b class="bad">-1,9</b></td><td class="num">164</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>contratar músicos para eventos</td><td class="num"><b>12,8</b></td><td class="num"><b class="bad">-3,1</b></td><td class="num">159</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>empresa de eventos en barcelona</td><td class="num"><b>12,2</b></td><td class="num"><b class="bad">-1,8</b></td><td class="num">157</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>agencia organizadora de eventos</td><td class="num"><b>16,2</b></td><td class="num"><b class="bad">-4,3</b></td><td class="num">141</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>wow factor events</td><td class="num"><b>19,9</b></td><td class="num"><b class="good">+4,7</b></td><td class="num">138</td><td class="num"><span class="nd">0</span></td></tr>
+<tr><td>empresas de eventos en barcelona</td><td class="num"><b>12</b></td><td class="num"><b class="bad">-1,3</b></td><td class="num">135</td><td class="num">1</td></tr>
+<tr><td>empresa de organizacion de eventos</td><td class="num"><b>17,1</b></td><td class="num"><b class="bad">-1</b></td><td class="num">126</td><td class="num"><span class="nd">0</span></td></tr>
+</table></div>
+<div class="callout">
+<b>Cómo se usa esta tabla.</b> Son búsquedas donde Google ya nos considera relevantes pero nos deja fuera de la primera página. Cada una es una página concreta que se puede mejorar. La columna de movimiento dice si el trabajo del mes anterior la ha empujado o si va cuesta abajo, así que el mes que viene se puede comprobar si lo que hicimos funcionó.
+</div>
+
+<h3 class="sec">Aparecemos arriba y no nos hacen clic <span class="sub">posición 10 o mejor, 80+ impresiones, menos del 1% de clics</span></h3>
+<div class="t-scroll"><table class="tbl ">
+<tr><th>Búsqueda</th><th>Posición</th><th>Impresiones</th><th>Clics</th><th>CTR</th></tr>
+<tr><td>rumba catalana</td><td class="num"><b>8,5</b></td><td class="num">712</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>eventos empresa barcelona</td><td class="num"><b>8</b></td><td class="num">326</td><td class="num">1</td><td class="num"><b class="bad">0,31%</b></td></tr>
+<tr><td>agencia eventos corporativos</td><td class="num"><b>3,7</b></td><td class="num">171</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>eventos empresas barcelona</td><td class="num"><b>8,1</b></td><td class="num">158</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>empresa de eventos barcelona</td><td class="num"><b>9,2</b></td><td class="num">151</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>empresa eventos</td><td class="num"><b>9,8</b></td><td class="num">146</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>ideas originales para eventos</td><td class="num"><b>3,1</b></td><td class="num">121</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>productora eventos barcelona</td><td class="num"><b>9,2</b></td><td class="num">121</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>agencia de eventos corporativos en barcelona</td><td class="num"><b>9,3</b></td><td class="num">109</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>entrega de premios</td><td class="num"><b>7,2</b></td><td class="num">108</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+<tr><td>empresas de eventos corporativos</td><td class="num"><b>8</b></td><td class="num">80</td><td class="num"><span class="nd">0</span></td><td class="num"><b class="bad">0,00%</b></td></tr>
+</table></div>
+<div class="callout warn">
+<b>Esto no se arregla subiendo posiciones.</b> Ya estamos arriba. Que no entre nadie significa que algo por encima del resultado resuelve la consulta: un resumen de IA, un bloque de imágenes, un mapa o el propio Google. La palanca aquí no es SEO clásico sino dar una respuesta que el resumen quiera citar, que es exactamente el trabajo de la hoja GEO.
+</div>
+
+<h3 class="sec">Qué se ha movido <span class="sub">jun 26 → jul 26 · 3+ puestos y 50+ impresiones</span></h3>
+<div class="two-col">
+<div>
+<div class="col-h good">Suben · 21</div>
+<div class="t-scroll"><table class="tbl ">
+<tr><th>Búsqueda</th><th>Antes</th><th>Ahora</th><th>Gana</th></tr>
+<tr><td>mice event</td><td class="num nd">60,1</td><td class="num"><b>35,1</b></td><td class="num"><b class="good">+25</b></td></tr>
+<tr><td>mice convention</td><td class="num nd">33,7</td><td class="num"><b>12,3</b></td><td class="num"><b class="good">+21,4</b></td></tr>
+<tr><td>organizador de eventos</td><td class="num nd">51,4</td><td class="num"><b>36,6</b></td><td class="num"><b class="good">+14,8</b></td></tr>
+<tr><td>espectaculos y eventos</td><td class="num nd">54,3</td><td class="num"><b>40,5</b></td><td class="num"><b class="good">+13,8</b></td></tr>
+<tr><td>organización de eventos</td><td class="num nd">65,7</td><td class="num"><b>53,7</b></td><td class="num"><b class="good">+12</b></td></tr>
+<tr><td>mice tourism</td><td class="num nd">31,1</td><td class="num"><b>23,9</b></td><td class="num"><b class="good">+7,2</b></td></tr>
+<tr><td>organizacion de eventos</td><td class="num nd">45,2</td><td class="num"><b>38</b></td><td class="num"><b class="good">+7,2</b></td></tr>
+<tr><td>agencia eventos corporativos</td><td class="num nd">9,7</td><td class="num"><b>3,7</b></td><td class="num"><b class="good">+6</b></td></tr>
+<tr><td>conductor de eventos</td><td class="num nd">72,8</td><td class="num"><b>66,8</b></td><td class="num"><b class="good">+6</b></td></tr>
+<tr><td>contratar bailaora flamenca para eventos</td><td class="num nd">23,7</td><td class="num"><b>17,7</b></td><td class="num"><b class="good">+6</b></td></tr>
+<tr><td>meeting, incentive, conference, exhibition, mice events</td><td class="num nd">48,8</td><td class="num"><b>42,9</b></td><td class="num"><b class="good">+5,9</b></td></tr>
+<tr><td>mice meetings</td><td class="num nd">9,5</td><td class="num"><b>4,4</b></td><td class="num"><b class="good">+5,1</b></td></tr>
+</table></div>
+</div>
+<div>
+<div class="col-h bad">Bajan · 112</div>
+<div class="t-scroll"><table class="tbl ">
+<tr><th>Búsqueda</th><th>Antes</th><th>Ahora</th><th>Pierde</th></tr>
+<tr><td>alquiler de escenarios para eventos</td><td class="num nd">55</td><td class="num"><b>73,8</b></td><td class="num"><b class="bad">-18,8</b></td></tr>
+<tr><td>eventos bcn</td><td class="num nd">10,1</td><td class="num"><b>28,4</b></td><td class="num"><b class="bad">-18,3</b></td></tr>
+<tr><td>compañía de danza</td><td class="num nd">56,7</td><td class="num"><b>74,2</b></td><td class="num"><b class="bad">-17,5</b></td></tr>
+<tr><td>creación de performances para eventos internacionales</td><td class="num nd">11,2</td><td class="num"><b>26,9</b></td><td class="num"><b class="bad">-15,7</b></td></tr>
+<tr><td>alquiler estructuras para eventos</td><td class="num nd">50,2</td><td class="num"><b>65,3</b></td><td class="num"><b class="bad">-15,1</b></td></tr>
+<tr><td>dj para eventos corporativos</td><td class="num nd">21,1</td><td class="num"><b>34,6</b></td><td class="num"><b class="bad">-13,5</b></td></tr>
+<tr><td>organizacion de eventos para empresas</td><td class="num nd">41,5</td><td class="num"><b>54,5</b></td><td class="num"><b class="bad">-13</b></td></tr>
+<tr><td>eventos organizados</td><td class="num nd">31</td><td class="num"><b>42,6</b></td><td class="num"><b class="bad">-11,6</b></td></tr>
+<tr><td>montaje de escenarios</td><td class="num nd">47</td><td class="num"><b>57,6</b></td><td class="num"><b class="bad">-10,6</b></td></tr>
+<tr><td>dj para eventos</td><td class="num nd">38,3</td><td class="num"><b>48,8</b></td><td class="num"><b class="bad">-10,5</b></td></tr>
+<tr><td>alquiler de estructuras para eventos</td><td class="num nd">54,4</td><td class="num"><b>64,3</b></td><td class="num"><b class="bad">-9,9</b></td></tr>
+<tr><td>grupos musicales</td><td class="num nd">31,9</td><td class="num"><b>41,1</b></td><td class="num"><b class="bad">-9,2</b></td></tr>
+</table></div>
+</div>
+</div>
+
+<h3 class="sec">Por qué este histórico se guarda aparte</h3>
+<div class="callout">
+Search Console borra los datos a los 16 meses. Sin un archivo propio no se puede responder la única pregunta que importa para saber si el trabajo SEO funciona: <b>¿esta búsqueda ha subido desde que tocamos su página?</b> Por eso cada mes se congelan las posiciones de todas las keywords con 5 o más impresiones. Hoy hay <b>17 meses</b> guardados, desde abr 25, y un mes guardado no se borra nunca.
 </div></div>
 <div class="pane" id="p-hist">
 <div class="head-block">

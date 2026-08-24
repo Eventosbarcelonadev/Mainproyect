@@ -11,6 +11,7 @@ data/*
 # Excepcion: serie historica GEO/SEO. GSC solo retiene 16 meses, asi que este
 # archivo ES el archivo. Si no se versiona, la historia se pierde.
 !data/geo-timeline.json
+!data/seo-keywords.json
 
 # Sensitive
 scripts/service-account-key.json

@@ -9,7 +9,40 @@ owner: Equipo SEO/contenido Eventos Barcelona
 
 # Pirámide SEO — Eventos Barcelona
 
+## ⚠️ Aviso de corrección · 2026-08-24
+
+**Las cifras de impresiones de la sección v2.0 están mal etiquetadas.** Dicen "Impr 90d" pero
+corresponden a una ventana de **5 o 6 días**, no de 90. Verificado contra la API de Search Console:
+el ratio entre lo publicado y lo real es constante (~0,78 de una ventana de 7 días) en todas las
+keywords comprobadas, lo que descarta que sea una diferencia de filtro o de fecha de corte.
+
+| Keyword | Dice v2.0 | Real 90d | Factor |
+|---|---:|---:|---:|
+| `agencia de eventos` | 190 | **2.911** | 15x |
+| `agencia de eventos corporativos` | 152 | **2.114** | 14x |
+| `eventos barcelona` | 133 | **3.311** | 25x |
+| `eventos corporativos barcelona` | 105 | **1.535** | 15x |
+| `eventos mice` | 38 | **737** | 19x |
+
+**Qué sigue siendo válido:** las tres keywords descartadas por falta de demanda
+(`team building barcelona`, `animación para eventos empresariales`,
+`experiencias para eventos corporativos`) lo están correctamente. Comprobado a 90 días reales:
+10, 24 y 162 impresiones respectivamente. El método era erróneo pero esa conclusión se sostiene.
+
+**Qué hay que revisar:** la priorización. Con volúmenes 15 veces menores, cualquier keyword de
+demanda media pudo quedar por debajo del umbral de atención. En los datos reales hay
+**147 búsquedas en posición 11-20 con 30 o más impresiones** que esta pirámide no recoge.
+
+**A partir de ahora los volúmenes y posiciones se consultan en
+`propuestas.eventosbarcelona.com/metricas`, hoja Keywords.** Salen por API, con la ventana escrita
+al lado de cada número, y con el histórico mes a mes congelado en `data/seo-keywords.json`. Esta
+pirámide se queda como documento de estrategia y de cobertura por landing, que es donde aporta.
+
+---
+
 ## 🆕 v2.0 · Refresh 2026-08-20 · Cruce con GSC real (90d)
+
+> ⚠️ Las impresiones de esta sección son de ~5 días, no de 90. Ver el aviso de corrección de arriba.
 
 Datos GSC pull 2026-08-16 (últimos 90 días) han confirmado y refutado hipótesis de la v1.0:
 
