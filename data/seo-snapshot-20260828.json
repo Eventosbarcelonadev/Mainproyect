@@ -1,0 +1,84 @@
+{
+  "snapshot_date": "2026-08-28",
+  "snapshot_time_utc": "20:35:00",
+  "context": "Baseline post-Sprint SEO agosto. Congelado para comparar en 4-8 semanas.",
+  "cluster_comercial": {
+    "target_impressions_90d": 23845,
+    "target_clicks_90d": 27,
+    "baseline_avg_ctr_pct": 0.11,
+    "keywords": [
+      { "kw": "agencia de eventos", "imp": 2665, "pos": 16.1, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" },
+      { "kw": "agencia de eventos corporativos", "imp": 2019, "pos": 15.4, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" },
+      { "kw": "eventos corporativos barcelona", "imp": 1549, "pos": 14.8, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" },
+      { "kw": "agencia de eventos barcelona", "imp": 1146, "pos": 12.2, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" },
+      { "kw": "agencia eventos", "imp": 1028, "pos": 12.5, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" },
+      { "kw": "agencias de eventos barcelona", "imp": 996, "pos": 13.5, "url_gana_hoy": "/", "target_landing": "/agencia-de-eventos-barcelona/" }
+    ]
+  },
+  "bloque_2_ctr_fix": [
+    { "kw": "rumba catalana", "imp": 1586, "pos": 8.6, "url": "/musica/grupos-de-rumba/", "post_id": 4722, "seo_applied": true, "expected_impact": "CTR ↑ desde 0% actual" },
+    { "kw": "ideas originales para eventos", "imp": 328, "pos": 3.0, "url": "/15-excelentes-alternativas-de-ocio-para-eventos-corporativos/", "post_id": 12534, "seo_applied": true, "expected_impact": "CTR ↑ (pos 3 debe generar clicks reales)" },
+    { "kw": "entrega de premios", "imp": 281, "pos": 7.6, "url": "/entregas-premios-eventos/", "post_id": 16088, "seo_applied": true, "expected_impact": "CTR ↑ y posible movimiento pos" },
+    { "kw": "show de burlesque en barcelona", "imp": 167, "pos": 7.6, "url": "/danza/contratar-bailarinas-burlesque-cabaret-barcelona/", "post_id": 5276, "seo_applied": true, "expected_impact": "CTR ↑" }
+  ],
+  "bloque_3_canibalizacion_aplicada": [
+    {
+      "case": "/eventos-empresa/ (post 2019 · 0 clics · 36 keywords perdidas)",
+      "action": "post_id 12524 → status=draft; 301 → /agencia-de-eventos-barcelona/",
+      "redirection_plugin_id": 72,
+      "verified_301": true,
+      "applied_at": "2026-08-28T20:35:00Z"
+    }
+  ],
+  "bloque_3_canibalizacion_pendiente": [
+    {
+      "case": "/produccion-tecnica-para-eventos/ vs / por keyword `producción de eventos`",
+      "imp": 2128, "home_pos": 32.6, "pt_pos": 60.2,
+      "propuesta": "Decidir cuál se queda el término. Sugerencia: dejar home con enlace fuerte a Producción Técnica hub (Sprint 7)"
+    },
+    {
+      "case": "4 hubs solapados",
+      "urls": ["/musica/", "/espectaculos/", "/artistas/", "/artistas-y-espectaculos/"],
+      "keywords_conflicto": 162,
+      "propuesta": "Consolidar en 1 hub por cluster. Se realiza en Sprint 7 con creación hub Producción técnica y hub MICE"
+    },
+    {
+      "case": "/agencia-eventos-corporativos-profesional-barcelona/",
+      "estado": "301 existente a landing DMC",
+      "propuesta": "Repuntar el 301 a /agencia-de-eventos-barcelona/ (landing nueva es el hub comercial ahora)"
+    }
+  ],
+  "landing_nueva": {
+    "es": { "id": 21943, "slug": "agencia-de-eventos-barcelona", "url": "https://www.eventosbarcelona.com/agencia-de-eventos-barcelona/", "status": "publish" },
+    "en": { "id": 21944, "slug": "corporate-events-agency-barcelona", "url": "https://www.eventosbarcelona.com/en/corporate-events-agency-barcelona/", "status": "publish" },
+    "wpml_trid": 88392,
+    "internal_links_inbound": 11,
+    "internal_links_sources": [
+      { "type": "post", "id": 21820, "slug": "como-mantener-500-personas-entretenidas-3-dias-con", "anchor": "agencia de eventos corporativos en Barcelona" },
+      { "type": "post", "id": 21822, "slug": "60-artistas-gartner-symposium", "anchor": "agencia de eventos corporativos" },
+      { "type": "post", "id": 21824, "slug": "5-espectaculos-wow-effect", "anchor": "agencia de eventos MICE en Barcelona" },
+      { "type": "post", "id": 21826, "slug": "guia-contratar-artistas-espectaculos", "anchor": "agencia de eventos corporativos Barcelona" },
+      { "type": "post", "id": 21828, "slug": "cuanto-cuesta-espectaculo-corporativo", "anchor": "agencia especializada" },
+      { "type": "post", "id": 21830, "slug": "menu-espectaculo-coordinar-catering", "anchor": "agencia de eventos integrada" },
+      { "type": "post", "id": 21832, "slug": "opening-closing-convenciones-shows", "anchor": "agencia de eventos corporativos internacionales" },
+      { "type": "post", "id": 21834, "slug": "errores-comunes-evento-corporativo-internacional", "anchor": "agencia de eventos corporativos en Barcelona" },
+      { "type": "page", "id": 21818, "slug": "convenciones-corporativas-internacionales-barcelona", "anchor": "agencia de eventos corporativos en Barcelona" },
+      { "type": "page", "id": 21845, "slug": "espectaculos-eventos-corporativos-barcelona", "anchor": "agencia de eventos corporativos en Barcelona" },
+      { "type": "page", "id": 21920, "slug": "venues-eventos-corporativos-barcelona", "anchor": "agencia de eventos corporativos en Barcelona" }
+    ]
+  },
+  "objetivo_comprobable": {
+    "keywords_target": ["agencia de eventos", "agencia de eventos corporativos", "eventos corporativos barcelona", "agencia de eventos barcelona", "agencia eventos"],
+    "sum_imp_hoy": 8407,
+    "sum_clicks_hoy": 10,
+    "success_criteria": "pasar de página 2 a página 1 (pos ≤ 10) en 4-8 semanas",
+    "check_date_min": "2026-09-25",
+    "check_date_max": "2026-10-23"
+  },
+  "attribution_tracking": {
+    "before": "0 sesiones atribuidas a IA (plugin LLMagnet no inyectaba tracker client-side)",
+    "after": "EB-AI-ATTRIBUTION snippet 21942 activo · GA4 event ai_referral · dimensión ai_source",
+    "sources_tracked": ["chatgpt", "perplexity", "claude", "gemini", "bing-copilot", "poe", "you.com", "kagi", "duckduckgo-ai"],
+    "first_data_expected": "2026-08-29T00:00:00Z"
+  }
+}
