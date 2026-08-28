@@ -39,26 +39,31 @@ verde "  OK  Claude Code instalado"
 mkdir -p "$BASE"
 cd "$BASE"
 
-# GitHub Desktop clona con el nombre del repo. Si esta asi, lo renombramos.
-[ -d "$BASE/Mainproyect/.git" ] && [ ! -d "$BASE/mainproyect/.git" ] && mv "$BASE/Mainproyect" "$BASE/mainproyect"
-[ -d "$BASE/eb-xavi/.git" ]     && [ ! -d "$BASE/trabajo/.git" ]     && mv "$BASE/eb-xavi" "$BASE/trabajo"
+# Nunca preguntar credenciales por terminal: si no hay acceso, fallar rapido.
+export GIT_TERMINAL_PROMPT=0
 
-if [ ! -d "$BASE/mainproyect/.git" ]; then
+# GitHub Desktop clona con el nombre del repo. Si esta asi, lo renombramos.
+[ -d "$BASE/Mainproyect" ] && [ ! -d "$BASE/mainproyect" ] && mv "$BASE/Mainproyect" "$BASE/mainproyect"
+[ -d "$BASE/eb-xavi" ]     && [ ! -d "$BASE/trabajo" ]     && mv "$BASE/eb-xavi" "$BASE/trabajo"
+
+# El proyecto puede llegar por git (clone) o por copia directa (zip por AirDrop).
+# Lo unico que importa es que este el paquete de instalacion dentro.
+if [ ! -d "$BASE/mainproyect/docs/xavi-setup" ]; then
   echo "  ..  Descargando el proyecto de Eventos Barcelona"
-  git clone https://github.com/Eventosbarcelonadev/Mainproyect.git mainproyect || {
-    rojo "No pude descargar el proyecto."
-    rojo "Clonalo antes con GitHub Desktop en la carpeta $BASE y volve a correr esto."
+  git clone https://github.com/Eventosbarcelonadev/Mainproyect.git mainproyect 2>/dev/null || {
+    rojo "No encuentro el proyecto en $BASE/mainproyect y no puedo descargarlo."
+    rojo "Descomprimi ahi el EB-Claude.zip que te paso Philippe, o clonalo con GitHub Desktop."
     exit 1
   }
-else
+elif [ -d "$BASE/mainproyect/.git" ]; then
   git -C "$BASE/mainproyect" pull --ff-only >/dev/null 2>&1 || true
 fi
-verde "  OK  Proyecto descargado (solo lectura)"
+verde "  OK  Proyecto listo (solo lectura)"
 
-if [ ! -d "$BASE/trabajo/.git" ]; then
+if [ ! -d "$BASE/trabajo" ]; then
   git clone https://github.com/Eventosbarcelonadev/eb-xavi.git trabajo 2>/dev/null || {
-    echo "  ..  El repositorio de trabajo todavia no existe, creo la carpeta local"
-    mkdir -p trabajo && git -C trabajo init -q
+    mkdir -p trabajo
+    git -C trabajo init -q 2>/dev/null || true
   }
 fi
 mkdir -p trabajo/presentaciones trabajo/ideas trabajo/briefs trabajo/notas imagenes
