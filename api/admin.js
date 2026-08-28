@@ -116,11 +116,15 @@ async function syncArtistaToGhlFull(env, artista) {
   const tipoLabel = capitalize(artista.tipo || 'artista');
   // Primera URL de fotos_urls = portada del artista (queda visible en GHL como link)
   const fotoUrl = Array.isArray(artista.fotos_urls) && artista.fotos_urls.filter(Boolean)[0] || '';
+  // Xavi 2026-08-28: la columna "categoria_artista" que ve en el listado de contactos
+  // GHL debe mostrar la ACTIVIDAD ESPECÍFICA del artista (subcategoría "Violinista",
+  // "DJ", "Cuarteto") para que sea informativa. La macro-categoría (Música, Danza)
+  // es demasiado genérica. Se swappean los valores: categoria=subs, subcategoria=macros.
   const customFields = [
     { id: GHL_CF.contact_type, key: 'contact_type', field_value: tipoLabel },
     { id: GHL_CF.nombre_artista, key: 'nombre_artista', field_value: nombreLabel },
-    { id: GHL_CF.categoria_artista, key: 'categoria_artista', field_value: macros },
-    { id: GHL_CF.subcategoria_artista, key: 'subcategoria_artista', field_value: subs },
+    { id: GHL_CF.categoria_artista, key: 'categoria_artista', field_value: subs },
+    { id: GHL_CF.subcategoria_artista, key: 'subcategoria_artista', field_value: macros },
     { id: GHL_CF.shows_vinculados, key: 'shows_vinculados', field_value: shows_text },
     { id: GHL_CF.url_supabase, key: 'url_supabase', field_value: adminUrlArtista(env, artista.id) },
     { id: GHL_CF.foto_artista_url, key: 'foto_artista_url', field_value: fotoUrl }
@@ -2152,6 +2156,50 @@ async function findGhlShowRecordId(env, show) {
   } catch (e) { return null; }
 }
 
+// Publica (o actualiza) un show en el CPT `espectaculos` de WordPress cuando
+// se aprueba en /admin. Xavi 2026-08-28: shows aprobados en /admin deben
+// aparecer automáticamente en el catálogo público. Status=draft para que Xavi
+// pueda revisar la maquetación antes de publicar.
+async function syncShowToWordpress(env, show) {
+  const wpUser = process.env.WP_USER;
+  const wpPass = process.env.WP_PASS;
+  if (!wpUser || !wpPass) return { skipped: 'no_wp_creds' };
+  if (!show || !show.name) return { skipped: 'no_show_name' };
+
+  const WP = 'https://www.eventosbarcelona.com/wp-json/wp/v2';
+  const wpAuth = { Authorization: `Basic ${Buffer.from(`${wpUser}:${wpPass}`).toString('base64')}` };
+  const slug = (show.slug || show.name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const content = `
+    ${show.description ? `<p>${show.description}</p>` : ''}
+    ${show.video_url ? `<p><a href="${show.video_url}" target="_blank" rel="noopener">Ver video</a></p>` : ''}
+    ${show.image_url ? `<p><img src="${show.image_url}" alt="${show.name}" style="max-width:100%;height:auto;border-radius:14px" /></p>` : ''}
+    <p><em>Show sincronizado desde /admin · id ${show.id}</em></p>
+  `.trim();
+
+  // Buscar existente por slug
+  const searchR = await fetch(`${WP}/espectaculos?slug=${encodeURIComponent(slug)}&_fields=id,slug&per_page=1`, { headers: wpAuth });
+  const existing = searchR.ok ? await searchR.json() : [];
+  const existingId = existing[0]?.id;
+
+  const body = {
+    title: show.name,
+    slug,
+    status: 'draft',
+    content,
+    excerpt: show.description ? show.description.slice(0, 240) : ''
+  };
+
+  const url = existingId ? `${WP}/espectaculos/${existingId}` : `${WP}/espectaculos`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { ...wpAuth, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) return { error: `WP ${r.status}: ${(await r.text()).slice(0, 180)}` };
+  const created = await r.json();
+  return { ok: true, wp_post_id: created.id, wp_link: created.link, mode: existingId ? 'updated' : 'created' };
+}
+
 async function reviewShow(req, res, env) {
   const { id, action, patch } = req.body || {};
   if (!id) return res.status(400).json({ error: 'Missing id' });
@@ -2276,7 +2324,16 @@ async function reviewShow(req, res, env) {
       ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0, 200)}` };
     }
   }
-  return res.status(200).json({ success: true, show, ghl });
+
+  // WP sync: al aprobar (o editar cuando ya está activo), publicar/actualizar
+  // el show como draft en el CPT `espectaculos` para que Xavi lo revise antes
+  // de publicar en el catálogo público. Best-effort, no bloquea la respuesta.
+  let wp = { skipped: 'not_approve_or_edit' };
+  if (show && (action === 'approve' || (action === 'edit' && show.status === 'active'))) {
+    try { wp = await syncShowToWordpress(env, show); } catch (e) { wp = { error: e.message }; }
+  }
+
+  return res.status(200).json({ success: true, show, ghl, wp });
 }
 
 // === geo-metrics ===

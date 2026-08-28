@@ -3130,21 +3130,42 @@
     // tocar: en ese caso NO es "custom" y debe renderizarse/guardarse según idioma.
     // Corrige el bug de propuestas EN que mostraban condiciones en español (el
     // flush de edición snapshotaba T.conditions del idioma del builder = ES).
+    // Normaliza texto para comparación tolerante: colapsa espacios, minúsculas,
+    // sin puntuación final. Sobrevive a espacios extra, mayúsculas raras y
+    // ediciones triviales que antes hacían fallar el matching estricto.
+    function normCondText(s) {
+      return String(s == null ? '' : s).toLowerCase().replace(/\s+/g,' ').replace(/[.,;:!?]+$/,'').trim();
+    }
     function conditionsAreDefaultText(arr) {
       if (!Array.isArray(arr)) return false;
-      const norm = a => JSON.stringify((a || []).map(s => String(s == null ? '' : s).trim()));
+      const norm = a => JSON.stringify((a || []).map(normCondText));
       const t = norm(arr);
       return t === norm(I18N.es.conditions) || t === norm(I18N.en.conditions);
+    }
+    // Detecta si N% del array coincide con el default del otro idioma (bug idioma mixto).
+    // Xavi 2026-08-28: propuestas ES que muestran condiciones EN (o viceversa) porque
+    // el snapshot del builder guardó el idioma erróneo. Umbral 60% de items matcheando
+    // el otro idioma → asumimos que están en el otro y devolvemos el default del actual.
+    function conditionsAreInOppositeLang(arr) {
+      if (!Array.isArray(arr) || !arr.length) return false;
+      const oppositeLang = (LANG === 'es') ? 'en' : 'es';
+      const oppDefaults = (I18N[oppositeLang].conditions || []).map(normCondText);
+      const matches = arr.filter(c => oppDefaults.includes(normCondText(c))).length;
+      return matches / arr.length >= 0.6;
     }
     // Condiciones a persistir: solo si son realmente custom; si coinciden con el
     // default de cualquier idioma, se guarda null para que el render use el del idioma.
     function getPersistableConditions() {
-      return (Array.isArray(proposalState.conditions) && !conditionsAreDefaultText(proposalState.conditions))
+      return (Array.isArray(proposalState.conditions) && !conditionsAreDefaultText(proposalState.conditions) && !conditionsAreInOppositeLang(proposalState.conditions))
         ? proposalState.conditions : null;
     }
     function getActiveConditions() {
-      return (Array.isArray(proposalState.conditions) && !conditionsAreDefaultText(proposalState.conditions))
-        ? proposalState.conditions : T.conditions;
+      if (Array.isArray(proposalState.conditions)
+          && !conditionsAreDefaultText(proposalState.conditions)
+          && !conditionsAreInOppositeLang(proposalState.conditions)) {
+        return proposalState.conditions;
+      }
+      return T.conditions;
     }
     function escapeHtmlText(s) {
       return String(s == null ? '' : s)
