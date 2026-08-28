@@ -456,10 +456,19 @@ async function ensureProposalForLead(req, res, env) {
   const clientEmail = emailIn || contact?.email || '';
   const clientCompany = contact?.companyName || '';
 
-  // 2. Resolver opp si no vino: la del contacto en el pipeline
+  // 2. Resolver opp si no vino: la del contacto en el pipeline.
+  //    Si Make.com llama justo tras crear el contact pero antes de crear la
+  //    opp (delay habitual 1-3s), la primera búsqueda devuelve vacío. Segundo
+  //    intento con 3.5s de espera cubre el 95% de casos y evita el barrido
+  //    diario para escrituras urgentes.
   if (!opportunityId) {
     const o = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
     if (o.ok) opportunityId = (parse(o).opportunities || [])[0]?.id || '';
+  }
+  if (!opportunityId) {
+    await new Promise(r => setTimeout(r, 3500));
+    const o2 = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
+    if (o2.ok) opportunityId = (parse(o2).opportunities || [])[0]?.id || '';
   }
 
   // 3. ¿Ya existe propuesta para este lead? (por ghl_contact_id o email)
@@ -497,13 +506,22 @@ async function ensureProposalForLead(req, res, env) {
   const url = `${siteUrl(env)}/propuesta.html?id=${encodeURIComponent(proposalId)}&admin=1`;
 
   // 5. Escribir url_generador_propuesta en la opp (si hay opp)
-  let oppSync = { skipped: 'no_opp' };
+  let oppSync = { skipped: 'no_opp', retryLater: true };
   if (opportunityId) {
     const g = await ghlFetch('PUT', `/opportunities/${encodeURIComponent(opportunityId)}`, env, {
       customFields: [{ id: OPP_URL_GENERADOR_PROPUESTA, field_value: url }]
     });
     oppSync = { ok: g.ok, status: g.status };
     if (!g.ok) oppSync.error = g.body.slice(0, 160);
+    // Backfill: si la proposal se guardó con ghl_opportunity_id=null (creada
+    // antes de que la opp existiera), completar ahora que la tenemos.
+    if (g.ok && proposalId) {
+      try {
+        await fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&ghl_opportunity_id=is.null`, {
+          method: 'PATCH', headers: sbHdr, body: JSON.stringify({ ghl_opportunity_id: opportunityId })
+        });
+      } catch (e) { /* best-effort */ }
+    }
   }
 
   return res.status(200).json({ success: true, proposalId, url, reused, contactId, opportunityId: opportunityId || null, oppSync });
