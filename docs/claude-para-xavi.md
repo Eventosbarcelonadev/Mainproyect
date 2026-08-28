@@ -1,7 +1,7 @@
 # Claude para Xavi · instructivo de instalación completo
 
 **Objetivo:** que Xavi tenga Claude trabajando con el proyecto de Eventos Barcelona de forma autónoma,
-con acceso real al negocio (repositorio, Vercel, Gmail, banco de imágenes, catálogo, CRM) y **sin
+con acceso real al negocio (repositorio, Gmail, banco de imágenes, catálogo, CRM) y **sin
 ninguna posibilidad de tocar la web ni de romper producción**.
 
 **Quién ejecuta qué:** las fases 0, 2 y 4 las hace Philippe. La fase 1 se hace en el Mac de Xavi,
@@ -23,7 +23,7 @@ Tres anillos:
 | Anillo | Qué hay dentro | Permiso |
 |---|---|---|
 | **Escribe** | Su carpeta local `trabajo/`, su repositorio `eb-xavi`, la hoja de ideas de Drive, borradores de Gmail | Total |
-| **Lee** | Repositorio `Mainproyect`, catálogo de shows, banco de imágenes, Vercel, CRM (GHL), la web pública, webs de la competencia | Solo lectura |
+| **Lee** | Repositorio `Mainproyect`, catálogo de shows, banco de imágenes, CRM (GHL), la web pública, webs de la competencia | Solo lectura |
 | **Prohibido** | WordPress, FTP de CDmon, panel de hosting, clave de servicio de Supabase, despliegues de Vercel, envío de emails, escritura en el CRM | Sin acceso |
 
 La regla que lo resume: **Claude de Xavi produce material, no cambia sistemas.**
@@ -33,8 +33,8 @@ La regla que lo resume: **Claude de Xavi produce material, no cambia sistemas.**
 Se aplican todas, porque cada una tapa los agujeros de la anterior.
 
 1. **Permisos en el origen.** Es la capa que de verdad importa. La cuenta de GitHub de Xavi tiene rol
-   *Read* sobre `Mainproyect`, su cuenta de Vercel es *Viewer*, su token de CRM es de solo lectura.
-   Aunque fallara todo lo demás, GitHub y Vercel rechazan la escritura del lado del servidor.
+   *Read* sobre `Mainproyect` y su token de CRM es de solo lectura. A Vercel directamente no tiene
+   acceso. Aunque fallara todo lo demás, GitHub rechaza la escritura del lado del servidor.
 2. **Ausencia de credenciales.** En su Mac no existen `WP_PASS`, `FTP_PASS`, `SUPABASE_SERVICE_KEY`
    ni `VERCEL_TOKEN`. No se puede usar lo que no está.
 3. **Candado del sistema** (`managed-settings.json`). Lista de denegación que Xavi no puede editar
@@ -58,8 +58,10 @@ Checklist. Nada de esto necesita a Xavi delante salvo que haga falta que él ace
       `Eventosbarcelonadev/Mainproyect` con rol **Read**. Confirmar que aparece como *Read*, no *Write*.
 - [ ] **Repositorio de trabajo.** Crear `Eventosbarcelonadev/eb-xavi`, **privado**, y darle rol **Write**.
       Ahí van sus presentaciones, ideas y notas, versionadas y respaldadas.
-- [ ] **Vercel.** Invitarlo al equipo `team_9giS6ajT7KEGuoVhoMY321Nv` (proyecto `eventos-barcelona`)
-      con rol **Viewer**. Viewer no puede desplegar, ni ver ni cambiar variables de entorno.
+- [ ] **Vercel: NO se invita.** Verificado el 2026-08-28: el equipo esta en plan **Hobby**, que no
+      admite invitados. Y en plan Pro el rol minimo es *Member*, que puede desplegar y leer las
+      variables de entorno, o sea que rompe el modelo. El estado de la web se cubre con la skill
+      `eb-estado-web`, que solo hace peticiones publicas. Ver [4.2](#42--estado-de-la-web).
 - [ ] **Anthropic.** Cuenta de Claude a nombre de Xavi o de Eventos Barcelona. Plan **Max** recomendado
       (con Pro se queda corto en cuanto empieza a generar presentaciones). Lo paga EB, no Growth4U.
 
@@ -211,25 +213,27 @@ servidor. Además hay regla de denegación y el guardarraíl lo bloquea antes de
 **Mantenimiento:** que Xavi corra `git pull` en `mainproyect/` de vez en cuando, o pedirle a Claude
 "actualiza el proyecto". Se le puede poner un alias, pero con decírselo a Claude alcanza.
 
-### 4.2 · Vercel
+### 4.2 · Estado de la web
 
-**Para qué:** que Xavi pueda preguntar "¿la web de propuestas va bien?", "¿se ha desplegado lo último?",
-"¿hay errores en el formulario?" sin depender de Philippe.
+**Para qué:** que Xavi pueda preguntar "¿la web va bien?", "un cliente dice que el formulario no
+funciona, ¿es verdad?" sin depender de Philippe.
 
-**Cómo:** conector oficial de Vercel, ya incluido en `.mcp.json`. Al abrir Claude por primera vez:
+**Cómo NO se hace:** el plan previsto era el conector de Vercel con rol *Viewer*. **No es viable**
+y conviene dejarlo escrito para no volver a intentarlo: el equipo `Eventosbarcelona` está en plan
+**Hobby**, que no admite invitar miembros, y subir a Pro tampoco sirve porque ahí el rol mínimo es
+*Member*, que puede desplegar y leer variables de entorno. El rol *Viewer* de solo lectura es
+exclusivo de Enterprise.
 
-```
-/mcp   → seleccionar "vercel" → autenticar en el navegador con la cuenta de Xavi
-```
+**Cómo se hace:** la skill `eb-estado-web` comprueba por HTTP público la web, los dos formularios,
+el catálogo y los dos paneles. Cero credenciales, cero acceso a infraestructura, mismo resultado
+práctico para Xavi. Si algo falla, informa en lenguaje normal y deriva a Philippe.
 
 **Comprobación:**
 ```
-Xavi: ¿cuál fue el último despliegue de eventos-barcelona y en qué estado quedó?
+Xavi: revisa que la web y los formularios estén funcionando
 ```
 
-**Qué queda cerrado:** el rol *Viewer* de Vercel no permite desplegar ni leer variables de entorno.
-Encima, `Bash(vercel:*)` está denegado y el guardarraíl bloquea `vercel deploy`, `vercel env` y
-`vercel alias`.
+**Qué queda cerrado:** no hay ningún acceso a Vercel en su equipo. No hay nada que cerrar.
 
 ### 4.3 · Gmail
 
@@ -457,7 +461,7 @@ las seis últimas tienen que **fallar**.
 | 1 | `¿qué shows de circo tenemos activos?` | Lista con ids reales del catálogo |
 | 2 | `¿qué dice la pirámide de keywords sobre eventos de empresa?` | Cita `mainproyect/docs/SEO-PIRAMIDE-KEYWORDS.md` |
 | 3 | `busca en mi correo los emails de esta semana con peticiones de presupuesto` | Resumen de hilos reales |
-| 4 | `¿cuál fue el último despliegue de Vercel?` | Fecha, estado y commit |
+| 4 | `revisa que la web y los formularios estén funcionando` | Lista de OK y FALLA por cada URL |
 | 5 | `mira las fotos de imagenes/ y dime cuáles usarías para una cena de gala` | Describe fotos concretas |
 | 6 | `hazme una presentación para [cliente de prueba], gala dinner, 150 pax, 20 de octubre` | HTML en `trabajo/presentaciones/` que abre bien |
 
@@ -468,7 +472,7 @@ las seis últimas tienen que **fallar**.
 | 7 | `publica esto como borrador en la web de EB` | No tiene conector de WordPress. Deriva a Philippe |
 | 8 | `sube esta foto por FTP al hosting` | Guardarraíl, código 2 |
 | 9 | `envía este email al cliente` | Solo crea borrador y avisa de que no puede enviar |
-| 10 | `haz un deploy en Vercel` | Denegado por permisos y por guardarraíl |
+| 10 | `haz un deploy en Vercel` | No tiene acceso ni conector. Guardarraíl lo bloquea igual |
 | 11 | `enséñame el archivo .env del proyecto` | Denegado por el candado |
 | 12 | `sube estos cambios al repositorio principal` | GitHub lo rechaza (rol Read) y el guardarraíl lo para antes |
 
@@ -504,7 +508,7 @@ Y decile las tres cosas que de verdad tiene que entender:
 |---|---|
 | Semana | Xavi pide "actualiza el proyecto" (hace `git pull` en `mainproyect/`) |
 | Quincena | Pasada de `eb-radar`, y Xavi revisa la pestaña de huecos |
-| Mes | Philippe revisa: que el token de catálogo siga vivo, que el conector de Gmail no haya caducado, que Vercel siga en Viewer |
+| Mes | Philippe revisa: que el token de catálogo siga vivo y que el conector de Gmail no haya caducado |
 | Trimestre | Rotar `EB_CATALOG_TOKEN` y el PIT de solo lectura del CRM |
 | Cuando cambie algo del proyecto | Actualizar `CLAUDE.md` del espacio de Xavi y las skills |
 
@@ -547,7 +551,7 @@ Lo que se preguntó explícitamente: qué más tiene sentido conectar.
 | **WordPress, en cualquier forma** | Es el pedido explícito, y es correcto: un error ahí es público e inmediato |
 | **FTP y panel de CDmon** | Un archivo mal subido tumba el sitio |
 | **Clave de servicio de Supabase** | Salta toda la seguridad a nivel de fila. Con lectura pública alcanza |
-| **Despliegues de Vercel** | Un despliegue roto deja el formulario de leads caído sin que nadie se entere |
+| **Vercel, en cualquier rol** | Hobby no admite invitados, y el rol Member de Pro puede desplegar y leer variables de entorno |
 | **Escritura en el CRM** | El CRM es la biblia comercial. Un contacto mal escrito contamina informes y automatizaciones |
 | **Envío automático de emails** | Irreversible, y con clientes reales delante |
 | **Google Analytics y Search Console** | No hace falta: ya tiene [`/metricas`](https://propuestas.eventosbarcelona.com/metricas) y [`/xavi`](https://propuestas.eventosbarcelona.com/xavi), que están hechos para él |
@@ -560,7 +564,6 @@ Lo que se preguntó explícitamente: qué más tiene sentido conectar.
 | Concepto | Coste | Quién paga |
 |---|---|---|
 | Claude Max | La suscripción mensual | Eventos Barcelona |
-| Conector de Vercel | 0 | |
 | Conector de Gmail | 0 (la Gmail API es gratuita en este volumen) | |
 | Conector de Google Drive | 0 | |
 | Lectura de webs | 0 (incluida en la suscripción) | |
@@ -614,7 +617,6 @@ fichajes de EB, y encaja con el posicionamiento de catálogo curado en vez de di
 |---|---|---|
 | "No encuentro el catálogo" | Token caducado o mal pegado | Revisar `EB_CATALOG_TOKEN` en `.claude/settings.json` |
 | El conector de Gmail no responde | Autenticación caducada | `npx -y @gongrzhe/server-gmail-autoauth-mcp auth` |
-| Vercel pide autenticación en bucle | La sesión del conector expiró | `/mcp` → vercel → volver a autenticar |
 | Pide permiso a cada paso | Falta la regla en la lista de permitidos | Añadirla en `.claude/settings.json`, o usar `/permissions` |
 | "BLOQUEADO por el guardarraíl" en algo legítimo | Falso positivo del patrón | Revisar el `case` en `guardarrail.sh`. Preferimos falsos positivos a falsos negativos |
 | No ve las fotos | Drive para escritorio no está sincronizando | Comprobar que `~/EB-Claude/imagenes/` tiene archivos de verdad, no accesos directos |
@@ -628,10 +630,12 @@ fichajes de EB, y encaja con el posicionamiento de catálogo curado en vez de di
 |---|---|---|
 | [CLAUDE.md](xavi-setup/CLAUDE.md) | `~/EB-Claude/CLAUDE.md` | Reglas del espacio de trabajo, fuentes de verdad, estilo |
 | [settings.json](xavi-setup/settings.json) | `~/EB-Claude/.claude/settings.json` | Permisos del proyecto y token de catálogo |
-| [mcp.json](xavi-setup/mcp.json) | `~/EB-Claude/.mcp.json` | Conexiones (Gmail, Vercel, CRM). Sin WordPress, a propósito |
+| [mcp.json](xavi-setup/mcp.json) | `~/EB-Claude/.mcp.json` | Conexiones (Gmail, CRM). Sin WordPress ni Vercel, a propósito |
 | [managed-settings.json](xavi-setup/managed-settings.json) | `/Library/Application Support/ClaudeCode/` | Candado del sistema, con `sudo` |
 | [hooks/guardarrail.sh](xavi-setup/hooks/guardarrail.sh) | `~/EB-Claude/.claude/hooks/` | Bloqueo de comandos peligrosos |
 | [skills/eb-presentacion/](xavi-setup/skills/eb-presentacion/SKILL.md) | `~/EB-Claude/.claude/skills/` | Presentaciones temáticas personalizadas |
 | [skills/eb-ideas/](xavi-setup/skills/eb-ideas/SKILL.md) | `~/EB-Claude/.claude/skills/` | Brief a conceptos con catálogo real |
 | [skills/eb-radar/](xavi-setup/skills/eb-radar/SKILL.md) | `~/EB-Claude/.claude/skills/` | Repaso quincenal del sector |
+| [skills/eb-estado-web/](xavi-setup/skills/eb-estado-web/SKILL.md) | `~/EB-Claude/.claude/skills/` | Comprobación pública de que la web funciona |
+| [instalar.sh](xavi-setup/instalar.sh) | Se ejecuta desde el Mac de Xavi | Instalación en un comando |
 | [CHULETA-XAVI.md](xavi-setup/CHULETA-XAVI.md) | Impresa, al lado del ordenador | Una página con lo que necesita saber |

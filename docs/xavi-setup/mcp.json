@@ -1,14 +1,13 @@
 {
-  "_comentario": "Va en /Users/USUARIO/EB-Claude/.mcp.json. Ojo: aquí NO hay servidor de WordPress, y es a propósito.",
+  "_comentario": "Va en /Users/USUARIO/EB-Claude/.mcp.json. Ojo: aqui NO hay servidor de WordPress ni de Vercel, y es a proposito. Vercel esta en plan Hobby (no admite invitados) y en Pro el rol minimo permite desplegar. El estado de la web se comprueba con la skill eb-estado-web.",
   "mcpServers": {
     "gmail": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@gongrzhe/server-gmail-autoauth-mcp"]
-    },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com"
+      "args": [
+        "-y",
+        "@gongrzhe/server-gmail-autoauth-mcp"
+      ]
     },
     "ghl-lectura": {
       "type": "http",
