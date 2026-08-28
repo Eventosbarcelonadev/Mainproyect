@@ -1,0 +1,22 @@
+{
+  "_comentario": "Va en /Users/USUARIO/EB-Claude/.mcp.json. Ojo: aquí NO hay servidor de WordPress, y es a propósito.",
+  "mcpServers": {
+    "gmail": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@gongrzhe/server-gmail-autoauth-mcp"]
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "ghl-lectura": {
+      "type": "http",
+      "url": "https://services.leadconnectorhq.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer PEGAR_PIT_DE_SOLO_LECTURA_AQUI",
+        "locationId": "J9VLRHB1GcyuH5JpL2f0"
+      }
+    }
+  }
+}

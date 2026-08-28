@@ -1,0 +1,44 @@
+{
+  "_comentario": "CANDADO DEL SISTEMA. Se instala con sudo en /Library/Application Support/ClaudeCode/managed-settings.json. Xavi no puede editarlo ni saltárselo. Ver docs/claude-para-xavi.md, capa 3.",
+  "permissions": {
+    "deny": [
+      "mcp__wordpress",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.secrets/**)",
+      "Read(**/gcp-oauth.keys.json)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "WebFetch(domain:gestiona.eventosbarcelona.com)",
+      "Bash(ftp:*)",
+      "Bash(sftp:*)",
+      "Bash(lftp:*)",
+      "Bash(vercel:*)",
+      "Bash(npx vercel:*)",
+      "Bash(supabase:*)",
+      "Bash(npx supabase:*)",
+      "Bash(wp:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo delete:*)",
+      "Bash(gh secret:*)",
+      "Bash(sudo:*)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/USUARIO/EB-Claude/.claude/hooks/guardarrail.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
