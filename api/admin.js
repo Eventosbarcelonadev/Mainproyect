@@ -44,10 +44,16 @@ const GHL_CF = {
   subcategoria_artista: 'A8CeeHJRdvK7YEakH6bV', // TEXT
   shows_vinculados: 'uBESZ2L5JmBqFB9UXyZA',     // LARGE_TEXT
   url_supabase: 'bd9b4HubsMstnWZMfa0G',         // TEXT (link a /admin.html?artista=<id>)
+  foto_artista_url: 'jI2hf9t8GNYSOJN87Hbw',     // TEXT (URL Supabase Storage, primer elemento de fotos_urls)
   // custom_objects.shows
   url_admin_show: '2b1BxWzhWb1ucxz1eNnn',       // TEXT (link a /admin.html?show=<slug>)
   estado_show: 'soD73QnfLAvZhaqDFrNu',          // SINGLE_OPTIONS: active|pending_review|archived
   es_favorito: 'gvJdAYNsNPKetTjixmDr'           // CHECKBOX
+};
+
+// Custom fields de custom_objects.shows (por fieldKey — se envían por properties)
+const GHL_SHOW_CF_KEYS = {
+  foto_show_url: 'foto_show_url' // TEXT (URL Supabase Storage de la portada del show)
 };
 
 function siteUrl(env) {
@@ -85,13 +91,16 @@ async function syncArtistaToGhlFull(env, artista) {
   const { macros, subs, shows_text } = await getArtistaShowsForGhl(env, artista.id);
   const nombreLabel = artista.nombre || artista.nombre_artistico || artista.compania || '';
   const tipoLabel = capitalize(artista.tipo || 'artista');
+  // Primera URL de fotos_urls = portada del artista (queda visible en GHL como link)
+  const fotoUrl = Array.isArray(artista.fotos_urls) && artista.fotos_urls.filter(Boolean)[0] || '';
   const customFields = [
     { id: GHL_CF.contact_type, key: 'contact_type', field_value: tipoLabel },
     { id: GHL_CF.nombre_artista, key: 'nombre_artista', field_value: nombreLabel },
     { id: GHL_CF.categoria_artista, key: 'categoria_artista', field_value: macros },
     { id: GHL_CF.subcategoria_artista, key: 'subcategoria_artista', field_value: subs },
     { id: GHL_CF.shows_vinculados, key: 'shows_vinculados', field_value: shows_text },
-    { id: GHL_CF.url_supabase, key: 'url_supabase', field_value: adminUrlArtista(env, artista.id) }
+    { id: GHL_CF.url_supabase, key: 'url_supabase', field_value: adminUrlArtista(env, artista.id) },
+    { id: GHL_CF.foto_artista_url, key: 'foto_artista_url', field_value: fotoUrl }
   ];
   try {
     await ghlPutContact(env, artista.ghl_contact_id, { customFields });
@@ -1391,10 +1400,7 @@ async function editShow(req, res, env) {
       if ('name' in update) props.nombre_show = show.name || '';
       if ('description' in update) props.descripcion_show = show.description || '';
       if ('video_url' in update) props.url_video = show.video_url || '';
-      // url_imagen está configurado como FILE_UPLOAD en GHL custom_objects.shows
-      // y rechaza URLs externas (400 "couldn't validate the mapped field").
-      // Si Xavi lo cambia a TEXT en el panel GHL, descomentar.
-      // if ('image_url' in update) props.url_imagen = show.image_url || '';
+      if ('image_url' in update) props[GHL_SHOW_CF_KEYS.foto_show_url] = show.image_url || '';
       const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
         properties: props
       });
@@ -1517,8 +1523,7 @@ async function addShow(req, res, env) {
     };
     if (show.description) props.descripcion_show = show.description;
     if (show.video_url) props.url_video = show.video_url;
-    // url_imagen rechazado por GHL (FILE_UPLOAD field, no acepta URL externa)
-    // if (show.image_url) props.url_imagen = show.image_url;
+    if (show.image_url) props[GHL_SHOW_CF_KEYS.foto_show_url] = show.image_url;
     const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
       locationId: env.GHL_LOC, properties: props
     });
@@ -1996,16 +2001,14 @@ async function patchShowImages(env, id, arr, res, uploadedUrl) {
   if (!rows.length) return res.status(404).json({ error: 'Show not found' });
   const show = rows[0];
 
-  // GHL sync: url_imagen está como FILE_UPLOAD en GHL custom_objects.shows,
-  // rechaza URLs externas. Desactivado hasta que Xavi cambie el campo a TEXT.
-  // (la imagen sí queda guardada en image_url + image_urls de Supabase para
-  // /admin, propuestas y el catálogo público.)
-  const ghlImg = { updated: false, skipped: 'url_imagen_field_is_FILE_UPLOAD' };
-  if (false && show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
+  // GHL sync: url_imagen (FILE_UPLOAD) no acepta URL externa, así que enviamos
+  // la URL pública al custom field TEXT `foto_show_url` creado 2026-08-27.
+  const ghlImg = { updated: false };
+  if (show.ghl_show_id && env.GHL_TOKEN && env.GHL_LOC) {
     const g = await ghlFetch('PUT',
       `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
       env,
-      { properties: { url_imagen: primary || '' } }
+      { properties: { [GHL_SHOW_CF_KEYS.foto_show_url]: primary || '' } }
     );
     if (g.ok) ghlImg.updated = true;
     else ghlImg.error = `GHL ${g.status}: ${g.body.slice(0, 160)}`;
@@ -2157,8 +2160,7 @@ async function reviewShow(req, res, env) {
       };
       if (show.description) props.descripcion_show = show.description;
       if (show.video_url) props.url_video = show.video_url;
-      // url_imagen rechazado por GHL (FILE_UPLOAD field, no URL externa)
-      // if (show.image_url) props.url_imagen = show.image_url;
+      if (show.image_url) props[GHL_SHOW_CF_KEYS.foto_show_url] = show.image_url;
       const g = await ghlFetch('POST', `/objects/${GHL_SHOWS_OBJECT_KEY}/records`, env, {
         locationId: env.GHL_LOC, properties: props
       });
@@ -2198,8 +2200,7 @@ async function reviewShow(req, res, env) {
         if ('name' in update) props.nombre_show = show.name || '';
         if ('description' in update) props.descripcion_show = show.description || '';
         if ('video_url' in update) props.url_video = show.video_url || '';
-        // url_imagen rechazado por GHL (FILE_UPLOAD field)
-        // if ('image_url' in update) props.url_imagen = show.image_url || '';
+        if ('image_url' in update) props[GHL_SHOW_CF_KEYS.foto_show_url] = show.image_url || '';
       }
       const g = await ghlFetch('PUT', `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${encodeURIComponent(show.ghl_show_id)}?locationId=${encodeURIComponent(env.GHL_LOC)}`, env, {
         properties: props
