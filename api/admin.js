@@ -64,6 +64,29 @@ function adminUrlShow(env, showSlug) { return `${siteUrl(env)}/admin.html?show=$
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 function uniq(arr) { return [...new Set(arr.filter(Boolean))]; }
 
+// Busca artista existente en Supabase por cualquiera de las claves duras
+// (email real no-placeholder, teléfono, ghl_contact_id). Se usa antes de
+// llamar a GHL en addArtista / importArtistaFromGhl para evitar duplicados
+// cuando la persona ya está en la base con distinto email o placeholder.
+// Devuelve la fila más reciente o null.
+async function findExistingArtista(env, { email, telefono, ghl_contact_id }) {
+  const sbAuth = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+  const emailClean = (email || '').trim().toLowerCase();
+  const telClean = (telefono || '').replace(/[\s\-()]/g, '').trim();
+  const isRealEmail = emailClean && !emailClean.includes('@placeholder.eventosbarcelona.local');
+  const orParts = [];
+  if (ghl_contact_id) orParts.push(`ghl_contact_id.eq.${encodeURIComponent(ghl_contact_id)}`);
+  if (isRealEmail) orParts.push(`email.eq.${encodeURIComponent(emailClean)}`);
+  if (telClean && telClean.length >= 8) orParts.push(`telefono.eq.${encodeURIComponent(telClean)}`);
+  if (!orParts.length) return null;
+  const url = `${env.SUPABASE_URL}/rest/v1/artistas`
+    + `?or=(${orParts.join(',')})&select=*&order=created_at.desc&limit=1`;
+  const r = await fetch(url, { headers: sbAuth });
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return rows[0] || null;
+}
+
 // Carga los shows vinculados a un artista desde Supabase (vía show_artistas)
 // y devuelve {macros, subs, shows_text} listo para customFields GHL.
 async function getArtistaShowsForGhl(env, artistaId) {
@@ -549,6 +572,20 @@ async function importArtistaFromGhl(req, res, env) {
   const c = cd.contact || cd;
   const nombre = [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || c.contactName || c.companyName || '';
 
+  // 1b. Dedupe previo (por ghl_contact_id, email o teléfono). Evita duplicar
+  //     cuando el mismo contacto GHL ya fue importado, o cuando un artista
+  //     "manual" tiene el mismo email/teléfono que el que se está importando.
+  const existing = await findExistingArtista(env, {
+    ghl_contact_id: ghlContactId, email: c.email, telefono: c.phone
+  });
+  if (existing) {
+    try { await ghlAddTag(env, ghlContactId, 'artista_ok'); } catch (e) { /* no bloquea */ }
+    return res.status(200).json({
+      success: true, artista: existing, existed: true,
+      message: `Artista ya existía (id ${existing.id}). No se creó duplicado.`
+    });
+  }
+
   // 2. Insertar / upsert en Supabase (dedup por ghl_contact_id)
   const row = {
     nombre,
@@ -891,6 +928,19 @@ async function addArtista(req, res, env) {
     return res.status(400).json({ error: 'Debe haber al menos nombre, nombre_artistico o compania' });
   }
   const tipoSafe = ['artista', 'proveedor', 'venue'].includes(tipo) ? tipo : 'artista';
+
+  // 0. Dedupe previo: si ya existe artista con este email o teléfono, no crear
+  //    otro contacto en GHL (que generaría ghl_contact_id nuevo y fila duplicada
+  //    en Supabase). Reusar el existente y devolverlo con existed:true.
+  const existing = await findExistingArtista(env, { email, telefono });
+  if (existing) {
+    // Best-effort re-sync a GHL por si cambió algún dato del artista existente
+    try { await syncArtistaToGhlFull(env, existing); } catch (e) { /* no bloquea */ }
+    return res.status(200).json({
+      success: true, artista: existing, existed: true,
+      message: `Artista ya existía (id ${existing.id}). No se creó duplicado.`
+    });
+  }
 
   // 1. Create GHL contact (upsert: dedupe by email if provided)
   let ghlContactId = null;
