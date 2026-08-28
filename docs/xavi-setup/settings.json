@@ -24,6 +24,8 @@
       "Bash(curl -s https://propuestas.eventosbarcelona.com/api/gpt/:*)",
       "Bash(curl -s https://propuestas.eventosbarcelona.com/api/admin?action=list-:*)",
       "Bash(curl -s https://propuestas.eventosbarcelona.com/api/admin?action=get-:*)",
+      "Bash(curl -s -X POST https://propuestas.eventosbarcelona.com/api/save-proposal:*)",
+      "WebFetch(domain:api.github.com)",
       "WebSearch",
       "WebFetch(domain:eventosbarcelona.com)",
       "WebFetch(domain:www.eventosbarcelona.com)",

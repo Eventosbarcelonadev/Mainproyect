@@ -12,7 +12,10 @@ Si te pide permiso para algo, leé la línea y decidí. Ante la duda, decí que 
 | Querés... | Escribí algo así |
 |---|---|
 | Ideas para un cliente | `Dame ideas para una cena de gala de 250 personas de una farmacéutica, en una masía, presupuesto sobre 8.000` |
-| Una presentación | `Hazme una presentación para Aston Martin, evento de lanzamiento, 120 personas, 15 de octubre, tono elegante` |
+| **Una propuesta para un lead** | `Hazme la propuesta para el lead de [empresa]` (te la deja lista en /admin para que le pongas el margen y la apruebes) |
+| Una presentación suelta | `Hazme un deck de circo para enseñar en la feria` |
+| Consultar la base | `¿Cuántos artistas tenemos de danza? ¿Cuáles no tienen foto ni vídeo?` |
+| Cruzar propuestas y CRM | `¿Qué le mandamos a [agencia] y en qué quedó?` |
 | Ver qué hace la competencia | `Pasa el radar del sector y dime qué formatos nos faltan` |
 | Buscar en tu correo | `Busca los emails de la agencia MCI de las últimas dos semanas y resúmelos` |
 | Contestar un email | `Prepárame un borrador de respuesta a este email, tono cercano, confirmando disponibilidad` |
@@ -27,7 +30,9 @@ Si te pide permiso para algo, leé la línea y decidí. Ante la duda, decí que 
 - **No toca la web.** No publica, no edita, no sube fotos a eventosbarcelona.com. Si hay que cambiar
   algo en la web, se lo pedís a Philippe.
 - **No envía emails.** Te deja el borrador en Gmail y lo envías tú.
-- **No modifica el CRM.** Lee y te cuenta. Los cambios los haces tú en GoHighLevel.
+- **No modifica el CRM ni la base.** Lee y te cuenta. Los cambios los haces tú en GoHighLevel o en /admin.
+- **No aprueba propuestas.** Te la deja montada en estado "revisión". Le pones el margen, la miras
+  y le das a aprobar tú. Ahí es cuando se genera el PDF y se guarda el enlace en la oportunidad.
 - **No despliega nada.** Mira el estado de la web, nada más.
 - **No inventa shows ni precios.** Si algo no está en el catálogo, te lo dice como "habría que
   producirlo a medida". Los precios los pones tú.

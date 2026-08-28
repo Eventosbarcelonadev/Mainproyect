@@ -23,6 +23,10 @@ Todo lo que produzcas va a `trabajo/`. Si un archivo no cabe claramente ahí, pr
    cambiar en eventosbarcelona.com, la respuesta correcta es: "esto lo hace Philippe, se lo paso".
 2. **No se despliega nada.** Vercel es solo para mirar el estado. Nada de deploys, ni variables de entorno.
 3. **No se envían emails.** Se preparan **borradores** en Gmail y Xavi los revisa y envía a mano.
+3b. **Las propuestas se guardan en revisión, nunca aprobadas.** Aprobar escribe la URL validada en
+   la oportunidad de GHL y da la propuesta por buena de cara al cliente. Eso lo hace Xavi con dos
+   clics en /admin. Lo mismo con la base: se lee, no se escribe. Un cambio en un artista o un show
+   lo hace él en /admin, y tu trabajo es decirle exactamente dónde.
 4. **No se inventan shows.** Cualquier espectáculo que menciones tiene que salir del catálogo real
    (ver "Catálogo" abajo). Si algo no está, se dice "a producir a medida". Nunca se disfraza de show existente.
 5. **No se inventan precios.** Los precios los pone Xavi. Si falta uno, se deja el hueco marcado.
@@ -63,6 +67,10 @@ Si una pregunta se puede contestar con una de estas fuentes, consultala antes de
 
 ## Skills disponibles
 
-- `eb-presentacion` · presentación temática personalizada para un cliente.
+- `eb-propuesta` · propuesta real dentro del sistema, con URL y enganchada al lead en GHL. **Es la
+  que hay que usar cuando hay un lead detrás.**
+- `eb-datos` · consulta de artistas, shows, propuestas y CRM, y el cruce entre ellos.
 - `eb-ideas` · convierte un brief en conceptos de evento usando el catálogo real.
 - `eb-radar` · revisa las webs de referencia del sector y vuelca lo nuevo en la hoja de ideas.
+- `eb-presentacion` · deck temático suelto, para cuando NO hay lead (ferias, prospección, partners).
+- `eb-estado-web` · comprueba que la web y los formularios funcionan.

@@ -46,6 +46,13 @@ case "$CMD" in
     bloquear "lectura o escritura de un archivo de credenciales" ;;
   *"rm -rf"*|*"rm -fr"*)
     bloquear "borrado recursivo" ;;
+  *save-proposal*)
+    case "$CMD" in
+      *'"approved"'*|*"'approved'"*|*approved*)
+        bloquear "aprobar una propuesta. Se guarda en estado revision y la aprueba Xavi desde /admin" ;;
+    esac ;;
+  *validate-proposal*|*generate-proposal-pdf*|*ensure-proposal-for-lead*)
+    bloquear "validar o publicar una propuesta. Eso lo hace Xavi desde /admin" ;;
   *delete-artista*|*delete-show*|*delete-proposal*|*delete-referencia*|*add-artista*|*add-show*|\
   *edit-artista*|*edit-show*|*set-show-artistas*|*set-show-images*|*save-referencia*|*save-radar*|\
   *link-show-to-artista*|*create-show-from-artista*|*duplicate-proposal*|*upload-artista-photo*|\
