@@ -4,8 +4,9 @@
 Barcelona (base de artistas y shows, propuestas, CRM, correo, banco de imágenes) y **sin ninguna
 posibilidad de tocar la web ni de romper nada irreversible**.
 
-**Quién hace qué:** las fases 0, 4 y 7 son de Philippe. La fase 1 se hace en el Mac de Xavi con él
-delante. La fase 6 es la sesión de traspaso.
+**Quién hace qué:** las fases 0 y 4 son de Philippe, en frío. La fase 1 se hace en el Mac de Xavi
+con él delante. Las fases 2 y 3 quedan configuradas y no hay que tocarlas. La fase 6 es la sesión
+de traspaso con Xavi.
 
 **Tiempo:** unos 45 minutos de preparación en frío, y unos 30 minutos con Xavi.
 
@@ -379,7 +380,7 @@ credenciales, de FTP, de los comandos de Vercel y Supabase, de `git push` y de `
 Ya copiado por el instalador, y registrado desde el candado (no desde los ajustes del proyecto)
 justamente para que no se pueda desactivar.
 
-Trece casos probados, trece correctos:
+Quince casos probados, quince correctos:
 
 | Comando | Resultado |
 |---|---|
@@ -396,6 +397,8 @@ Trece casos probados, trece correctos:
 | `validate-proposal` | bloqueado |
 | `save-proposal` en revisión | permitido |
 | `.../api/admin?action=list-artistas` | permitido |
+| `.../api/admin?action=list-proposals` | permitido |
+| `git status` | permitido |
 
 Sin dependencias (ni node, ni python, ni jq) a propósito: los hooks corren con un entorno mínimo.
 
