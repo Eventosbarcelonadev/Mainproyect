@@ -46,6 +46,16 @@ case "$CMD" in
     bloquear "lectura o escritura de un archivo de credenciales" ;;
   *"rm -rf"*|*"rm -fr"*)
     bloquear "borrado recursivo" ;;
+  *delete-artista*|*delete-show*|*delete-proposal*|*delete-referencia*|*add-artista*|*add-show*|\
+  *edit-artista*|*edit-show*|*set-show-artistas*|*set-show-images*|*save-referencia*|*save-radar*|\
+  *link-show-to-artista*|*create-show-from-artista*|*duplicate-proposal*|*upload-artista-photo*|\
+  *upload-show-image*|*import-artista-from-ghl*|*toggle-favorite*|*review-show*|*to-pending*)
+    bloquear "una accion de escritura del panel /admin. Solo se puede LEER (list-*, get-*, shows-pending)" ;;
+  *api/admin*)
+    case "$CMD" in
+      *"-X POST"*|*"--request POST"*|*"-d "*|*"--data"*|*"-X DELETE"*)
+        bloquear "escritura contra /api/admin. Solo peticiones GET de lectura" ;;
+    esac ;;
   *EB-Claude/mainproyect*)
     case "$CMD" in
       *">"*|*"rm "*|*"mv "*|*"sed -i"*|*"tee "*)

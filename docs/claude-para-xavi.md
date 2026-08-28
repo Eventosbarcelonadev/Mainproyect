@@ -637,5 +637,6 @@ fichajes de EB, y encaja con el posicionamiento de catálogo curado en vez de di
 | [skills/eb-ideas/](xavi-setup/skills/eb-ideas/SKILL.md) | `~/EB-Claude/.claude/skills/` | Brief a conceptos con catálogo real |
 | [skills/eb-radar/](xavi-setup/skills/eb-radar/SKILL.md) | `~/EB-Claude/.claude/skills/` | Repaso quincenal del sector |
 | [skills/eb-estado-web/](xavi-setup/skills/eb-estado-web/SKILL.md) | `~/EB-Claude/.claude/skills/` | Comprobación pública de que la web funciona |
+| [skills/eb-datos/](xavi-setup/skills/eb-datos/SKILL.md) | `~/EB-Claude/.claude/skills/` | Consulta de artistas, shows, propuestas y CRM (solo lectura) |
 | [instalar.sh](xavi-setup/instalar.sh) | Se ejecuta desde el Mac de Xavi | Instalación en un comando |
 | [CHULETA-XAVI.md](xavi-setup/CHULETA-XAVI.md) | Impresa, al lado del ordenador | Una página con lo que necesita saber |
