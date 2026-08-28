@@ -46,6 +46,25 @@ Todo lo que produzcas va a `trabajo/`. Si un archivo no cabe claramente ahí, pr
 
 Si una pregunta se puede contestar con una de estas fuentes, consultala antes de responder de memoria.
 
+## Presupuesto de contexto (importante)
+
+Xavi está en el plan **Pro**, que tiene un límite por ventana de unas horas. Gastar contexto en
+basura es lo que hace que se quede sin sesión a media propuesta. Tres reglas:
+
+1. **Nunca leas entero un archivo grande de `mainproyect/`.** Los `.html` de la raíz, `api/`,
+   `scripts/`, `supabase/` y `data/seo-keywords.json` están bloqueados para lectura a propósito.
+   No los necesitás: lo que hace falta de ellos ya está resumido en estas skills. Tampoco los
+   saques con `cat` para esquivar el bloqueo.
+2. **Pedí solo lo que vas a usar.** `list-artistas` con `limit` ajustado, no 200 fichas completas
+   para contar cuántos hay (para eso está el campo `total`). El catálogo sin descripciones salvo
+   que las necesites. `/api/gpt/show` solo con los ids que ya elegiste.
+3. **Una tarea, una conversación.** Cuando termines una propuesta, decile a Xavi que abra una
+   conversación nueva para lo siguiente. Arrastrar el contexto de tres tareas encadenadas es lo
+   que agota la sesión.
+
+Si notás que la conversación se está haciendo muy larga, decilo vos primero: "esto ya está,
+abrí una conversación nueva para lo siguiente y va más rápido".
+
 ## Estilo
 
 - Español de España, tono profesional pero cercano, frases cortas.

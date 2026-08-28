@@ -67,6 +67,12 @@
       "mcp__ghl-lectura__emails_fetch-template"
     ],
     "deny": [
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/*.html)",
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/api/**)",
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/scripts/**)",
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/supabase/**)",
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/node_modules/**)",
+      "Read(//Users/USUARIO/EB-Claude/mainproyect/data/seo-keywords.json)",
       "Edit(//Users/USUARIO/EB-Claude/mainproyect/**)",
       "Write(//Users/USUARIO/EB-Claude/mainproyect/**)",
       "Edit(//Users/USUARIO/EB-Claude/imagenes/**)",

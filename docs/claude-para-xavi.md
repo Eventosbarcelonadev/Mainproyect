@@ -84,8 +84,12 @@ acciones `gpt-*` siguen con su token propio para no romper el GPT de Xavi.
 - [ ] **GitHub.** Usuario de Xavi (con el correo de EB, no personal). Invitarlo a
       `Eventosbarcelonadev/Mainproyect` con rol **Read**. Verificar que dice *Read*, no *Write*.
 - [ ] **Repositorio de trabajo.** Crear `Eventosbarcelonadev/eb-xavi`, **privado**, rol **Write**.
-- [ ] **Claude.** Cuenta a nombre de EB. Plan **Max**: con Pro choca con los límites en cuanto
-      encadena dos o tres propuestas. Lo paga EB.
+- [ ] **Claude.** Cuenta a nombre de EB. **Xavi está en plan Pro y con Pro se puede trabajar**,
+      pero hay que cuidar el contexto o se queda sin sesión a media propuesta. Las tres reglas
+      están en el `CLAUDE.md` de su espacio y en la configuración: no leer los archivos grandes de
+      `mainproyect/` (bloqueados para lectura: los `.html` de la raíz, `api/`, `scripts/`,
+      `supabase/` y `data/seo-keywords.json`), pedir solo los datos que se van a usar, y una
+      conversación por tarea. Si aun así le corta a menudo, ahí sí toca subir a Max.
 - [ ] **Vercel: no se invita.** El equipo está en plan Hobby, que no admite miembros, y en Pro el
       rol mínimo (*Member*) puede desplegar y leer variables de entorno. El rol *Viewer* es de
       Enterprise. Se cubre con `eb-estado-web`. Ver [5.6](#56--estado-de-la-web).
@@ -506,7 +510,7 @@ que no están en el catálogo; correos enviados que no recuerda.
 
 | Concepto | Coste | Quién paga |
 |---|---|---|
-| Claude Max | Suscripción mensual | Eventos Barcelona |
+| Claude Pro | Suscripción mensual (el plan actual de Xavi) | Eventos Barcelona |
 | Conectores (Gmail, Drive, CRM) | 0 | |
 | Lectura de webs | 0, incluida en la suscripción | |
 | Catálogo, base de datos y propuestas | 0, infraestructura que ya existe | |
@@ -544,6 +548,7 @@ Google Sheet "EB · Motor de ideas". Seis pestañas.
 
 | Síntoma | Causa habitual | Solución |
 |---|---|---|
+| "Has alcanzado tu límite" a media tarea | Plan Pro, contexto gastado en archivos grandes o en encadenar tareas | Conversación nueva por tarea. Si pasa a menudo, subir a Max |
 | "No encuentro el catálogo" | Token caducado o mal pegado | Revisar `EB_CATALOG_TOKEN` en `.claude/settings.json` |
 | Gmail no responde | Autenticación caducada | `npx -y @gongrzhe/server-gmail-autoauth-mcp auth` |
 | Pide permiso a cada paso | Falta la regla en la lista de permitidos | Añadirla en `settings.json`, o `/permissions` |

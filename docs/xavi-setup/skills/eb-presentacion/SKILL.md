@@ -95,7 +95,8 @@ Cada show se justifica en una línea: por qué ese y no otro, para ese cliente y
 
 Archivo HTML autocontenido en `trabajo/presentaciones/AAAA-MM-DD-cliente-tema/index.html`.
 
-Identidad visual de EB (copiada de la plantilla de propuestas, `mainproyect/propuesta.html`):
+Identidad visual de EB. **No abras `mainproyect/propuesta.html` para copiarla**, son 184 KB y se
+come la sesión. Todo lo que hace falta está aquí:
 
 ```css
 --accent: #E87461;   /* por defecto y tema "shows" */
