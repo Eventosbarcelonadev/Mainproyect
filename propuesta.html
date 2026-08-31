@@ -3542,41 +3542,38 @@
     async function toggleProposalLang(target) {
       if (target !== 'es' && target !== 'en') return;
       if (target === LANG) return;
-      try {
-        flushPendingEditableEdits();
-        if (proposalState.proposalId) {
-          // Persistir el cambio antes de recargar para que la propuesta
-          // quede guardada en el nuevo idioma.
-          await fetch('/api/save-proposal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: proposalState.proposalId,
-              status: proposalState.status || 'revision',
-              client: proposalState.client,
-              event: proposalState.event,
-              category: proposalState.category,
-              concept: proposalState.concept,
-              heroSub: proposalState.heroSub,
-              heroSubEn: proposalState.heroSubEn,
-              shows: proposalState.shows.map(s => ({
-                id: s.id, name: s.name, description: s.description,
-                nameEn: s.nameEn, descriptionEn: s.descriptionEn, priceNoteEn: s.priceNoteEn,
-                currentPrice: s.currentPrice, contextLabel: s.contextLabel,
-                priceNote: s.priceNote, base_price: s.basePrice,
-                extras: Array.isArray(s.extras) ? s.extras : []
-              })),
-              globalMargin: proposalState.globalMargin,
-              hideSummary: proposalState.hideSummary,
-              heroImageUrl: proposalState.heroImageUrl || null,
-              conditions: getPersistableConditions(),
-              lang: target,
-              ghlContactId: proposalState.ghlContactId || null,
-              ghlOpportunityId: proposalState.ghlOpportunityId || null
-            })
-          });
+
+      // Camino ADMIN: persistir SIEMPRE antes de recargar. Si la propuesta aún
+      // no existe (recién construida en el builder, sin proposalId),
+      // saveProposalDraft la CREA y devuelve el id. Antes, sin proposalId, se
+      // saltaba el guardado y la recarga mantenía mode=builder → volvía al
+      // formulario vacío y se perdía TODO el trabajo. Ahora recargamos hacia la
+      // propuesta guardada (?id=…&lang=…), nunca al builder vacío.
+      if (proposalState.isAdmin) {
+        try {
+          flushPendingEditableEdits();
+          const savedId = await saveProposalDraft(target);
+          const params = new URLSearchParams(location.search);
+          params.delete('mode');   // salir del builder / modo auto
+          params.delete('data');
+          params.set('id', savedId);
+          params.set('lang', target);
+          params.set('admin', '1');
+          location.assign(`${location.pathname}?${params.toString()}${location.hash}`);
+        } catch (e) {
+          console.error('toggle lang save error:', e);
+          // No recargar si el guardado falló: perderíamos el trabajo en memoria.
+          if (typeof showToast === 'function') {
+            showToast('No se pudo guardar antes de cambiar de idioma. Reintenta.', 'error');
+          } else {
+            alert('No se pudo guardar antes de cambiar de idioma. Reintenta.');
+          }
         }
-      } catch (e) { console.error('toggle lang save error:', e); }
+        return;
+      }
+
+      // Camino CLIENTE: solo cambia el idioma de visualización, sin guardar nada
+      // ni exponer el modo edición (la propuesta ya está guardada por id).
       const params = new URLSearchParams(location.search);
       params.set('lang', target);
       location.assign(`${location.pathname}?${params.toString()}${location.hash}`);
@@ -3797,7 +3794,7 @@
     // Guarda la propuesta actual (borrador) y devuelve su id. El PDF
     // server-side se renderiza desde la BD, así que necesita una fila en
     // `proposals` — en modo builder/auto la propuesta aún no existe.
-    async function saveProposalDraft() {
+    async function saveProposalDraft(langOverride) {
       flushPendingEditableEdits(); // capturar ediciones inline antes de serializar
       const payload = {
         id: proposalState.proposalId || null,
@@ -3828,6 +3825,8 @@
         ghlContactId: proposalState.ghlContactId || null,
         ghlOpportunityId: proposalState.ghlOpportunityId || null
       };
+      // Persistir el idioma: el override (p.ej. al cambiar de idioma) o el actual.
+      payload.lang = (langOverride === 'en' || langOverride === 'es') ? langOverride : LANG;
       const r = await fetch('/api/save-proposal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
