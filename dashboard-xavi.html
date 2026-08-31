@@ -66,6 +66,11 @@ input[name="sprint-tab"]{position:absolute;left:-9999px}
 #tab-plan:checked~.contents #c-plan{display:block}
 .tabs label[for="tab-plan"]{background:linear-gradient(90deg,rgba(10,37,64,.10),rgba(10,37,64,.02));border-left:3px solid var(--ink);color:var(--ink);font-weight:700}
 .tabs label[for="tab-plan"] small{color:var(--ink)}
+#tab-s7:checked~.tabs label[for="tab-s7"],#tab-s8:checked~.tabs label[for="tab-s8"],#tab-s9:checked~.tabs label[for="tab-s9"],#tab-s10:checked~.tabs label[for="tab-s10"],#tab-s11:checked~.tabs label[for="tab-s11"],#tab-s12:checked~.tabs label[for="tab-s12"],#tab-s13:checked~.tabs label[for="tab-s13"],#tab-s14:checked~.tabs label[for="tab-s14"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.08)}
+#tab-s7:checked~.tabs label[for="tab-s7"] small,#tab-s8:checked~.tabs label[for="tab-s8"] small,#tab-s9:checked~.tabs label[for="tab-s9"] small,#tab-s10:checked~.tabs label[for="tab-s10"] small,#tab-s11:checked~.tabs label[for="tab-s11"] small,#tab-s12:checked~.tabs label[for="tab-s12"] small,#tab-s13:checked~.tabs label[for="tab-s13"] small,#tab-s14:checked~.tabs label[for="tab-s14"] small{color:var(--gold);font-weight:700}
+#tab-s7:checked~.contents #c-s7,#tab-s8:checked~.contents #c-s8,#tab-s9:checked~.contents #c-s9,#tab-s10:checked~.contents #c-s10,#tab-s11:checked~.contents #c-s11,#tab-s12:checked~.contents #c-s12,#tab-s13:checked~.contents #c-s13,#tab-s14:checked~.contents #c-s14{display:block}
+/* Separador visual entre sprints históricos y plan sep-dic */
+.tabs .divider{padding:14px 6px;color:var(--muted);font-size:16px;user-select:none}
 #tab-hoy:checked~.tabs label[for="tab-hoy"]{color:var(--ink);border-bottom-color:var(--gold);background:rgba(201,154,58,.15)}
 #tab-hoy:checked~.tabs label[for="tab-hoy"] small{color:var(--gold);font-weight:700}
 #tab-hoy:checked~.contents #c-hoy{display:block}
@@ -333,16 +338,24 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <input type="radio" name="sprint-tab" id="tab-s5">
 <input type="radio" name="sprint-tab" id="tab-s6">
 <input type="radio" name="sprint-tab" id="tab-ov">
-<input type="radio" name="sprint-tab" id="tab-plan" checked>
+<input type="radio" name="sprint-tab" id="tab-plan">
+<input type="radio" name="sprint-tab" id="tab-s7" checked>
+<input type="radio" name="sprint-tab" id="tab-s8">
+<input type="radio" name="sprint-tab" id="tab-s9">
+<input type="radio" name="sprint-tab" id="tab-s10">
+<input type="radio" name="sprint-tab" id="tab-s11">
+<input type="radio" name="sprint-tab" id="tab-s12">
+<input type="radio" name="sprint-tab" id="tab-s13">
+<input type="radio" name="sprint-tab" id="tab-s14">
 
 <header>
 <div class="kicker">Dashboard operativo · retainer Eventos Barcelona</div>
 <h1>Estado y avances</h1>
 <div class="subtitle">Documento vivo. Cada sprint es una hoja con snapshot inicial, trabajo del sprint y actualización al cierre. Se actualiza cada 2 semanas.</div>
 <div class="meta-badges">
-  <span>Sprint activo · <b>2 · en curso</b></span>
-  <span>Fecha · <b>13 jul 2026</b></span>
-  <span>Próxima actualización · <b>29 jul 2026</b></span>
+  <span>Sprint activo · <b>7 · Cerrar pendientes agosto</b></span>
+  <span>Fecha · <b>31 ago 2026</b></span>
+  <span>Próxima actualización · <b>14 sep 2026 · cierre S7</b></span>
 </div>
 </header>
 
@@ -354,7 +367,16 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   <label for="tab-s5">Sprint 5 <small>27 ago-9 sep</small></label>
   <label for="tab-s6">Sprint 6 <small>10-23 sep</small></label>
   <label for="tab-ov">Overview <small>los 6 sprints</small></label>
-  <label for="tab-plan">Plan sep-dic <small>8 sprints · 4 gates</small></label>
+  <span class="divider">·</span>
+  <label for="tab-plan">Plan sep-dic <small>resumen</small></label>
+  <label for="tab-s7">Sprint 7 <small>1-14 sep · activo</small></label>
+  <label for="tab-s8">Sprint 8 <small>15-28 sep</small></label>
+  <label for="tab-s9">Sprint 9 <small>29 sep-12 oct · G1</small></label>
+  <label for="tab-s10">Sprint 10 <small>13-26 oct · G2</small></label>
+  <label for="tab-s11">Sprint 11 <small>27 oct-9 nov · G3</small></label>
+  <label for="tab-s12">Sprint 12 <small>10-23 nov</small></label>
+  <label for="tab-s13">Sprint 13 <small>24 nov-7 dic</small></label>
+  <label for="tab-s14">Sprint 14 <small>8-21 dic · G4</small></label>
   <a class="tab-link" href="/metricas">Métricas ↗ <small>SEO &amp; GEO</small></a>
 </div>
 
@@ -1624,135 +1646,26 @@ La posición media ponderada <b>29,56</b> es el techo. Si baja de ahí en un sna
 </tbody>
 </table>
 
-<h3 class="section">Los 8 sprints</h3>
+<h3 class="section">Los 8 sprints <span class="sub">cada uno en su hoja · clic en el tab arriba</span></h3>
 
-<!-- SPRINT 1 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">1</span>
-    <b>Cerrar los pendientes de agosto</b>
-    <span class="o-goal">1 – 14 sep · Sin gate</span>
-  </div>
-  <ul>
-    <li><span class="cat-tag content">Xavi</span><div><b>Testimonios de 3 clientes reales</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Nombre + empresa + cargo + logo autorizado + frase corta (30-50 palabras). Se publican en home y landing agencia. <b>Terminado cuando:</b> los 3 testimonios están live en producción. Deadline efectivo: <b>15 sept</b>.</span></div></li>
-    <li><span class="cat-tag seo">Phil</span><div><b>Aplicar canonical de los 3 hubs solapados</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Entrar en <code>/wp-admin</code> → páginas <code>/musica/</code>, <code>/artistas/</code>, <code>/espectaculos/</code> → Yoast metabox → Advanced → Canonical URL: <code>https://www.eventosbarcelona.com/artistas-y-espectaculos/</code>. <b>Terminado cuando:</b> el HTML de las 3 páginas muestra <code>&lt;link rel="canonical"&gt;</code> apuntando al hub principal.</span></div></li>
-    <li><span class="cat-tag content">Phil</span><div><b>Reescritura profunda de 3 posts pre-2023 top-tráfico</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Posts <code>12521</code> (10 mejores venues), <code>12507</code> (factor WOW), <code>12518</code> (espectáculos imprescindibles). <b>Terminado cuando:</b> cada uno tiene estructura H2/H3, FAQ schema, imagen intercalada, ≥ 900 palabras, ≥ 5 enlaces internos.</span></div></li>
-    <li><span class="cat-tag seo">Phil</span><div><b>Diferenciación SEO del archive <code>/espectaculos/</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Es archive de CPT, requiere snippet PHP en mu-plugin. <b>Terminado cuando:</b> title + meta description específicos aparecen en el HTML de <code>/espectaculos/</code>.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot semanal 5 kw cluster comercial</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Lunes 8 sep y 15 sep. <b>Terminado cuando:</b> <code>data/seo-keywords-tracker.json</code> committeado con delta vs 28 ago.</span></div></li>
-  </ul>
-</div>
+<table class="baseline-table">
+<thead>
+<tr><th style="width:70px">Sprint</th><th style="width:110px">Fechas</th><th>Foco principal</th><th style="width:110px">Gate</th></tr>
+</thead>
+<tbody>
+<tr><td><b>Sprint 7</b></td><td>1 – 14 sep<br><small style="color:var(--gold);font-weight:700">Activo</small></td><td>Cerrar los pendientes de agosto (testimonios Xavi, canonical Phil, 3 posts viejos)</td><td><small style="color:var(--muted)">Sin gate</small></td></tr>
+<tr><td><b>Sprint 8</b></td><td>15 – 28 sep</td><td>Hubs pendientes · Producción técnica + MICE + FAQ schema en B5-B12</td><td><small style="color:var(--muted)">Sin gate</small></td></tr>
+<tr><td><b>Sprint 9</b></td><td>29 sep – 12 oct</td><td>GEO/AEO ofensivo (answer boxes, AI Overviews, llms.txt cron)</td><td style="color:var(--gold);font-weight:700">G1</td></tr>
+<tr><td><b>Sprint 10</b></td><td>13 – 26 oct</td><td>Ventana crítica · cierre + report + decisión bifurcación S11</td><td style="color:var(--gold);font-weight:700">G2</td></tr>
+<tr><td><b>Sprint 11</b></td><td>27 oct – 9 nov</td><td>Long-tail comercial (si G2 verde) o pivot Frente E (si G2 rojo)</td><td style="color:var(--gold);font-weight:700">G3</td></tr>
+<tr><td><b>Sprint 12</b></td><td>10 – 23 nov</td><td>Contenido de autoridad (3 casos reales, 3 guías, outreach 5 medios MICE)</td><td><small style="color:var(--muted)">Sin gate</small></td></tr>
+<tr><td><b>Sprint 13</b></td><td>24 nov – 7 dic</td><td>Consolidación técnica (CWV + accesibilidad + snapshot 3 meses)</td><td><small style="color:var(--muted)">Sin gate</small></td></tr>
+<tr><td><b>Sprint 14</b></td><td>8 – 21 dic</td><td>Cierre año + plan Q1 2027</td><td style="color:var(--gold);font-weight:700">G4</td></tr>
+</tbody>
+</table>
 
-<!-- SPRINT 2 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">2</span>
-    <b>Hubs pendientes · Producción técnica + MICE</b>
-    <span class="o-goal">15 – 28 sep · Sin gate</span>
-  </div>
-  <ul>
-    <li><span class="cat-tag content">Phil</span><div><b>Reescribir <code>/produccion-tecnica-para-eventos/</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Union real de sonido + iluminación + LED + videowall + escenografía. <b>Terminado cuando:</b> ≥ 1.500 palabras · 5 links a spokes · FAQ · CTA · en producción.</span></div></li>
-    <li><span class="cat-tag content">Phil</span><div><b>Crear landing hub <code>/eventos-mice-barcelona/</code> ES + EN</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Union real de convenciones + galas + venues + escenografía. <b>Terminado cuando:</b> WPML linked · ≥ 1.500 palabras · publicada ES + EN.</span></div></li>
-    <li><span class="cat-tag seo">Phil</span><div><b>Cross-linking desde spokes a los 2 hubs nuevos</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cada landing temática apunta al hub padre. Bloque «También te puede interesar» actualizado. <b>Terminado cuando:</b> los 2 hubs tienen ≥ 8 backlinks entrantes cada uno.</span></div></li>
-    <li><span class="cat-tag seo">Phil</span><div><b>FAQ schema en los 8 posts B5-B12</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">JSON-LD FAQPage por post. <b>Terminado cuando:</b> Rich Results Test verifica correcto en los 8.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Primer read de attribution IA + snapshot 29 sep</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">GA4 event <code>ai_referral</code> debe tener ≥ 10 sesiones. Snapshot con delta desde arranque S2.</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 3 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">3</span>
-    <b>GEO / AEO ofensivo</b>
-    <span class="o-goal">29 sep – 12 oct · <span style="color:var(--gold)">Gate G1</span></span>
-  </div>
-  <p style="padding:12px 20px 0;margin:0;color:var(--muted);font-size:13px;font-style:italic">Aprovechamos que ChatGPT es el único motor que trae tráfico convertible (5,32% CTR · 15× Google) para captar más citaciones directas.</p>
-  <ul>
-    <li><span class="cat-tag geo">Phil</span><div><b>5 posts optimizados para AI Overviews</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cada post responde a una pregunta explícita en H2 con respuesta de 40-60 palabras en el primer párrafo del bloque. <b>Terminado cuando:</b> los 5 posts publicados y detectables por LLMagnet.</span></div></li>
-    <li><span class="cat-tag geo">Phil</span><div><b>Answer boxes en 10 landings principales</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Bloque «Resumen» de 60 palabras al inicio de cada landing, redactado para ser citable como snippet directo. <b>Terminado cuando:</b> las 10 landings tienen answer box y ChatGPT las lee.</span></div></li>
-    <li><span class="cat-tag tech">Phil</span><div><b>llms.txt refresh automatizado</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cron o mu-plugin que regenera <code>llms.txt</code> semanal desde el sitemap. <b>Terminado cuando:</b> el fichero se actualiza sin intervención manual.</span></div></li>
-    <li><span class="cat-tag geo">Phil + Xavi</span><div><b>Monitoreo continuo GA4 ai_referral</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Dashboard con sesiones por <code>ai_source</code> (chatgpt · perplexity · claude · gemini · copilot). <b>Terminado cuando:</b> se ve la evolución semanal.</span></div></li>
-    <li><span class="cat-tag docs" style="background:var(--red)">Gate G1</span><div><b>Evaluación 12 oct · condición roja: cero kw cluster suben &gt; 1 puesto</b> <span class="o-detail" style="color:var(--red);font-weight:600">Si suena: pausar S4 · auditoría técnica profunda antes de continuar.</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 4 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">4</span>
-    <b>Ventana crítica · cierre de la ventana de medición</b>
-    <span class="o-goal">13 – 26 oct · <span style="color:var(--gold)">Gate G2</span></span>
-  </div>
-  <p style="padding:12px 20px 0;margin:0;color:var(--muted);font-size:13px;font-style:italic">Primer momento honesto para saber si la estrategia del sprint agosto funcionó.</p>
-  <ul>
-    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot completo 20 oct</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comparar con snapshot 28 ago. <b>Terminado cuando:</b> <code>data/seo-snapshot-20261020.json</code> committeado con análisis del delta.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Report HTML de la ventana</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Artifact con las 5 kw cluster comercial + delta + hipótesis explicativas de qué funcionó y qué no.</span></div></li>
-    <li><span class="cat-tag docs" style="background:var(--red)">Gate G2</span><div><b>Evaluación 23 oct · condición: cluster comercial en pos ≤ 10</b> <span class="o-detail" style="color:var(--red);font-weight:600">Si NO se cumple: pivot inmediato al Frente E ampliado en S5. No lanzar Frente D. Revisión con Xavi + Ramiro.</span></div></li>
-    <li><span class="cat-tag content">Xavi + Ramiro + Phil</span><div><b>Decisión bifurcación S5</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Documentado en Notion: qué frente se lanza en S5 según G2.</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 5 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">5</span>
-    <b>Long-tail comercial · o pivot a Frente E</b>
-    <span class="o-goal">27 oct – 9 nov · <span style="color:var(--gold)">Gate G3</span></span>
-  </div>
-  <p style="padding:12px 20px 0;margin:0;color:var(--muted);font-size:13px;font-style:italic">El contenido depende del resultado del G2.</p>
-  <ul>
-    <li><span class="cat-tag content" style="background:var(--green)">Si G2 verde</span><div><b>Frente D · long-tail comercial (4 landings)</b> <span class="o-detail">Landings nuevas: <code>agencia MICE internacional Barcelona</code>, <code>producción evento corporativo boutique</code>, <code>agencia eventos hibrídos</code>, <code>wedding planner corporate Barcelona</code>. Aprovechar la tracción del cluster comercial ya rankeando.</span></div></li>
-    <li><span class="cat-tag content" style="background:var(--red)">Si G2 rojo</span><div><b>Pivot Frente E ampliado</b> <span class="o-detail">Reescritura profunda de 5 páginas viejas más · Auditoría hosting + Core Web Vitals · Reforzar tono de las 12 landings recientes · Contactar 3 medios MICE (Ramiro).</span></div></li>
-    <li><span class="cat-tag docs" style="background:var(--red)">Gate G3</span><div><b>Evaluación 9 nov · condición roja: media ponderada &gt; 30</b> <span class="o-detail" style="color:var(--red);font-weight:600">Si suena: alarma completa. Auditoría E-E-A-T total. Reconsiderar activar DataForSEO (~25 €/mes).</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 6 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">6</span>
-    <b>Contenido de autoridad · sprint preventivo</b>
-    <span class="o-goal">10 – 23 nov · Sin gate</span>
-  </div>
-  <p style="padding:12px 20px 0;margin:0;color:var(--muted);font-size:13px;font-style:italic">Acumular señales E-E-A-T que sobreviven al próximo core update.</p>
-  <ul>
-    <li><span class="cat-tag content">Xavi + Phil</span><div><b>3 casos reales publicados con métricas</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Post por caso con: cliente, evento, pax, artistas, feedback textual, foto autorizada. Requiere validación Xavi.</span></div></li>
-    <li><span class="cat-tag content">Phil</span><div><b>Serie de 3 guías comparativas</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">DMC vs agencia · in-house vs freelance · producción integrada vs subcontratada. Alta demanda de comparativas para MICE.</span></div></li>
-    <li><span class="cat-tag content">Ramiro</span><div><b>Backlink push · outreach a 5 medios MICE</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">5 emails enviados con propuesta de placement. Objetivo: 1-2 menciones publicadas.</span></div></li>
-    <li><span class="cat-tag content">Phil</span><div><b>Refresh estacional pre-diciembre</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Copy actualizado en landing agencia + gala dinners con foco en temporada alta de fiestas de empresa nov-dic.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot 23 nov</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Delta vs snapshot 20 oct.</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 7 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">7</span>
-    <b>Consolidación técnica</b>
-    <span class="o-goal">24 nov – 7 dic · Sin gate</span>
-  </div>
-  <ul>
-    <li><span class="cat-tag tech">Phil</span><div><b>Auditoría Core Web Vitals + Lighthouse</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Report con LCP, CLS, INP por página tipo. Fix de los 5 issues más graves.</span></div></li>
-    <li><span class="cat-tag tech">Phil</span><div><b>Fix accesibilidad WCAG AA</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Contrast ratio, alt texts, aria labels revisados en las 22 landings publicadas.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot noviembre + diff vs agosto</b> <span class="status-inline pending">Pendiente</span><span class="o-detail"><code>data/seo-snapshot-20261130.json</code> + análisis 3 meses de retainer.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Report mensual sprint 4-7</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Artifact HTML publicado como versión del Cuaderno SEO.</span></div></li>
-    <li><span class="cat-tag content">Phil + Xavi + Ramiro</span><div><b>Call de 45 min con hallazgos 3 meses</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comunicación estructurada de resultados y prep para plan Q1.</span></div></li>
-  </ul>
-</div>
-
-<!-- SPRINT 8 -->
-<div class="objective">
-  <div class="o-header">
-    <span class="o-num">8</span>
-    <b>Cierre de año + plan Q1 2027</b>
-    <span class="o-goal">8 – 21 dic · <span style="color:var(--gold)">Gate G4</span></span>
-  </div>
-  <ul>
-    <li><span class="cat-tag docs" style="background:var(--red)">Gate G4</span><div><b>Evaluación 21 dic · condición roja: media ponderada &gt; 28</b> <span class="o-detail" style="color:var(--red);font-weight:600">Si suena: no volvimos al pre-core update. El plan Q1 2027 se reescribe desde cero con auditoría profunda.</span></div></li>
-    <li><span class="cat-tag docs">Phil + Ramiro</span><div><b>Escribir <code>PLAN-SPRINTS-2027-Q1.md</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Doc con 6 sprints Q1, métricas actualizadas y nuevos gates.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Backup snapshot cierre año</b> <span class="status-inline pending">Pendiente</span><span class="o-detail"><code>data/seo-snapshot-20261221.json</code> con estado final trimestre.</span></div></li>
-    <li><span class="cat-tag docs">Phil</span><div><b>Doc de resultados año 2026</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">HTML artifact con delta desde abril-junio (baseline pre-core update).</span></div></li>
-    <li><span class="cat-tag content">Phil + Xavi + Ramiro</span><div><b>Reunión de fin de año</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comunicación de resultados + confirmación fecha arranque Q1 2027.</span></div></li>
-  </ul>
+<div class="callout info" style="margin-top:8px">
+<b>Cada sprint tiene su propia hoja</b> arriba (Sprint 7, 8, 9…) con las tareas, owner, Definition of Done y gate asociado. Se actualiza al cierre de cada sprint (viernes cada 2 semanas).
 </div>
 
 <h3 class="section">Cadencia de medición</h3>
@@ -1783,6 +1696,224 @@ La posición media ponderada <b>29,56</b> es el techo. Si baja de ahí en un sna
 <b>Cierre</b> — este plan no promete rankings. Compromete ejecución, mide con rigor, y decide en gates. Si algo del plan se demuestra mal, se ve en una tabla y se corrige. Sin drama. Baseline al que volvemos si algo va rojo: media ponderada 29,56 · cluster comercial 8.407 imp / 10 clics · 182 páginas con 0 clics.
 </div>
 
+</div>
+
+<!-- SPRINT 7 · 1-14 sep · Cerrar pendientes agosto -->
+<div class="tab-content" id="c-s7">
+<div class="sprint-header current">
+  <div class="sh-top">
+    <h2>Sprint 7 · Cerrar los pendientes de agosto</h2>
+    <span class="status-tag current">Activo</span>
+  </div>
+  <div class="dates">1 – 14 septiembre 2026 · sin gate</div>
+  <p class="focus"><b>Objetivo:</b> rematar el 15% del sprint agosto que quedó sin cerrar. No añadir scope.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">7</span><b>Definition of Done por cada tarea</b><span class="o-goal">6 tareas</span></div>
+  <ul>
+    <li><span class="cat-tag content">Xavi</span><div><b>Testimonios de 3 clientes reales</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Nombre + empresa + cargo + logo autorizado + frase corta (30-50 palabras). Se publican en home y landing agencia. <b>Terminado cuando:</b> los 3 testimonios están live en producción. Deadline efectivo: <b>15 sept</b>.</span></div></li>
+    <li><span class="cat-tag seo">Phil</span><div><b>Aplicar canonical de los 3 hubs solapados</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Entrar en <code>/wp-admin</code> → páginas <code>/musica/</code>, <code>/artistas/</code>, <code>/espectaculos/</code> → Yoast metabox → Advanced → Canonical URL: <code>https://www.eventosbarcelona.com/artistas-y-espectaculos/</code>. <b>Terminado cuando:</b> el HTML de las 3 páginas muestra <code>&lt;link rel="canonical"&gt;</code> apuntando al hub principal.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Reescritura profunda de 3 posts pre-2023 top-tráfico</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Posts <code>12521</code> (10 mejores venues), <code>12507</code> (factor WOW), <code>12518</code> (espectáculos imprescindibles). <b>Terminado cuando:</b> cada uno tiene estructura H2/H3, FAQ schema, imagen intercalada, ≥ 900 palabras, ≥ 5 enlaces internos.</span></div></li>
+    <li><span class="cat-tag seo">Phil</span><div><b>Diferenciación SEO del archive <code>/espectaculos/</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Es archive de CPT, requiere snippet PHP en mu-plugin. <b>Terminado cuando:</b> title + meta description específicos aparecen en el HTML de <code>/espectaculos/</code>.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot semanal 5 kw cluster comercial</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Lunes 8 sep y 15 sep. <b>Terminado cuando:</b> <code>data/seo-keywords-tracker.json</code> committeado con delta vs 28 ago.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Cierre del sprint · reporte quincenal</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Actualizar dashboard con delta real, evidencias y decisiones. <b>Terminado cuando:</b> Definition of Done aplicada por tarea + Notion sincronizado.</span></div></li>
+  </ul>
+</div>
+</div>
+
+<!-- SPRINT 8 · 15-28 sep · Hubs pendientes -->
+<div class="tab-content" id="c-s8">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 8 · Hubs pendientes · Producción técnica + MICE</h2>
+    <span class="status-tag pending">Próximo</span>
+  </div>
+  <div class="dates">15 – 28 septiembre 2026 · sin gate</div>
+  <p class="focus"><b>Objetivo:</b> crear los 2 hubs que faltan del plan agosto para completar la arquitectura hub-and-spoke.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">8</span><b>Definition of Done por cada tarea</b><span class="o-goal">5 tareas</span></div>
+  <ul>
+    <li><span class="cat-tag content">Phil</span><div><b>Reescribir <code>/produccion-tecnica-para-eventos/</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Union real de sonido + iluminación + LED + videowall + escenografía. <b>Terminado cuando:</b> ≥ 1.500 palabras · 5 links a spokes · FAQ · CTA · en producción.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Crear landing hub <code>/eventos-mice-barcelona/</code> ES + EN</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Union real de convenciones + galas + venues + escenografía. <b>Terminado cuando:</b> WPML linked · ≥ 1.500 palabras · publicada ES + EN.</span></div></li>
+    <li><span class="cat-tag seo">Phil</span><div><b>Cross-linking desde spokes a los 2 hubs nuevos</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cada landing temática apunta al hub padre. Bloque «También te puede interesar» actualizado. <b>Terminado cuando:</b> los 2 hubs tienen ≥ 8 backlinks entrantes cada uno.</span></div></li>
+    <li><span class="cat-tag seo">Phil</span><div><b>FAQ schema en los 8 posts B5-B12</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">JSON-LD FAQPage por post. <b>Terminado cuando:</b> Rich Results Test verifica correcto en los 8.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Primer read de attribution IA + snapshot 29 sep</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">GA4 event <code>ai_referral</code> debe tener ≥ 10 sesiones. Snapshot con delta desde arranque S8.</span></div></li>
+  </ul>
+</div>
+</div>
+
+<!-- SPRINT 9 · 29 sep-12 oct · GEO/AEO · G1 -->
+<div class="tab-content" id="c-s9">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 9 · GEO / AEO ofensivo</h2>
+    <span class="status-tag pending">Próximo · <b style="color:var(--gold)">Gate G1</b></span>
+  </div>
+  <div class="dates">29 septiembre – 12 octubre 2026 · <b style="color:var(--gold)">gate G1 al cierre</b></div>
+  <p class="focus"><b>Objetivo:</b> aprovechar que ChatGPT es el único motor que trae tráfico convertible (5,32% CTR · 15× Google) para captar más citaciones directas de LLMs.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">9</span><b>Definition of Done por cada tarea</b><span class="o-goal">4 tareas + G1</span></div>
+  <ul>
+    <li><span class="cat-tag geo">Phil</span><div><b>5 posts optimizados para AI Overviews</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cada post responde a una pregunta explícita en H2 con respuesta de 40-60 palabras en el primer párrafo del bloque. <b>Terminado cuando:</b> los 5 posts publicados y detectables por LLMagnet.</span></div></li>
+    <li><span class="cat-tag geo">Phil</span><div><b>Answer boxes en 10 landings principales</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Bloque «Resumen» de 60 palabras al inicio de cada landing, redactado para ser citable como snippet directo. <b>Terminado cuando:</b> las 10 landings tienen answer box y ChatGPT las lee.</span></div></li>
+    <li><span class="cat-tag tech">Phil</span><div><b>llms.txt refresh automatizado</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Cron o mu-plugin que regenera <code>llms.txt</code> semanal desde el sitemap. <b>Terminado cuando:</b> el fichero se actualiza sin intervención manual.</span></div></li>
+    <li><span class="cat-tag geo">Phil + Xavi</span><div><b>Monitoreo continuo GA4 ai_referral</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Dashboard con sesiones por <code>ai_source</code> (chatgpt · perplexity · claude · gemini · copilot). <b>Terminado cuando:</b> se ve la evolución semanal.</span></div></li>
+  </ul>
+</div>
+
+<div class="callout" style="border-left-color:var(--red);background:rgba(193,39,45,.05)">
+<b style="color:var(--red)">Gate G1 · 12 octubre</b><br>
+Condición roja: <b>cero kw del cluster comercial suben más de 1 puesto</b>. Acción si suena: pausar Sprint 10 · auditoría técnica profunda (hosting, Core Web Vitals, canibalización residual) antes de continuar.
+</div>
+</div>
+
+<!-- SPRINT 10 · 13-26 oct · Ventana crítica · G2 -->
+<div class="tab-content" id="c-s10">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 10 · Ventana crítica · cierre de la ventana de medición</h2>
+    <span class="status-tag pending">Próximo · <b style="color:var(--gold)">Gate G2</b></span>
+  </div>
+  <div class="dates">13 – 26 octubre 2026 · <b style="color:var(--gold)">gate G2 al cierre</b></div>
+  <p class="focus"><b>Objetivo:</b> primer momento honesto para saber si la estrategia del sprint agosto funcionó. La ventana de medición 25 sep – 23 oct cierra en este sprint.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">10</span><b>Definition of Done por cada tarea</b><span class="o-goal">3 tareas + G2</span></div>
+  <ul>
+    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot completo 20 oct</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comparar con snapshot 28 ago. <b>Terminado cuando:</b> <code>data/seo-snapshot-20261020.json</code> committeado con análisis del delta.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Report HTML de la ventana</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Artifact con las 5 kw cluster comercial + delta + hipótesis explicativas de qué funcionó y qué no.</span></div></li>
+    <li><span class="cat-tag content">Xavi + Ramiro + Phil</span><div><b>Decisión bifurcación S11</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Documentado en Notion: qué frente se lanza en Sprint 11 según G2. <b>Terminado cuando:</b> decisión firmada por los 3.</span></div></li>
+  </ul>
+</div>
+
+<div class="callout" style="border-left-color:var(--red);background:rgba(193,39,45,.05)">
+<b style="color:var(--red)">Gate G2 · 23 octubre</b><br>
+Condición roja: <b>las 5 kw cluster comercial siguen en posición &gt; 10</b>. Acción si suena: pivot inmediato al Frente E ampliado en Sprint 11 · no lanzar Frente D · revisión estratégica con Xavi + Ramiro.
+</div>
+</div>
+
+<!-- SPRINT 11 · 27 oct-9 nov · Long-tail o pivot · G3 -->
+<div class="tab-content" id="c-s11">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 11 · Long-tail comercial · o pivot a Frente E</h2>
+    <span class="status-tag pending">Próximo · <b style="color:var(--gold)">Gate G3</b></span>
+  </div>
+  <div class="dates">27 octubre – 9 noviembre 2026 · <b style="color:var(--gold)">gate G3 al cierre</b></div>
+  <p class="focus"><b>Objetivo:</b> el contenido del sprint depende del resultado del G2. Bifurcación: seguir con long-tail (si tracción confirmada) o pivotar a E-E-A-T (si no).</p>
+</div>
+
+<h3 class="section">Tareas del sprint · dos rutas según G2</h3>
+<div class="objective">
+  <div class="o-header" style="background:var(--green)"><span class="o-num" style="background:#fff;color:var(--green)">✓</span><b>Si G2 verde · Frente D · long-tail comercial (4 landings)</b><span class="o-goal">Aprovechar tracción</span></div>
+  <ul>
+    <li><span class="cat-tag content">Phil</span><div><b>Landing <code>agencia MICE internacional Barcelona</code></b> <span class="o-detail">Nueva landing atacando búsquedas internacionales de agencia MICE.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Landing <code>producción evento corporativo boutique</code></b> <span class="o-detail">Diferenciación premium anti-directorio.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Landing <code>agencia eventos hibrídos</code></b> <span class="o-detail">Post-covid, tendencia estable.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Landing <code>wedding planner corporate Barcelona</code></b> <span class="o-detail">Crossover con bodas de empresa.</span></div></li>
+  </ul>
+</div>
+
+<div class="objective" style="margin-top:16px">
+  <div class="o-header" style="background:var(--red)"><span class="o-num" style="background:#fff;color:var(--red)">✗</span><b>Si G2 rojo · pivot Frente E ampliado</b><span class="o-goal">Priorizar calidad</span></div>
+  <ul>
+    <li><span class="cat-tag content">Phil</span><div><b>Reescritura profunda de 5 páginas viejas más</b> <span class="o-detail">Continuar el B4 empezado en sprint agosto.</span></div></li>
+    <li><span class="cat-tag tech">Phil</span><div><b>Auditoría hosting + Core Web Vitals</b> <span class="o-detail">Confirmar si hay problema técnico bloqueando.</span></div></li>
+    <li><span class="cat-tag content">Phil + Xavi</span><div><b>Reforzar tono de las 12 landings recientes</b> <span class="o-detail">Recomendación Xavi sobre cambios de tono.</span></div></li>
+    <li><span class="cat-tag content">Ramiro</span><div><b>Contactar 3 medios MICE para menciones</b> <span class="o-detail">Placement en Eventoplus, ExpoBcn, Grup Serhs.</span></div></li>
+  </ul>
+</div>
+
+<div class="callout" style="border-left-color:var(--red);background:rgba(193,39,45,.05);margin-top:16px">
+<b style="color:var(--red)">Gate G3 · 9 noviembre</b><br>
+Condición roja: <b>posición media ponderada > 30</b>. Acción si suena: alarma completa · Auditoría E-E-A-T total · Reconsiderar activar DataForSEO (~25 €/mes).
+</div>
+</div>
+
+<!-- SPRINT 12 · 10-23 nov · Contenido autoridad -->
+<div class="tab-content" id="c-s12">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 12 · Contenido de autoridad · sprint preventivo</h2>
+    <span class="status-tag pending">Próximo</span>
+  </div>
+  <div class="dates">10 – 23 noviembre 2026 · sin gate</div>
+  <p class="focus"><b>Objetivo:</b> acumular señales E-E-A-T que sobreviven al próximo core update. Este sprint es preventivo, no reactivo.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">12</span><b>Definition of Done por cada tarea</b><span class="o-goal">5 tareas</span></div>
+  <ul>
+    <li><span class="cat-tag content">Xavi + Phil</span><div><b>3 casos reales publicados con métricas</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Post por caso con: cliente, evento, pax, artistas, feedback textual, foto autorizada. Requiere validación Xavi. <b>Terminado cuando:</b> 3 posts publicados con métricas verificables.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Serie de 3 guías comparativas</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">DMC vs agencia · in-house vs freelance · producción integrada vs subcontratada. Alta demanda de comparativas para MICE.</span></div></li>
+    <li><span class="cat-tag content">Ramiro</span><div><b>Backlink push · outreach a 5 medios MICE</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">5 emails enviados con propuesta de placement. Objetivo: 1-2 menciones publicadas.</span></div></li>
+    <li><span class="cat-tag content">Phil</span><div><b>Refresh estacional pre-diciembre</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Copy actualizado en landing agencia + gala dinners con foco en temporada alta de fiestas de empresa nov-dic.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot 23 nov</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Delta vs snapshot 20 oct.</span></div></li>
+  </ul>
+</div>
+</div>
+
+<!-- SPRINT 13 · 24 nov-7 dic · Consolidación técnica -->
+<div class="tab-content" id="c-s13">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 13 · Consolidación técnica</h2>
+    <span class="status-tag pending">Próximo</span>
+  </div>
+  <div class="dates">24 noviembre – 7 diciembre 2026 · sin gate</div>
+  <p class="focus"><b>Objetivo:</b> cerrar los gaps técnicos y de accesibilidad que se acumularon durante el trimestre.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">13</span><b>Definition of Done por cada tarea</b><span class="o-goal">5 tareas</span></div>
+  <ul>
+    <li><span class="cat-tag tech">Phil</span><div><b>Auditoría Core Web Vitals + Lighthouse</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Report con LCP, CLS, INP por página tipo. Fix de los 5 issues más graves.</span></div></li>
+    <li><span class="cat-tag tech">Phil</span><div><b>Fix accesibilidad WCAG AA</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Contrast ratio, alt texts, aria labels revisados en las 22 landings publicadas.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Snapshot noviembre + diff vs agosto</b> <span class="status-inline pending">Pendiente</span><span class="o-detail"><code>data/seo-snapshot-20261130.json</code> + análisis 3 meses de retainer.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Report mensual sprint 10-13</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Artifact HTML publicado como versión del Cuaderno SEO.</span></div></li>
+    <li><span class="cat-tag content">Phil + Xavi + Ramiro</span><div><b>Call de 45 min con hallazgos 3 meses</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comunicación estructurada de resultados y prep para plan Q1.</span></div></li>
+  </ul>
+</div>
+</div>
+
+<!-- SPRINT 14 · 8-21 dic · Cierre año · G4 -->
+<div class="tab-content" id="c-s14">
+<div class="sprint-header">
+  <div class="sh-top">
+    <h2>Sprint 14 · Cierre de año + plan Q1 2027</h2>
+    <span class="status-tag pending">Próximo · <b style="color:var(--gold)">Gate G4</b></span>
+  </div>
+  <div class="dates">8 – 21 diciembre 2026 · <b style="color:var(--gold)">gate G4 al cierre</b></div>
+  <p class="focus"><b>Objetivo:</b> cerrar el año y preparar la siguiente iteración con las lecciones aprendidas.</p>
+</div>
+
+<h3 class="section">Tareas del sprint</h3>
+<div class="objective">
+  <div class="o-header"><span class="o-num">14</span><b>Definition of Done por cada tarea</b><span class="o-goal">4 tareas + G4</span></div>
+  <ul>
+    <li><span class="cat-tag docs">Phil + Ramiro</span><div><b>Escribir <code>PLAN-SPRINTS-2027-Q1.md</code></b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Doc con 6 sprints Q1, métricas actualizadas y nuevos gates.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Backup snapshot cierre año</b> <span class="status-inline pending">Pendiente</span><span class="o-detail"><code>data/seo-snapshot-20261221.json</code> con estado final trimestre.</span></div></li>
+    <li><span class="cat-tag docs">Phil</span><div><b>Doc de resultados año 2026</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">HTML artifact con delta desde abril-junio (baseline pre-core update).</span></div></li>
+    <li><span class="cat-tag content">Phil + Xavi + Ramiro</span><div><b>Reunión de fin de año</b> <span class="status-inline pending">Pendiente</span><span class="o-detail">Comunicación de resultados + confirmación fecha arranque Q1 2027.</span></div></li>
+  </ul>
+</div>
+
+<div class="callout" style="border-left-color:var(--red);background:rgba(193,39,45,.05)">
+<b style="color:var(--red)">Gate G4 · 21 diciembre</b><br>
+Condición roja: <b>media ponderada > 28</b> (no volvimos al pre-core update). Acción si suena: el plan Q1 2027 se reescribe desde cero con auditoría profunda antes de arrancar.
+</div>
 </div>
 
 </div><!-- /.contents -->
