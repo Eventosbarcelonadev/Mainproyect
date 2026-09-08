@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard Eventos Barcelona — Sprint 1 · 2026</title>
+<title>Dashboard Eventos Barcelona — Sprint 8 · 2026</title>
 <style>
 :root{
   --ink:#0a2540;
@@ -22,7 +22,6 @@
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.55;font-size:15px}
 .wrap{max-width:1100px;margin:0 auto;padding:48px 32px}
 
-/* Header */
 header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:36px}
 .kicker{color:var(--gold);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
 h1{font-size:36px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
@@ -31,18 +30,17 @@ h1{font-size:36px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
 .sprint-meta span{opacity:.7}
 .sprint-meta b{color:var(--gold)}
 
-/* Sections */
 h2{font-size:22px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.01em;display:flex;align-items:baseline;justify-content:space-between}
 h2 .sub{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none}
 h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
 
-/* Big narrative box */
 .executive{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:22px 26px;border-radius:4px;margin-bottom:24px}
 .executive p{margin:0 0 12px;font-size:15px}
 .executive p:last-child{margin-bottom:0}
 .executive b{color:var(--ink)}
+.executive.red{border-left-color:var(--red)}
+.executive.red b.warn{color:var(--red)}
 
-/* Before/After metric cards */
 .deltas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
 .delta{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .delta .cat{background:var(--ink);color:#fff;padding:8px 14px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
@@ -55,9 +53,11 @@ h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
 .delta .row.now.up .val{color:var(--green)}
 .delta .row.now.up::after{content:"↑";color:var(--green);font-size:16px;font-weight:700;margin-left:6px}
 .delta .row.now.down .val{color:var(--red)}
+.delta .row.now.down::after{content:"↓";color:var(--red);font-size:16px;font-weight:700;margin-left:6px}
+.delta .row.now.flat .val{color:var(--muted)}
+.delta .row.now.flat::after{content:"=";color:var(--muted);font-size:16px;font-weight:700;margin-left:6px}
 .delta .row .note{font-size:11px;color:var(--muted);margin-left:auto;text-align:right;max-width:120px}
 
-/* Delivered log */
 .delivered-list{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:6px 0}
 .delivered-list li{list-style:none;padding:12px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
 .delivered-list li:last-child{border-bottom:none}
@@ -67,14 +67,15 @@ h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
 .delivered-list .cat-tag.seo{background:var(--green)}
 .delivered-list .cat-tag.tech{background:var(--amber)}
 .delivered-list .cat-tag.content{background:var(--red)}
+.delivered-list .cat-tag.perf{background:#5548bb}
 .delivered-list .desc{font-size:14px}
 .delivered-list .desc b{color:var(--ink)}
 .delivered-list .impact{font-size:12px;color:var(--muted);text-align:right;font-style:italic;white-space:nowrap}
 
-/* Roadmap next sprints */
 .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
 .sprint-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:18px 20px}
 .sprint-card.current{border-color:var(--ink);border-width:2px}
+.sprint-card.blocked{border-color:var(--red);border-width:2px}
 .sprint-card .sp-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
 .sprint-card .sp-title b{font-size:14px}
 .sprint-card .sp-title .date{font-size:11px;color:var(--muted)}
@@ -82,10 +83,10 @@ h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
 .sprint-card .sp-status.done{color:var(--green)}
 .sprint-card .sp-status.now{color:var(--gold)}
 .sprint-card .sp-status.next{color:var(--muted)}
+.sprint-card .sp-status.skipped{color:var(--red)}
 .sprint-card ul{margin:0;padding:0 0 0 18px;font-size:13px}
 .sprint-card li{margin:3px 0}
 
-/* Backlog */
 .backlog{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .backlog th{background:var(--ink);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
 .backlog td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -95,18 +96,22 @@ h3{font-size:16px;margin:22px 0 8px;color:var(--ink)}
 .p-tag.p2{background:var(--amber)}
 .p-tag.p3{background:var(--muted)}
 
-/* Callout */
 .callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px;font-size:14px}
 .callout b{color:var(--ink)}
+.callout.red{background:#fff5f5;border-color:#f0a0a0;border-left-color:var(--red)}
+.callout.red b{color:var(--red)}
 
-/* Toc */
 .toc{background:var(--card);border:1px solid var(--line);padding:16px 20px;border-radius:4px;margin-bottom:24px;font-size:13px;color:var(--muted)}
 .toc b{color:var(--ink);text-transform:uppercase;font-size:11px;letter-spacing:.12em;display:block;margin-bottom:6px}
 .toc a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--line);margin-right:12px}
 
-/* Sprint archive */
 .archive{background:var(--card);border:1px dashed var(--line);padding:20px;border-radius:4px;color:var(--muted);font-size:13px}
 .archive b{color:var(--ink)}
+
+.honest{background:#fff5f5;border:1px solid #f0c0c0;border-left:6px solid var(--red);padding:16px 20px;border-radius:4px;margin:20px 0}
+.honest b{color:var(--red);text-transform:uppercase;font-size:11px;letter-spacing:.12em;display:block;margin-bottom:8px}
+.honest p{margin:0 0 10px;font-size:14px}
+.honest p:last-child{margin-bottom:0}
 
 footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
 
@@ -119,7 +124,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 }
 @media print{
   body{background:#fff}
-  .delta,.executive,.sprint-card,.callout{break-inside:avoid}
+  .delta,.executive,.sprint-card,.callout,.honest{break-inside:avoid}
 }
 </style>
 </head>
@@ -129,202 +134,225 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <header>
 <div class="kicker">Dashboard operativo · actualización quincenal</div>
 <h1>Eventos Barcelona — Estado y avances</h1>
-<div class="subtitle">Documento vivo. Se actualiza cada 2 semanas al cierre de sprint. Xavi puede consultarlo en cualquier momento.</div>
-<div class="sprint-meta"><span>Sprint activo</span><b>1 · 24 jun — 8 jul 2026</b><span>Corte</span><b>2 jul 2026</b></div>
+<div class="subtitle">Documento vivo. Se actualiza al cierre de sprint. Xavi puede consultarlo en cualquier momento.</div>
+<div class="sprint-meta"><span>Sprint activo</span><b>8 · 3 — 16 sep 2026</b><span>Corte</span><b>8 sep 2026</b></div>
 </header>
 
 <div class="toc">
 <b>Contenido</b>
-<a href="#resumen">Resumen ejecutivo</a>
+<a href="#honest">Lo que pasó y no pasó</a>
 <a href="#deltas">Antes vs Ahora</a>
 <a href="#entregado">Trabajo entregado</a>
+<a href="#plan">Plan de recuperación</a>
 <a href="#roadmap">Sprints próximos</a>
 <a href="#backlog">Backlog priorizado</a>
 </div>
 
-<h2 id="resumen">Resumen ejecutivo <span class="sub">2 minutos de lectura</span></h2>
+<h2 id="honest">Lo que pasó y no pasó <span class="sub">Sprint 1 al 8, honestidad total</span></h2>
 
-<div class="executive">
-<p>Este primer sprint (24 junio — 8 julio) se enfocó en <b>saneamiento GEO/AEO</b> — preparar el sitio para que los agentes de IA (ChatGPT, Claude, Perplexity, Gemini) puedan encontrar, entender y citar el contenido de Eventos Barcelona. Es la capa que crece en importancia con AI Overviews de Google y la migración de búsquedas hacia asistentes.</p>
-<p>Punto de partida: el sitio estaba <b>ausente del ecosistema AI</b> (sin llms.txt, sin agent-card, sin señales de consentimiento a crawlers de IA, 1.000+ imágenes sin texto alternativo, arquitectura de seguridad incompleta). El diagnóstico técnico interno arrojó <b>68/100</b> en el estándar de agent-readiness.</p>
-<p>Cierre parcial de sprint: <b>95/100</b>. El sitio ahora está en el techo de lo alcanzable sin subir a planes premium de plugins. Se cerraron además dos frentes secundarios: <b>arquitectura técnica base</b> (sitemap, hreflang bilingüe, security headers) y <b>documentación canónica</b> (pirámide SEO como fuente única de verdad para gestión de contenido).</p>
-<p><b>Próximas 2 semanas (Sprint 2, 9-22 julio):</b> arrancar publicación de contenido — 3 páginas de la pirámide bilingüe (ES+EN) por semana, empezando por los 3 gaps críticos (DMC Barcelona, team building, entretenimiento eventos empresariales). Análisis competitivo previo a cada artículo. Definition of Done aplicado a cada pieza.</p>
+<div class="honest">
+<b>Estado real GSC · 8 sep 2026</b>
+<p><b>Impresiones, clics y posiciones no se han movido</b> desde abril. Baseline se mantiene: ~2.600 impr/día, ~23 clics/día, CTR 0,90%, pos media ~29. No es un fallo de reportar — es una realidad que hay que nombrar.</p>
+<p><b>La causa raíz es clara y explicable:</b> el trabajo de julio a septiembre fue casi todo <b>técnico</b> (GEO/AEO, security, imágenes, performance, Cloudflare). Ese trabajo es <b>necesario pero no suficiente</b>. Sin publicar contenido nuevo que rankee keywords que hoy no cubrimos, Google no tiene material nuevo que subir. Los signals técnicos evitan penalizaciones pero no crean posiciones.</p>
+<p><b>Qué falta:</b> los 24 artículos de la pirámide (Sprint 2-6) planificados en julio <b>no se publicaron</b>. Los backlinks (Sprint 12 con Ramiro) no arrancaron. Los testimonios reales de clientes (Sprint 7) siguen pendientes de Xavi. Son las 3 palancas que sí mueven la aguja.</p>
 </div>
 
-<h2 id="deltas">Antes vs Ahora <span class="sub">Snapshot 23-jun-2026 vs 02-jul-2026</span></h2>
+<h2 id="deltas">Antes vs Ahora <span class="sub">Snapshot 23-jun vs 8-sep 2026</span></h2>
 
 <div class="deltas">
 
 <div class="delta">
+<div class="cat">Impresiones GSC /día</div>
+<div class="row pre"><div class="side">Abril</div><div class="val">~2,6 K</div><div class="note">Baseline</div></div>
+<div class="row now flat"><div class="side">Ahora</div><div class="val">~2,6 K</div><div class="note">Sin cambio</div></div>
+</div>
+
+<div class="delta">
+<div class="cat">Clics GSC /día</div>
+<div class="row pre"><div class="side">Abril</div><div class="val">23</div><div class="note">Baseline</div></div>
+<div class="row now flat"><div class="side">Ahora</div><div class="val">~23</div><div class="note">Sin cambio</div></div>
+</div>
+
+<div class="delta">
+<div class="cat">Posición media KWs top</div>
+<div class="row pre"><div class="side">Abril</div><div class="val">~29</div><div class="note">Baseline</div></div>
+<div class="row now flat"><div class="side">Ahora</div><div class="val">~29</div><div class="note">Sin cambio</div></div>
+</div>
+
+<div class="delta">
 <div class="cat">GEO / AEO Score</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">68<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Agent-Readiness bajo</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">95<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">+27 puntos · techo free</div></div>
+<div class="row pre"><div class="side">Antes</div><div class="val">68<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Agent-readiness bajo</div></div>
+<div class="row now up"><div class="side">Ahora</div><div class="val">95<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">+27 techo free</div></div>
 </div>
 
 <div class="delta">
-<div class="cat">SEO Técnico</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">~65<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Est. pre-audit</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">82<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">Auditado 2-jul</div></div>
+<div class="cat">Performance mobile</div>
+<div class="row pre"><div class="side">Antes</div><div class="val">59<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">TTFB 3.470 ms</div></div>
+<div class="row now up"><div class="side">Ahora</div><div class="val">67<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">TTFB 30 ms via CF</div></div>
 </div>
 
 <div class="delta">
-<div class="cat">Cobertura pirámide</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">no medida</div><div class="note">Pirámide no existía</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">64<span style="font-size:14px;color:var(--muted)">% directa</span></div><div class="note">22% partial · 14% gap</div></div>
+<div class="cat">Peso página home</div>
+<div class="row pre"><div class="side">Antes</div><div class="val">~8 MB</div><div class="note">2 PNG hero pesados</div></div>
+<div class="row now up"><div class="side">Ahora</div><div class="val">~2,3 MB</div><div class="note">−5,7 MB</div></div>
 </div>
 
 <div class="delta">
-<div class="cat">Presencia AI (llms.txt + agent-card)</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">0<span style="font-size:14px;color:var(--muted)"> archivos</span></div><div class="note">Ausente del estándar</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">9<span style="font-size:14px;color:var(--muted)"> archivos</span></div><div class="note">Cumple A2A + MCP + LLM standards</div></div>
+<div class="cat">Contenido pirámide publicado</div>
+<div class="row pre"><div class="side">Plan</div><div class="val">24 <span style="font-size:14px;color:var(--muted)">artículos</span></div><div class="note">Sprint 2-6</div></div>
+<div class="row now down"><div class="side">Real</div><div class="val">0</div><div class="note">Bloqueador principal</div></div>
 </div>
 
 <div class="delta">
-<div class="cat">Imágenes con alt text</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">~65<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">1.000+ imgs vacías</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">100<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">Batch fix + fallback runtime</div></div>
+<div class="cat">Backlinks temáticos nuevos</div>
+<div class="row pre"><div class="side">Plan</div><div class="val">10-15</div><div class="note">Ramiro Sprint 12</div></div>
+<div class="row now down"><div class="side">Real</div><div class="val">0</div><div class="note">Outreach no arrancó</div></div>
 </div>
 
 <div class="delta">
-<div class="cat">Bilingüe ES + EN</div>
-<div class="row pre"><div class="side">Antes</div><div class="val">operativo</div><div class="note">WPML activo</div></div>
-<div class="row now up"><div class="side">Ahora</div><div class="val">149 / 147</div><div class="note">EN / ES · equilibrio confirmado</div></div>
+<div class="cat">Testimonios reales con logo</div>
+<div class="row pre"><div class="side">Plan</div><div class="val">3-5</div><div class="note">Sprint 7 Xavi</div></div>
+<div class="row now down"><div class="side">Real</div><div class="val">0</div><div class="note">Pendiente Xavi</div></div>
 </div>
 
 </div>
 
-<div class="callout">
-<b>Nota sobre tráfico GSC.</b> Los baselines de abril 2026 son <b>2.600 impresiones/día, 23 clics/día, CTR 0,90%</b>. El trabajo de este sprint es <b>técnico y estructural</b> — no se espera impacto en tráfico orgánico dentro de la ventana del sprint (Google reprocesa infraestructura en 2-6 semanas, la aguja se mueve con Sprint 2+ una vez que sale contenido nuevo). Empezamos a trackear GSC 7d rolling desde este dashboard a partir del Sprint 2.
+<div class="callout red">
+<b>Lectura correcta.</b> El trabajo hecho protege el ranking actual (evita penalizaciones, mejora experiencia, prepara el terreno) pero <b>no lo sube</b>. Para subir posiciones necesitamos las 3 palancas que están en rojo arriba: contenido nuevo, backlinks, testimonios. Sin ellas seguiremos en pos ~29 media indefinidamente.
 </div>
 
-<h2 id="entregado">Trabajo entregado · Sprint 1 <span class="sub">detalle por categoría</span></h2>
+<h2 id="entregado">Trabajo entregado · acumulado sprint 1-8 <span class="sub">detalle por categoría</span></h2>
 
 <div class="delivered-list">
 <ul>
 
 <li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Instalación stack GEO completo</b> — LLMagnet AI SEO Optimizer + AEO God Mode + 3 snippets custom (EB-SEC-HEADERS, EB-SCHEMA-LOCALBUSINESS, EB-AUDIT-100). 17 abilities MCP listas.</div>
-<div class="impact">infraestructura AI</div>
+<span class="cat-tag perf">Perf</span>
+<div class="desc"><b>Cloudflare Free por delante de CDmon</b> — activado 3 sep. Zone active, SSL Full, HTTP/3, Brotli, IPv6, Always Online, 3 Page Rules (wp-admin bypass, wp-json bypass, cache_everything). TTFB direct www: 3.470 ms → 30 ms (−99%).</div>
+<div class="impact">sprint 8</div>
 </li>
 
 <li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>9 archivos servidos en /.well-known/</b> — agent-card.json (formato A2A v0.3.0), agent-skills, mcp.json, security.txt, api-catalog, oauth-authorization-server, change-password, ai-agent.json, ai-plugin.json. El sitio cumple el estándar emergente para agentes AI.</div>
-<div class="impact">discoverability</div>
+<span class="cat-tag perf">Perf</span>
+<div class="desc"><b>Transform Rule Cache-Control</b> — override 172.800s (2 días del origen) → 300s browser + 1800s edge + 24h stale-while-revalidate. Cambios se propagan en 5 min en vez de 2 días.</div>
+<div class="impact">sprint 8</div>
 </li>
 
 <li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>llms.txt + llms-full.txt reales</b> — 22KB + 25KB de contexto estructurado para que LLMs entiendan qué es Eventos Barcelona y qué servicios ofrece. Cumple el estándar propuesto por Anthropic.</div>
-<div class="impact">contexto AI</div>
+<span class="cat-tag perf">Perf</span>
+<div class="desc"><b>Snippet PHP 70 (Code Snippets)</b> — Cache-Control largo assets, HSTS 1 año, WPO page cache activado programáticamente. Redirect canónico single-hop.</div>
+<div class="impact">sprint 8</div>
 </li>
 
 <li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Robots.txt con reglas explícitas para crawlers AI</b> — GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, anthropic-ai, cohere-ai. Content-Signal directive (IAB standard) declarando consentimiento para búsqueda + input a IA, sin entrenamiento.</div>
-<div class="impact">consent AI</div>
-</li>
-
-<li>
-<span class="cat-tag geo">GEO/AEO</span>
-<div class="desc"><b>Score de agent-readiness 68 → 95</b> (+27 puntos, techo alcanzable sin plan Pro de LLMagnet). Discovery 96, Content 100, HTML 100, Security 95, Performance 93, Accessibility 100, Well-known 50.</div>
-<div class="impact">ranking AI</div>
+<span class="cat-tag perf">Perf</span>
+<div class="desc"><b>Reprocesado masivo de 12 heros PNG → JPG</b> — 45 MB ahorrados. Home laser (2,2 MB → 261 KB), acrobatas (1,3 MB → 330 KB), /espectaculos/ hero (4 MB → 248 KB), 10 más. Dimensiones EXACTAS mantenidas para no romper layouts.</div>
+<div class="impact">sprint 8</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Batch alt-text fix</b> — 1.000+ attachments en la mediateca + 218 páginas Elementor con imágenes de alt vacío regeneradas desde el nombre de archivo. Además fallback runtime en el snippet EB-AUDIT-100 que añade alt="Eventos Barcelona" a cualquier img nueva que salga sin alt.</div>
-<div class="impact">accesibilidad + SEO</div>
+<div class="desc"><b>Sección NUMBERS obligatoria en shows</b> — "¿Por qué elegir X?" con 4 razones específicas. Aplicada a pompas jabón ES + bubble show EN (form traducido). Doctrina completa guardada en skill <code>eb-crear-espectaculo</code> con checklist Definition of Done + regla dura de verificar 4 vistas (ES/EN × desktop/mobile) antes de cerrar.</div>
+<div class="impact">sprint 8</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Security headers en todas las páginas</b> — HSTS (max-age 1 año, includeSubDomains), X-Frame-Options SAMEORIGIN, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy configurada, CSP Report-Only para recolectar violaciones.</div>
-<div class="impact">seguridad</div>
+<div class="desc"><b>Fixes UX detectados por Xavi</b> — badge "eB" que tapaba título de cards (movido a esquina), subrayados kcs-text que se cortaban entre líneas (nowrap desktop, limpio mobile), show pompas movido de page a CPT espectaculos (301 auto), backup expuesto a draft.</div>
+<div class="impact">sprint 8</div>
+</li>
+
+<li>
+<span class="cat-tag geo">GEO/AEO</span>
+<div class="desc"><b>Score agent-readiness 68 → 95/100</b> — 9 archivos servidos en /.well-known/, llms.txt + llms-full.txt, robots.txt con consent explícito para GPTBot/ClaudeBot/PerplexityBot. Cumple estándar Anthropic + IAB Content-Signal.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>Corrección de soft-404</b> — plugin "All 404 Redirect to Homepage" desactivado. URLs inexistentes ahora devuelven HTTP 404 real, no un redirect fake que confunde a Google.</div>
-<div class="impact">indexabilidad</div>
+<div class="desc"><b>Batch alt-text fix</b> — 1.000+ attachments + 218 páginas Elementor con alt vacío regeneradas desde nombre de archivo. Fallback runtime en snippet EB-AUDIT-100.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 <li>
 <span class="cat-tag tech">Técnico</span>
-<div class="desc"><b>RSS feeds restaurados</b> — Perfmatters estaba bloqueando /feed/ redirigiéndolo a home. Reactivado. Ahora los agregadores y crawlers pueden acceder al feed correctamente.</div>
-<div class="impact">discoverability</div>
+<div class="desc"><b>Security headers</b> — HSTS 1 año, X-Frame-Options SAMEORIGIN, X-Content-Type-Options nosniff, Referrer-Policy, Permissions-Policy, CSP Report-Only.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Pirámide SEO canónica</b> — 46 keywords mapeadas en 3 niveles (marca / categoría / long-tail) con URLs reales del sitemap, cobertura por keyword, gaps priorizados P1/P2/P3, estrategia hub-and-spoke definida. Es la única fuente de verdad para cualquier acción SEO.</div>
-<div class="impact">estrategia</div>
+<span class="cat-tag tech">Técnico</span>
+<div class="desc"><b>Soft-404 corregido + RSS feeds restaurados</b> — plugin All-404 desactivado, Perfmatters config revisada. URLs devuelven HTTP 404 real y feeds accesibles.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Regla bilingüe explícita ES + EN</b> — toda página nueva debe existir en ambos idiomas. Sin excepciones. WPML activo lo soporta. Documentado como norma del proyecto.</div>
-<div class="impact">estrategia</div>
+<span class="cat-tag content">Doc</span>
+<div class="desc"><b>Pirámide SEO canónica</b> — 46 keywords en 3 niveles (marca / categoría / long-tail), URLs reales del sitemap, cobertura, gaps priorizados P1/P2/P3, hub-and-spoke definido. Fuente única de verdad.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 <li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Plan de contenido Sprint 2-5 (jul-ago 2026)</b> — 12 gaps de la pirámide × ES+EN = 24 páginas. Workflow definido: análisis competitivo previo → brief → clonar template → copy validado → QA con Definition of Done → publicar bilingüe.</div>
-<div class="impact">roadmap</div>
-</li>
-
-<li>
-<span class="cat-tag content">Documentación</span>
-<div class="desc"><b>Definition of Done por artículo</b> — checklist en 3 fases (pre-publish · post-publish 24-48h · post-publish 7-14d) cubriendo metadata, schema, imágenes, internal linking, bilingüe, GEO/AEO, performance, tracking. Garantiza que cada artículo salga como activo SEO y no como "contenido publicado".</div>
-<div class="impact">calidad</div>
+<span class="cat-tag content">Doc</span>
+<div class="desc"><b>Plan contenido 24 artículos ES+EN</b> — 12 gaps × 2 idiomas. Workflow definido: análisis competitivo → brief → clonar template → copy validado → QA con DoD → publicar bilingüe. <b>Plan escrito pero NO ejecutado.</b></div>
+<div class="impact">sprint 2-6 · SKIPPED</div>
 </li>
 
 <li>
 <span class="cat-tag seo">SEO</span>
-<div class="desc"><b>Radiografía SEO técnica completa</b> — audit end-to-end con 9 categorías + arquitectura + SXO + E-E-A-T. Health score 82/100. 5 quick wins priorizados por impacto × facilidad. Documento entregado el 2 de julio (este mismo día).</div>
-<div class="impact">diagnóstico</div>
+<div class="desc"><b>Radiografía SEO técnica completa</b> — audit end-to-end con 9 categorías. Health score 82/100. 5 quick wins.</div>
+<div class="impact">sprint 1</div>
 </li>
 
 </ul>
 </div>
 
-<h2 id="roadmap">Sprints próximos <span class="sub">visibilidad hasta 30 septiembre</span></h2>
+<h2 id="plan">Plan de recuperación · próximas 8 semanas <span class="sub">para mover posiciones de verdad</span></h2>
+
+<div class="executive red">
+<p><b>Diagnóstico:</b> los 3 vectores que mueven ranking (contenido, backlinks, E-E-A-T) están en 0. Sin activar al menos 2 de los 3, GSC no se moverá en Q4.</p>
+<p><b>Propuesta priorizada:</b></p>
+<p><b class="warn">1. Contenido pirámide (Phil, 6 semanas)</b> — arrancar YA los 24 artículos que se planificaron en jul y no se ejecutaron. 3-4 artículos/semana × 6 semanas × ES+EN. Sin dependencias externas. Impacto esperado: +3-5 posiciones en 8-12 semanas en keywords donde hoy no rankeamos.</p>
+<p><b class="warn">2. Testimonios reales (Xavi, 1 hora)</b> — 3 clientes con foto + logo + cargo + 1 métrica. Bloqueador único: agenda de Xavi. Impacto esperado: +2-4 posiciones por E-E-A-T en keywords comerciales.</p>
+<p><b class="warn">3. Outreach backlinks (Ramiro, 4-8 semanas)</b> — arrancar contactos con medios MICE (Eventoplus, ExpoBcn), asociaciones (ADIME) y complementarios (hoteles top, catering). 2 emails/día × 40 días = 80 contactos = 10-15 backlinks realistas. Impacto esperado: +4-8 posiciones si son de dominio autoridad.</p>
+</div>
+
+<h2 id="roadmap">Sprints próximos <span class="sub">Q4 · pivot al contenido</span></h2>
 
 <div class="roadmap">
 
 <div class="sprint-card">
-<div class="sp-title"><b>Sprint 1</b><span class="date">24 jun — 8 jul</span></div>
-<div class="sp-status done">✓ En curso · corte hoy</div>
+<div class="sp-title"><b>Sprint 8</b><span class="date">3 — 16 sep</span></div>
+<div class="sp-status now">▶ Activo</div>
 <ul>
-<li>Setup GEO/AEO completo</li>
-<li>Score 68 → 95</li>
-<li>Batch alt + security</li>
-<li>Radiografía SEO técnica</li>
-<li>Pirámide + DoD documentados</li>
+<li>Cloudflare + Transform Rule ✓</li>
+<li>Heros optimizados ✓</li>
+<li>NUMBERS en shows + skill ✓</li>
+<li>Fixes UX Xavi ✓</li>
+<li>Arranque 24 artículos</li>
 </ul>
 </div>
 
 <div class="sprint-card current">
-<div class="sp-title"><b>Sprint 2</b><span class="date">9 — 22 jul</span></div>
-<div class="sp-status now">▶ Próximo</div>
+<div class="sp-title"><b>Sprint 9</b><span class="date">17 — 30 sep</span></div>
+<div class="sp-status now">▶ Contenido intensivo</div>
 <ul>
-<li>QW1-QW5 del audit (bugs)</li>
-<li>Análisis competitivo P1 DMC Barcelona</li>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Decisión hub /musica/ vs /grupos-musica/</li>
-<li>IndexNow activo</li>
+<li>4 artículos ES + 4 EN</li>
+<li>DMC Barcelona</li>
+<li>Team building</li>
+<li>Entretenimiento eventos empresariales</li>
+<li>Cenas gala</li>
 </ul>
 </div>
 
 <div class="sprint-card">
-<div class="sp-title"><b>Sprint 3</b><span class="date">23 jul — 5 ago</span></div>
+<div class="sp-title"><b>Sprint 10</b><span class="date">1 — 14 oct</span></div>
 <div class="sp-status next">— Planificado</div>
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
+<li>4 artículos ES + 4 EN</li>
+<li>Testimonios Xavi (deadline)</li>
+<li>Ramiro arranca outreach</li>
 <li>Cobertura pirámide 64% → 75%</li>
-<li>Primer pull GSC 7d con delta</li>
-<li>Handoff performance a Perfmatters</li>
 </ul>
 </div>
 
@@ -333,72 +361,68 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <div class="roadmap">
 
 <div class="sprint-card">
-<div class="sp-title"><b>Sprint 4</b><span class="date">6 — 19 ago</span></div>
+<div class="sp-title"><b>Sprint 11</b><span class="date">15 — 28 oct</span></div>
 <div class="sp-status next">— Planificado</div>
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Primeros rankings esperados</li>
-<li>Cloudflare Polish (WebP conversion)</li>
-<li>Bot AI traffic empieza a medirse</li>
+<li>4 artículos ES + 4 EN</li>
+<li>Primer batch backlinks Ramiro (~3)</li>
+<li>Refresh 3 páginas viejas</li>
 </ul>
 </div>
 
 <div class="sprint-card">
-<div class="sp-title"><b>Sprint 5</b><span class="date">20 ago — 2 sep</span></div>
+<div class="sp-title"><b>Sprint 12</b><span class="date">29 oct — 11 nov</span></div>
 <div class="sp-status next">— Planificado</div>
 <ul>
-<li>3 páginas ES + 3 EN publicadas</li>
-<li>Cobertura pirámide 85%+</li>
-<li>Cierre gaps P1 + P2</li>
+<li>4 artículos ES + 4 EN</li>
+<li>Primeros movimientos GSC esperados</li>
+<li>Backlinks batch 2 (~5)</li>
+</ul>
+</div>
+
+<div class="sprint-card">
+<div class="sp-title"><b>Sprint 13-14</b><span class="date">12 nov — 15 dic</span></div>
+<div class="sp-status next">— Planificado</div>
+<ul>
+<li>Cierre 24 artículos</li>
+<li>Backlinks batch 3</li>
 <li>Baseline nuevo GSC vs abril</li>
-</ul>
-</div>
-
-<div class="sprint-card">
-<div class="sp-title"><b>Sprint 6</b><span class="date">3 — 16 sep</span></div>
-<div class="sp-status next">— Planificado</div>
-<ul>
-<li>Buffer + refresh de páginas Sprint 2</li>
-<li>Análisis 12 semanas de datos</li>
-<li>Refresh trimestral pirámide con GSC real</li>
-<li>Propuesta continuación Q4 a Xavi</li>
+<li>Propuesta Q1 2027</li>
 </ul>
 </div>
 
 </div>
 
-<h2 id="backlog">Backlog priorizado <span class="sub">acciones pendientes ordenadas</span></h2>
+<h2 id="backlog">Backlog priorizado <span class="sub">acciones pendientes ordenadas por impacto</span></h2>
 
 <table class="backlog">
 <tr><th>Prioridad</th><th>Acción</th><th>Sprint</th><th>Esfuerzo</th></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Consolidar duplicate hub <code>/musica/</code> ↔ <code>/grupos-musica/</code> (canonical cruzado)</td><td>Sprint 2</td><td>1h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/dmc-barcelona/</code> ES + EN (análisis competitivo previo)</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/team-building-barcelona/</code> ES + EN</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p1">P1</span></td><td>Crear landing <code>/entretenimiento-eventos-empresariales/</code> ES + EN</td><td>Sprint 2</td><td>~4h</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Fix broken link <code>/.md</code> en snippet EB-AUDIT-100 (bug menor)</td><td>Sprint 2</td><td>5min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Desactivar snippet EB-SCHEMA-LOCALBUSINESS (Yoast ya lo cubre)</td><td>Sprint 2</td><td>5min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Activar IndexNow en Yoast Premium</td><td>Sprint 2</td><td>2min</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>4 landings P2 pirámide (cenas gala, experiencias, animación, circo)</td><td>Sprint 3</td><td>~16h</td></tr>
-<tr><td><span class="p-tag p2">P2</span></td><td>Cloudflare Polish activación (WebP automático + CDN gratis)</td><td>Sprint 4</td><td>~2h + DNS</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Combine CSS/JS en Perfmatters (mejora LCP)</td><td>Sprint 4</td><td>~1h + QA</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>5 landings P3 pirámide (long-tails: pantallas LED, violinista, etc.)</td><td>Sprint 4-5</td><td>~20h</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Disavow file → GSC (backlog abril)</td><td>Sprint 5</td><td>~2h con Ahrefs</td></tr>
-<tr><td><span class="p-tag p3">P3</span></td><td>Reforzar CSP a enforce (actualmente Report-Only)</td><td>Sprint 6</td><td>~1h</td></tr>
+<tr><td><span class="p-tag p1">P1</span></td><td><b>Arrancar publicación 24 artículos pirámide</b> (3-4/sem × 6 sem × ES+EN)</td><td>Sprint 8 arranque, 9-14 ejecución</td><td>~60 h · yo solo</td></tr>
+<tr><td><span class="p-tag p1">P1</span></td><td><b>Testimonios reales de Xavi</b> (3-5 con foto + logo + cargo + métrica)</td><td>Sprint 9 deadline</td><td>1 h Xavi</td></tr>
+<tr><td><span class="p-tag p1">P1</span></td><td><b>Outreach backlinks Ramiro</b> (arrancar lista de 80 contactos)</td><td>Sprint 10 arranque</td><td>4-8 sem Ramiro</td></tr>
+<tr><td><span class="p-tag p2">P2</span></td><td>Consolidar duplicate hub <code>/musica/</code> ↔ <code>/grupos-musica/</code> (canonical)</td><td>Sprint 9</td><td>1 h</td></tr>
+<tr><td><span class="p-tag p2">P2</span></td><td>Bandeja NUMBERS obligatoria en TODOS los shows existentes (Light Boxes, laser, aston, light art)</td><td>Sprint 9-10</td><td>~4 h</td></tr>
+<tr><td><span class="p-tag p2">P2</span></td><td>Refresh páginas viejas con schema actualizado + internal linking hub-spoke</td><td>Sprint 11</td><td>~8 h</td></tr>
+<tr><td><span class="p-tag p2">P2</span></td><td>Autor bio + credenciales Xavi/EB para E-E-A-T en autor pages</td><td>Sprint 10</td><td>2 h · 30 min Xavi</td></tr>
+<tr><td><span class="p-tag p3">P3</span></td><td>Reprocesar remaining PNG > 500 KB (Gemini AI, HP-2.jpeg, SMR6323)</td><td>Sprint 11</td><td>~3 h</td></tr>
+<tr><td><span class="p-tag p3">P3</span></td><td>Cloudflare Polish (WebP auto) — requiere upgrade a Pro $20/mes</td><td>Sprint 12 evaluar</td><td>2 h + $20/mes</td></tr>
+<tr><td><span class="p-tag p3">P3</span></td><td>Disavow file → GSC (backlog abril, requiere Ahrefs)</td><td>Sprint 13</td><td>~2 h</td></tr>
 </table>
 
 <div class="callout">
-<b>Cómo se lee este backlog.</b> Los P1 son las 4 acciones que bloquean el crecimiento orgánico este mes. Los P2 son fixes o piezas de contenido que suman pero no bloquean. Los P3 son optimizaciones diferidas.
+<b>Regla de compromiso.</b> Cualquier sprint que no publique al menos 3-4 artículos nuevos ES+EN <b>no cuenta como sprint SEO</b>. La cadencia es la única palanca que garantiza movimiento. Si Xavi no puede dar testimonios en Sprint 9, arrancamos la Opción B (autor bio + casos de éxito reales con métricas) para no bloquear el vector E-E-A-T.
 </div>
 
-<h2 id="archive">Snapshots anteriores</h2>
+<h2 id="archive">Historial sprints anteriores</h2>
 <div class="archive">
-<b>Sprint 0 · pre-24 junio 2026.</b> Estado documentado en <code>memory/project_llmagnet_audit_setup.md</code>. Score GEO/AEO 68/100, 1.000+ imgs sin alt, sin /.well-known/ files, sin llms.txt, plugin All-404 redirect activo, Perfmatters bloqueando feeds. No hay snapshots visuales de este período — se reconstruye desde memoria del proyecto.
-<br><br>
-<i>A partir del cierre de Sprint 2 (23 julio 2026) este bloque incluirá el diff quincenal completo.</i>
+<b>Sprint 1 · 24 jun — 8 jul.</b> Setup GEO/AEO completo. Score 68 → 95. Batch alt + security. Radiografía SEO técnica. Pirámide + DoD documentados. Entregado.<br><br>
+<b>Sprint 2-6 · 9 jul — 2 sep.</b> Planificados 24 artículos ES+EN de la pirámide. <b>NO EJECUTADOS</b> — motivo principal a diagnosticar. Se planteó como sprint SEO estratégico pero se derivó a técnica/fixes reactivos.<br><br>
+<b>Sprint 7 · 1 — 14 sep.</b> Cerrar pendientes agosto. Testimonios Xavi bloqueados. Canonical hubs pendiente.<br><br>
+<b>Sprint 8 · 3 — 16 sep (activo).</b> Cloudflare Free + Transform Rule Cache-Control + reprocesado 12 heros + NUMBERS en shows + skill eb-crear-espectaculo + fixes UX Xavi. Ejecutado hasta 8-sep.
 </div>
 
 <footer>
-Dashboard generado 2026-07-02 · Sprint 1 corte parcial · próxima actualización 8-jul-2026 (cierre Sprint 1) y luego cada 2 semanas<br>
+Dashboard actualizado 2026-09-08 · Sprint 8 corte parcial · próxima actualización 16-sep (cierre Sprint 8) y luego cada 2 semanas<br>
 Archivo: <code>OUTPUTS/eventos-barcelona/dashboard-xavi.html</code> · versionado en git
 </footer>
 
