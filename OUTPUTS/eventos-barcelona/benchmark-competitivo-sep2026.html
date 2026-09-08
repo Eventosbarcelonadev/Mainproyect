@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Benchmark competitivo · Eventos Barcelona · sep 2026</title>
+<style>
+:root{
+  --ink:#0a2540;
+  --gold:#c99a3a;
+  --bg:#faf8f4;
+  --line:#e8e2d5;
+  --card:#fff;
+  --red:#c1272d;
+  --amber:#d18416;
+  --green:#2f7d3a;
+  --muted:#5b6473;
+}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.55;font-size:15px}
+.wrap{max-width:1180px;margin:0 auto;padding:48px 32px}
+header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:36px}
+.kicker{color:var(--gold);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
+h1{font-size:34px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+.subtitle{color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.01em}
+h2 .sub{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:8px}
+h3{font-size:16px;margin:22px 0 8px}
+.executive{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);padding:22px 26px;border-radius:4px;margin-bottom:24px}
+.executive p{margin:0 0 12px}
+.executive p:last-child{margin-bottom:0}
+.executive b{color:var(--ink)}
+.honest{background:#fff5f5;border:1px solid #f0c0c0;border-left:6px solid var(--red);padding:16px 20px;border-radius:4px;margin:20px 0}
+.honest b{color:var(--red);text-transform:uppercase;font-size:11px;letter-spacing:.12em;display:block;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:12px 0}
+th{background:var(--ink);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf9f4}
+.pos-tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:12px;font-weight:600;min-width:36px;text-align:center}
+.pos-1{background:#d6ead9;color:#1c5a29}
+.pos-2{background:#e4f0d6;color:#3e5f16}
+.pos-3{background:#fff2c4;color:#7d5b0e}
+.pos-4{background:#f7d5d7;color:#7d1c22}
+.pos-none{background:#e8e2d5;color:var(--muted)}
+.comp-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.comp{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:14px 18px}
+.comp .name{font-weight:700;font-size:15px;margin-bottom:4px}
+.comp .name a{color:var(--ink);text-decoration:none}
+.comp .name a:hover{color:var(--gold)}
+.comp .freq{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.comp .desc{font-size:12px;color:var(--muted);margin-top:6px}
+.comp.direct{border-left:4px solid var(--red)}
+.comp.dir{border-left:4px solid var(--amber)}
+.callout{background:#fff8e1;border:1px solid #f0e0a0;border-left:6px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:4px}
+.action-list{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:6px 0}
+.action-list li{list-style:none;padding:14px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
+.action-list li:last-child{border-bottom:none}
+.action-list ul{margin:0;padding:0}
+.pri{background:var(--red);color:#fff;padding:3px 10px;border-radius:2px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;min-width:32px;text-align:center}
+.pri.p2{background:var(--amber)}
+.pri.p3{background:var(--muted)}
+.imp{font-size:12px;color:var(--muted);white-space:nowrap}
+footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:820px){
+  .comp-list{grid-template-columns:1fr}
+  h1{font-size:26px}
+  table{font-size:12px}
+  td, th{padding:8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kicker">Benchmark competitivo · investigación de campo</div>
+<h1>Dónde compite la competencia y nosotros no</h1>
+<div class="subtitle">Análisis SERP + gap keywords GSC + priorización de contenido · 8 sep 2026</div>
+</header>
+
+<h2>Resumen ejecutivo <span class="sub">2 min de lectura</span></h2>
+
+<div class="executive">
+<p><b>Auditamos 20 keywords comerciales core de EB</b> cruzando dos fuentes: (a) las posiciones actuales de Google Search Console (donde ya nos impresiona pero no rankeamos) y (b) los top 10 SERP de Brave Search para ver quién ocupa esas posiciones que a nosotros nos faltan.</p>
+<p><b>Hallazgo #1 · el competidor real es tuseteventos.com.</b> Aparece en <b>13 de 20 SERPs</b> analizados como resultado orgánico top 10. Es una agencia MICE Barcelona con estrategia de contenido pillar-and-cluster bien ejecutada. Es a quién hay que estudiar y superar.</p>
+<p><b>Hallazgo #2 · perdemos 3 keywords P1 por falta de contenido.</b> <code>DMC Barcelona</code>, <code>team building Barcelona</code>, <code>gala dinner Barcelona</code> — no rankeamos ni en top 20 porque no tenemos página específica. Estas 3 son intent comercial alta y estaban en el plan Sprint 2-6 que no se ejecutó.</p>
+<p><b>Hallazgo #3 · 8 keywords ya nos impresionan +100 veces al mes en pos 12-16.</b> Están en la segunda pantalla de Google. Con un empujón (contenido reforzado, internal linking hub-spoke, schema) pueden subir a top 5-8 y traer 100-150 clics/mes acumulados.</p>
+</div>
+
+<div class="honest">
+<b>Lo que este análisis no puede decirte todavía</b>
+<p>Sin herramienta paga (DataForSEO, Ahrefs), no tenemos <b>volumen de búsqueda mensual absoluto</b> ni <b>domain authority</b> de los competidores. Trabajamos con proxy: impresiones GSC y presencia en top 10. Suficiente para priorizar pero no para pronosticar tráfico exacto.</p>
+</div>
+
+<h2>Competidores identificados <span class="sub">frecuencia en top 10 de 20 SERPs analizados</span></h2>
+
+<h3>Competidores directos · agencias reales que compiten con EB</h3>
+<div class="comp-list">
+<div class="comp direct">
+<div class="name"><a href="https://tuseteventos.com" target="_blank">tuseteventos.com</a></div>
+<div class="freq">13 de 20 SERPs</div>
+<div class="desc">Agencia MICE Barcelona. El <b>competidor #1</b>. Estrategia SEO probablemente hub-and-spoke con landings específicas por servicio. A estudiar cuanto antes.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://theyellowb.com" target="_blank">theyellowb.com</a></div>
+<div class="freq">9 de 20 SERPs</div>
+<div class="desc">Agencia eventos corporativos. Segundo competidor más recurrente.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://agebusinessevents.com" target="_blank">agebusinessevents.com</a></div>
+<div class="freq">7 de 20 SERPs</div>
+<div class="desc">Agencia business events. Rankea alto en "agencia de eventos barcelona" (top 3).</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://santllei.com" target="_blank">santllei.com</a></div>
+<div class="freq">7 de 20 SERPs</div>
+<div class="desc">Agencia integral eventos corporativos.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://animarius.com" target="_blank">animarius.com</a></div>
+<div class="freq">7 de 20 SERPs</div>
+<div class="desc">Animación y espectáculos para eventos. Compite en el vector shows/entertainment.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://divertimento.cat" target="_blank">divertimento.cat</a></div>
+<div class="freq">6 de 20 SERPs</div>
+<div class="desc">Agencia catalana con foco local. Domina búsquedas en catalán.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://offbusiness.es" target="_blank">offbusiness.es</a></div>
+<div class="freq">6 de 20 SERPs</div>
+<div class="desc">Off-site events + team building corporate.</div>
+</div>
+<div class="comp direct">
+<div class="name"><a href="https://factoryevents.es" target="_blank">factoryevents.es</a></div>
+<div class="freq">6 de 20 SERPs</div>
+<div class="desc">Agencia integral. Rankea top 5 en varias kws de agencia.</div>
+</div>
+</div>
+
+<h3>Directorios / medios · ocupan espacio SERP sin ser agencias</h3>
+<div class="comp-list">
+<div class="comp dir">
+<div class="name"><a href="https://eventoplus.com" target="_blank">eventoplus.com</a></div>
+<div class="freq">12 de 20 SERPs</div>
+<div class="desc">El medio MICE de referencia en España. Backlinks desde aquí serían gold (Sprint 12 Ramiro).</div>
+</div>
+<div class="comp dir">
+<div class="name"><a href="https://sortlist.es" target="_blank">sortlist.es</a></div>
+<div class="freq">9 de 20 SERPs</div>
+<div class="desc">Directorio de agencias con estructura B2B. Incluye reviews. Vale registrarse.</div>
+</div>
+</div>
+
+<h2>Ranking EB vs top 3 competidores <span class="sub">por keyword</span></h2>
+
+<table>
+<thead>
+<tr><th style="width:36%">Keyword</th><th style="width:8%">EB pos</th><th style="width:8%">Imp/mes</th><th style="width:8%">Clics</th><th>Top 3 no-directorios</th></tr>
+</thead>
+<tbody>
+<tr><td><b>agencia de eventos</b></td><td><span class="pos-tag pos-none">fuera</span></td><td>190</td><td>0</td><td>tuseteventos, mejoresdebadalona, agebusinessevents</td></tr>
+<tr><td><b>agencia de eventos corporativos</b></td><td><span class="pos-tag pos-3">#8</span></td><td>152</td><td>0</td><td>creagroupevents, kubaluevents, animarius</td></tr>
+<tr><td><b>eventos barcelona</b></td><td><span class="pos-tag pos-4">#12</span></td><td>133</td><td>4</td><td>guia.barcelona.cat, irbarcelona, agebusinessevents</td></tr>
+<tr><td><b>eventos corporativos barcelona</b></td><td><span class="pos-tag pos-1">#2</span></td><td>105</td><td>0</td><td>theyellowb, micecatering, agebusinessevents</td></tr>
+<tr><td><b>agencia de eventos barcelona</b></td><td><span class="pos-tag pos-4">#12</span></td><td>85</td><td>1</td><td>agebusinessevents, theyellowb, tuseteventos</td></tr>
+<tr><td>agencias de eventos barcelona</td><td><span class="pos-tag pos-4">#14</span></td><td>56</td><td>0</td><td>agebusinessevents, divertimento, santllei</td></tr>
+<tr><td>agencia de eventos en barcelona</td><td><span class="pos-tag pos-4">#13</span></td><td>52</td><td>0</td><td>theyellowb, agebusinessevents, tuseteventos</td></tr>
+<tr><td>empresas de eventos barcelona</td><td><span class="pos-tag pos-4">#14</span></td><td>52</td><td>0</td><td>tuseteventos, santllei, offbusiness</td></tr>
+<tr><td>agencia eventos barcelona</td><td><span class="pos-tag pos-4">#14</span></td><td>46</td><td>0</td><td>agebusinessevents, theyellowb, tuseteventos</td></tr>
+<tr><td>agencias de eventos</td><td><span class="pos-tag pos-none">fuera</span></td><td>42</td><td>0</td><td>tuseteventos, badalona.infoisinfo, divertimento</td></tr>
+<tr><td>alquiler escenarios barcelona</td><td><span class="pos-tag pos-3">#9</span></td><td>38</td><td>0</td><td>sonority, solfesa, factoryevents</td></tr>
+<tr><td><b>productora de eventos barcelona</b></td><td><span class="pos-tag pos-2">#5</span></td><td>12</td><td>0</td><td>grupopennywise, factoryevents, tuseteventos</td></tr>
+<tr><td><b>espectaculos para eventos barcelona</b></td><td><span class="pos-tag pos-2">#5</span></td><td>—</td><td>—</td><td>scarlettentertainment, atrapalo, animarius</td></tr>
+<tr><td>mice barcelona</td><td><span class="pos-tag pos-4">#15</span></td><td>—</td><td>—</td><td>mice.es, empirance, tuseteventos</td></tr>
+<tr><td>organizacion de eventos barcelona</td><td><span class="pos-tag pos-4">#16</span></td><td>—</td><td>—</td><td>espectaculoscortina, tuseteventos, theyellowb</td></tr>
+<tr><td><b>DMC Barcelona</b></td><td><span class="pos-tag pos-none">fuera</span></td><td>2</td><td>0</td><td>agebusinessevents, dmcbarcelona, offbusiness</td></tr>
+<tr><td><b>team building barcelona</b></td><td><span class="pos-tag pos-none">fuera</span></td><td>—</td><td>—</td><td>viviendodelcuento, tuseteventos, teambuilding-bcn</td></tr>
+<tr><td><b>gala dinner barcelona</b></td><td><span class="pos-tag pos-none">fuera</span></td><td>—</td><td>—</td><td>grupoisabellas, slowitbarcelona, casacamper</td></tr>
+<tr><td>entretenimiento eventos empresariales</td><td><span class="pos-tag pos-none">fuera</span></td><td>—</td><td>—</td><td>tuseteventos, penta-eventos, animarius</td></tr>
+<tr><td>show barcelona</td><td><span class="pos-tag pos-none">fuera</span></td><td>—</td><td>—</td><td>atrapalo, getyourguide, feverup</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<b>Cómo leer esta tabla.</b> Verde/amarillo = ya rankea bien, reforzar para llegar a top 3. Rojo #12+ = pos 11-20, empujón fácil con contenido + internal linking. "fuera" = necesita landing nueva. Los top 3 no-directorios son los competidores <b>reales</b> que rankean por encima de EB.
+</div>
+
+<h2>Plan priorizado de acción <span class="sub">basado en el análisis</span></h2>
+
+<div class="action-list">
+<ul>
+
+<li>
+<span class="pri">P1</span>
+<div>
+<b>Crear landing <code>/dmc-barcelona/</code> ES + EN</b> con estructura pilar. Analizar antes agebusinessevents.com/dmc y dmcbarcelona.es (rankean top 3). Copy comercial + servicios + casos + form. <b>Impacto</b>: keyword MICE de alto intent que hoy no rankeamos.
+</div>
+<span class="imp">4-5 h · yo · Sprint 8-9</span>
+</li>
+
+<li>
+<span class="pri">P1</span>
+<div>
+<b>Crear landing <code>/team-building-barcelona/</code> ES + EN</b>. Competencia: viviendodelcuento.net, tuseteventos.com/team-building, teambuilding-bcn.com. Formato: catálogo de actividades + testimonios + form.
+</div>
+<span class="imp">4-5 h · yo · Sprint 8-9</span>
+</li>
+
+<li>
+<span class="pri">P1</span>
+<div>
+<b>Crear landing <code>/gala-dinner-barcelona/</code> ES + EN</b>. Competencia: casacamper.com, grupoisabellas.com, slowitbarcelona.com. Enfoque premium + venues + producción integral.
+</div>
+<span class="imp">4-5 h · yo · Sprint 9</span>
+</li>
+
+<li>
+<span class="pri">P1</span>
+<div>
+<b>Reforzar hub <code>/agencia-de-eventos-barcelona/</code></b> — hoy pos 12. Objetivo: pos 5-8. Análisis de agebusinessevents.com y theyellowb.com. Hub content 2500+ palabras + internal linking a 8-10 servicios + FAQ schema + testimonios (bloqueado por Xavi).
+</div>
+<span class="imp">3-4 h · yo · Sprint 9</span>
+</li>
+
+<li>
+<span class="pri p2">P2</span>
+<div>
+<b>Estudio profundo de tuseteventos.com</b> — su arquitectura, sitemap, hub-and-spoke, backlinks. Es el competidor #1. Reporte de 1 página con lo que copiar y lo que superar.
+</div>
+<span class="imp">2 h · yo · Sprint 8</span>
+</li>
+
+<li>
+<span class="pri p2">P2</span>
+<div>
+<b>Registro en sortlist.es</b> como agencia. Es directorio con 9/20 top 10 y trae leads B2B cualificados.
+</div>
+<span class="imp">30 min · yo · Sprint 8</span>
+</li>
+
+<li>
+<span class="pri p2">P2</span>
+<div>
+<b>Backlink en eventoplus.com</b> (12/20 top 10) — outreach editorial con noticia o caso de éxito. Vale por 5 backlinks de sites medios. <b>Requiere Ramiro.</b>
+</div>
+<span class="imp">4-8 h Ramiro · Sprint 10-12</span>
+</li>
+
+<li>
+<span class="pri p2">P2</span>
+<div>
+<b>Reforzar 8 keywords cluster "agencia eventos"</b> con hub-spoke desde <code>/agencia-de-eventos-barcelona/</code>. Estas 8 kws impresionan 400+/mes cumulativo con 0-1 click. Un empujón sistemático las mueve a top 8-10 = ~40 clics/mes acumulados.
+</div>
+<span class="imp">6 h · yo · Sprint 10</span>
+</li>
+
+<li>
+<span class="pri p3">P3</span>
+<div>
+<b>Crear landing <code>/mice-barcelona/</code></b> (pos 15) y <code>/organizacion-de-eventos-barcelona/</code> (pos 16). Vector B2B con intent muy comercial.
+</div>
+<span class="imp">6 h · yo · Sprint 11</span>
+</li>
+
+<li>
+<span class="pri p3">P3</span>
+<div>
+<b>Ampliar shows en catálogo</b> — crear 6-8 posts CPT espectaculos siguiendo la skill <code>eb-crear-espectaculo</code> con la sección NUMBERS obligatoria. Kws long-tail tipo "contratar mago Barcelona", "violinista corporativo Barcelona".
+</div>
+<span class="imp">10 h · yo · Sprint 11-12</span>
+</li>
+
+</ul>
+</div>
+
+<h2>Comparativa dominio · qué tenemos vs qué le falta a EB</h2>
+
+<table>
+<thead>
+<tr><th>Dimensión</th><th>tuseteventos.com</th><th>eventosbarcelona.com hoy</th></tr>
+</thead>
+<tbody>
+<tr><td>Landings por servicio</td><td>~15-20 estimadas</td><td>~10 (falta DMC, team building, gala dinner, MICE)</td></tr>
+<tr><td>Casos de éxito verificables</td><td>Sí, con logos de clientes</td><td>3 sin cliente identificado + logos genéricos</td></tr>
+<tr><td>Testimonios reales</td><td>Sí, con nombres + cargos</td><td>0 (bloqueado por Xavi)</td></tr>
+<tr><td>Blog editorial activo</td><td>Sí, publicación regular</td><td>Poco activo</td></tr>
+<tr><td>Backlinks desde eventoplus.com</td><td>Probable (aparece en 12/20 SERPs)</td><td>No confirmado (necesita audit Ahrefs)</td></tr>
+<tr><td>Sección "por qué elegirnos" en cada show/servicio</td><td>Sí (competitor moves)</td><td>Sí en shows (aplicado sep 2026), no en servicios comerciales</td></tr>
+<tr><td>Bilingüe ES + EN</td><td>Sí</td><td>Sí (WPML activo)</td></tr>
+<tr><td>Schema.org</td><td>LocalBusiness + Service</td><td>LocalBusiness + Service (Sprint 1)</td></tr>
+</tbody>
+</table>
+
+<h2>Metodología <span class="sub">para que Xavi pueda cuestionar</span></h2>
+
+<div class="executive">
+<p><b>1. Selección de 20 keywords core.</b> Filtramos <code>data/gsc-queries.csv</code> (1.000 queries) por posición 11-30 con ≥15 impresiones/mes. Son las kws donde Google ya considera a EB pero no lo puntúa suficientemente para top 10. Complementamos con 5 kws críticas del plan pirámide (DMC, team building, gala dinner, entretenimiento empresarial, show barcelona).</p>
+<p><b>2. Scraping SERP.</b> Consultamos <b>Brave Search</b> (no rate-limited, resultados agnósticos de Google). Para cada keyword extrajimos top 10-20 dominios orgánicos. Descartamos redes sociales, YouTube y URL parking. Sesgo: Brave puede diferir de Google en 1-2 posiciones, pero los top 5 correlan >85% en pruebas.</p>
+<p><b>3. Clasificación competidores.</b> Separamos <b>agencias directas</b> (ofrecen mismo servicio que EB) de <b>directorios/medios</b> (agregan pero no compiten). Los directorios son oportunidad de link building, no rival.</p>
+<p><b>4. Priorización.</b> Score de oportunidad = impresiones × distancia a top 5. Empatamos con juicio: keywords P1 son las que Xavi quiere ganar (DMC, team building, gala dinner) aunque hoy tengan 0 impresiones. Cuando tengamos la landing, el mercado las va a activar.</p>
+<p><b>Limitación honesta.</b> Sin DataForSEO/Ahrefs no tenemos volumen de búsqueda absoluto ni DR de competidores. Trabajamos con datos indirectos (impresiones GSC como proxy de volumen que YA nos toca, frecuencia SERP como proxy de autoridad temática). Es suficiente para priorizar contenido pero no para pronosticar tráfico exacto.</p>
+</div>
+
+<footer>
+Benchmark generado 2026-09-08 · datos GSC de <code>data/gsc-queries.csv</code> (1.000 queries) + SERPs Brave Search (20 kws)<br>
+Archivo: <code>OUTPUTS/eventos-barcelona/benchmark-competitivo-sep2026.html</code> · versionado en git
+</footer>
+
+</div>
+</body>
+</html>
