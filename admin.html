@@ -1286,9 +1286,14 @@
         </div>
         <div class="card-footer">
           <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver detalle</button>
+          <button class="btn btn-secondary" data-download-artista="${escapeHtml(a.id)}" title="Descargar las fotos del artista y de sus shows">Descargar fotos</button>
         </div>
       `;
       card.querySelector('[data-detail]').addEventListener('click', () => setHash('artistas', a.id, {}));
+      card.querySelector('[data-download-artista]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        downloadArtistaPhotos(a, e.currentTarget);
+      });
       const editArtBtn = card.querySelector('[data-edit-artista]');
       if (editArtBtn) {
         editArtBtn.addEventListener('click', async (e) => {
@@ -1333,6 +1338,7 @@
       const disciplinas = Array.isArray(a.disciplinas) ? a.disciplinas : [];
       const fotos = Array.isArray(a.fotos_urls) ? a.fotos_urls : [];
       const shows = Array.isArray(a.shows) ? a.shows : [];
+      const photoEntries = artistaPhotoEntries(a);
 
       const showsHtml = shows.length
         ? shows.map(s => `
@@ -1392,6 +1398,7 @@
           ${(!a.video1 && !a.video2) ? '—' : ''}
         </div></div>
         ${fotos.length ? `<div class="field-row"><label>Fotos</label><div class="photos">${fotos.map(p => `<img src="${escapeHtml(p)}" alt="">`).join('')}</div></div>` : ''}
+        ${photoEntries.length ? `<div class="field-row"><label>Descargar</label><div class="value"><button class="btn btn-secondary" id="drawer-download-fotos" title="ZIP con una carpeta por show">Descargar fotos (${photoEntries.length})</button></div></div>` : ''}
         ${a.ghl_contact_id ? `<div class="field-row"><label>GHL contact</label><div class="value"><code style="font-size:11px;">${escapeHtml(a.ghl_contact_id)}</code></div></div>` : ''}
         ${a.tipo === 'proveedor' ? '' : `
         <div class="drawer-section">
@@ -1406,6 +1413,9 @@
           setHash('shows', null, { show: sid });
         });
       });
+
+      const dlDrawerBtn = $('drawer-body').querySelector('#drawer-download-fotos');
+      if (dlDrawerBtn) dlDrawerBtn.addEventListener('click', () => downloadArtistaPhotos(a, dlDrawerBtn));
 
       const copyBtn = $('drawer-body').querySelector('#artist-link-copy');
       if (copyBtn) {
@@ -1775,6 +1785,7 @@
             ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>`
             : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="to-pending">Pasar a pending review</button>`}
           ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Video</a>` : ''}
+          ${showImages(s).length ? `<button class="btn btn-video" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">Fotos (${showImages(s).length})</button>` : ''}
         </div>
       `;
 
@@ -1801,6 +1812,13 @@
       card.querySelectorAll('[data-action]').forEach(b => {
         b.addEventListener('click', () => reviewShow(b.dataset.id, b.dataset.action, b));
       });
+      const dlBtn = card.querySelector('[data-download]');
+      if (dlBtn) {
+        dlBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          downloadShowPhotos(s, dlBtn);
+        });
+      }
 
       const favBtn = card.querySelector('[data-fav]');
       if (favBtn) {
@@ -1820,6 +1838,155 @@
 
       return card;
     }
+
+    // ---------- descarga de fotos ----------
+    // Ramiro 2026-09-11: botones para bajar las fotos de un show, o las de un
+    // artista con las de todos sus shows. El ZIP se arma en el navegador (Storage
+    // de Supabase sirve con CORS *), sin compresión: son JPEG y no ganan nada
+    // comprimiéndolos. Sin dependencias.
+    function showImages(s) {
+      const arr = Array.isArray(s.image_urls) ? s.image_urls.filter(u => u && String(u).trim()) : [];
+      return arr.length ? arr : (s.image_url ? [s.image_url] : []);
+    }
+    function slugifyFile(name) {
+      return String(name || 'fotos').normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'fotos';
+    }
+    function photoExt(url) {
+      return ((String(url).match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i) || [])[1] || 'jpg').toLowerCase().replace('jpeg', 'jpg');
+    }
+    const pad2 = n => String(n).padStart(2, '0');
+    function showPhotoEntries(s, folder) {
+      const base = slugifyFile(s.name || s.id);
+      return showImages(s).map((url, i) => ({ url, name: `${folder ? folder + '/' : ''}${base}-${pad2(i + 1)}.${photoExt(url)}` }));
+    }
+    // Fotos de un artista + las de sus shows, sin repetir URL: cada show en su
+    // carpeta y las fotos propias del artista (las que no son de ningún show) en artista/.
+    function artistaPhotoEntries(a) {
+      const seen = new Set(), entries = [];
+      for (const s of (Array.isArray(a.shows) ? a.shows : [])) {
+        for (const e of showPhotoEntries(s, slugifyFile(s.name || s.id))) {
+          if (seen.has(e.url)) continue;
+          seen.add(e.url);
+          entries.push(e);
+        }
+      }
+      const base = slugifyFile(artistaDisplayName(a) || a.id);
+      const inFolders = entries.length > 0;
+      const own = (Array.isArray(a.fotos_urls) ? a.fotos_urls : []).filter(u => u && String(u).trim() && !seen.has(u));
+      own.forEach((url, i) => entries.push({ url, name: `${inFolders ? 'artista/' : ''}${base}-${pad2(i + 1)}.${photoExt(url)}` }));
+      // Nombres únicos dentro del ZIP (dos shows con el mismo nombre no se pisan)
+      const used = new Set();
+      for (const e of entries) {
+        let n = e.name, k = 2;
+        while (used.has(n)) n = e.name.replace(/(\.[a-z]+)$/, `-${k++}$1`);
+        used.add(n);
+        e.name = n;
+      }
+      return entries;
+    }
+    const _crcTable = (() => {
+      const t = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+        t[n] = c >>> 0;
+      }
+      return t;
+    })();
+    function crc32(buf) {
+      let c = 0xFFFFFFFF;
+      for (let i = 0; i < buf.length; i++) c = _crcTable[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
+      return (c ^ 0xFFFFFFFF) >>> 0;
+    }
+    // files: [{ name, data: Uint8Array }] -> Blob ZIP (método store)
+    function zipStore(files) {
+      const enc = new TextEncoder();
+      const parts = [], central = [];
+      let offset = 0;
+      for (const f of files) {
+        const name = enc.encode(f.name), crc = crc32(f.data), size = f.data.length;
+        const lh = new DataView(new ArrayBuffer(30));
+        lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+        lh.setUint16(12, 0x21, true);
+        lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true);
+        lh.setUint16(26, name.length, true);
+        parts.push(new Uint8Array(lh.buffer), name, f.data);
+        const ch = new DataView(new ArrayBuffer(46));
+        ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+        ch.setUint16(8, 0x0800, true); ch.setUint16(14, 0x21, true);
+        ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
+        ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+        central.push(new Uint8Array(ch.buffer), name);
+        offset += 30 + name.length + size;
+      }
+      const cdSize = central.reduce((a, p) => a + p.length, 0);
+      const end = new DataView(new ArrayBuffer(22));
+      end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+      end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+      return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: 'application/zip' });
+    }
+    // entries: [{ url, name }]. Una sola foto baja tal cual; varias, en ZIP.
+    async function downloadPhotos(entries, zipBase, btn, emptyMsg) {
+      if (!entries.length) { showError(emptyMsg || 'No hay fotos para descargar'); return; }
+      const orig = btn.textContent;
+      btn.disabled = true;
+      try {
+        const files = new Array(entries.length);
+        let done = 0, next = 0;
+        btn.textContent = `Descargando 0/${entries.length}…`;
+        const worker = async () => {
+          while (next < entries.length) {
+            const i = next++, e = entries[i];
+            const r = await fetch(e.url);
+            if (!r.ok) throw new Error(`${e.name}: HTTP ${r.status}`);
+            files[i] = { name: e.name, data: new Uint8Array(await r.arrayBuffer()), type: r.headers.get('content-type') || 'image/jpeg' };
+            btn.textContent = `Descargando ${++done}/${entries.length}…`;
+          }
+        };
+        await Promise.all(Array.from({ length: Math.min(6, entries.length) }, worker));
+        const single = files.length === 1;
+        const blob = single ? new Blob([files[0].data], { type: files[0].type }) : zipStore(files);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = single ? files[0].name.split('/').pop() : `${zipBase}-fotos.zip`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+      } catch (err) {
+        showError('No se pudieron descargar las fotos: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    }
+    function downloadShowPhotos(s, btn) {
+      return downloadPhotos(showPhotoEntries(s, ''), slugifyFile(s.name || s.id), btn, 'Este show no tiene fotos');
+    }
+    async function downloadArtistaPhotos(a, btn) {
+      let full = a;
+      // La card viene del listado: sin fotos de los shows. Pedimos el detalle.
+      if (!Array.isArray(a.shows) || a.shows.some(s => !s || !('image_urls' in s))) {
+        const orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Preparando…';
+        try {
+          const r = await fetch('/api/admin?action=get-artista-detail&id=' + encodeURIComponent(a.id));
+          const d = await r.json();
+          if (!r.ok || !d.artista) throw new Error(d.error || `HTTP ${r.status}`);
+          full = d.artista;
+        } catch (err) {
+          showError('No se pudieron cargar las fotos del artista: ' + err.message);
+          return;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      }
+      return downloadPhotos(artistaPhotoEntries(full), slugifyFile(artistaDisplayName(full) || full.id), btn, 'Este artista no tiene fotos todavía');
+    }
+    // ---------- fin descarga de fotos ----------
 
     // ---------- favorite + edit ----------
     async function toggleFavorite(id, is_favorite) {
