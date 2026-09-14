@@ -217,7 +217,39 @@ footer.foot strong{color:var(--body);font-weight:500}
     <div class="card">
       <span class="tag tag-live">Live</span>
       <h4>Cloudflare Free por delante de CDmon</h4>
-      <p>Instalado el 3 sep 2026 con la cuenta <code>dev@eventosbarcelona.com</code>. Zone activa, SSL Full (no strict, CDmon origin cert), Page Rules, DNS auditado. Cambio de nameservers desde CDmon a Cloudflare completado por Xavi. <strong>TTFB pasó de 3.470 ms a 30 ms.</strong> Purga automatizada tras cada publicación desde script Node vía API v4.</p>
+      <p>Instalado el 3 sep 2026 con la cuenta <code>dev@eventosbarcelona.com</code>. Zone activa, SSL Full (no strict, CDmon origin cert), Page Rules, DNS auditado. Cambio de nameservers desde CDmon a Cloudflare completado por Xavi. Purga automatizada tras cada publicación desde script Node vía API v4.</p>
+    </div>
+
+    <h4 class="mini">PageSpeed · antes y después del despliegue</h4>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl">TTFB pre-Cloudflare</div>
+        <div class="val">3.470<span style="font-size:1rem;font-weight:400;color:var(--muted);"> ms</span></div>
+        <div class="note">baseline agosto · origin CDmon directo</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">TTFB post-Cloudflare</div>
+        <div class="val">30<span style="font-size:1rem;font-weight:400;color:var(--muted);"> ms</span></div>
+        <div class="note">3 sep 2026 · CDN edge Barcelona</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Delta TTFB</div>
+        <div class="val" style="color:var(--sage)">-99%</div>
+        <div class="note">factor 115× más rápido en el primer byte</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Análisis PageSpeed de referencia</h4>
+      <p><strong>Baseline pre-Cloudflare</strong> · <a href="https://pagespeed.web.dev/analysis/https-eventosbarcelona-com/9bzh2wn30z?form_factor=mobile" target="_blank" rel="noopener">Informe PageSpeed 9bzh2wn30z</a> · el reporte que ordenó el trabajo. TTFB elevado, mala nota mobile.</p>
+      <p><strong>Post-Cloudflare</strong> · <a href="https://pagespeed.web.dev/analysis/https-eventosbarcelona-com/b8s07t2x3y?form_factor=mobile" target="_blank" rel="noopener">Informe PageSpeed b8s07t2x3y</a> · corrida tras cortar CDmon con Cloudflare por delante. Cae drásticamente el TTFB y sube la nota. Auditoría CWV programada en sprint 7 para atacar los siguientes cuellos (LCP, CLS, TBT restantes).</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-planned">Sprint 7</span>
+      <h4>Auditoría Core Web Vitals completa</h4>
+      <p>Programada para sprint 7 (24 nov - 7 dic). Report con LCP, CLS, INP por tipo de página (home, hub, landing, post, caso). Fix de los 5 issues más graves y verificación con PageSpeed nuevo. Objetivo: pasar los tres CWV en el 75 percentil de <a href="https://search.google.com/search-console/core-web-vitals" target="_blank" rel="noopener">Google Search Console</a>.</p>
     </div>
 
     <div class="card">
