@@ -107,6 +107,22 @@
     {
       "source": "/benchmark/",
       "destination": "/OUTPUTS/eventos-barcelona/benchmark-competitivo-sep2026.html"
+    },
+    {
+      "source": "/sprint-close",
+      "destination": "/OUTPUTS/eventos-barcelona/sprint-close-sep2026.html"
+    },
+    {
+      "source": "/sprint-close/",
+      "destination": "/OUTPUTS/eventos-barcelona/sprint-close-sep2026.html"
+    },
+    {
+      "source": "/sprint",
+      "destination": "/OUTPUTS/eventos-barcelona/sprint-close-sep2026.html"
+    },
+    {
+      "source": "/sprint/",
+      "destination": "/OUTPUTS/eventos-barcelona/sprint-close-sep2026.html"
     }
   ],
   "headers": [

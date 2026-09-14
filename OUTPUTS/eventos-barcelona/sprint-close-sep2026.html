@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprint Close · Sep 2026 · Eventos Barcelona</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#f6f4ef;
+  --card:#eeece5;
+  --card-2:#faf9f4;
+  --ink:#111114;
+  --body:#33322f;
+  --muted:#7a7772;
+  --line:#d9d5cb;
+  --line-strong:#bab4a4;
+  --accent:#c33a67;
+  --accent-soft:#f0d9e2;
+  --sage:#5a7d6a;
+  --amber:#c18a3b;
+  --red:#a63e3e;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--ground);
+  color:var(--body);
+  line-height:1.55;
+  font-size:16px;
+  font-weight:400;
+  padding:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:56px 32px 96px}
+@media (max-width:600px){.wrap{padding:32px 20px 64px}}
+
+/* -------- header -------- */
+.eyebrow{
+  text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;
+  color:var(--accent);margin-bottom:14px;
+}
+h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2.2rem,5vw,3.4rem);
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:-.02em;
+  line-height:1.05;
+  margin:0 0 12px;
+  text-wrap:balance;
+}
+.subtitle{
+  font-size:1.15rem;color:var(--muted);max-width:640px;text-wrap:pretty;
+  margin:0 0 4px;
+}
+.byline{font-size:.85rem;color:var(--muted);margin-top:20px;letter-spacing:.02em}
+.byline strong{color:var(--ink);font-weight:600}
+
+hr.rule{border:0;height:1px;background:var(--line);margin:48px 0}
+
+/* -------- big picture -------- */
+.big{
+  margin:40px 0 8px;
+  padding:32px 36px;
+  background:var(--card-2);
+  border-left:3px solid var(--accent);
+  border-radius:2px 8px 8px 2px;
+}
+.big h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px;font-weight:600}
+.big p{font-size:1.18rem;line-height:1.55;margin:0;color:var(--ink);text-wrap:pretty;font-weight:400}
+.big strong{background:var(--accent-soft);padding:1px 6px;border-radius:3px;font-weight:600;color:var(--ink)}
+@media (max-width:600px){.big{padding:24px 22px}.big p{font-size:1.05rem}}
+
+/* -------- section -------- */
+section{margin-top:64px}
+h2.section{
+  font-size:1.55rem;color:var(--ink);font-weight:600;
+  letter-spacing:-.005em;margin:0 0 6px;
+}
+.section-lead{color:var(--muted);font-size:.95rem;margin:0 0 28px;max-width:640px}
+
+/* -------- kpi grid -------- */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-top:20px;
+}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.kpis{grid-template-columns:1fr}}
+.kpi{
+  background:var(--card);
+  padding:22px 22px 20px;
+  border-radius:6px;
+  position:relative;
+}
+.kpi .lbl{
+  font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--muted);font-weight:500;margin-bottom:10px;
+}
+.kpi .val{
+  font-size:2.2rem;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;
+}
+.kpi .unit{font-size:1rem;color:var(--muted);font-weight:400;margin-left:2px}
+.kpi .delta{
+  margin-top:10px;font-size:.85rem;font-weight:500;
+  display:flex;align-items:baseline;gap:6px;
+  font-variant-numeric:tabular-nums;
+}
+.kpi .delta.up{color:var(--sage)}
+.kpi .delta.down{color:var(--red)}
+.kpi .delta.flat{color:var(--muted)}
+.kpi .note{font-size:.78rem;color:var(--muted);margin-top:6px}
+
+/* -------- chart -------- */
+.chart-wrap{
+  background:var(--card-2);
+  padding:26px 20px 18px;
+  border-radius:6px;
+  margin-top:22px;
+  overflow-x:auto;
+}
+.chart-title{
+  font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--muted);font-weight:500;margin:0 0 4px 6px;
+}
+.chart-sub{font-size:.85rem;color:var(--muted);margin:0 0 20px 6px}
+svg.timeline{display:block;width:100%;height:auto;min-width:640px}
+.legend{display:flex;gap:22px;margin:14px 6px 0;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+/* -------- shipped -------- */
+.shipped{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px;
+}
+@media (max-width:700px){.shipped{grid-template-columns:1fr}}
+.card{
+  background:var(--card-2);padding:22px 24px;border-radius:6px;
+  border:1px solid var(--line);
+}
+.card h3{font-size:1rem;color:var(--ink);margin:0 0 8px;font-weight:600;letter-spacing:-.005em}
+.card p{margin:0;color:var(--body);font-size:.94rem;line-height:1.5}
+.card .tag{
+  display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:12px;font-weight:600;margin-bottom:10px;
+}
+.tag-geo{background:var(--accent-soft);color:var(--accent)}
+.tag-infra{background:#e4ecdc;color:var(--sage)}
+.tag-content{background:#f4e7cc;color:var(--amber)}
+.tag-brand{background:#e5e2d8;color:var(--body)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--body);font-size:.9rem}
+.card ul li{margin-bottom:4px}
+.card a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-soft)}
+.card a:hover{border-bottom-color:var(--accent)}
+
+/* -------- landings list -------- */
+.landings-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px;
+}
+@media (max-width:600px){.landings-grid{grid-template-columns:1fr}}
+.landing-row{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:10px 14px;background:var(--ground);border:1px solid var(--line);border-radius:4px;
+  font-size:.85rem;align-items:center;
+}
+.landing-row a{color:var(--ink);text-decoration:none;font-weight:500;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.landing-row a:hover{color:var(--accent)}
+.landing-row .lang{
+  font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600;
+  padding:2px 8px;background:var(--card);border-radius:10px;flex-shrink:0;
+}
+
+/* -------- next moves -------- */
+.next{
+  margin-top:24px;
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+@media (max-width:700px){.next{grid-template-columns:1fr}}
+.next-item{
+  background:var(--card-2);border-left:3px solid var(--accent);
+  padding:14px 20px;border-radius:2px 4px 4px 2px;
+}
+.next-item h4{margin:0 0 4px;font-size:.95rem;color:var(--ink);font-weight:600}
+.next-item p{margin:0;font-size:.87rem;color:var(--muted)}
+
+/* -------- footer -------- */
+footer.foot{
+  margin-top:80px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:24px;
+  flex-wrap:wrap;
+}
+footer.foot strong{color:var(--body);font-weight:500}
+
+/* -------- dark mode -------- */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0f0f10;
+    --card:#1a1a1c;
+    --card-2:#161618;
+    --ink:#f4f2ed;
+    --body:#c9c6bf;
+    --muted:#8a8880;
+    --line:#2a2a2c;
+    --line-strong:#3a3a3c;
+    --accent:#e35085;
+    --accent-soft:#3a1e28;
+    --sage:#8ab090;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0f0f10;
+  --card:#1a1a1c;
+  --card-2:#161618;
+  --ink:#f4f2ed;
+  --body:#c9c6bf;
+  --muted:#8a8880;
+  --line:#2a2a2c;
+  --line-strong:#3a3a3c;
+  --accent:#e35085;
+  --accent-soft:#3a1e28;
+  --sage:#8ab090;
+  color-scheme:dark;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Sprint Close · Sep 2026</div>
+    <h1>El SEO clásico cae, el GEO crece</h1>
+    <p class="subtitle">Cierre de sprint enfocado en visibilidad en motores generativos (ChatGPT, Perplexity, Claude, Gemini). Datos GA4 + GSC + infra.</p>
+    <p class="byline">Preparado por <strong>Scale IT</strong> (Philippe · Ramiro) para <strong>Eventos Barcelona</strong> · 14 sep 2026</p>
+  </header>
+
+  <div class="big">
+    <h2>La foto</h2>
+    <p>La SEO clásica sigue tocada por el <strong>core update de junio 2026</strong> (-55% clicks vs mayo). Lo que <strong>está creciendo es GEO</strong>: las sesiones desde ChatGPT + Perplexity + Claude han subido un <strong>+19% YoY</strong> y ya atribuyen <strong>38 leads/mes</strong> que antes no medíamos. El sprint 9 apunta a que las 4 nuevas landings MICE recuperen tráfico vía FAQ schema + AEO y compensen la caída de Google Search.</p>
+  </div>
+
+  <section>
+    <h2 class="section">KPIs GEO · ago 2026 vs ago 2025</h2>
+    <p class="section-lead">Foco en el vector que sí crece. Datos GA4 + GSC (propiedad www.eventosbarcelona.com).</p>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl">Sesiones AI</div>
+        <div class="val">43</div>
+        <div class="delta up">↑ +19.4% YoY</div>
+        <div class="note">vs 36 en ago 2025</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Share AI del tráfico</div>
+        <div class="val">8.27<span class="unit">%</span></div>
+        <div class="delta up">↑ +1.95 pp YoY</div>
+        <div class="note">3ª fuente después de Google y Directo</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Leads AI</div>
+        <div class="val">38</div>
+        <div class="delta up">↑ 12% del total (319)</div>
+        <div class="note">antes no medibles</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Posición media Google</div>
+        <div class="val">28.6</div>
+        <div class="delta up">↑ +7.9 puestos YoY</div>
+        <div class="note">Impresiones +17% YoY (77k)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section">Serie temporal · sesiones desde motores AI</h2>
+    <p class="section-lead">21 meses. La línea es ChatGPT (95% del tráfico AI). La sombra es share % sobre total de sesiones.</p>
+    <div class="chart-wrap">
+      <div class="chart-title">Sesiones AI mensuales · ene 2025 → sep 2026*</div>
+      <div class="chart-sub">* sep 2026 mes parcial (hasta día 14)</div>
+      <svg class="timeline" viewBox="0 0 900 320" preserveAspectRatio="xMidYMid meet" aria-labelledby="chart-title">
+        <title id="chart-title">Evolución mensual de sesiones desde motores AI a eventosbarcelona.com</title>
+        <defs>
+          <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#c33a67" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#c33a67" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Axis y grid -->
+        <g font-family="Space Grotesk" font-size="11" fill="#7a7772">
+          <line x1="60" y1="20" x2="60" y2="260" stroke="#d9d5cb" stroke-width="1"/>
+          <line x1="60" y1="260" x2="880" y2="260" stroke="#d9d5cb" stroke-width="1"/>
+          <!-- Y ticks: 0, 30, 60, 90, 120 -->
+          <g>
+            <text x="52" y="264" text-anchor="end">0</text>
+            <text x="52" y="204" text-anchor="end">30</text>
+            <text x="52" y="144" text-anchor="end">60</text>
+            <text x="52" y="84" text-anchor="end">90</text>
+            <text x="52" y="24" text-anchor="end">120</text>
+            <line x1="60" y1="200" x2="880" y2="200" stroke="#eeece5" stroke-width="1"/>
+            <line x1="60" y1="140" x2="880" y2="140" stroke="#eeece5" stroke-width="1"/>
+            <line x1="60" y1="80" x2="880" y2="80" stroke="#eeece5" stroke-width="1"/>
+            <line x1="60" y1="20" x2="880" y2="20" stroke="#eeece5" stroke-width="1"/>
+          </g>
+        </g>
+        <!-- Area: sesiones AI · x = 60 + i * 39 (21 puntos, 20 gaps = 780px, gap=39) -->
+        <!-- ai_sessions series: [14,6,23,18,28,29,26,36,78,98,50,70,83,108,74,80,74,39,60,43,28] -->
+        <!-- max=120, y = 260 - (val/120 * 240) -->
+        <path fill="url(#grad)" d="M60,232
+          L99,248 L138,214 L177,224 L216,204 L255,202 L294,208 L333,188
+          L372,104 L411,64 L450,160 L489,120 L528,94 L567,44
+          L606,112 L645,100 L684,112 L723,182 L762,140 L801,174 L840,204
+          L840,260 L60,260 Z"/>
+        <!-- Line -->
+        <path fill="none" stroke="#c33a67" stroke-width="2.2" stroke-linejoin="round" d="M60,232
+          L99,248 L138,214 L177,224 L216,204 L255,202 L294,208 L333,188
+          L372,104 L411,64 L450,160 L489,120 L528,94 L567,44
+          L606,112 L645,100 L684,112 L723,182 L762,140 L801,174 L840,204"/>
+        <!-- Datapoints (highlight last 6 to tell the story) -->
+        <g fill="#c33a67">
+          <circle cx="606" cy="112" r="3"/>
+          <circle cx="645" cy="100" r="3"/>
+          <circle cx="684" cy="112" r="3"/>
+          <circle cx="723" cy="182" r="3"/>
+          <circle cx="762" cy="140" r="3"/>
+          <circle cx="801" cy="174" r="3.5" fill="#c33a67" stroke="#f6f4ef" stroke-width="2"/>
+          <circle cx="840" cy="204" r="3" fill="#7a7772"/>
+        </g>
+        <!-- Highlight ago 2026 -->
+        <g font-family="Space Grotesk" font-size="11" fill="#111114" font-weight="600">
+          <text x="801" y="164" text-anchor="middle">43</text>
+          <text x="801" y="152" text-anchor="middle" font-size="9" fill="#7a7772" font-weight="500">ago 26</text>
+        </g>
+        <!-- X labels: cada 3 meses -->
+        <g font-family="Space Grotesk" font-size="10.5" fill="#7a7772">
+          <text x="60"  y="278" text-anchor="middle">ene25</text>
+          <text x="177" y="278" text-anchor="middle">abr25</text>
+          <text x="294" y="278" text-anchor="middle">jul25</text>
+          <text x="411" y="278" text-anchor="middle">oct25</text>
+          <text x="528" y="278" text-anchor="middle">ene26</text>
+          <text x="645" y="278" text-anchor="middle">abr26</text>
+          <text x="762" y="278" text-anchor="middle">jul26</text>
+          <text x="840" y="278" text-anchor="middle" fill="#c33a67" font-weight="600">sep26*</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#c33a67"></span>Sesiones AI (mensuales)</span>
+        <span><span class="dot" style="background:#7a7772"></span>Mes parcial</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section">Lo que hemos shipped este sprint</h2>
+    <p class="section-lead">Sprint 9 · sep 2026. Cuatro entregables, todos orientados a que las visitas GEO conviertan y que Google encuentre respuestas nuestras.</p>
+    <div class="shipped">
+      <div class="card">
+        <span class="tag tag-geo">GEO · Content</span>
+        <h3>4 nuevas landings MICE · ES + EN</h3>
+        <p>DMC Barcelona, Entretenimiento eventos empresariales, MICE Barcelona, Organización eventos corporativos. Estructura Hero + INFO + NUMBERS reales + FAQ AEO + Contacto. 8 URLs bilingües con schema <code>FAQPage</code> JSON-LD embebido.</p>
+        <div class="landings-grid">
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/dmc-barcelona/" target="_blank">DMC Barcelona</a><span class="lang">ES</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/en/dmc-barcelona/" target="_blank">DMC Barcelona</a><span class="lang">EN</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/entretenimiento-eventos-empresariales-barcelona/" target="_blank">Entretenimiento eventos empresariales</a><span class="lang">ES</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/en/corporate-event-entertainment-barcelona/" target="_blank">Corporate event entertainment</a><span class="lang">EN</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/mice-barcelona/" target="_blank">MICE Barcelona</a><span class="lang">ES</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/en/mice-barcelona/" target="_blank">MICE Barcelona</a><span class="lang">EN</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/organizacion-eventos-corporativos-barcelona/" target="_blank">Organización eventos corporativos</a><span class="lang">ES</span></div>
+          <div class="landing-row"><a href="https://www.eventosbarcelona.com/en/corporate-event-management-barcelona/" target="_blank">Corporate event management</a><span class="lang">EN</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-infra">Infra · Performance</span>
+        <h3>Cloudflare + purga · TTFB 3470ms → 30ms</h3>
+        <p>Cloudflare Free por delante de CDmon (3 sep). Los AI crawlers no ejecutan JS y penalizan latencia; ahora la home responde en 30 ms.</p>
+        <ul>
+          <li>SSL Full · Page Rules · DNS auditados</li>
+          <li>Transform Rule para Cache-Control (evita 2 días de HTML caché en origen)</li>
+          <li>Purga automatizada tras cada publicación</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-content">Content · AEO</span>
+        <h3>FAQ schema en las 8 landings</h3>
+        <p>Cada landing incluye 5 preguntas frecuentes con <code>FAQPage</code> JSON-LD nativo. Google puede citar respuestas en featured snippets y ChatGPT/Perplexity tienen bloques self-contained listos para citar.</p>
+        <ul>
+          <li>NUMBERS con cifras reales (20+ años, 500+ artistas, 48-72h propuesta, 1 interlocutor)</li>
+          <li>Anti-directorio · positioning boutique reforzado en H1</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-brand">Brand · Sistema</span>
+        <h3>Skill de copywriting codificada</h3>
+        <p>Reglas del tono EB versionadas: prohibición del em dash, bilingüe obligatorio, formato de cards, verificación 4 vistas, imágenes coincidentes con el tema. Aplica automáticamente a todo lo que redactemos de aquí en adelante.</p>
+        <ul>
+          <li>Fórmulas de titular EB-friendly (curación &gt; catálogo)</li>
+          <li>Estructura de artículo AEO (H1 + intro 60-90 words + H2 respondiendo pregunta)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section">Próximos pasos · sprint 10</h2>
+    <p class="section-lead">Semanas 15-21 sep. Foco: que las 4 landings recuperen la caída de clicks vía sindicación LLM y AEO snippets.</p>
+    <div class="next">
+      <div class="next-item">
+        <h4>Verificar 4 vistas de las 8 landings</h4>
+        <p>ES/EN × desktop/mobile. Chequear que hero + FAQ + contacto renderizan como se espera.</p>
+      </div>
+      <div class="next-item">
+        <h4>Sindicar landings en LinkedIn + Twitter</h4>
+        <p>ChatGPT + Perplexity indexan LinkedIn/Twitter rápido. Un post por landing con link + snippet.</p>
+      </div>
+      <div class="next-item">
+        <h4>Cubrir las 19 H2 sin respuesta</h4>
+        <p>Baseline abril 2026 identificó preguntas frecuentes sin página. Featured snippet + AEO oportunidad directa.</p>
+      </div>
+      <div class="next-item">
+        <h4>Bajar Cache-Control origen CDmon</h4>
+        <p>Actualmente <code>max-age=172800</code> (2 días). Cambio a 3600 permite que las novedades lleguen al front al momento.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>Datos: GA4 <strong>324831331</strong> + GSC <strong>www.eventosbarcelona.com</strong> · geo-report.js <strong>14 sep 2026</strong></div>
+    <div><strong>Scale IT</strong> · Philippe Saint-Hubert · Ramiro</div>
+  </footer>
+
+</div>
+</body>
+</html>
