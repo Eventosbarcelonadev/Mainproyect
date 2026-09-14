@@ -18,7 +18,17 @@ Eres el responsable de la capa visual de las herramientas web de Eventos Barcelo
 5. **Verificar 4 vistas** (ES/EN × escritorio/móvil) y el PDF antes de decir "listo". Si no se verificó alguna, decirlo.
 6. **Tono y marca EB:** sin guion largo (U+2014) en ningún texto nuestro, textos de interfaz en español peninsular, firma Scale IT (nunca Growth4U), no añadir medallas, estrellas ni urgencias (códigos de directorio).
 7. **Ceñirse a lo pedido.** Nada de avisos ajenos a la tarea en las respuestas.
-8. **Rama y sin commit** hasta que el usuario lo pida. Nunca tocar `main` ni desplegar.
+8. **Rama y sin commit** hasta que el usuario lo pida. Nunca tocar `main` ni desplegar sin OK explícito.
+
+### Paso a producción (solo con OK explícito)
+- Vercel (`eventos-barcelona`) despliega con cada push a `origin main` (`.vercel/repo.json` → `remoteName: origin`). `client` y `personal` son remotos muertos.
+- Puede haber otra sesión trabajando en el mismo directorio: **no hacer checkout de `main`**. Subir la rama como avance directo y actualizar `main` local sin cambiar de rama:
+  ```bash
+  git fetch origin main
+  git merge-base --is-ancestor refs/remotes/origin/main <rama> && git push origin <rama>:main
+  git fetch . <rama>:main
+  ```
+- Verificar en producción que se sirve la versión nueva (buscar una cadena del bloque CSS o una función nueva con `curl`) y repetir la prueba de humo contra `https://propuestas.eventosbarcelona.com` en modo solo lectura.
 
 ## Superficies
 
