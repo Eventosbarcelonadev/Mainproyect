@@ -188,7 +188,7 @@
       padding: 12px 16px;
       border-top: 1px solid var(--border);
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       align-items: center;
     }
@@ -212,6 +212,12 @@
     .btn-archive:hover { border-color: #c44; color: #c44; }
     .btn-video, .btn-secondary { color: var(--gray); border-color: var(--border); }
     .btn-secondary:hover, .btn-video:hover { color: var(--dark); border-color: var(--dark); }
+    .btn-download { display: inline-flex; align-items: center; gap: 4px; padding-left: 10px; padding-right: 12px; }
+    .btn-download svg { width: 13px; height: 13px; flex: none; }
+    /* Con el botón de descarga, la card de show en Active lleva 3 botones: un
+       poco menos de aire para que quepan en una fila en vez de saltar a dos. */
+    .card-footer .btn { padding-left: 11px; padding-right: 11px; }
+    .card-footer .btn-download { padding-left: 9px; padding-right: 11px; }
     .btn-primary { background: var(--dark); color: #fff; }
     .btn-primary:hover { background: #000; }
     .btn-danger-outline { color: #c0392b; border-color: #e0a0a0; background: #fff; }
@@ -1286,7 +1292,7 @@
         </div>
         <div class="card-footer">
           <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver detalle</button>
-          <button class="btn btn-secondary" data-download-artista="${escapeHtml(a.id)}" title="Descargar las fotos del artista y de sus shows">Descargar fotos</button>
+          <button class="btn btn-secondary btn-download" data-download-artista="${escapeHtml(a.id)}" title="Descargar las fotos del artista y de sus shows">${DOWNLOAD_ICON}Descargar fotos</button>
         </div>
       `;
       card.querySelector('[data-detail]').addEventListener('click', () => setHash('artistas', a.id, {}));
@@ -1398,7 +1404,7 @@
           ${(!a.video1 && !a.video2) ? '—' : ''}
         </div></div>
         ${fotos.length ? `<div class="field-row"><label>Fotos</label><div class="photos">${fotos.map(p => `<img src="${escapeHtml(p)}" alt="">`).join('')}</div></div>` : ''}
-        ${photoEntries.length ? `<div class="field-row"><label>Descargar</label><div class="value"><button class="btn btn-secondary" id="drawer-download-fotos" title="ZIP con una carpeta por show">Descargar fotos (${photoEntries.length})</button></div></div>` : ''}
+        ${photoEntries.length ? `<div class="field-row"><label>Descargar</label><div class="value"><button class="btn btn-secondary btn-download" id="drawer-download-fotos" title="ZIP con una carpeta por show">${DOWNLOAD_ICON}Descargar fotos (${photoEntries.length})</button></div></div>` : ''}
         ${a.ghl_contact_id ? `<div class="field-row"><label>GHL contact</label><div class="value"><code style="font-size:11px;">${escapeHtml(a.ghl_contact_id)}</code></div></div>` : ''}
         ${a.tipo === 'proveedor' ? '' : `
         <div class="drawer-section">
@@ -1785,7 +1791,7 @@
             ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>`
             : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="to-pending">Pasar a pending review</button>`}
           ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Video</a>` : ''}
-          ${showImages(s).length ? `<button class="btn btn-video" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">Fotos (${showImages(s).length})</button>` : ''}
+          ${showImages(s).length ? `<button class="btn btn-video btn-download" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">${DOWNLOAD_ICON}Fotos (${showImages(s).length})</button>` : ''}
         </div>
       `;
 
@@ -1856,6 +1862,7 @@
       return ((String(url).match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i) || [])[1] || 'jpg').toLowerCase().replace('jpeg', 'jpg');
     }
     const pad2 = n => String(n).padStart(2, '0');
+    const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10.5 5 5 5-5"/><path d="M5 19.5h14"/></svg>';
     function showPhotoEntries(s, folder) {
       const base = slugifyFile(s.name || s.id);
       return showImages(s).map((url, i) => ({ url, name: `${folder ? folder + '/' : ''}${base}-${pad2(i + 1)}.${photoExt(url)}` }));
@@ -1929,7 +1936,7 @@
     // entries: [{ url, name }]. Una sola foto baja tal cual; varias, en ZIP.
     async function downloadPhotos(entries, zipBase, btn, emptyMsg) {
       if (!entries.length) { showError(emptyMsg || 'No hay fotos para descargar'); return; }
-      const orig = btn.textContent;
+      const orig = btn.innerHTML;
       btn.disabled = true;
       try {
         const files = new Array(entries.length);
@@ -1958,7 +1965,7 @@
         showError('No se pudieron descargar las fotos: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = orig;
+        btn.innerHTML = orig;
       }
     }
     function downloadShowPhotos(s, btn) {
@@ -1968,7 +1975,7 @@
       let full = a;
       // La card viene del listado: sin fotos de los shows. Pedimos el detalle.
       if (!Array.isArray(a.shows) || a.shows.some(s => !s || !('image_urls' in s))) {
-        const orig = btn.textContent;
+        const orig = btn.innerHTML;
         btn.disabled = true;
         btn.textContent = 'Preparando…';
         try {
@@ -1981,7 +1988,7 @@
           return;
         } finally {
           btn.disabled = false;
-          btn.textContent = orig;
+          btn.innerHTML = orig;
         }
       }
       return downloadPhotos(artistaPhotoEntries(full), slugifyFile(artistaDisplayName(full) || full.id), btn, 'Este artista no tiene fotos todavía');
