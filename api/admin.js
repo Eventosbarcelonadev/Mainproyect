@@ -1684,12 +1684,14 @@ async function deleteShow(req, res, env) {
   }
 
   // 4. Borrar el record en GHL custom_objects.shows (best-effort).
-  //    locationId va como query param en custom_objects (no en el body).
+  //    El DELETE de custom_objects NO acepta locationId (ni query ni body):
+  //    con él GHL responde 422 "property locationId should not exist" y el
+  //    record quedaba huérfano. Verificado 2026-09-11.
   const ghlResult = { deleted: false };
   if (ghlShowId && env.GHL_TOKEN && env.GHL_LOC) {
     const g = await ghlFetch(
       'DELETE',
-      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${ghlShowId}?locationId=${encodeURIComponent(env.GHL_LOC)}`,
+      `/objects/${GHL_SHOWS_OBJECT_KEY}/records/${ghlShowId}`,
       env
     );
     if (g.ok) ghlResult.deleted = true;
@@ -2322,6 +2324,23 @@ async function reviewShow(req, res, env) {
         properties: props
       });
       ghl = g.ok ? { updated: true, fields: Object.keys(props) } : { error: `GHL ${g.status}: ${g.body.slice(0, 200)}` };
+    }
+  }
+
+  // Al aprobar, asociar el show a sus artistas en GHL. set-show-artistas solo
+  // empuja asociaciones si el show ya tenía ghl_show_id, y los shows que llegan
+  // por formulario o import se vinculan antes de existir en GHL: sin esto el
+  // record quedaba huérfano. Idempotente ("duplicate relation" cuenta como ok).
+  if (show && show.ghl_show_id && action === 'approve' && env.GHL_TOKEN && env.GHL_LOC) {
+    try {
+      const sa = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/show_artistas?show_id=eq.${encodeURIComponent(show.id)}&select=artista:artista_id(nombre,ghl_contact_id)`,
+        { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      const toAdd = sa.ok ? (await sa.json()).map(x => x.artista).filter(Boolean) : [];
+      if (toAdd.length) ghl = { ...(ghl || {}), associations: await syncShowAssociationsToGhl(env, show, toAdd, []) };
+    } catch (e) {
+      ghl = { ...(ghl || {}), associations: { error: e.message } };
     }
   }
 
