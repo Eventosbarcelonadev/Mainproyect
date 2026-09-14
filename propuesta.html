@@ -1815,6 +1815,211 @@
       justify-content: center;
       box-sizing: border-box;
     }
+
+    /* =====================================================================
+       RIDER VISUAL · OLA 1 (2026-09-14)
+       Solo capa visual: ningún cambio de JS, datos ni API.
+       Detalle y evidencia: OUTPUTS/eventos-barcelona/research-ux-ui-propuestas-sep2026.md
+       ===================================================================== */
+    :root {
+      --accent: #EC5853;        /* coral de eventosbarcelona.com */
+      --accent-hover: #F2716C;
+      --accent-text: #B63F35;   /* coral para texto pequeño (5,3:1 sobre blanco) */
+      --on-accent: #161413;     /* texto sobre coral (5,3:1) */
+      --ui-edit: #3B5BDB;       /* solo modo editor, nunca en la propuesta */
+      --ok-solid: #1A7340;
+      --crit-solid: #B42318;
+    }
+
+    /* V04 · Un solo acento de marca en todas las categorías */
+    body.theme-danza, body.theme-musica, body.theme-circo, body.theme-shows, body.theme-wow {
+      --accent: #EC5853;
+      --accent-hover: #F2716C;
+    }
+
+    /* V02 · Acción principal con contraste AA (antes 2,10:1 y 2,96:1) */
+    .btn-approve-client,
+    .btn-approve,
+    .btn-confirm { background: var(--accent); color: var(--on-accent); }
+    .btn-approve-client:hover,
+    .btn-approve:hover,
+    .btn-confirm:hover { background: var(--accent-hover); }
+    .btn-accent, .btn-generate { color: var(--on-accent); }
+    .toast.success { background: var(--ok-solid); }
+    .toast.error { background: var(--crit-solid); }
+
+    /* V03 · Etiquetas y textos coral legibles */
+    .section-label { color: var(--accent-text); letter-spacing: .12em; }
+    .picker-card-body small,
+    .builder-card-cat { color: var(--accent-text); }
+    .about-section h2 .highlight { color: var(--accent-text); }
+    .footer-contact a:hover,
+    .footer-social a:hover { color: var(--accent-text); }
+
+    /* V05 · Cabecera: foto a color con degradado y la sección siguiente asomando */
+    .hero { min-height: 88vh; min-height: 88svh; }
+    .hero-bg-image { opacity: 1; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(to top,
+        rgba(22, 20, 19, .92) 0%,
+        rgba(22, 20, 19, .80) 32%,
+        rgba(22, 20, 19, .30) 68%,
+        rgba(22, 20, 19, .50) 100%);
+    }
+    .hero h1 { font-size: clamp(2.75rem, 1.5rem + 4.4vw, 5.5rem); max-width: 18ch; text-wrap: balance; }
+    .hero-sub { color: #D9D3CC; }
+    .hero-detail { color: #BDB6AE; }
+
+    /* V01 · Cabecera en móvil: sin botones cortados */
+    @media (max-width: 600px) {
+      .nav { padding: 16px 20px; }
+      .nav-logo img { height: 38px; }
+      .nav .btn-pdf-client { display: none; }   /* sigue disponible en el cierre */
+      .nav .btn-approve-client { padding: 9px 16px; font-size: 13px; white-space: nowrap; }
+      .hero-image-change { padding: 7px 10px; font-size: 11px; }
+    }
+
+    /* V09 · Color exclusivo del modo editor */
+    .editable-text:hover { background: rgba(59, 91, 219, .06); outline: 1px dashed var(--ui-edit); }
+    .editable-text:focus { background: rgba(59, 91, 219, .04); outline: 2px solid var(--ui-edit); }
+    .block-price.editable:hover { color: var(--ui-edit); }
+    .price-input { border-color: var(--ui-edit); }
+    .add-show-block:hover { border-color: var(--ui-edit); background: rgba(59, 91, 219, .04); }
+    .add-show-icon { background: var(--ui-edit); color: #fff; }
+    .block-extras-add,
+    .conditions-section .cond-add { color: var(--ui-edit); }
+    .block-extras-row .ex-remove:hover,
+    .conditions-section .cond-remove:hover { color: var(--crit-solid); }
+    .margin-slider::-webkit-slider-thumb { background: var(--ui-edit); }
+    .picker-search input:focus,
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--ui-edit); }
+    .picker-tab:hover,
+    .builder-tab:hover { border-color: var(--ui-edit); color: var(--ui-edit); }
+    .picker-tab.active,
+    .builder-tab.active { background: var(--ui-edit); border-color: var(--ui-edit); color: #fff; }
+    .picker-card:hover { border-color: var(--ui-edit); }
+    .picker-artist-avatar--initial { color: var(--on-accent); }
+    .hero-image-tile:hover,
+    .hero-image-tile.selected { border-color: var(--ui-edit); }
+    .hero-image-reset:hover { color: var(--ui-edit); border-color: var(--ui-edit); }
+    .builder-card:hover { border-color: var(--ui-edit); }
+    .builder-card.selected { border-color: var(--ui-edit); box-shadow: 0 0 0 3px rgba(59, 91, 219, .2); }
+    .builder-card.selected::after { background: var(--ui-edit); color: #fff; }
+
+    /* V10 · Barra admin en móvil en una sola fila */
+    @media (max-width: 768px) {
+      .admin-bar { flex-direction: row; flex-wrap: nowrap; gap: 10px; padding: 10px 12px; }
+      .admin-bar-left { flex: 1 1 auto; min-width: 0; }
+      .admin-bar-info { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+      .admin-bar-info #adminMeta { display: none; }
+      .admin-bar-right { flex: 0 0 auto; gap: 6px; }
+      .btn-admin { padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+      .btn-admin.btn-pdf { font-size: 0; }
+      .btn-admin.btn-pdf::after { content: "PDF"; font-size: 12px; }
+      .lang-toggle { margin-right: 0; }
+      .lang-toggle button { padding: 6px 10px; }
+    }
+
+    /* V11 · Carrusel usable en táctil y con teclado */
+    .carousel-arrow { width: 44px; height: 44px; }
+    .block-carousel:focus-within .carousel-arrow { opacity: 1; }
+    @media (hover: none) { .carousel-arrow { opacity: 1; } }
+    .carousel-dots { gap: 0; bottom: 8px; }
+    .carousel-dot { position: relative; width: 24px; height: 24px; background: transparent; }
+    .carousel-dot::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .55);
+      transition: background .2s, inset .2s;
+    }
+    .carousel-dot.active { background: transparent; transform: none; }
+    .carousel-dot.active::before { background: #fff; inset: 7px; }
+
+    /* V12 · Foco visible y movimiento reducido */
+    :focus-visible { outline: 3px solid #1D1B1A; outline-offset: 3px; }
+    .hero :focus-visible,
+    .cta-section :focus-visible,
+    .admin-bar :focus-visible,
+    .builder-selection :focus-visible { outline-color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      .carousel-slide, .carousel-arrow, .carousel-dot::before,
+      .builder-card, .picker-card, .hero-image-tile, .toast { transition: none; }
+      .builder-card:hover, .picker-card:hover, .hero-image-tile:hover { transform: none; }
+    }
+
+    /* V06 + V07 + V08 · PDF A4: márgenes, numeración y shows más compactos */
+    @page {
+      margin: 10mm 0 12mm;
+      @bottom-center {
+        content: "Eventos Barcelona  ·  " counter(page) " / " counter(pages);
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #8C847D;
+      }
+    }
+    @page :first {
+      margin: 0;
+      @bottom-center { content: none; }
+    }
+    body.print-mode .hero { min-height: 100vh; }
+    body.print-mode .concept-section { padding: 28px 14mm 30px; }
+    body.print-mode .block,
+    body.print-mode .block--reversed {
+      grid-template-columns: 40% 1fr;
+      direction: ltr;
+      min-height: 0;
+      gap: 8mm;
+      align-items: start;
+      padding: 0 14mm;
+      margin: 0 0 9mm;
+    }
+    body.print-mode .block--reversed > * { direction: ltr; }
+    body.print-mode .block-image {
+      min-height: 0;
+      height: auto;
+      aspect-ratio: 4 / 5;
+      border-radius: 2px;
+    }
+    body.print-mode .block-content { padding: 0; justify-content: flex-start; }
+    body.print-mode .block-content h2 { font-size: 26px; margin-bottom: 8px; }
+    body.print-mode .block-content p { font-size: 12.5px; line-height: 1.6; margin-bottom: 12px; }
+    body.print-mode .block-price { font-size: 22px; }
+    body.print-mode .block-extras-row { font-size: 12.5px; }
+    body.print-mode .btn-dark {
+      background: none;
+      color: #1D1B1A;
+      padding: 0;
+      border-radius: 0;
+      font-size: 12px;
+      text-decoration: underline;
+      text-decoration-color: var(--accent);
+      text-underline-offset: 3px;
+    }
+    /* Los márgenes de página restan ~22 mm: el cierre (about + clientes +
+       condiciones + footer) se compacta un poco más para seguir en una sola
+       hoja y que el footer no caiga solo en una página vacía. */
+    body.print-mode .about-section { padding: 6px 14mm 14px !important; }
+    body.print-mode .about-section h2 { font-size: 20px !important; line-height: 1.4 !important; }
+    body.print-mode .clients-section { padding: 4px 14mm 8px !important; }
+    body.print-mode .clients-section .section-label { margin-bottom: 10px !important; }
+    body.print-mode .clients-grid { gap: 8px 24px !important; }
+    body.print-mode .clients-grid img { max-height: 28px !important; }
+    body.print-mode .conditions-section { padding: 8px 14mm 10px !important; }
+    body.print-mode .conditions-section ul { margin-top: 10px; }
+    body.print-mode .conditions-section li { padding-top: 4px; padding-bottom: 4px; margin-bottom: 0 !important; font-size: 12.5px; }
+    body.print-mode .conditions-section li::before { top: 11px; }
+    body.print-mode .footer { padding: 14px 24px 12px !important; }
+    body.print-mode .footer-logo img { height: 40px; }
+    body.print-mode .footer-address { margin-top: 12px; }
+    body.print-mode .footer-social { margin-top: 12px; }
   </style>
 </head>
 <body>

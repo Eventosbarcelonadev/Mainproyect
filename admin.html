@@ -537,143 +537,354 @@
       margin-left: 6px; text-transform: uppercase; letter-spacing: 0.05em;
     }
 
-    /* ---- Tab Ideas ---- */
-    .ideas-layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
-    @media (max-width: 900px) { .ideas-layout { grid-template-columns: 1fr; } }
-    .ideas-col-form { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; }
-    @media (max-width: 900px) { .ideas-col-form { position: static; } }
-    .ideas-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
-    .ideas-box h3 {
-      margin: 0 0 14px; font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--gray);
+
+    /* =====================================================================
+       RIDER VISUAL · ADMIN (2026-09-14)
+       Solo capa visual: ningún cambio de JS, datos ni API.
+       ===================================================================== */
+    :root {
+      --accent: #EC5853;
+      --accent-hover: #F2716C;
+      --accent-text: #B63F35;   /* coral para texto pequeño (5,3:1) */
+      --on-accent: #161413;     /* texto sobre coral (5,3:1) */
+      --dark: #161413;
+      --gray: #5E5853;          /* 6,6:1 sobre papel */
+      --light: #F4F2EF;
+      --border: #E3DED8;
+      --border-strong: #D2CBC3;
+      --ink-2: #3E3935;
+      --ui-edit: #3B5BDB;
+      --ok-fg: #17663A;   --ok-bg: #E6F4EA;
+      --warn-fg: #8A5300; --warn-bg: #FFF4E0;
+      --crit-fg: #B42318; --crit-bg: #FDECEA;
     }
-    .ideas-count { color: var(--accent); font-weight: 700; }
-    .ideas-box textarea, .ideas-box input, .ideas-box select {
-      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
-      font-family: inherit; font-size: 13px; background: #fff; color: var(--dark); resize: vertical;
+
+    /* Barra superior fija y pestañas más ligeras */
+    .topbar { position: sticky; top: 0; z-index: 90; padding: 12px 32px; }
+    .topbar h1 { font-size: 20px; }
+    .tabs { gap: 4px; }
+    .tab { color: rgba(255, 255, 255, .72); border-color: transparent; font-weight: 500; padding: 7px 14px; }
+    .tab:hover { color: #fff; background: rgba(255, 255, 255, .08); border-color: transparent; }
+    .tab.active { background: #fff; color: var(--dark); border-color: #fff; }
+
+    /* Más ancho útil en pantallas grandes: 4 columnas de tarjetas a partir de ~1400 px */
+    main { max-width: 1440px; padding: 28px 32px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+
+    /* Toolbar y filtros */
+    .toolbar { gap: 10px; margin-bottom: 20px; }
+    .toolbar input, .toolbar select { height: 36px; padding: 0 14px; border-color: var(--border-strong); font-size: 13.5px; color: var(--dark); }
+    .toolbar input:focus, .toolbar select:focus { outline: 2px solid var(--ui-edit); outline-offset: 1px; border-color: var(--ui-edit); }
+    .subtabs { gap: 6px; margin-bottom: 18px; }
+    .subtab { padding: 6px 13px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); border-color: var(--border-strong); }
+    .subtab:hover { border-color: var(--dark); color: var(--dark); }
+    .subtab.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+    .subtab-badge { background: var(--accent); color: var(--on-accent); }
+    .lang-toggle { border-color: var(--border-strong); }
+    .lang-toggle .lang-btn { color: var(--ink-2); }
+    .lang-toggle .lang-btn.active { background: var(--dark); color: #fff; }
+    .lang-missing-badge { background: var(--warn-bg); color: var(--warn-fg); }
+
+    /* Tarjetas más compactas */
+    .card { border-radius: 12px; border-color: var(--border); transition: box-shadow .15s, border-color .15s; }
+    .card:hover { border-color: var(--border-strong); box-shadow: 0 4px 14px rgba(22, 20, 19, .06); }
+    .card-img { height: auto; aspect-ratio: 2 / 1; }
+    .card-img.placeholder {
+      aspect-ratio: auto;
+      height: 56px;
+      font-size: 0;
+      background: repeating-linear-gradient(135deg, #F1EDE8 0 8px, #EBE6E0 8px 16px);
     }
-    .ideas-box textarea:focus, .ideas-box input:focus, .ideas-box select:focus {
-      outline: none; border-color: var(--accent);
+    .card-img.placeholder::after {
+      content: "Sin foto";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font: 500 11px/1 'Inter', sans-serif;
+      color: var(--gray);
     }
-    .ideas-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
-    .ideas-hint { font-size: 11px; color: var(--gray); margin: 10px 0 0; line-height: 1.4; }
-    .ideas-ref-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-    .ideas-ref { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .ideas-ref:last-of-type { border-bottom: none; }
-    .ideas-ref.off { opacity: 0.45; }
-    .ideas-ref-main { flex: 1; min-width: 0; }
-    .ideas-ref-main a { font-size: 13px; font-weight: 600; color: var(--dark); text-decoration: none; }
-    .ideas-ref-main a:hover { color: var(--accent); }
-    .ideas-ref-main .notas { font-size: 11px; color: var(--gray); line-height: 1.35; }
-    .ideas-ref-actions { display: flex; gap: 4px; flex-shrink: 0; }
-    .ideas-ref-actions button {
-      background: none; border: none; cursor: pointer; font-size: 13px;
-      padding: 2px 4px; color: var(--gray); line-height: 1;
+    .status-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 10.5px;
+      letter-spacing: .04em;
+      padding: 3px 8px;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .7);
     }
-    .ideas-ref-actions button:hover { color: var(--accent); }
-    .radar-que-es {
-      background: var(--light); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0;
-      padding: 14px 16px; margin-bottom: 18px; font-size: 13px; line-height: 1.55;
+    .status-completa { background: var(--ok-bg); color: var(--ok-fg); }
+    .status-incompleta { background: var(--warn-bg); color: var(--warn-fg); }
+    .card-body { padding: 14px 16px; gap: 4px; }
+    .card-body h3 { font-size: 15px; letter-spacing: -.005em; }
+    .card-body .artist { color: var(--accent-text); font-weight: 500; }
+    .card-body .meta { color: var(--gray); }
+    .card-body p { color: #4A4541; -webkit-line-clamp: 2; }
+    .chip { background: #F1EDE8; color: #4A4541; }
+    .chip-warning { background: var(--crit-bg); color: var(--crit-fg); }
+
+    /* Artistas asignados: chips neutros, el principal con borde oscuro */
+    .assign-row { background: #FAF8F5; padding: 8px 16px; gap: 10px; }
+    .assign-row label { font-size: 10.5px; letter-spacing: .08em; color: var(--gray); }
+    .assign-row input { height: 30px; border-color: var(--border-strong); background: #fff; }
+    .assign-row input:focus { outline: 2px solid var(--ui-edit); outline-offset: 0; border-color: var(--ui-edit); }
+    .chip-removable {
+      background: #fff;
+      color: var(--dark);
+      font-weight: 500;
+      padding: 3px 4px;
+      box-shadow: inset 0 0 0 1px var(--border-strong);
     }
-    .radar-que-es strong { display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .radar-que-es p { margin: 0 0 8px; }
-    .radar-que-es ol { margin: 0 0 8px; padding-left: 18px; }
-    .radar-que-es li { margin-bottom: 4px; }
-    .radar-aviso { color: var(--gray); font-size: 12px; margin-bottom: 0 !important; }
-    .radar-vacio { color: var(--gray); font-size: 13px; padding: 14px 0; }
-    .radar-seccion { margin-top: 18px; }
-    .radar-seccion h4 {
-      margin: 0 0 10px; font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; color: var(--gray);
+    .chip-removable button { width: 18px; height: 18px; background: #EFEAE4; color: var(--gray); }
+    .chip-removable button:hover { background: var(--crit-bg); color: var(--crit-fg); }
+    .chip-artista .pos { background: var(--dark); color: #fff; }
+    .chip-artista[title*="principal"] { box-shadow: inset 0 0 0 1.5px var(--dark); }
+    .chip-artista[title*="sin GHL"] { background: var(--warn-bg); color: var(--warn-fg); box-shadow: inset 0 0 0 1px #E9C98F; }
+
+    /* Acciones de la tarjeta: benignas a la izquierda, cambio de estado aparte a la derecha */
+    .card-footer { padding: 10px 12px; gap: 6px; }
+    .btn { font-weight: 500; }
+    .btn-video, .btn-secondary { color: var(--ink-2); border-color: var(--border-strong); background: #fff; }
+    .btn-secondary:hover, .btn-video:hover { color: var(--dark); border-color: var(--dark); }
+    .card-footer .btn-archive { order: 3; margin-left: auto; color: var(--gray); border-color: transparent; background: transparent; }
+    .card-footer .btn-archive:hover { color: var(--crit-fg); background: var(--crit-bg); border-color: transparent; }
+    .btn-approve { background: var(--accent); color: var(--on-accent); }
+    .btn-approve:hover { background: var(--accent-hover); }
+    .card-footer .btn-primary { background: transparent; color: var(--dark); border-color: var(--dark); }
+    .card-footer .btn-primary:hover { background: var(--dark); color: #fff; }
+
+    /* Propuestas: tabla con scroll propio, acciones ligeras y eliminar separado */
+    #propuestas-table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+    table.proposals { border: 0; border-radius: 0; min-width: 980px; font-variant-numeric: tabular-nums; }
+    table.proposals th { background: #FAF8F5; font-size: 10.5px; letter-spacing: .08em; padding: 10px 14px; }
+    table.proposals td { padding: 10px 14px; vertical-align: middle; }
+    table.proposals tbody tr:hover td { background: #FBFAF8; }
+    table.proposals td small { font-size: 12px; }
+    table.proposals td .btn { padding: 5px 10px; font-size: 12px; }
+    table.proposals td .btn-secondary { border-color: transparent; background: transparent; color: var(--ink-2); }
+    table.proposals td .btn-secondary:hover { background: #F1EDE8; border-color: transparent; }
+    table.proposals td .btn-danger-outline { position: relative; margin-left: 14px; border-color: transparent; background: transparent; color: var(--crit-fg); }
+    table.proposals td .btn-danger-outline::before { content: ""; position: absolute; left: -8px; top: 5px; bottom: 5px; width: 1px; background: var(--border); }
+    table.proposals td .btn-danger-outline:hover { background: var(--crit-bg); color: var(--crit-fg); border-color: transparent; }
+    .badge { font-size: 0; padding: 3px 9px; }
+    .badge::after { font-size: 11.5px; font-weight: 600; }
+    .badge-revision { background: var(--warn-bg); color: var(--warn-fg); }
+    .badge-revision::after { content: "En revisión"; }
+    .badge-approved { background: var(--ok-bg); color: var(--ok-fg); }
+    .badge-approved::after { content: "Aprobada"; }
+
+    /* Modales y ficha lateral */
+    .edit-modal label, .field-row label { font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #4A4541; }
+    .edit-modal input:focus, .edit-modal textarea:focus, .edit-modal select:focus { border-color: var(--ui-edit); }
+    .edit-modal .btn-save { background: var(--dark); color: #fff; }
+    .edit-modal .art-section-title { color: var(--dark); }
+    .gallery-tile.primary { border-color: var(--dark); }
+    .gallery-tile .primary-tag { background: var(--dark); }
+    .gallery-add:hover { border-color: var(--ui-edit); color: var(--ui-edit); background: #F3F5FD; }
+    .show-mini:hover { border-color: var(--border-strong); }
+    .error { background: var(--crit-bg); border-color: #F2C3BD; color: var(--crit-fg); }
+
+    /* Foco visible y movimiento reducido */
+    :focus-visible { outline: 3px solid var(--ui-edit); outline-offset: 2px; }
+    .topbar :focus-visible { outline-color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      .card, .drawer, .icon-btn, .tab { transition: none; }
     }
-    .hueco {
-      border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px;
+
+    /* Ajustes tras revisar capturas */
+    /* "Pasar a pending review" lo genera el JS: se acorta y traduce solo con CSS para que quepa en una fila */
+    .card-footer .btn-archive[data-action="to-pending"] { font-size: 0; white-space: nowrap; }
+    .card-footer .btn-archive[data-action="to-pending"]::after { content: "Pasar a revisión"; font-size: 12px; }
+    .card-footer { flex-wrap: nowrap; }
+    .card-footer .btn { white-space: nowrap; }
+    .badge { white-space: nowrap; }
+    /* "contacto: …" de proveedores venía con color en línea del coral claro (3,45:1) */
+    .card-body .meta span[style*="var(--accent)"] { color: var(--accent-text) !important; }
+
+    /* Ajustes con evidencia de back-office (Polaris, Carbon, Primer, NN/g) */
+    main { max-width: 1760px; }                                   /* 5 columnas a 2000 px */
+    .tab { border-radius: 0; padding: 8px 12px; }
+    .tab:hover { background: transparent; box-shadow: inset 0 -2px 0 rgba(255, 255, 255, .35); }
+    .tab.active { background: transparent; color: #fff; border-color: transparent; font-weight: 600; box-shadow: inset 0 -2px 0 #fff; }
+    /* Filtros: estado (Activos, Pendientes) separado de datos que faltan (Sin imagen, Sin artista) */
+    #shows-subtabs { align-items: center; }
+    .subtab[data-substatus="active"] { order: 1; }
+    .subtab[data-substatus="pending_review"] { order: 2; }
+    .subtab[data-substatus="no_image"] { order: 3; margin-left: 14px; position: relative; }
+    .subtab[data-substatus="no_image"]::before { content: ""; position: absolute; left: -11px; top: 6px; bottom: 6px; width: 1px; background: var(--border-strong); }
+    .subtab[data-substatus="orphans"] { order: 4; }
+    .subtab.active::after { content: " ✓"; }
+    .subtab-badge, #shows-filter-info, .chip-artista .pos, #artistas-summary, #proveedores-summary, #propuestas-summary { font-variant-numeric: tabular-nums; }
+    /* Tarjeta: el título manda; el artista en gris */
+    .card-body .artist { color: var(--gray); }
+    .card-body .artist:hover { color: var(--dark); }
+    .card-body .meta > span:first-child { display: inline-block; }
+    .card-body .meta > span:first-child::first-letter { text-transform: uppercase; }
+    /* Iconos sobre la foto con contraste propio */
+    .icon-btn { background: rgba(22, 20, 19, .58); box-shadow: none; }
+    .icon-btn:hover { background: rgba(22, 20, 19, .8); }
+    .icon-btn.fav::before, .icon-btn.edit::before { color: #fff; }
+    .icon-btn.is-favorite { background: #FFD84D; }
+    /* Bloque de artistas más ligero: sin franja, sin mayúsculas, "×" al pasar el ratón */
+    .assign-row { background: #fff; }
+    .assign-row label { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 500; }
+    .assign-row input { border-color: transparent; background: transparent; }
+    .assign-row input:hover { border-color: var(--border); }
+    .chip-removable button { opacity: 0; transition: opacity .15s; }
+    .card:hover .chip-removable button, .card:focus-within .chip-removable button { opacity: 1; }
+    @media (hover: none) { .chip-removable button { opacity: 1; } }
+    /* Acciones benignas más ligeras */
+    .card-footer .btn-video { border-color: transparent; background: #F4F1ED; }
+    .card-footer .btn-video:hover { background: #EAE5DF; color: var(--dark); border-color: transparent; }
+
+    /* =====================================================================
+       PROPUESTAS · LISTA (sustituye a la tabla; mismos datos y acciones)
+       ===================================================================== */
+    #propuestas-table-wrap { overflow: visible; background: transparent; border: 0; border-radius: 0; }
+    #propuestas-summary { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+    .p-stat { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; color: var(--gray); white-space: nowrap; }
+    .p-stat b { color: var(--dark); font-weight: 600; font-variant-numeric: tabular-nums; margin-right: 2px; }
+
+    .p-list { background: #fff; border: 1px solid var(--border); border-radius: 14px; }
+    .p-row {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.25fr) minmax(240px, 1.35fr) 120px 150px minmax(270px, auto);
+      gap: 20px;
+      align-items: center;
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
     }
-    .hueco-cab { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .hueco-cab strong { font-size: 14px; }
-    .prio { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
-    .prio-alta { background: #fff4f0; color: var(--accent); }
-    .prio-media { background: #fff8ee; color: #a3691e; }
-    .prio-baja { background: var(--light); color: var(--gray); }
-    .hueco p { margin: 0 0 4px; font-size: 13px; line-height: 1.5; }
-    .hueco .falta { font-size: 12px; color: var(--gray); }
-    .radar-idea { border-left: 2px solid var(--border); padding-left: 12px; margin-bottom: 12px; }
-    .radar-idea strong { font-size: 14px; }
-    .radar-idea p { margin: 3px 0 0; font-size: 13px; line-height: 1.5; }
-    .radar-fuentes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .radar-fuente {
-      font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border);
+    .p-row--head {
+      position: sticky;
+      top: 56px;
+      z-index: 5;
+      border-top: 0;
+      border-radius: 14px 14px 0 0;
+      padding-top: 11px;
+      padding-bottom: 11px;
+      background: #FAF8F5;
+      box-shadow: 0 1px 0 var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gray);
     }
-    .radar-fuente.ok { background: #ecf7e8; color: #35701c; border-color: #cfe6c6; }
-    .radar-fuente.parcial { background: #fff8ee; color: #a3691e; border-color: #f0dcc0; }
-    .radar-fuente.fallo { background: #fff4f0; color: #a33; border-color: #f0cdc5; }
-    .radar-bloque { margin-top: 22px; }
-    .radar-bloque:first-child { margin-top: 6px; }
-    .radar-bloque > h4 {
-      display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
-      font-size: 15px; font-weight: 700; letter-spacing: 0;
-      text-transform: none; color: var(--dark);
-      padding-bottom: 8px; border-bottom: 2px solid var(--dark);
+    .p-head-actions { text-align: right; }
+    .p-group {
+      padding: 20px 18px 8px;
+      border-top: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--dark);
     }
-    .radar-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 20px; height: 20px; border-radius: 50%; background: var(--dark);
-      color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
+    .p-row--head + .p-group { border-top: 0; }
+    .p-group + .p-row { border-top: 0; }
+    .propuesta-main:hover { background: #FBFAF8; }
+
+    .p-client { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .p-avatar {
+      flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: #EFEAE4; color: var(--ink-2);
+      font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
     }
-    .descubrimiento {
-      background: #fff8ee; border-left: 3px solid #e0a94f; border-radius: 0 6px 6px 0;
-      padding: 12px 14px; margin-bottom: 10px;
+    .is-approved .p-avatar { background: var(--ok-bg); color: var(--ok-fg); }
+    .p-avatar--version { background: transparent; color: var(--gray); font-size: 16px; }
+    .p-text, .p-event, .p-shows, .p-status { min-width: 0; }
+    .p-title {
+      font-size: 14px; font-weight: 600; color: var(--dark); line-height: 1.35;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .descubrimiento strong { display: block; font-size: 14px; line-height: 1.4; margin-bottom: 6px; }
-    .descubrimiento .dato { margin: 0 0 6px; font-size: 13px; line-height: 1.5; }
-    .descubrimiento .implicacion { margin: 0; font-size: 13px; line-height: 1.5; color: #7a5a1e; }
-    .descubrimiento .implicacion span { font-weight: 700; }
-    .accionable {
-      border: 1px solid var(--border); border-radius: 6px;
-      padding: 14px 16px; margin-bottom: 10px; background: #fff;
+    .p-title.is-muted { color: var(--gray); font-weight: 500; }
+    .is-empty .p-client .p-title { font-weight: 500; }
+    .p-sub {
+      font-size: 12.5px; color: var(--gray); line-height: 1.4; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .acc-cab { display: flex; align-items: baseline; gap: 9px; margin-bottom: 8px; }
-    .acc-cab strong { font-size: 15px; line-height: 1.35; }
-    .acc-n {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
-      color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0;
+    .p-date { font-size: 12px; color: var(--gray); margin-top: 5px; font-variant-numeric: tabular-nums; }
+
+    .p-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 23px; padding: 0 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
     }
-    .acc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
-    .accionable p { margin: 0 0 5px; font-size: 13px; line-height: 1.5; }
-    .accionable .etq { font-weight: 700; }
-    .acc-shows { color: var(--gray); font-size: 12px !important; margin-top: 7px !important; }
-    .prio, .esf, .fichar {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      padding: 3px 8px; border-radius: 999px; letter-spacing: 0.03em;
+    .p-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .p-pill--ok { background: var(--ok-bg); color: var(--ok-fg); }
+    .p-pill--info { background: #E8F1FB; color: #1F5FAE; }
+    .p-pill--warn { background: var(--warn-bg); color: var(--warn-fg); }
+    .p-pill--neutral { background: #F1EDE8; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .p-pill--neutral::before { display: none; }
+
+    .p-versions {
+      border: 0; background: none; padding: 0; margin-left: 8px;
+      font: inherit; font-size: 12.5px; font-weight: 500; color: var(--ui-edit); cursor: pointer;
     }
-    .prio-alta { background: #fff4f0; color: var(--accent); }
-    .prio-media { background: #fff8ee; color: #a3691e; }
-    .prio-baja { background: var(--light); color: var(--gray); }
-    .esf-bajo { background: #ecf7e8; color: #35701c; }
-    .esf-medio { background: #fff8ee; color: #a3691e; }
-    .esf-alto { background: #fff4f0; color: #a33; }
-    .fichar.no { background: #ecf7e8; color: #35701c; }
-    .fichar.si { background: var(--light); color: var(--gray); }
-    .radar-descartes { margin: 0; padding-left: 18px; font-size: 12px; color: var(--gray); line-height: 1.55; }
-    .radar-descartes li { margin-bottom: 6px; }
-    .gpt-check {
-      display: flex; flex-direction: column; gap: 3px; padding: 12px 14px;
-      border-radius: 6px; margin-bottom: 16px; font-size: 13px;
+    .p-versions:hover { text-decoration: underline; }
+
+    .p-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    .p-actions .btn { padding: 7px 13px; font-size: 12.5px; white-space: nowrap; }
+    .p-ghost { color: var(--ink-2); background: transparent; border-color: transparent; }
+    .p-ghost:hover { background: #F1EDE8; color: var(--dark); }
+    .p-menu { position: relative; }
+    .p-menu > summary { list-style: none; cursor: pointer; user-select: none; }
+    .p-menu > summary::-webkit-details-marker { display: none; }
+    .p-menu > summary::after { content: "▾"; font-size: 10px; margin-left: 6px; }
+    .p-menu[open] > summary { background: #EFEAE4; color: var(--dark); }
+    .p-menu-panel {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+      min-width: 200px; padding: 6px;
+      display: flex; flex-direction: column;
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 14px 34px rgba(22, 20, 19, .16);
     }
-    .gpt-check.ok { background: #ecf7e8; color: #35701c; }
-    .gpt-check.ko { background: #fff4f0; color: #a33; }
-    .gpt-check span { color: inherit; opacity: 0.8; font-size: 12px; }
-    .gpt-endpoints { display: flex; flex-direction: column; gap: 8px; }
-    .gpt-endpoint {
-      display: flex; flex-direction: column; gap: 2px; padding: 10px 12px;
-      background: var(--light); border: 1px solid var(--border); border-radius: 6px;
+    .p-menu-item {
+      text-align: left; background: none; border: 0; border-radius: 6px;
+      padding: 9px 10px; font: inherit; font-size: 13px; color: var(--dark); cursor: pointer;
     }
-    .gpt-endpoint code { font-size: 12px; font-weight: 600; color: var(--dark); }
-    .gpt-endpoint span { font-size: 11px; color: var(--gray); }
-    .ideas-box code {
-      background: var(--light); border: 1px solid var(--border); border-radius: 4px;
-      padding: 1px 5px; font-size: 11px;
+    .p-menu-item:hover { background: #F4F1ED; }
+    .p-menu-item:disabled { opacity: .6; cursor: progress; }
+    .p-menu-item--danger { color: var(--crit-fg); margin-top: 4px; position: relative; }
+    .p-menu-item--danger::before { content: ""; position: absolute; left: 4px; right: 4px; top: -3px; height: 1px; background: var(--border); }
+    .p-menu-item--danger:hover { background: var(--crit-bg); }
+    .p-row--version { background: #FAF8F5; padding-top: 8px; padding-bottom: 8px; }
+
+    /* Anchos medios: shows y estado apilados en una columna */
+    @media (max-width: 1280px) {
+      .p-row { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) 130px auto; column-gap: 16px; row-gap: 6px; }
+      .p-client { grid-column: 1; grid-row: 1 / span 2; }
+      .p-event { grid-column: 2; grid-row: 1 / span 2; }
+      .p-shows { grid-column: 3; grid-row: 1; }
+      .p-status { grid-column: 3; grid-row: 2; }
+      .p-actions { grid-column: 4; grid-row: 1 / span 2; }
+      .p-date { display: none; }
+      .p-row--head { display: none; }
+      .p-list { border-radius: 14px; }
+    }
+    /* Móvil: cada propuesta como tarjeta */
+    @media (max-width: 760px) {
+      .p-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 10px; padding: 14px; }
+      .p-client { grid-column: 1; grid-row: 1; }
+      .p-status { grid-column: 2; grid-row: 1; text-align: right; }
+      .p-event { grid-column: 1 / -1; grid-row: 2; padding-left: 50px; }
+      .p-shows { grid-column: 1; grid-row: 3; padding-left: 50px; }
+      .p-actions { grid-column: 1 / -1; grid-row: 4; justify-content: flex-start; padding-left: 46px; flex-wrap: wrap; }
+      .p-title, .p-sub { white-space: normal; }
+      .p-date { display: block; }
+      .p-menu-panel { left: 0; right: auto; }
+    }
+
+    /* Móvil */
+    @media (max-width: 700px) {
+      .toolbar input { flex: 1 1 100% !important; max-width: none !important; }
+      .subtab[data-substatus="no_image"] { margin-left: 0; }
+      .subtab[data-substatus="no_image"]::before { display: none; }
+      .topbar { padding: 10px 16px; }
+      .tabs { width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab { flex: 0 0 auto; }
+      main { padding: 18px 14px; }
+      .toolbar input, .toolbar select { min-width: 0; flex: 1 1 100%; }
+      .grid { grid-template-columns: 1fr; gap: 12px; }
+      .card-img { aspect-ratio: 2 / 1; }
     }
   </style>
 </head>
@@ -685,7 +896,6 @@
       <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
-      <button class="tab" data-tab="ideas">Ideas</button>
     </div>
   </div>
 
@@ -747,10 +957,10 @@
     <!-- TAB: SHOWS -->
     <section id="tab-shows" class="tab-panel hidden">
       <div class="subtabs" id="shows-subtabs">
-        <button class="subtab" data-substatus="active">Active</button>
+        <button class="subtab" data-substatus="active">Activos</button>
         <button class="subtab" data-substatus="no_image">Sin imagen</button>
         <button class="subtab" data-substatus="orphans">Sin artista asignado</button>
-        <button class="subtab" data-substatus="pending_review">Pending review<span class="subtab-badge hidden" id="pending-review-count">0</span></button>
+        <button class="subtab" data-substatus="pending_review">Pendientes de revisión<span class="subtab-badge hidden" id="pending-review-count">0</span></button>
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
@@ -784,104 +994,6 @@
       <div id="propuestas-table-wrap"></div>
     </section>
 
-    <!-- TAB: IDEAS -->
-    <section id="tab-ideas" class="tab-panel hidden">
-      <div class="ideas-layout">
-        <div class="ideas-col-form">
-          <div class="ideas-box">
-            <h3>Fuentes de referencia <span id="refs-count" class="ideas-count"></span></h3>
-            <p class="ideas-hint" style="margin-top:0;">Webs y perfiles del sector que viajan al GPT junto con el catálogo. Inspiración de formatos, nunca copiamos textos.</p>
-            <div id="refs-list"></div>
-            <button class="btn btn-secondary" id="ref-add-btn" style="width:100%;margin-top:10px;">+ Añadir fuente</button>
-            <form id="ref-form" class="ideas-ref-form hidden">
-              <input type="hidden" id="ref-id">
-              <div class="field-row">
-                <label for="ref-nombre">Nombre *</label>
-                <input id="ref-nombre" type="text" placeholder="Scarlett Entertainment">
-              </div>
-              <div class="field-row">
-                <label for="ref-url">URL *</label>
-                <input id="ref-url" type="url" placeholder="https://...">
-              </div>
-              <div class="field-row">
-                <label for="ref-tipo">Tipo</label>
-                <select id="ref-tipo">
-                  <option value="web">Web</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="pinterest">Pinterest</option>
-                  <option value="otro">Otro</option>
-                </select>
-              </div>
-              <div class="field-row">
-                <label for="ref-notas">Qué mirar aquí</label>
-                <textarea id="ref-notas" rows="2" placeholder="Catálogo enorme, buena referencia de amplitud"></textarea>
-              </div>
-              <div class="field-row">
-                <label for="ref-tags">Tags (separados por coma)</label>
-                <input id="ref-tags" type="text" placeholder="catalogo-grande, mice">
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button type="submit" class="btn btn-primary" style="flex:1;">Guardar</button>
-                <button type="button" class="btn btn-secondary" id="ref-cancel">Cancelar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="ideas-col-results">
-          <div class="ideas-box">
-            <h3>Radar del sector <span id="radar-fecha" class="ideas-count"></span></h3>
-
-            <div class="radar-que-es">
-              <strong>Qué es esto y de dónde sale</strong>
-              <p>
-                Un análisis que se lanza <strong>a demanda</strong>, cuando Xavi lo pide o cuando toca
-                revisar por dónde ampliar catálogo. No es un informe automático semanal: se hace cuando
-                sirve para algo. Cada vez recorre estos pasos:
-              </p>
-              <ol>
-                <li>Lee el catálogo activo de Eventos Barcelona, los shows aprobados en ese momento.</li>
-                <li>Lee cómo clasifican su oferta las agencias de referencia del sector, sacando su taxonomía de los sitemaps públicos.</li>
-                <li>Cruza las dos listas y busca <strong>familias de entretenimiento que ellos venden y aquí no hay</strong>.</li>
-                <li>Descarta lo que no encaja con el posicionamiento. Eventos Barcelona es boutique premium para clientes MICE, no un directorio: un hueco no vale por existir, vale si tiene sentido para evento corporativo premium en Barcelona.</li>
-              </ol>
-              <p class="radar-aviso">
-                Son pistas para decidir a quién fichar y qué empaquetar, no una lista de la compra.
-                El criterio sigue siendo de Xavi. Abajo se ve también lo que se descartó y por qué,
-                que suele ser tan útil como lo que se propone.
-              </p>
-            </div>
-
-            <div id="radar-contenido"></div>
-          </div>
-
-          <div class="ideas-box" style="margin-top:16px;">
-            <h3>Conexión con el GPT</h3>
-            <p style="font-size:14px;margin:0 0 16px;line-height:1.55;">
-              La ideación vive en el GPT de Xavi, que llama a este panel para leer el catálogo real.
-              Así trabaja con lo que Eventos Barcelona puede producir de verdad, en vez de inventarse shows.
-            </p>
-            <div id="gpt-status"></div>
-            <div class="gpt-endpoints">
-              <div class="gpt-endpoint"><code>GET /api/gpt/catalogo</code><span>Catálogo activo + fuentes de referencia</span></div>
-              <div class="gpt-endpoint"><code>GET /api/gpt/show?ids=…</code><span>Detalle: precio, vídeo, biografía del artista</span></div>
-            </div>
-            <p class="ideas-hint">
-              Solo lectura. No exponen contactos, propuestas ni datos de clientes.
-              Para montar o revisar el GPT: <code>docs/gpt-asistente-instrucciones.md</code> en el repo.
-            </p>
-          </div>
-
-          <div class="ideas-box" style="margin-top:16px;">
-            <h3>Qué ve el GPT</h3>
-            <p class="ideas-hint" style="margin-top:0;">
-              Los shows en estado <strong>Activo</strong>. Lo que Xavi apruebe en el tab Shows aparece
-              en el GPT al momento, sin tocar nada. Lo archivado desaparece.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- Drawer -->
@@ -1125,7 +1237,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'ideas'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -1158,8 +1270,7 @@
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
       shows: { substatus: 'active', artistaFilter: null, items: [], q: '', lang: 'es' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
-      propuestas: { q: '', status: '', items: [] },
-      ideas: { referencias: [], gpt: null, refsLoaded: false }
+      propuestas: { q: '', status: '', items: [] }
     };
     state.artistas.statusFilter = '';
     state.artistas.tipo = 'artista';
@@ -3025,76 +3136,161 @@
         // Grupos ordenados por la propuesta más reciente de cada uno
         groups.sort((a, b) => new Date(b[0].created_at || 0) - new Date(a[0].created_at || 0));
 
-        $('propuestas-summary').textContent =
-          `${groups.length} cliente${groups.length === 1 ? '' : 's'} · ${data.total} propuesta${data.total === 1 ? '' : 's'}`;
+        // ---- Presentación de la lista (mismos datos, mismos botones y data-attributes) ----
+        // shows llega como string JSON desde Supabase: contarlo bien (antes salía 0 casi siempre).
+        const countShows = (p) => {
+          const v = p && p.shows;
+          if (Array.isArray(v)) return v.length;
+          if (typeof v === 'string' && v.trim()) {
+            try { const x = JSON.parse(v); return Array.isArray(x) ? x.length : 0; } catch { return 0; }
+          }
+          return 0;
+        };
+        const isEmailLike = (s) => /@/.test(s || '');
+        const hoy = new Date();
+        const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const daysAgo = (v) => {
+          const d = new Date(v);
+          return (!v || isNaN(d)) ? null : Math.round((startOfDay(hoy) - startOfDay(d)) / 86400000);
+        };
+        const fmtShort = (d, withYear) => d.toLocaleDateString('es-ES', withYear
+          ? { day: 'numeric', month: 'short', year: 'numeric' }
+          : { day: 'numeric', month: 'short' });
+        const fmtCreated = (v) => {
+          const d = new Date(v);
+          if (!v || isNaN(d)) return 'Sin fecha';
+          const n = daysAgo(v);
+          const hora = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+          if (n === 0) return `Hoy, ${hora}`;
+          if (n === 1) return `Ayer, ${hora}`;
+          return fmtShort(d, d.getFullYear() !== hoy.getFullYear());
+        };
+        // Fechas de evento: ISO se formatea; las escritas a mano ("22 de octubre") se muestran tal cual.
+        const fmtEventDate = (v) => {
+          if (!v) return '';
+          const s = String(v).trim();
+          if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const d = new Date(s); if (!isNaN(d)) return fmtShort(d, true); }
+          return s;
+        };
+        const bucketOf = (v) => {
+          const n = daysAgo(v);
+          if (n === null) return 'Sin fecha';
+          if (n <= 0) return 'Hoy';
+          if (n < 7) return 'Últimos 7 días';
+          if (n < 31) return 'Último mes';
+          return 'Anteriores';
+        };
+        const initialsOf = (s) => (s || '?').replace(/@.*/, '').split(/[\s._-]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+        const clientParts = (p) => {
+          const name = (p.client_name || '').trim();
+          const company = (p.client_company || '').trim();
+          const email = (p.client_email || '').trim();
+          const title = name && !isEmailLike(name) ? name : (company || name || email || 'Sin nombre');
+          const sub = [company && company !== title ? company : null, email && email !== title ? email : null].filter(Boolean).join(' · ');
+          return { title, sub };
+        };
+        const eventParts = (p) => {
+          const raw = (p.event_name || '').trim();
+          const generic = !raw || /^Propuesta\s+[—-]\s+/.test(raw);
+          const title = generic ? ((p.event_type || '').trim() || 'Evento sin definir') : raw;
+          const guests = Number(p.event_guests) > 0 ? `${p.event_guests} invitados` : null;
+          const meta = [fmtEventDate(p.event_date), (p.event_location || '').trim() || null, guests].filter(Boolean).join(' · ');
+          return { title, meta, generic };
+        };
+        const statusPill = (p) => p.status === 'approved'
+          ? '<span class="p-pill p-pill--ok">Aprobada</span>'
+          : '<span class="p-pill p-pill--info">En revisión</span>';
+        const showsPill = (n) => n > 0
+          ? `<span class="p-pill p-pill--neutral">${n} show${n === 1 ? '' : 's'}</span>`
+          : '<span class="p-pill p-pill--warn">Por preparar</span>';
 
-        const rowActions = (p) => `
-          <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
-          <button class="btn btn-secondary" data-dup-proposal="${escapeHtml(p.id)}" title="Duplicar como nueva versión">Duplicar</button>
-          <button class="btn btn-secondary" data-copy="${escapeHtml(p.id)}">Copiar URL</button>
-          ${p.status !== 'approved'
-            ? `<button class="btn btn-secondary" data-validate="${escapeHtml(p.id)}">Validar</button>`
-            : (p.pdf_url
-                ? `<a class="btn btn-secondary" href="${escapeHtml(p.pdf_url)}" target="_blank">PDF</a>
-                   <button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Regenerar</button>`
-                : `<button class="btn btn-secondary" data-gen-pdf="${escapeHtml(p.id)}">Generar PDF</button>`)}
-          <button class="btn btn-danger-outline" data-del-proposal="${escapeHtml(p.id)}" title="Eliminar esta versión">Eliminar</button>
-        `;
+        const totalConShows = state.propuestas.items.filter(p => countShows(p) > 0).length;
+        const totalAprobadas = state.propuestas.items.filter(p => p.status === 'approved').length;
+        $('propuestas-summary').innerHTML =
+          `<span class="p-stat"><b>${groups.length}</b> cliente${groups.length === 1 ? '' : 's'}</span>` +
+          `<span class="p-stat"><b>${data.total}</b> propuesta${data.total === 1 ? '' : 's'}</span>` +
+          `<span class="p-stat"><b>${totalConShows}</b> con shows</span>` +
+          `<span class="p-stat"><b>${totalAprobadas}</b> aprobada${totalAprobadas === 1 ? '' : 's'}</span>`;
 
+        // Acciones: las frecuentes a la vista; el resto en un menú nativo <details>.
+        // Mismos data-attributes que antes, así los manejadores de abajo no cambian.
+        const rowActions = (p) => {
+          const id = escapeHtml(p.id);
+          const approved = p.status === 'approved';
+          return `
+            <div class="p-actions">
+              <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
+              <button class="btn p-ghost" data-copy="${id}">Copiar URL</button>
+              ${approved && p.pdf_url ? `<a class="btn p-ghost" href="${escapeHtml(p.pdf_url)}" target="_blank">PDF</a>` : ''}
+              <details class="p-menu">
+                <summary class="btn p-ghost" title="Más acciones">Más</summary>
+                <div class="p-menu-panel">
+                  <button class="p-menu-item" data-dup-proposal="${id}" title="Duplicar como nueva versión">Duplicar</button>
+                  ${approved
+                    ? `<button class="p-menu-item" data-gen-pdf="${id}">${p.pdf_url ? 'Regenerar PDF' : 'Generar PDF'}</button>`
+                    : `<button class="p-menu-item" data-validate="${id}">Validar</button>`}
+                  <button class="p-menu-item p-menu-item--danger" data-del-proposal="${id}" title="Eliminar esta versión">Eliminar</button>
+                </div>
+              </details>
+            </div>`;
+        };
+
+        let lastBucket = null;
         const rowsHtml = groups.map((versions, gi) => {
           const latest = versions[0];
           const older = versions.slice(1);
-          const showsArr = Array.isArray(latest.shows) ? latest.shows : [];
-          const created = latest.created_at ? new Date(latest.created_at).toLocaleDateString('es-ES') : '—';
-          const evDate = latest.event_date ? new Date(latest.event_date).toLocaleDateString('es-ES') : '';
-          const badge = latest.status === 'approved' ? 'badge-approved' : 'badge-revision';
+          const n = countShows(latest);
+          const c = clientParts(latest);
+          const ev = eventParts(latest);
+          const bucket = bucketOf(latest.created_at);
+          let html = '';
+          if (bucket !== lastBucket) {
+            html += `<div class="p-group">${escapeHtml(bucket)}</div>`;
+            lastBucket = bucket;
+          }
           const verLabel = versions.length > 1
-            ? `<button class="btn btn-secondary" data-toggle-versions="${gi}" style="font-size:11px;padding:4px 10px;">▸ ${versions.length} versiones</button>`
-            : `<span style="color:var(--gray);font-size:12px;">1 versión</span>`;
+            ? `<button class="p-versions" data-toggle-versions="${gi}">▸ ${versions.length} versiones</button>`
+            : '';
 
           // Fila principal (última versión)
-          let html = `
-            <tr data-group="${gi}" class="propuesta-main">
-              <td>${escapeHtml(created)}</td>
-              <td>
-                <strong>${escapeHtml(latest.client_name || '—')}</strong>
-                ${latest.client_company ? `<br><small style="color:var(--gray);">${escapeHtml(latest.client_company)}</small>` : ''}
-                ${latest.client_email ? `<br><small style="color:var(--gray);">${escapeHtml(latest.client_email)}</small>` : ''}
-              </td>
-              <td>
-                ${escapeHtml(latest.event_name || latest.event_type || '—')}
-                ${evDate ? `<br><small style="color:var(--gray);">${escapeHtml(evDate)}</small>` : ''}
-                <br>${verLabel}
-              </td>
-              <td>${showsArr.length}</td>
-              <td><span class="badge ${badge}">${escapeHtml(latest.status || '—')}</span></td>
-              <td style="white-space:nowrap;">${rowActions(latest)}</td>
-            </tr>
-          `;
-          // Filas de versiones anteriores (ocultas por defecto)
+          html += `
+            <div data-group="${gi}" class="p-row propuesta-main${n === 0 ? ' is-empty' : ''}${latest.status === 'approved' ? ' is-approved' : ''}">
+              <div class="p-client">
+                <span class="p-avatar" aria-hidden="true">${escapeHtml(initialsOf(c.title))}</span>
+                <div class="p-text">
+                  <div class="p-title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</div>
+                  ${c.sub ? `<div class="p-sub" title="${escapeHtml(c.sub)}">${escapeHtml(c.sub)}</div>` : ''}
+                </div>
+              </div>
+              <div class="p-event">
+                <div class="p-title${ev.generic ? ' is-muted' : ''}" title="${escapeHtml(ev.title)}">${escapeHtml(ev.title)}</div>
+                ${ev.meta || verLabel ? `<div class="p-sub">${ev.meta ? escapeHtml(ev.meta) : ''}${verLabel}</div>` : ''}
+              </div>
+              <div class="p-shows">${showsPill(n)}</div>
+              <div class="p-status">${statusPill(latest)}<div class="p-date">${escapeHtml(fmtCreated(latest.created_at))}</div></div>
+              ${rowActions(latest)}
+            </div>`;
+          // Versiones anteriores (ocultas por defecto)
           older.forEach(p => {
-            const c = p.created_at ? new Date(p.created_at).toLocaleDateString('es-ES') + ' ' + new Date(p.created_at).toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}) : '—';
-            const b = p.status === 'approved' ? 'badge-approved' : 'badge-revision';
             html += `
-              <tr data-version-of="${gi}" class="propuesta-version hidden" style="background:var(--light);">
-                <td style="color:var(--gray);font-size:12px;">${escapeHtml(c)}</td>
-                <td colspan="2" style="color:var(--gray);font-size:12px;padding-left:24px;">↳ versión anterior</td>
-                <td>${(Array.isArray(p.shows) ? p.shows : []).length}</td>
-                <td><span class="badge ${b}">${escapeHtml(p.status || '—')}</span></td>
-                <td style="white-space:nowrap;">${rowActions(p)}</td>
-              </tr>
-            `;
+              <div data-version-of="${gi}" class="p-row p-row--version propuesta-version hidden">
+                <div class="p-client"><span class="p-avatar p-avatar--version" aria-hidden="true">↳</span><div class="p-text"><div class="p-sub">Versión anterior</div></div></div>
+                <div class="p-event"><div class="p-sub">Creada ${escapeHtml(fmtCreated(p.created_at))}</div></div>
+                <div class="p-shows">${showsPill(countShows(p))}</div>
+                <div class="p-status">${statusPill(p)}</div>
+                ${rowActions(p)}
+              </div>`;
           });
           return html;
         }).join('');
 
         $('propuestas-table-wrap').innerHTML = `
-          <table class="proposals">
-            <thead>
-              <tr><th>Fecha</th><th>Cliente</th><th>Evento</th><th>Shows</th><th>Status</th><th>Acciones</th></tr>
-            </thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
+          <div class="p-list">
+            <div class="p-row p-row--head">
+              <div>Cliente</div><div>Evento</div><div>Shows</div><div>Estado</div><div class="p-head-actions">Acciones</div>
+            </div>
+            ${rowsHtml}
+          </div>
         `;
 
         // Expandir/colapsar versiones
@@ -3249,216 +3445,6 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
     // ---------- HASH ROUTER ----------
-    // ---------- IDEAS (fuentes + estado del GPT) ----------
-
-    async function loadReferencias() {
-      try {
-        const r = await fetch('/api/admin?action=list-referencias');
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error || 'Error cargando fuentes');
-        state.ideas.referencias = d.items || [];
-        state.ideas.gpt = d.gpt || null;
-        state.ideas.refsLoaded = true;
-        renderReferencias();
-        renderGptStatus();
-        if (d.radar) renderRadar(d.radar);
-        else $('radar-contenido').innerHTML =
-          '<p class="radar-vacio">Todavía no se ha publicado ningún informe. Se genera a demanda desde el repo.</p>';
-      } catch (e) {
-        showError(e.message);
-      }
-    }
-
-    function renderGptStatus() {
-      const g = state.ideas.gpt;
-      if (!g) { $('gpt-status').innerHTML = ''; return; }
-      const ok = g.token_configurado;
-      $('gpt-status').innerHTML = `
-        <div class="gpt-check ${ok ? 'ok' : 'ko'}">
-          <strong>${ok ? 'Token configurado' : 'Falta GPT_ACTION_TOKEN'}</strong>
-          <span>${ok
-            ? `El GPT puede leer el catálogo. ${g.shows_activos} shows activos disponibles.`
-            : 'Setear la env var en Vercel y redeployar, o la Action devolverá 500.'}</span>
-        </div>`;
-    }
-
-    function renderReferencias() {
-      const refs = state.ideas.referencias;
-      const activas = refs.filter(r => r.activa).length;
-      $('refs-count').textContent = refs.length ? `${activas}/${refs.length}` : '';
-      if (!refs.length) {
-        $('refs-list').innerHTML = '<p class="ideas-hint" style="margin:0;">Todavía no hay fuentes. Añade las webs del sector que quieras usar de inspiración.</p>';
-        return;
-      }
-      $('refs-list').innerHTML = refs.map(r => `
-        <div class="ideas-ref ${r.activa ? '' : 'off'}">
-          <div class="ideas-ref-main">
-            <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.nombre)}</a>
-            ${r.notas ? `<div class="notas">${escapeHtml(r.notas)}</div>` : ''}
-          </div>
-          <div class="ideas-ref-actions">
-            <button title="${r.activa ? 'Desactivar' : 'Activar'}" data-ref-toggle="${r.id}">${r.activa ? '\u25c9' : '\u25cb'}</button>
-            <button title="Editar" data-ref-edit="${r.id}">\u270e</button>
-            <button title="Eliminar" data-ref-del="${r.id}">\u00d7</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openRefForm(ref) {
-      $('ref-id').value = ref ? ref.id : '';
-      $('ref-nombre').value = ref ? ref.nombre : '';
-      $('ref-url').value = ref ? ref.url : '';
-      $('ref-tipo').value = ref ? (ref.tipo || 'web') : 'web';
-      $('ref-notas').value = ref ? (ref.notas || '') : '';
-      $('ref-tags').value = ref && Array.isArray(ref.tags) ? ref.tags.join(', ') : '';
-      $('ref-form').classList.remove('hidden');
-      $('ref-add-btn').classList.add('hidden');
-      $('ref-nombre').focus();
-    }
-
-    function closeRefForm() {
-      $('ref-form').classList.add('hidden');
-      $('ref-add-btn').classList.remove('hidden');
-    }
-
-    async function saveReferenciaFromForm(ev) {
-      ev.preventDefault();
-      const id = $('ref-id').value;
-      const body = {
-        nombre: $('ref-nombre').value.trim(),
-        url: $('ref-url').value.trim(),
-        tipo: $('ref-tipo').value,
-        notas: $('ref-notas').value.trim(),
-        tags: $('ref-tags').value.split(',').map(t => t.trim()).filter(Boolean)
-      };
-      if (id) body.id = id;
-      if (!body.nombre || !body.url) { showError('Nombre y URL son obligatorios'); return; }
-      try {
-        const r = await fetch('/api/admin?action=save-referencia', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-        });
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error || 'Error guardando');
-        closeRefForm();
-        await loadReferencias();
-      } catch (e) { showError(e.message); }
-    }
-
-    async function toggleReferencia(id) {
-      const ref = state.ideas.referencias.find(r => r.id === id);
-      if (!ref) return;
-      try {
-        const r = await fetch('/api/admin?action=save-referencia', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...ref, activa: !ref.activa })
-        });
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error || 'Error');
-        await loadReferencias();
-      } catch (e) { showError(e.message); }
-    }
-
-    async function deleteReferenciaById(id) {
-      const ref = state.ideas.referencias.find(r => r.id === id);
-      if (!confirm(`¿Eliminar la fuente "${ref ? ref.nombre : id}"?`)) return;
-      try {
-        const r = await fetch('/api/admin?action=delete-referencia', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })
-        });
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error || 'Error');
-        await loadReferencias();
-      } catch (e) { showError(e.message); }
-    }
-
-    function renderRadar(d) {
-      if (d.generado) {
-        const f = new Date(d.generado);
-        if (!isNaN(f)) $('radar-fecha').textContent = f.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
-      }
-      const desc = d.descubrimientos || [];
-      const acc = d.accionables || [];
-      let html = '';
-
-      if (desc.length) {
-        html += '<div class="radar-bloque"><h4><span class="radar-num">1</span> Qué hemos descubierto</h4>';
-        html += desc.map((x, i) => `
-          <div class="descubrimiento">
-            <strong>${escapeHtml(x.titulo)}</strong>
-            <p class="dato">${escapeHtml(x.dato || '')}</p>
-            ${x.implicacion ? `<p class="implicacion"><span>Qué significa:</span> ${escapeHtml(x.implicacion)}</p>` : ''}
-          </div>`).join('');
-        html += '</div>';
-      }
-
-      if (acc.length) {
-        html += '<div class="radar-bloque"><h4><span class="radar-num">2</span> Qué hacemos con esto</h4>';
-        html += acc.map((a, i) => {
-          const p = (a.prioridad || 'baja').toLowerCase();
-          const e = (a.esfuerzo || '').toLowerCase();
-          return `<div class="accionable">
-            <div class="acc-cab">
-              <span class="acc-n">${i + 1}</span>
-              <strong>${escapeHtml(a.accion)}</strong>
-            </div>
-            <div class="acc-tags">
-              <span class="prio prio-${escapeHtml(p)}">prioridad ${escapeHtml(p)}</span>
-              ${e ? `<span class="esf esf-${escapeHtml(e)}">esfuerzo ${escapeHtml(e)}</span>` : ''}
-              <span class="fichar ${a.requiere_fichar ? 'si' : 'no'}">${a.requiere_fichar ? 'hay que fichar' : 'con lo que ya hay'}</span>
-            </div>
-            ${a.por_que ? `<p><span class="etq">Por qué:</span> ${escapeHtml(a.por_que)}</p>` : ''}
-            ${a.como ? `<p><span class="etq">Cómo:</span> ${escapeHtml(a.como)}</p>` : ''}
-            ${(a.shows_implicados || []).length
-              ? `<p class="acc-shows">Usa: ${a.shows_implicados.map(escapeHtml).join(' · ')}</p>` : ''}
-          </div>`;
-        }).join('');
-        html += '</div>';
-      }
-
-      if ((d.nuevo_esta_semana || []).length) {
-        html += `<div class="radar-seccion"><h4>Nuevo desde el último informe</h4>
-          <ul class="radar-descartes">${d.nuevo_esta_semana.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
-      }
-
-      if ((d.descartado_a_proposito || []).length) {
-        html += `<div class="radar-seccion"><h4>Descartado a propósito</h4>
-          <ul class="radar-descartes">${d.descartado_a_proposito.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
-      }
-
-      if ((d.avisos_de_datos || []).length) {
-        html += `<div class="radar-seccion"><h4>Avisos sobre los datos</h4>
-          <ul class="radar-descartes">${d.avisos_de_datos.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
-      }
-
-      if ((d.fuentes_leidas || []).length) {
-        html += `<div class="radar-seccion"><h4>Fuentes leídas</h4><div class="radar-fuentes">
-          ${d.fuentes_leidas.map(f => {
-            const est = (f.estado || 'ok').toLowerCase();
-            const n = f.categorias_encontradas ? ` · ${f.categorias_encontradas}` : '';
-            return `<span class="radar-fuente ${escapeHtml(est)}">${escapeHtml(f.nombre)}${n}</span>`;
-          }).join('')}</div>
-          ${d.catalogo_eb ? `<p class="radar-aviso" style="margin-top:8px;">Comparado contra ${d.catalogo_eb.shows} shows propios en ${(d.catalogo_eb.categorias || []).length} categorías.</p>` : ''}
-        </div>`;
-      }
-
-      $('radar-contenido').innerHTML = html;
-    }
-
-    $('ref-add-btn').addEventListener('click', () => openRefForm(null));
-    $('ref-cancel').addEventListener('click', closeRefForm);
-    $('ref-form').addEventListener('submit', saveReferenciaFromForm);
-    $('refs-list').addEventListener('click', (ev) => {
-      const btn = ev.target.closest('button');
-      if (!btn) return;
-      if (btn.dataset.refToggle) return toggleReferencia(btn.dataset.refToggle);
-      if (btn.dataset.refDel) return deleteReferenciaById(btn.dataset.refDel);
-      if (btn.dataset.refEdit) {
-        const ref = state.ideas.referencias.find(r => r.id === btn.dataset.refEdit);
-        if (ref) openRefForm(ref);
-      }
-    });
-
     async function applyHash() {
       const { tab, sub, query } = parseHash();
       activateTab(tab);
@@ -3517,8 +3503,6 @@
         }
       } else if (tab === 'propuestas') {
         loadPropuestas();
-      } else if (tab === 'ideas') {
-        if (!state.ideas.refsLoaded) loadReferencias();
       }
     }
 

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta EB · antes y después</title>
+<style>
+  :root { --ink: #1D1B1A; --muted: #5E5853; --rule: #E6E1DB; --paper: #F4F2EF; --edit: #3B5BDB; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid var(--rule); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+  h1 { font-size: 15px; margin: 0; font-weight: 650; }
+  h1 small { font-weight: 400; color: var(--muted); margin-left: 6px; }
+  .group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .group span { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+  button, select, a.btn { font: inherit; font-size: 13px; border: 1px solid #C9C3BC; background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 12px; cursor: pointer; text-decoration: none; }
+  button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  label.sync { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .note { font-size: 12.5px; color: var(--muted); padding: 8px 20px 0; }
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px 20px 32px; }
+  .col h2 { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+  .col h2::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #C9C3BC; }
+  .col.after h2::before { background: #EC5853; }
+  .col h2 a { margin-left: auto; font-size: 12px; letter-spacing: 0; text-transform: none; }
+  .stage { background: #fff; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; position: relative; }
+  .stage.mob { width: 392px; max-width: 100%; margin-inline: auto; border-radius: 26px; border: 8px solid #111; }
+  .stage iframe { border: 0; display: block; background: #fff; transform-origin: 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Propuesta EB · Ola 1 visual <small>antes (main) frente a después (rama visual/rider-ola-1)</small></h1>
+  <div class="group"><span>Propuesta</span>
+    <select id="pid">
+      <option value="ca5e1a51">ca5e1a51 · AI Summit (aprobada, 5 shows)</option>
+      <option value="061efc6d">061efc6d · Actividad Aérea (revisión, danza, resumen)</option>
+    </select>
+  </div>
+  <div class="group" id="modeGroup"><span>Vista</span>
+    <button type="button" id="m-cliente" data-mode="cliente" aria-pressed="true">Cliente</button>
+    <button type="button" id="m-editor" data-mode="editor" aria-pressed="false">Editor</button>
+    <button type="button" id="m-builder" data-mode="builder" aria-pressed="false">Builder</button>
+    <button type="button" id="m-admin-shows" data-mode="admin-shows" aria-pressed="false">Admin · Shows</button>
+    <button type="button" id="m-admin-artistas" data-mode="admin-artistas" aria-pressed="false">Admin · Artistas</button>
+    <button type="button" id="m-admin-propuestas" data-mode="admin-propuestas" aria-pressed="false">Admin · Propuestas</button>
+  </div>
+  <div class="group" id="vpGroup"><span>Pantalla</span>
+    <button type="button" id="v-mob" data-vp="mob" aria-pressed="true">Móvil</button>
+    <button type="button" id="v-desk" data-vp="desk" aria-pressed="false">Escritorio</button>
+  </div>
+  <label class="sync"><input type="checkbox" id="sync" checked> Sincronizar scroll</label>
+</header>
+<p class="note">Solo lectura: las escrituras a la API están bloqueadas, así que en el editor no se guarda ni se aprueba nada. Los PDF se generan con las mismas opciones que producción y tardan unos segundos.</p>
+<main>
+  <section class="col before">
+    <h2>Antes <a class="btn" id="pdfBefore" target="_blank" rel="noopener">PDF antes</a></h2>
+    <div class="stage" id="stageBefore"><iframe id="fBefore" title="Propuesta antes"></iframe></div>
+  </section>
+  <section class="col after">
+    <h2>Después <a class="btn" id="pdfAfter" target="_blank" rel="noopener">PDF después</a></h2>
+    <div class="stage" id="stageAfter"><iframe id="fAfter" title="Propuesta después"></iframe></div>
+  </section>
+</main>
+<script>
+  const state = { id: 'ca5e1a51', mode: 'cliente', vp: 'mob' };
+  const fB = document.getElementById('fBefore'), fA = document.getElementById('fAfter');
+  const sB = document.getElementById('stageBefore'), sA = document.getElementById('stageAfter');
+
+  function page() {
+    return state.mode.startsWith('admin-') ? 'admin.html' : 'propuesta.html';
+  }
+  function query() {
+    if (state.mode.startsWith('admin-')) return '#' + state.mode.replace('admin-', '') + (state.mode === 'admin-shows' ? '/active' : '');
+    if (state.mode === 'builder') return '?mode=builder';
+    return `?id=${state.id}${state.mode === 'editor' ? '&admin=1' : ''}`;
+  }
+  function layout() {
+    const mob = state.vp === 'mob';
+    [sB, sA].forEach(s => s.classList.toggle('mob', mob));
+    const w = mob ? 376 : 1440, h = mob ? 780 : 900;
+    [[fB, sB], [fA, sA]].forEach(([f, s]) => {
+      f.style.width = w + 'px';
+      f.style.height = h + 'px';
+      const scale = mob ? 1 : Math.min(1, s.clientWidth / w);
+      f.style.transform = `scale(${scale})`;
+      s.style.height = (h * scale + (mob ? 0 : 0)) + 'px';
+    });
+  }
+  function load() {
+    const q = query();
+    fB.src = '/antes/' + page() + q;
+    fA.src = '/' + page() + q;
+    const pdfOk = state.mode === 'cliente' || state.mode === 'editor';
+    [['pdfBefore', 'antes'], ['pdfAfter', 'despues']].forEach(([id, v]) => {
+      const a = document.getElementById(id);
+      a.hidden = !pdfOk;
+      a.href = `/pdf?v=${v}&id=${state.id}`;
+    });
+    layout();
+  }
+  function bindGroup(groupId, key, attr) {
+    document.querySelectorAll(`#${groupId} button`).forEach(b => b.addEventListener('click', () => {
+      state[key] = b.dataset[attr];
+      document.querySelectorAll(`#${groupId} button`).forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      key === 'vp' ? layout() : load();
+    }));
+  }
+  bindGroup('modeGroup', 'mode', 'mode');
+  bindGroup('vpGroup', 'vp', 'vp');
+  document.getElementById('pid').addEventListener('change', e => { state.id = e.target.value; load(); });
+  window.addEventListener('resize', layout);
+
+  // Scroll sincronizado (mismo origen)
+  let lock = false;
+  function hook(src, dst) {
+    src.addEventListener('load', () => {
+      try {
+        src.contentWindow.addEventListener('scroll', () => {
+          if (lock || !document.getElementById('sync').checked) return;
+          const a = src.contentDocument.documentElement, b = dst.contentDocument && dst.contentDocument.documentElement;
+          if (!b) return;
+          lock = true;
+          const ratio = a.scrollTop / Math.max(1, a.scrollHeight - a.clientHeight);
+          dst.contentWindow.scrollTo(0, ratio * (b.scrollHeight - b.clientHeight));
+          requestAnimationFrame(() => { lock = false; });
+        });
+      } catch (e) {}
+    });
+  }
+  hook(fB, fA); hook(fA, fB);
+  load();
+</script>
+</body>
+</html>
