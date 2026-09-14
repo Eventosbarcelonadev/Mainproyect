@@ -123,6 +123,14 @@
     {
       "source": "/sprint/",
       "destination": "/OUTPUTS/eventos-barcelona/sprint-close-sep2026.html"
+    },
+    {
+      "source": "/brief",
+      "destination": "/OUTPUTS/eventos-barcelona/brief-tecnico-y-contenido.html"
+    },
+    {
+      "source": "/brief/",
+      "destination": "/OUTPUTS/eventos-barcelona/brief-tecnico-y-contenido.html"
     }
   ],
   "headers": [

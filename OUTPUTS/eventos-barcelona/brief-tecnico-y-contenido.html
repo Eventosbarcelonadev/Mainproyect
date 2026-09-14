@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief técnico + contenido · Eventos Barcelona</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#f6f4ef;
+  --card:#eeece5;
+  --card-2:#faf9f4;
+  --ink:#111114;
+  --body:#33322f;
+  --muted:#7a7772;
+  --line:#d9d5cb;
+  --accent:#c33a67;
+  --accent-soft:#f0d9e2;
+  --sage:#5a7d6a;
+  --sage-soft:#dbe6dc;
+  --amber:#c18a3b;
+  --amber-soft:#f2e2c1;
+  --red:#a63e3e;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--ground);
+  color:var(--body);
+  line-height:1.55;
+  font-size:16px;
+  font-weight:400;
+  padding:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:56px 32px 96px}
+@media (max-width:600px){.wrap{padding:32px 20px 64px}}
+
+.eyebrow{
+  text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;
+  color:var(--accent);margin-bottom:14px;
+}
+h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2.4rem,5.5vw,3.6rem);
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:-.02em;
+  line-height:1.05;
+  margin:0 0 12px;
+  text-wrap:balance;
+}
+.subtitle{
+  font-size:1.18rem;color:var(--muted);max-width:720px;text-wrap:pretty;
+  margin:0 0 6px;
+}
+.byline{font-size:.85rem;color:var(--muted);margin-top:22px;letter-spacing:.02em}
+.byline strong{color:var(--ink);font-weight:600}
+
+hr.rule{border:0;height:1px;background:var(--line);margin:56px 0}
+
+/* -------- TOC -------- */
+.toc{
+  margin:40px 0 10px;padding:26px 30px;background:var(--card-2);
+  border-radius:8px;border:1px solid var(--line);
+}
+.toc-title{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 14px}
+.toc ol{margin:0;padding-left:22px;font-size:1rem}
+.toc ol li{margin-bottom:6px}
+.toc ol li a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent}
+.toc ol li a:hover{border-bottom-color:var(--accent);color:var(--accent)}
+.toc-meta{margin-top:18px;font-size:.85rem;color:var(--muted)}
+
+/* -------- section headers -------- */
+section{margin-top:72px;scroll-margin-top:20px}
+.sec-eyebrow{
+  font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--accent);font-weight:600;margin-bottom:8px;
+}
+.sec-title{
+  font-size:2.1rem;color:var(--ink);font-weight:700;
+  letter-spacing:-.01em;margin:0 0 8px;line-height:1.15;
+}
+.sec-lead{color:var(--muted);font-size:1rem;margin:0 0 32px;max-width:760px}
+
+/* -------- subsection -------- */
+h3.sub{font-size:1.28rem;color:var(--ink);font-weight:600;margin:40px 0 14px;letter-spacing:-.005em}
+h4.mini{font-size:.9rem;color:var(--ink);font-weight:600;margin:20px 0 8px;letter-spacing:.02em;text-transform:uppercase}
+
+/* -------- content list -------- */
+p{margin:0 0 16px}
+ul.plain{margin:0 0 18px;padding-left:22px}
+ul.plain li{margin-bottom:8px;color:var(--body)}
+ul.tight{margin:0 0 14px;padding-left:22px}
+ul.tight li{margin-bottom:4px;color:var(--body);font-size:.94rem}
+
+.card{
+  background:var(--card-2);border:1px solid var(--line);
+  padding:22px 26px;border-radius:8px;margin-bottom:14px;
+}
+.card h4{margin:0 0 8px;font-size:1rem;color:var(--ink);font-weight:600}
+.card p{margin:0 0 10px;font-size:.94rem;color:var(--body)}
+.card p:last-child{margin:0}
+.card code{background:var(--card);padding:2px 6px;border-radius:3px;font-family:'Space Grotesk',monospace;font-size:.85rem;color:var(--accent)}
+
+.tag{
+  display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 10px;border-radius:12px;font-weight:600;margin-right:6px;
+}
+.tag-shipped{background:var(--sage-soft);color:var(--sage)}
+.tag-planned{background:var(--amber-soft);color:var(--amber)}
+.tag-live{background:var(--accent-soft);color:var(--accent)}
+
+/* -------- URL list -------- */
+.url-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+@media (max-width:700px){.url-grid{grid-template-columns:1fr}}
+.url-row{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:11px 16px;background:var(--ground);border:1px solid var(--line);border-radius:5px;
+  font-size:.9rem;
+}
+.url-row a{color:var(--ink);text-decoration:none;font-weight:500;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.url-row a:hover{color:var(--accent)}
+.url-row .lang{
+  font-size:.66rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600;
+  padding:2px 8px;background:var(--card);border-radius:10px;flex-shrink:0;
+}
+
+/* -------- kpi tiles -------- */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 24px}
+@media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--card);padding:18px 20px;border-radius:6px}
+.kpi .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.kpi .val{font-size:1.7rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
+.kpi .note{font-size:.78rem;color:var(--muted);margin-top:6px}
+
+/* -------- timeline pipeline -------- */
+.pipeline{margin:16px 0;padding:20px 24px;background:var(--card-2);border-radius:8px;border-left:3px solid var(--accent)}
+.pipeline h4{margin:0 0 10px;font-size:1rem;color:var(--ink);font-weight:600}
+.pipeline ul{margin:0;padding-left:20px}
+.pipeline ul li{margin-bottom:6px;font-size:.92rem}
+
+/* -------- footer -------- */
+footer.foot{
+  margin-top:80px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:24px;
+  flex-wrap:wrap;
+}
+footer.foot strong{color:var(--body);font-weight:500}
+
+/* -------- dark mode -------- */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0f0f10;
+    --card:#1a1a1c;
+    --card-2:#161618;
+    --ink:#f4f2ed;
+    --body:#c9c6bf;
+    --muted:#8a8880;
+    --line:#2a2a2c;
+    --accent:#e35085;
+    --accent-soft:#3a1e28;
+    --sage:#8ab090;
+    --sage-soft:#1e2a22;
+    --amber:#d9a659;
+    --amber-soft:#302615;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0f0f10;--card:#1a1a1c;--card-2:#161618;--ink:#f4f2ed;--body:#c9c6bf;
+  --muted:#8a8880;--line:#2a2a2c;--accent:#e35085;--accent-soft:#3a1e28;
+  --sage:#8ab090;--sage-soft:#1e2a22;--amber:#d9a659;--amber-soft:#302615;color-scheme:dark;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Brief técnico + contenido · septiembre 2026</div>
+    <h1>Todo lo que hemos ejecutado y lo que queda por delante</h1>
+    <p class="subtitle">Documento maestro con la infraestructura técnica desplegada, las landings y artículos publicados y el roadmap de contenido pendiente hasta cierre de año.</p>
+    <p class="byline">Preparado por <strong>Scale IT</strong> (Philippe · Ramiro) para <strong>Eventos Barcelona</strong> · septiembre 2026</p>
+  </header>
+
+  <div class="toc">
+    <div class="toc-title">Contenido</div>
+    <ol>
+      <li><a href="#nivel-tecnico">Nivel técnico · infraestructura y sistema</a></li>
+      <li><a href="#landings">Landings comerciales publicadas</a></li>
+      <li><a href="#articulos">Artículos AEO publicados</a></li>
+      <li><a href="#casos">Casos de éxito publicados</a></li>
+      <li><a href="#pendiente">Contenido pendiente por sprint</a></li>
+      <li><a href="#kpis">KPIs y gates de decisión</a></li>
+    </ol>
+    <div class="toc-meta">Última actualización: 14 sep 2026 · Estado: sprint 8 cerrado, sprint 9 en curso</div>
+  </div>
+
+  <hr class="rule">
+
+  <section id="nivel-tecnico">
+    <div class="sec-eyebrow">Sección 1</div>
+    <h2 class="sec-title">Nivel técnico · infraestructura y sistema</h2>
+    <p class="sec-lead">Todo lo que sostiene el rendimiento, la escritura autónoma sobre WordPress, la medición GEO y la publicación bilingüe. Cada línea tiene un impacto medible.</p>
+
+    <h3 class="sub">Infraestructura y performance</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Cloudflare Free por delante de CDmon</h4>
+      <p>Instalado el 3 sep 2026 con la cuenta <code>dev@eventosbarcelona.com</code>. Zone activa, SSL Full (no strict, CDmon origin cert), Page Rules, DNS auditado. Cambio de nameservers desde CDmon a Cloudflare completado por Xavi. <strong>TTFB pasó de 3.470 ms a 30 ms.</strong> Purga automatizada tras cada publicación desde script Node vía API v4.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Transform Rule para Cache-Control</h4>
+      <p>CDmon envía <code>max-age=172800</code> (2 días) para HTML desde origin. Regla de transformación en Cloudflare que reescribe la cabecera para que las novedades lleguen al front al momento sin depender de un cambio en el origen que requiere FTP.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Elementor cache purge estandarizado</h4>
+      <p>Al editar <code>_elementor_data</code> vía REST, el frontend seguía mostrando HTML viejo. Fix: <code>DELETE /wp-json/elementor/v1/cache</code> incorporado a cada script de publicación + reset de <code>_elementor_css</code> para regenerar el CSS por página.</p>
+    </div>
+
+    <h3 class="sub">Escritura y publicación autónoma en WordPress</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>mu-plugin eb-mcp-write (v1.18)</h4>
+      <p>10 abilities MCP de escritura sobre WordPress: <code>eb/create-draft</code>, <code>eb/set-elementor</code>, <code>eb/set-seo</code>, <code>eb/set-language</code>, <code>eb/move-post-type</code>, <code>eb/register-media</code>, <code>eb/clone-case</code>, <code>eb/render-elementor</code>, <code>eb/get-post-meta</code>, <code>eb/set-featured-image</code>. Fuente en repo <code>data/wp-mu-plugin/</code>. Deploy inicial por FTP.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>REST directo para páginas publicadas</h4>
+      <p><code>eb/set-elementor</code> solo actúa sobre drafts. Para páginas ya publicadas, escritura directa vía <code>POST /wp/v2/pages/{id}</code> con <code>meta._elementor_data</code>. Round-trip byte a byte idéntico, sin corrupción de escapes. Sin necesidad de FTP.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Gotcha del post_content divergente</h4>
+      <p>Detectado el 14 sep: para algunas páginas legacy (ej. hub 4167 <code>/produccion-tecnica-para-eventos/</code>) el <code>post_content</code> tiene un HTML pre-generado por Elementor que diverge del <code>_elementor_data</code>. Escritura a meta persiste pero no cambia el render. Fix aplicado: snippet PHP output-buffer con <code>str_replace</code>.</p>
+    </div>
+
+    <h3 class="sub">Snippets PHP activos en Code Snippets</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live · ID 14</span>
+      <h4>EB-AUDIT-100-V2-LINK-WEBMCP</h4>
+      <p>Link headers (llms.txt, agent-card, mcp-card, agent-skills) + WebMCP <code>navigator.modelContext</code> loader + web-bot-auth (ed25519). Bypass de LLMagnet Pro toggles. Fallback canonical + meta description via output buffer si Yoast omite.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live · ID 70</span>
+      <h4>EB-CACHE-CONTROL</h4>
+      <p>Headers <code>Cache-Control</code> para navegador. Estáticos: 1 año inmutable. HTML dinámico: <code>public, max-age=300, s-maxage=1800, stale-while-revalidate=86400</code>. Strict-Transport-Security con preload.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live · ID 106</span>
+      <h4>EB-FAQ-SCHEMA · auto-inject FAQPage JSON-LD</h4>
+      <p>En single posts, parsea H2 "Preguntas frecuentes / FAQ" + pares H3+P y emite el schema FAQPage en <code>wp_head</code>. Aplica automáticamente a los 5 posts blog publicados esta sesión sin tocar el content del post (evita el bug de WP despojando <code>&lt;script&gt;</code> tags). Reutilizable para todos los futuros posts.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live · ID 107</span>
+      <h4>EB-I18N-TEMPLATE-SINGLE-BLOG</h4>
+      <p>El template <code>Single Blog</code> (post 4176) trae strings hardcoded en inglés. En posts ES según WPML, output-buffer con <code>preg_replace</code> tolerante a whitespace traduce: "Corporate Event Success Studies" → "Casos de éxito en eventos corporativos", "See How we Have Delivered..." → "Descubre cómo hemos producido...". Extensible con más patterns.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live · ID 108</span>
+      <h4>EB-PRODUCCION-TECNICA-INTRO</h4>
+      <p>Fix del post_content divergente del hub 4167. En <code>template_redirect</code> para page 4167, reemplaza el bloque INTRO viejo por content optimizado con 12 internal links a spokes técnicos y a las 4 landings MICE nuevas.</p>
+    </div>
+
+    <h3 class="sub">Medición GEO / AEO / SEO</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Snippet EB-AI-ATTRIBUTION</h4>
+      <p>Captura referrals de humanos desde LLMs (ChatGPT, Perplexity, Claude, Gemini, Bing Copilot). Dispara GA4 event <code>ai_referral</code> con dimensión <code>ai_source</code> desde 28 ago 2026. Sesiones AI trackeables por origen.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Stack GEO/AEO instalado</h4>
+      <p>LLMagnet + AEO God Mode + 3 snippets EB-* + archivos físicos en <code>/well-known/</code> (agent-card.json, mcp.json, ai-agent.json) + <code>llms.txt</code> con refresh mensual. Audit LLMagnet 68 → 95/100.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Scripts de medición locales</h4>
+      <p><code>scripts/geo-report.js</code> (GA4 referrals AI, tendencia mensual, landing pages citadas, leads atribuidos) + <code>scripts/geo-timeline.js</code> (histórico congelado en <code>data/geo-timeline.json</code>) + <code>scripts/gsc-report.js</code> (posiciones y CTR por keyword). Reporte agregado en <code>propuestas.eventosbarcelona.com/metricas</code>.</p>
+    </div>
+
+    <h3 class="sub">Sistema editorial · skill de copywriting</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Skill copywriting con 8 reglas duras</h4>
+      <p>Codificadas para que ningún artículo o landing se dé por lista sin verificarlas:</p>
+      <ul class="tight">
+        <li>Posicionamiento boutique premium · no directorio (anti unaplauso)</li>
+        <li>Prohibido em dash · reformular con comas/paréntesis</li>
+        <li>Bilingüe ES + EN obligatorio</li>
+        <li>Formato cards permanente en widgets de contenido</li>
+        <li>Verificación 4 vistas (ES/EN × desktop/mobile) antes de "listo"</li>
+        <li>Margen y ancho patrón <code>/casos-exito/</code>: <code>boxed_width 1200</code> base + <code>boxed_width_widescreen 1500</code></li>
+        <li>Featured image JPG landscape ≥1500px coincidente con el tema del artículo</li>
+        <li>Verificación WPML de internal links EN antes de publish (HEAD check batch)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Priorización de contenido por sprint</h4>
+      <p>Regla codificada: fuentes de verdad en orden estricto → <code>docs/PLAN-SPRINTS-2026-SEP-DIC.md</code> &gt; <code>docs/SEO-PIRAMIDE-KEYWORDS.md</code> &gt; <code>data/seo-keywords.json</code>. Cada pieza mueve al menos uno de los 5 KPIs primarios; si no, no se publica.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="landings">
+    <div class="sec-eyebrow">Sección 2</div>
+    <h2 class="sec-title">Landings comerciales publicadas</h2>
+    <p class="sec-lead">Todas las URLs comerciales activas del cluster MICE, con estructura Hero + INFO + NUMBERS + FAQ + Contacto, bilingües (ES + EN) linkadas por WPML.</p>
+
+    <h3 class="sub">Landings MICE nuevas · sprint 9</h3>
+
+    <div class="url-grid">
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/dmc-barcelona/" target="_blank">DMC Barcelona</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/dmc-barcelona/" target="_blank">DMC Barcelona</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/entretenimiento-eventos-empresariales-barcelona/" target="_blank">Entretenimiento eventos empresariales</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/corporate-event-entertainment-barcelona/" target="_blank">Corporate event entertainment</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/mice-barcelona/" target="_blank">MICE Barcelona</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/mice-barcelona/" target="_blank">MICE Barcelona</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/organizacion-eventos-corporativos-barcelona/" target="_blank">Organización eventos corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/corporate-event-management-barcelona/" target="_blank">Corporate event management</a><span class="lang">EN</span></div>
+    </div>
+
+    <h3 class="sub">Landings comerciales pre-existentes · con cross-linking añadido esta sesión</h3>
+
+    <div class="url-grid">
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/agencia-de-eventos-barcelona/" target="_blank">Agencia de eventos corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/partner-dmc-agencias-eventos-barcelona/" target="_blank">Partner DMC agencias</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/espectaculos-eventos-corporativos-barcelona/" target="_blank">Espectáculos eventos corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/produccion-tecnica-para-eventos/" target="_blank">Producción técnica para eventos</a><span class="lang">ES</span></div>
+    </div>
+
+    <h3 class="sub">Landings temáticas y spokes técnicos · sprint 3-4 (histórico)</h3>
+
+    <div class="url-grid">
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/venues-eventos-corporativos-barcelona/" target="_blank">Venues corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/escenografia-eventos-corporativos-barcelona/" target="_blank">Escenografía</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/alquiler-iluminacion-eventos-corporativos-barcelona/" target="_blank">Iluminación corporativa</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/videowall-eventos-corporativos-barcelona/" target="_blank">Videowall corporativo</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/alquiler-pantallas-led-eventos-barcelona/" target="_blank">Pantallas LED</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/gala-dinners-corporativos-barcelona/" target="_blank">Gala dinners corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/convenciones-corporativas-internacionales-barcelona/" target="_blank">Convenciones internacionales</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/musica-en-vivo-eventos-corporativos-barcelona/" target="_blank">Música en vivo corporativa</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/dj-fiesta-empresa-barcelona/" target="_blank">DJ fiesta empresa</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/cantante-eventos-corporativos-barcelona/" target="_blank">Cantante eventos corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/violinista-cena-gala-corporativa-barcelona/" target="_blank">Violinista cena de gala</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/bandas-versiones-fiestas-empresa-barcelona/" target="_blank">Bandas de versiones</a><span class="lang">ES</span></div>
+    </div>
+
+    <h3 class="sub">Optimización CTR desde SERP · sprint 9</h3>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Home Yoast reescrito · cluster comercial</h4>
+      <p>Title de "Agencia de eventos corporativos en Barcelona" (descriptivo) a <strong>"Agencia MICE Barcelona · producción integral · 20+ años"</strong>. Meta con hooks: 20+ años, 500+ shows curados, propuesta 48-72h, un solo interlocutor. Objetivo: subir CTR de 0% actual en cluster <code>agencia eventos corporativos</code> (400 imp/mes en pos 5.8) a 2-3%.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="articulos">
+    <div class="sec-eyebrow">Sección 3</div>
+    <h2 class="sec-title">Artículos AEO publicados</h2>
+    <p class="sec-lead">Posts de blog con estructura AEO (answer box 60 palabras + H2 respondiendo pregunta + FAQ schema JSON-LD + 5-6 internal links). Los 5 nuevos apuntan a keywords con demanda GSC validada.</p>
+
+    <h3 class="sub">Sprint 9 · 5 posts nuevos con demanda GSC validada</h3>
+
+    <div class="url-grid">
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/elegir-agencia-eventos-corporativos-barcelona/" target="_blank">Cómo elegir agencia de eventos corporativos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/how-to-choose-corporate-event-agency-barcelona/" target="_blank">How to choose corporate event agency</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/elegir-dj-evento-corporativo-barcelona/" target="_blank">Cómo elegir DJ evento corporativo</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/how-to-choose-dj-corporate-event-barcelona/" target="_blank">How to choose DJ corporate event</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/contratar-cantante-evento-corporativo-barcelona/" target="_blank">Cómo contratar cantante</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/hire-singer-corporate-event-barcelona/" target="_blank">How to hire a singer</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/alquiler-escenarios-eventos-barcelona-guia/" target="_blank">Alquiler escenarios · guía</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/stage-rental-events-barcelona-guide/" target="_blank">Stage rental guide</a><span class="lang">EN</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/empresas-organizadoras-eventos-barcelona/" target="_blank">Empresas organizadoras eventos</a><span class="lang">ES</span></div>
+      <div class="url-row"><a href="https://www.eventosbarcelona.com/en/event-management-companies-barcelona/" target="_blank">Event management companies</a><span class="lang">EN</span></div>
+    </div>
+
+    <h4 class="mini">Demanda GSC agregada de los 5 posts</h4>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl">Cluster agencia eventos</div>
+        <div class="val">471+</div>
+        <div class="note">imp/mes agregadas · pos 15-27</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Cluster DJ</div>
+        <div class="val">145+</div>
+        <div class="note">imp/mes · pos 19-43</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Cluster escenarios</div>
+        <div class="val">38+</div>
+        <div class="note">imp/mes · pos 27.9</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Cluster organizadoras</div>
+        <div class="val">27+</div>
+        <div class="note">imp/mes · pos 29.2</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Cluster cantante</div>
+        <div class="val">33+</div>
+        <div class="note">imp/mes · pos 23</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Total agregado nuevo</div>
+        <div class="val">714+</div>
+        <div class="note">imp/mes cazables en ventana</div>
+      </div>
+    </div>
+
+    <h3 class="sub">Sprint 3-4 · posts blog pre-existentes</h3>
+
+    <ul class="plain">
+      <li><a href="https://www.eventosbarcelona.com/errores-comunes-evento-corporativo-internacional-barcelona/">Errores comunes al organizar un evento corporativo internacional</a></li>
+      <li><a href="https://www.eventosbarcelona.com/opening-closing-convenciones-shows-marcan-diferencia/">Opening y closing de convenciones · shows que marcan diferencia</a></li>
+      <li><a href="https://www.eventosbarcelona.com/menu-espectaculo-coordinar-catering-show-gala-dinner/">Menú y espectáculo · coordinar catering y show</a></li>
+      <li><a href="https://www.eventosbarcelona.com/cuanto-cuesta-espectaculo-corporativo-barcelona-rangos-factores/">Cuánto cuesta un espectáculo corporativo · rangos y factores</a></li>
+      <li><a href="https://www.eventosbarcelona.com/guia-contratar-artistas-espectaculos-eventos-corporativos/">Guía para contratar artistas y espectáculos</a></li>
+      <li><a href="https://www.eventosbarcelona.com/5-espectaculos-wow-effect-eventos-corporativos-barcelona/">5 espectáculos WOW effect</a></li>
+      <li><a href="https://www.eventosbarcelona.com/como-mantener-500-personas-entretenidas-3-dias-convencion/">Cómo mantener a 500 personas entretenidas 3 días</a></li>
+      <li><a href="https://www.eventosbarcelona.com/colaboracion-dmc-productora-artistica-evento-mice-barcelona/">Colaboración DMC + productora artística</a></li>
+      <li><a href="https://www.eventosbarcelona.com/dmc-agencia-eventos-productora-artistica-diferencias/">DMC, agencia o productora · qué es cada una</a></li>
+      <li><a href="https://www.eventosbarcelona.com/como-elegir-espectaculo-cena-gala-corporativa/">Cómo elegir el espectáculo para una cena de gala</a></li>
+      <li><a href="https://www.eventosbarcelona.com/10-venues-singulares-gala-dinners-corporativas-barcelona/">10 venues singulares para gala dinners</a></li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <section id="casos">
+    <div class="sec-eyebrow">Sección 4</div>
+    <h2 class="sec-title">Casos de éxito publicados</h2>
+    <p class="sec-lead">Referencias verificables con marcas globales reales. Publicados como <code>casosdexito</code> CPT y accesibles desde el hub <code>/casos-exito/</code>.</p>
+
+    <h3 class="sub">Casos activos con nombre público de cliente</h3>
+
+    <ul class="plain">
+      <li><strong>Aston Martin</strong> · Inauguración de concesionario y activación durante el GP de Fórmula 1 (2026)</li>
+      <li><strong>Huawei</strong> · Cena de gala corporativa premium en Barcelona</li>
+      <li><strong>Hewlett Packard</strong> · Convención Discover en La Cúpula de Les Arenes</li>
+      <li><strong>Allianz India</strong> · Convención anual de 500 asistentes durante 3 días</li>
+      <li><strong>Criteo</strong> · Show de clausura con Brass Band en la Fira de Girona</li>
+      <li><strong>Gartner</strong> · Symposium con más de 60 artistas rotando durante 3 días</li>
+      <li><strong>Spribe</strong> · Cena de gala inspirada en la obra del Cascanueces</li>
+      <li><strong>Royale Century Ply / Century Ply India</strong> · Cena de gala corporativa · convención en Palau de Congressos</li>
+      <li><strong>Diputación de Sevilla</strong> · Gala institucional con LED Dancers</li>
+      <li><strong>Sant Joan Ciutadella</strong> · Show láser de cierre de fiestas</li>
+      <li><strong>Tecselect</strong> · Cena de gala en el MNAC</li>
+      <li><strong>YPO</strong> · Convención en IESE</li>
+      <li><strong>Pidilite India</strong> · Entrega de premios en Hotel Hyatt Regency</li>
+      <li><strong>Guess Jewelry</strong> · Convención en Hotel W</li>
+      <li><strong>L'Oreal</strong> · Desfile de moda en Can Magí</li>
+      <li><strong>Strap Events (Francia)</strong> · Cena de gala en Finca Mas Solers</li>
+    </ul>
+
+    <div class="card">
+      <span class="tag tag-live">Live</span>
+      <h4>Hub Casos de éxito</h4>
+      <p><a href="https://www.eventosbarcelona.com/casos-exito/" target="_blank">/casos-exito/</a> · página canónica con la grid de casos publicados. Es la referencia estructural de márgenes y ancho de contenido (<code>boxed_width_widescreen 1500px</code>) que se replica en todas las nuevas landings.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="pendiente">
+    <div class="sec-eyebrow">Sección 5</div>
+    <h2 class="sec-title">Contenido pendiente por sprint</h2>
+    <p class="sec-lead">Roadmap sep-dic 2026 según <code>docs/PLAN-SPRINTS-2026-SEP-DIC.md</code>. Cada pieza mueve al menos uno de los 5 KPIs primarios; si no, no se publica. Los tres tipos son landing comercial, post AEO y caso o guía comparativa.</p>
+
+    <div class="pipeline">
+      <h4>Sprint 3 · 29 sep - 12 oct · GEO/AEO ofensivo</h4>
+      <ul>
+        <li><span class="tag tag-planned">Planned</span> 5 posts optimizados para AI Overviews (formato answer box 60 palabras + H2 respondiendo pregunta explícita en primer párrafo)</li>
+        <li><span class="tag tag-planned">Planned</span> Answer boxes en 10 landings principales (bloque "Resumen" 60 palabras al inicio, citable como snippet AEO)</li>
+        <li><span class="tag tag-planned">Planned</span> <code>llms.txt</code> refresh mensual automatizado desde el sitemap</li>
+        <li><strong>Gate G1 (12 oct)</strong> · si cero keywords del cluster comercial suben más de 1 puesto, pausa y auditoría técnica profunda</li>
+      </ul>
+    </div>
+
+    <div class="pipeline">
+      <h4>Sprint 4 · 13 - 26 oct · Ventana crítica de cierre</h4>
+      <ul>
+        <li><span class="tag tag-planned">Planned</span> Snapshot 20 oct comparado con 28 ago congelado</li>
+        <li><span class="tag tag-planned">Planned</span> Report HTML con hallazgos de la ventana</li>
+        <li><strong>Gate G2 (23 oct)</strong> · si 5 keywords del cluster comercial siguen en pos &gt; 10, pivot a Frente E ampliado (E-E-A-T + calidad), no lanzar Frente D</li>
+      </ul>
+    </div>
+
+    <div class="pipeline">
+      <h4>Sprint 5 · 27 oct - 9 nov · Long-tail o pivot (según G2)</h4>
+      <p><strong>Si G2 verde</strong> · Frente D:</p>
+      <ul>
+        <li><span class="tag tag-planned">Planned</span> Landing <code>agencia MICE internacional Barcelona</code></li>
+        <li><span class="tag tag-planned">Planned</span> Landing <code>producción evento corporativo boutique</code></li>
+        <li><span class="tag tag-planned">Planned</span> Landing <code>agencia eventos híbridos</code></li>
+      </ul>
+      <p><strong>Si G2 rojo</strong> · Pivot Frente E ampliado (reescritura profunda de 5 páginas viejas + auditoría hosting + Core Web Vitals).</p>
+    </div>
+
+    <div class="pipeline">
+      <h4>Sprint 6 · 10 - 23 nov · Contenido de autoridad E-E-A-T</h4>
+      <ul>
+        <li><span class="tag tag-planned">Planned</span> 3 casos reales publicados con métricas verificables (cliente, evento, pax, artistas, feedback textual, foto autorizada) · requiere aporte de datos de Xavi</li>
+        <li><span class="tag tag-planned">Planned</span> Guía comparativa · DMC vs agencia de eventos vs productora artística</li>
+        <li><span class="tag tag-planned">Planned</span> Guía comparativa · In-house vs freelance para producción de eventos</li>
+        <li><span class="tag tag-planned">Planned</span> Guía comparativa · Producción integrada vs subcontratada</li>
+        <li><span class="tag tag-planned">Planned</span> Backlink push · outreach a 5 medios MICE</li>
+        <li><span class="tag tag-planned">Planned</span> Refresh estacional pre-diciembre en agencia + gala dinners (temporada alta fiestas de empresa nov-dic)</li>
+      </ul>
+    </div>
+
+    <div class="pipeline">
+      <h4>Sprint 7 · 24 nov - 7 dic · Consolidación técnica</h4>
+      <ul>
+        <li><span class="tag tag-planned">Planned</span> Auditoría Core Web Vitals y Lighthouse (fix 5 issues más graves)</li>
+        <li><span class="tag tag-planned">Planned</span> Fix accesibilidad WCAG AA en las 22 landings publicadas</li>
+        <li><span class="tag tag-planned">Planned</span> Snapshot noviembre + análisis de 3 meses</li>
+        <li><span class="tag tag-planned">Planned</span> Report mensual sprints 4-7 y call con Xavi de 45 minutos</li>
+      </ul>
+    </div>
+
+    <div class="pipeline">
+      <h4>Sprint 8 · 8 - 21 dic · Cierre de año + plan Q1 2027</h4>
+      <ul>
+        <li><strong>Gate G4 (21 dic)</strong> · si media ponderada &gt; 28 (no volvimos al pre-core update), plan Q1 se reescribe desde cero</li>
+        <li><span class="tag tag-planned">Planned</span> <code>PLAN-SPRINTS-2027-Q1.md</code></li>
+        <li><span class="tag tag-planned">Planned</span> Doc de resultados año 2026 con delta vs abril-junio (baseline pre-core update)</li>
+      </ul>
+    </div>
+
+    <h3 class="sub">Backlog CTR fix identificado en GSC · aplicable inmediato</h3>
+
+    <ul class="plain">
+      <li>Reescribir title + meta de las top 10 landings del cluster comercial con hooks (número, año, diferenciador). Baseline actual: CTR &lt; 1% en la mayoría, con impresiones altas. Efecto esperado: 30-80 clicks/mes adicionales del stock actual sin tocar posición.</li>
+      <li>Añadir bloque "Resumen" 60 palabras al inicio de las 10 landings principales (formato AEO para snippet).</li>
+      <li>Cubrir 5 clusters de keywords con demanda validada aún sin post pilar propio (venue gala corporativa, timeline convención MICE, compliance farma eventos, kick-off ventas Barcelona, alquiler audiovisual · cada uno &gt; 20 imp/mes).</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <section id="kpis">
+    <div class="sec-eyebrow">Sección 6</div>
+    <h2 class="sec-title">KPIs primarios y gates de decisión</h2>
+    <p class="sec-lead">Los cinco números que ordenan el plan sep-dic. Baseline al 31 ago 2026 · objetivos al cierre de ventana (23 oct) y al cierre de año (21 dic).</p>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl">Pos. media cluster comercial</div>
+        <div class="val">14.0</div>
+        <div class="note">obj 23 oct: ≤ 10 · obj 21 dic: ≤ 8</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Impresiones GSC / mes</div>
+        <div class="val">78k</div>
+        <div class="note">obj 23 oct: +15% · obj 21 dic: +30%</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Clics cluster comercial / mes</div>
+        <div class="val">10</div>
+        <div class="note">obj 23 oct: ≥ 30 · obj 21 dic: ≥ 80</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Sesiones GA4 ai_referral / mes</div>
+        <div class="val">43</div>
+        <div class="note">ago 26 · obj 23 oct: ≥ 60 · obj 21 dic: ≥ 100</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Páginas con 0 clics</div>
+        <div class="val">182 / 295</div>
+        <div class="note">obj 23 oct: ≤ 170 · obj 21 dic: ≤ 150</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">CTR SERP</div>
+        <div class="val">0.8%</div>
+        <div class="note">objetivo trabajo de fix titles/metas</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Cadencia de snapshots</h4>
+      <p><strong>Semanal (lunes)</strong> · 5 keywords cluster comercial · posición individual · snapshot en <code>data/seo-keywords-tracker.json</code>.</p>
+      <p><strong>Quincenal (viernes de cierre sprint)</strong> · report HTML con delta vs sprint anterior.</p>
+      <p><strong>Mensual (día 1)</strong> · snapshot completo cluster + posiciones + páginas 0 clics.</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>Datos: GA4 <strong>324831331</strong> + GSC <strong>www.eventosbarcelona.com</strong> · <code>geo-report.js</code> del 14 sep 2026</div>
+    <div><strong>Scale IT</strong> · Philippe Saint-Hubert · Ramiro</div>
+  </footer>
+
+</div>
+</body>
+</html>
