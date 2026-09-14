@@ -128,8 +128,10 @@ ul.tight li{margin-bottom:5px;color:var(--body);font-size:.94rem}
 }
 
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 24px}
+.kpis.kpis-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:900px){.kpis.kpis-4{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}}
-@media (max-width:480px){.kpis{grid-template-columns:1fr}}
+@media (max-width:480px){.kpis,.kpis.kpis-4{grid-template-columns:1fr}}
 .kpi{background:var(--card);padding:20px 22px;border-radius:6px}
 .kpi .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
 .kpi .val{font-size:1.9rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
@@ -218,7 +220,7 @@ footer.foot strong{color:var(--body);font-weight:500}
 
   <div class="big">
     <h2>La foto en tres líneas</h2>
-    <p>La web es hoy <strong>115 veces más rápida</strong> que antes de verano, aparece en top 10 para las keywords más competitivas del sector y está en la <strong>3ª posición del tráfico</strong> generado desde IAs (ChatGPT, Perplexity, Claude). En septiembre publicamos <strong>18 URLs nuevas</strong> bilingües del cluster MICE, sumadas a las 34 landings y 26 artículos publicados desde mayo.</p>
+    <p>La web es hoy <strong>115 veces más rápida</strong> que antes de verano, aparece en top 10 para las keywords más competitivas del sector y está en la <strong>3ª posición del tráfico</strong> generado desde IAs (ChatGPT, Perplexity, Claude). En septiembre publicamos <strong>18 URLs bilingües del cluster MICE + 46 fichas del catálogo nuevo de Daryna Shavryna</strong>. En verano ya habíamos publicado 2 casos de éxito nuevos (Aston Martin, Sant Joan) y el show de pompas de jabón. En total, <strong>+110 URLs nuevas</strong> desde el arranque del retainer.</p>
     <p>Google actualizó su algoritmo en junio y el sector MICE completo se reordenó: los grandes directorios (Sortlist, Eventoplus) capturaron visibilidad transitoria. Estamos ejecutando el plan que nos posiciona bien cuando el péndulo vuelva, y en paralelo capturando la nueva demanda desde IAs, que sí está creciendo.</p>
   </div>
 
@@ -318,9 +320,9 @@ footer.foot strong{color:var(--body);font-weight:500}
   <section id="publicado">
     <div class="sec-eyebrow">Sección 3</div>
     <h2 class="sec-title">Todo lo publicado desde el arranque</h2>
-    <p class="sec-lead">78 URLs nuevas trabajadas desde mayo 2026. Divididas en cuatro capas.</p>
+    <p class="sec-lead">Más de 110 URLs nuevas trabajadas desde mayo 2026. Divididas en cinco capas.</p>
 
-    <div class="kpis">
+    <div class="kpis kpis-4">
       <div class="kpi hero">
         <div class="lbl">Landings comerciales</div>
         <div class="val">34</div>
@@ -332,9 +334,14 @@ footer.foot strong{color:var(--body);font-weight:500}
         <div class="note">respondiendo demanda GSC + IAs</div>
       </div>
       <div class="kpi hero">
+        <div class="lbl">Shows y fichas de artista</div>
+        <div class="val">52</div>
+        <div class="note">nuevas · 46 son de Daryna Shavryna</div>
+      </div>
+      <div class="kpi hero">
         <div class="lbl">Casos de éxito activos</div>
         <div class="val">16</div>
-        <div class="note">producciones tuyas, optimizadas por nosotros</div>
+        <div class="note">2 nuevos nuestros · 14 producciones tuyas</div>
       </div>
     </div>
 
@@ -426,10 +433,39 @@ footer.foot strong{color:var(--body);font-weight:500}
       <li>Redirects 301 eliminando canibalización en dos URLs antiguas</li>
     </ul>
 
-    <h3 class="sub">Casos de éxito activos en el site</h3>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:.94rem">Estas son producciones tuyas de los últimos años. Nuestro trabajo del retainer sobre ellas: schema de eventos para que Google y las IAs los reconozcan, cross-linking desde las landings comerciales nuevas, refresh de imágenes destacadas y verificación de que rankean por keywords tipo "gala corporativa Barcelona" o "convención MICE".</p>
+    <h3 class="sub">Shows y fichas de artista publicadas</h3>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:.94rem">Fichas nuevas del catálogo público que hemos creado y sincronizado con el CRM interno. Todas visibles en la web pública y disponibles en el builder de propuestas.</p>
+
+    <h4 class="mini">Daryna Shavryna · nueva artista incorporada al catálogo (46 fichas)</h4>
     <ul class="plain">
-      <li><strong>Aston Martin</strong> · inauguración de concesionario y activación durante el GP de F1 (2026)</li>
+      <li>Ficha de artista publicada con bio, disciplinas (WOW, Circo), teléfono, email y catálogo completo importado desde su Drive</li>
+      <li>46 fichas de personajes LED con foto, descripción ES + EN, precio orientativo, video (donde disponible) y schema para IAs</li>
+      <li>Ejemplos: Personajes LED Búhos Blancos, Personajes LED Alienígenas, Personajes LED Ángeles Blancos, Personajes Anubis Oro y Plata, Personajes LED Cabaret (3 versiones), Personajes LED Faunos, Personajes LED Geishas, Personajes LED Medusas, Personajes LED Setas, Personajes LED Unicornios, Personajes Reinas de Versalles (2 versiones)</li>
+      <li>Todas las fichas asociadas a Daryna en el CRM (relación N:M) para que el builder las recomiende automáticamente</li>
+      <li>Contacto GHL creado (ghl_contact_id activo) para gestión comercial y facturación</li>
+    </ul>
+
+    <h4 class="mini">Otros shows y artistas nuevos publicados (6 fichas)</h4>
+    <ul class="plain">
+      <li><strong><a href="https://www.eventosbarcelona.com/espectaculos/show-pompas-jabon-eventos-corporativos-barcelona/">Show de pompas de jabón</a></strong> · ficha completa con foto, descripción, casos de uso y precio orientativo (26 ago)</li>
+      <li><strong>Tribal Flow</strong> · espectáculo de flow tribal (31 ago)</li>
+      <li><strong>Bruno malabarista</strong> · ficha de artista + show (11 sep)</li>
+      <li><strong>Manuel Ferreira de la Rosa</strong> · ficha de artista + show (11 sep)</li>
+      <li><strong>Sandra Live Art</strong> · ficha de artista + show (11 sep)</li>
+      <li><strong>Raíces del Flamenco</strong> · ficha de música flamenco tradicional (20 may)</li>
+    </ul>
+
+    <h3 class="sub">Casos de éxito activos en el site</h3>
+
+    <h4 class="mini">Nuevos casos producidos por nosotros post-retainer (2)</h4>
+    <ul class="plain">
+      <li><strong><a href="https://www.eventosbarcelona.com/casos-de-exito/aston-martin-concesionario-barcelona-espectaculo-f1/">Aston Martin</a></strong> · show exclusivo durante el GP F1 de Barcelona (21 jul)</li>
+      <li><strong><a href="https://www.eventosbarcelona.com/casos-de-exito/espectaculo-laser-cierre-fiestas-sant-joan-ciutadella/">Sant Joan Ciutadella</a></strong> · show láser de cierre de fiestas (21 jul)</li>
+    </ul>
+
+    <h4 class="mini">Casos activos anteriores · producciones tuyas (14)</h4>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:.94rem">Nuestro trabajo del retainer sobre ellas: schema de eventos para que Google y las IAs los reconozcan, cross-linking desde las landings comerciales nuevas, refresh de imágenes destacadas y verificación de que rankean por keywords tipo "gala corporativa Barcelona" o "convención MICE".</p>
+    <ul class="plain">
       <li><strong>Huawei</strong> · cena de gala corporativa premium en Barcelona</li>
       <li><strong>Hewlett Packard</strong> · convención Discover en La Cúpula de Les Arenes</li>
       <li><strong>Allianz India</strong> · convención anual de 500 asistentes durante 3 días</li>
@@ -438,7 +474,6 @@ footer.foot strong{color:var(--body);font-weight:500}
       <li><strong>Spribe</strong> · cena de gala inspirada en la obra del Cascanueces</li>
       <li><strong>Royale Century Ply</strong> · convención en Palau de Congressos</li>
       <li><strong>Diputación de Sevilla</strong> · gala institucional con LED Dancers</li>
-      <li><strong>Sant Joan Ciutadella</strong> · show láser de cierre de fiestas</li>
       <li><strong>Tecselect</strong> · cena de gala en el MNAC</li>
       <li><strong>YPO</strong> · convención en IESE</li>
       <li><strong>Pidilite India</strong> · entrega de premios en Hotel Hyatt Regency</li>
@@ -661,8 +696,8 @@ footer.foot strong{color:var(--body);font-weight:500}
     <p class="sec-lead">Temas que dependen de una decisión tuya para arrancar. Los dejamos aquí para no perderlos.</p>
 
     <div class="card">
-      <h4>Shows de artista nuevo</h4>
-      <p>Comentaste que querías incorporar los shows de un artista nuevo al catálogo. ¿Nos pasas nombre, ficha técnica, fotos y videos? Nosotros creamos las fichas de show, subimos el material al builder y aseguramos que aparezca en la web pública, el sitemap y en la biblioteca del CRM. Con material completo, live en 5-7 días.</p>
+      <h4>¿Más artistas o shows para incorporar?</h4>
+      <p>Con Daryna Shavryna ya subimos 46 fichas del catálogo LED. Si tienes otros artistas o colecciones pendientes de entrar (con foto + descripción + video), pásanoslo y arrancamos el mismo flujo: ficha de artista + shows + relación N:M en CRM + publicación bilingüe en la web. Ritmo: unos 40-50 shows nuevos por semana si el material viene ordenado.</p>
     </div>
 
     <div class="card">
