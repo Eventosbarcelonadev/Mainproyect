@@ -75,7 +75,11 @@ Principios con fuente, verificados en septiembre de 2026. **I** = independiente 
 | PDF propuesta 5 shows | 7 páginas, hasta 39 % en blanco | 5 páginas |
 | PDF propuesta 6 shows | 9 páginas, hasta 51 % en blanco | 6 páginas |
 | Admin Shows, tarjetas por pantalla (2000 px) | 3 columnas, 6,7 | 5 columnas, 12 |
-| Admin Shows, tarjetas por pantalla (1600 px) | 3 columnas, 6,2 | 5 columnas, 11,5 |
-| Admin Proveedores, tarjetas por pantalla | 8 | 15,9 |
+| Admin Shows, tarjetas por pantalla (1600 px) | 3 columnas, 6,2 | 5 columnas, 11,4 (plantilla nueva) |
+| Admin Artistas, tarjetas por pantalla (1600 px) | 3 columnas, 7,6 | 5 columnas, 18,8 (tarjeta compacta de 251 px) |
+| Admin Proveedores, tarjetas por pantalla (1600 px) | 3 columnas, 8 | 5 columnas, 18,8 |
+| Admin Propuestas, shows mostrados | 0 en 145 de 148 clientes (texto JSON sin contar) | Número real; "Por preparar" en 156 propuestas sin shows |
+| Precios en la propuesta | `3950€`, `19.650€` y `2.250 €` en la misma página | `3950 €` y `19 650 €`; en inglés `€3,950` y `€19,650` |
+| Línea del hero | `2026-09-21 · Cocktail` o `null · Fiesta corporativa` | `21 de septiembre de 2026 · Cocktail / Welcome drink · Eurostars Grand Marina` |
 | Admin Propuestas en móvil | página de 1.327 px de ancho | 390 px, tabla con scroll propio |
 | Contraste botón "Aprobar" | 2,10:1 | 5,32:1 |

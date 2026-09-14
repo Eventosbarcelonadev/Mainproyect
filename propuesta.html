@@ -2020,6 +2020,134 @@
     body.print-mode .footer-logo img { height: 40px; }
     body.print-mode .footer-address { margin-top: 12px; }
     body.print-mode .footer-social { margin-top: 12px; }
+
+    /* =====================================================================
+       RIDER VISUAL · OLA 2 + OLA 3 (2026-09-14)
+       Sistema visual de la propuesta y del editor. Solo estilos.
+       ===================================================================== */
+    :root {
+      --light-gray: #FAF8F5;
+      --text: #2A2725;
+      --gray: #5E5853;
+      --dark: #161413;
+      --border: #E6E1DB;
+    }
+
+    /* Hero: empresa del cliente */
+    .hero-for {
+      position: relative; z-index: 1;
+      margin: 0 0 14px;
+      font-size: 13px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+      color: #D9D3CC;
+    }
+
+    /* V14 · Texto de lectura a 62 caracteres */
+    .block-content p, .concept-section p { font-size: 16.5px; line-height: 1.7; max-width: 62ch; }
+    .concept-section p { margin-inline: auto; }
+
+    /* V15 · Precio del bloque en Inter con la nota debajo; "Ver vídeo" como enlace */
+    .block-footer { flex-direction: column; align-items: flex-start; gap: 14px; }
+    /* En el PDF el enlace es solo texto: precio y vídeo en la misma línea para que quepan dos shows por hoja */
+    body.print-mode .block-footer { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+    /* Tamaños compactos solo en print: la Ola 2 agranda el texto en pantalla, no en A4 */
+    body.print-mode .concept-section h2 { font-size: 30px; margin-bottom: 12px; }
+    body.print-mode .concept-section p { font-size: 13.5px; line-height: 1.6; }
+    body.print-mode .block-price small { flex-basis: auto; font-size: 12px; }
+    body.print-mode .block-extras { margin-top: 8px; padding-top: 6px; }
+    body.print-mode .block-content .btn-dark { border-bottom: 0; }
+    .block-price {
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums; flex-wrap: wrap; row-gap: 2px;
+    }
+    .block-price small { flex-basis: 100%; font-size: 13.5px; }
+    .block-content .btn-dark {
+      background: transparent; color: var(--dark);
+      padding: 0 0 2px; border-radius: 0;
+      border-bottom: 1.5px solid var(--accent);
+      font-weight: 500;
+    }
+    .block-content .btn-dark::before { content: "▶"; font-size: 9px; margin-right: 8px; color: var(--accent-text); vertical-align: 1px; }
+    .block-content .btn-dark:hover { background: transparent; color: var(--accent-text); }
+    body.print-mode .block-content .btn-dark::before { content: none; }
+
+    /* V16 · Suplementos */
+    .block-extras { margin-top: 16px; padding-top: 10px; border-top: 1px dashed var(--border); }
+    .block-extras-row .ex-amount { font-variant-numeric: tabular-nums; }
+    .block-extras-row:not(.editable) .ex-amount::before { content: "+ "; color: var(--gray); font-weight: 400; }
+
+    /* V17 · Resumen con total claro */
+    .summary-row { align-items: baseline; gap: 24px; font-size: 15.5px; color: var(--text); }
+    .summary-row span:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .summary-note-line { display: block; margin-top: 2px; font-size: 13px; font-weight: 400; color: var(--gray); }
+    .summary-total { margin-top: 12px; padding-top: 18px; border-top: 2px solid var(--dark); font-size: 40px; align-items: baseline; }
+    .summary-total span:first-child { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; }
+    .summary-total span:last-child { font-variant-numeric: tabular-nums; }
+    .summary-note { font-size: 14px; color: var(--gray); }
+
+    /* V18 · Condiciones legibles, a dos columnas en pantalla ancha */
+    .conditions-section { max-width: 980px; }
+    .conditions-section li { font-size: 15px; color: var(--text); }
+    .conditions-section li::before { background: var(--accent); width: 6px; height: 6px; top: 16px; }
+    @media (min-width: 900px) {
+      body:not(.print-mode) .conditions-section ul { columns: 2; column-gap: 48px; }
+      body:not(.print-mode) .conditions-section li { break-inside: avoid; }
+    }
+
+    /* V19 · Logos uniformes, sin depender del hover */
+    .clients-grid img, .clients-grid img:hover { filter: grayscale(100%); opacity: .8; }
+    @media (max-width: 480px) { .clients-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+    /* V20 · Zigzag sin direction: rtl */
+    .block--reversed { direction: ltr; }
+    .block--reversed > .block-image { order: 2; }
+    @media (max-width: 768px) { .block--reversed > .block-image { order: 0; } }
+    body.print-mode .block--reversed > .block-image { order: 0; }
+
+    .cta-section p { color: #A8A099; }
+
+    /* V21 · Editor: estado como pastilla, avisos abajo, icono en el modal */
+    .admin-bar-left .status-dot { display: none; }
+    #adminStatus {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 24px; padding: 0 10px; margin-left: 0; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      background: rgba(255, 196, 107, .16); color: #FFC46B;
+    }
+    #adminStatus::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .status-dot.approved + .admin-bar-info #adminStatus { background: rgba(126, 226, 168, .16); color: #7EE2A8; }
+    .status-dot.sent + .admin-bar-info #adminStatus { background: rgba(140, 196, 255, .16); color: #8CC4FF; }
+    .toast { top: auto; bottom: 24px; transform: translateX(-50%) translateY(20px); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .modal-content .check {
+      font-size: 0; width: 52px; height: 52px; margin: 0 auto 16px;
+      border-radius: 50%; background: #E6F4EA; display: grid; place-items: center;
+    }
+    .modal-content .check::before { content: "✓"; font-size: 26px; font-weight: 700; color: #17663A; }
+
+    /* V22 · Quitar con texto visible */
+    .block-remove, .summary-remove {
+      width: auto; height: 32px; padding: 0 12px; gap: 6px;
+      border-radius: 999px; font-size: 0;
+      background: rgba(22, 20, 19, .78);
+    }
+    .block-remove::before, .summary-remove::before { content: "×"; font-size: 16px; line-height: 1; }
+    .block-remove::after { content: "Quitar show"; font-size: 12.5px; font-weight: 600; }
+    .summary-remove::after { content: "Ocultar resumen"; font-size: 12.5px; font-weight: 600; }
+    .block-remove:hover, .summary-remove:hover { background: var(--crit-solid); }
+
+    /* V23 · Selector: "Añadido" en vez de opacidad */
+    .picker-card.already-added { opacity: 1; position: relative; }
+    .picker-card.already-added img { opacity: .5; }
+    .picker-card.already-added::after {
+      content: "Añadido"; position: absolute; top: 8px; left: 8px;
+      background: #E6F4EA; color: #17663A;
+      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+    }
+    .picker-card-body small { text-transform: none; letter-spacing: 0; font-size: 11.5px; }
+
+    /* V24 · Builder: etiquetas en tipo oración */
+    .form-group label { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 500; color: #4A4541; }
+    .form-group input, .form-group select { height: 42px; }
   </style>
 </head>
 <body>
@@ -2053,7 +2181,7 @@
             <input type="email" id="bEmail" placeholder="carlos@empresa.com">
           </div>
           <div class="form-group">
-            <label>Telefono</label>
+            <label>Teléfono</label>
             <input type="tel" id="bPhone" placeholder="+34 612 345 678">
           </div>
           <div class="form-group">
@@ -2083,7 +2211,7 @@
             <input type="number" id="bGuests" placeholder="250">
           </div>
           <div class="form-group">
-            <label>Ubicacion</label>
+            <label>Ubicación</label>
             <input type="text" id="bLocation" placeholder="Hotel W Barcelona">
           </div>
           <div class="form-group">
@@ -2097,11 +2225,11 @@
             </select>
           </div>
           <div class="form-group full">
-            <label>Concepto artístico (titulo)</label>
+            <label>Concepto artístico (título)</label>
             <input type="text" id="bConceptTitle" placeholder="Noche de Estrellas">
           </div>
           <div class="form-group full">
-            <label>Concepto artístico (descripcion)</label>
+            <label>Concepto artístico (descripción)</label>
             <input type="text" id="bConceptText" placeholder="Una selección de espectáculos diseñada para...">
           </div>
         </div>
@@ -2135,7 +2263,7 @@
     <div class="admin-bar-left">
       <div class="status-dot" id="statusDot"></div>
       <div class="admin-bar-info">
-        <span id="adminStatus">REVISION</span>
+        <span id="adminStatus">En revisión</span>
         <span id="adminMeta"></span>
       </div>
     </div>
@@ -2290,6 +2418,7 @@
     const I18N = {
       es: {
         navCta: 'Solicita presupuesto',
+        heroFor: 'Propuesta para',
         conceptLabel: 'Concepto artístico',
         statsTitle: 'Algunos datos interesantes que queremos compartir contigo.',
         statsYears: 'Años de experiencia',
@@ -2328,6 +2457,7 @@
       },
       en: {
         navCta: 'Request a quote',
+        heroFor: 'Proposal for',
         conceptLabel: 'Artistic concept',
         statsTitle: 'A few numbers we\'d like to share with you.',
         statsYears: 'Years of experience',
@@ -2876,14 +3006,14 @@
                       onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${ex.label || ''}</span>
                 <span class="ex-amount" contenteditable="true"
                       onblur="updateExtraAmount(${i}, ${j}, this)"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${exFormatted}&euro;</span>
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${money(exAmount)}</span>
                 <button class="ex-remove" onclick="removeExtra(${i}, ${j})" title="Eliminar línea">&times;</button>
               </div>`;
           }
           return `
               <div class="block-extras-row">
                 <span class="ex-label">${ex.label || ''}</span>
-                <span class="ex-amount">${exFormatted}&euro;</span>
+                <span class="ex-amount">${money(exAmount)}</span>
               </div>`;
         }).join('');
         const extrasBlock = (extras.length || isAdmin) ? `
@@ -2902,7 +3032,7 @@
               <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'descriptionEn' : 'description'}" data-show-index="${i}"` : ''}>${localizedShowField(show, 'description')}</p>
               <div class="block-footer">
                 <div class="block-price ${isAdmin ? 'editable' : ''}" data-price="${priceWithMargin}" data-index="${i}" ${isAdmin ? 'onclick="startPriceEdit(this, ' + i + ')"' : ''}>
-                  ${priceFormatted}&euro;<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'priceNoteEn' : 'priceNote'}" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${localizedShowField(show, 'priceNote')}</small>
+                  ${money(priceWithMargin)}<small ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'priceNoteEn' : 'priceNote'}" data-show-index="${i}" onclick="event.stopPropagation()"` : ''}>${localizedShowField(show, 'priceNote')}</small>
                 </div>
                 ${show.videoUrl ? `<a href="${show.videoUrl.replace('/embed/', '/watch?v=')}" target="_blank" class="btn-dark">${T.btnVideo}</a>` : ''}
               </div>
@@ -2920,8 +3050,8 @@
         total += price;
         summaryHTML += `
           <div class="summary-row" data-summary="${show.id}">
-            <span>${localizedShowField(show, 'name')} (${localizedShowField(show, 'priceNote')})</span>
-            <span>${formatPrice(price)}&euro;</span>
+            <span>${localizedShowField(show, 'name')}${localizedShowField(show, 'priceNote') ? `<small class="summary-note-line">${localizedShowField(show, 'priceNote')}</small>` : ''}</span>
+            <span>${money(price)}</span>
           </div>
         `;
         const extras = Array.isArray(show.extras) ? show.extras : [];
@@ -2931,7 +3061,7 @@
           summaryHTML += `
           <div class="summary-row summary-row-extra" data-summary="${show.id}-extra">
             <span>${ex.label || ''}</span>
-            <span>${formatPrice(exAmount)}&euro;</span>
+            <span>${money(exAmount)}</span>
           </div>
         `;
         });
@@ -2969,9 +3099,10 @@
                 : `${clientPdfBtn()}<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
             </div>
           </div>
+          ${clientForLine(client) ? `<p class="hero-for">${T.heroFor} ${escapeHtmlText(clientForLine(client))}</p>` : ''}
           <h1 ${isAdmin ? 'class="editable-text" contenteditable="true" data-field="event.name"' : ''}>${event.name.replace(' — ', '<br>')}</h1>
           <p class="hero-sub ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-field="${heroSubField}"` : ''}>${escapeHtmlText(heroSubValue)}</p>
-          <p class="hero-detail">${event.date} &middot; ${event.type}</p>
+          ${eventDetailLine(event) ? `<p class="hero-detail">${escapeHtmlText(eventDetailLine(event))}</p>` : ''}
         </div>
 
         <!-- CONCEPTO -->
@@ -3008,7 +3139,7 @@
               ${summaryHTML}
               <div class="summary-total" id="summaryTotal">
                 <span>${T.summaryTotal}</span>
-                <span>${formatPrice(total)}&euro;</span>
+                <span>${money(total)}</span>
               </div>
             </div>
             <div class="summary-note">
@@ -3096,7 +3227,39 @@
     // PRICE HELPERS
     // =============================================
     function formatPrice(num) {
-      return num.toLocaleString('es-ES');
+      // FundéuRAE: 4 cifras sin separador (3950) y desde 5 con espacio fino (19 650). EN: 3,950.
+      const n = Math.round(Number(num) || 0);
+      if (LANG === 'en') return n.toLocaleString('en-IE');
+      const s = String(Math.abs(n));
+      return (n < 0 ? '-' : '') + (s.length > 4 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : s);
+    }
+    // Importe con símbolo: "3950 €" en español, "€3,950" en inglés.
+    function money(num) {
+      return LANG === 'en' ? '€' + formatPrice(num) : formatPrice(num) + ' €';
+    }
+    function cleanField(v) {
+      if (v == null) return '';
+      const s = String(v).trim();
+      return (s === 'null' || s === 'undefined') ? '' : s;
+    }
+    // Fechas ISO a texto legible; las escritas a mano ("22 de octubre") se respetan.
+    function fmtEventDate(v) {
+      const s = cleanField(v);
+      if (!s) return '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        const d = new Date(s + 'T12:00:00');
+        if (!isNaN(d)) return d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+      return s;
+    }
+    function eventDetailLine(ev) {
+      return [fmtEventDate(ev && ev.date), cleanField(ev && ev.type), cleanField(ev && ev.location)].filter(Boolean).join(' · ');
+    }
+    // Empresa para "Propuesta para …": se omite si parece un email, un teléfono o un relleno.
+    function clientForLine(cl) {
+      const c = cleanField(cl && cl.company);
+      if (!c || /@/.test(c) || /^[+\d\s().-]{6,}$/.test(c) || /^(contacto|particular|empresa|n\/a|-)$/i.test(c)) return '';
+      return c;
     }
 
     function getAdjustedPrice(basePrice) {
@@ -3685,7 +3848,7 @@
       // Reverse the margin to store the base price
       proposalState.shows[index].currentPrice = Math.round(newPrice / (1 + proposalState.globalMargin / 100));
       renderProposal();
-      showToast('Precio actualizado: ' + formatPrice(newPrice) + '\u20AC');
+      showToast('Precio actualizado: ' + money(newPrice));
     }
 
     function updateGlobalMargin(value) {
@@ -3713,19 +3876,19 @@
       switch (proposalState.status) {
         case 'revision':
           dot.className = 'status-dot';
-          status.textContent = 'REVISION';
+          status.textContent = 'En revisión';
           break;
         case 'approved':
           dot.className = 'status-dot approved';
-          status.textContent = 'APROBADA';
+          status.textContent = 'Aprobada';
           break;
         case 'sent':
           dot.className = 'status-dot sent';
-          status.textContent = 'ENVIADA';
+          status.textContent = 'Enviada';
           break;
       }
 
-      meta.textContent = `${client.company} \u2014 ${event.type} \u2014 ${event.date}`;
+      meta.textContent = [cleanField(client.company), cleanField(event.type), fmtEventDate(event.date)].filter(Boolean).join(' · ');
 
       // Marca el lang actual en el toggle
       document.querySelectorAll('#langToggle button').forEach(b => {
@@ -3863,7 +4026,7 @@
       document.getElementById('approveModalText').innerHTML =
         `Se guardará como <strong>versión final</strong> y se generará el PDF.<br><br>` +
         `Cliente: <strong>${escapeHtmlText(proposalState.client.email || proposalState.client.name || '\u2014')}</strong><br>` +
-        `Presupuesto: <strong>${formatPrice(total)}\u20AC</strong> (+ IVA).`;
+        `Presupuesto: <strong>${money(total)}</strong> (+ IVA).`;
       document.getElementById('approveModalActions').innerHTML =
         `<button class="btn-cancel" onclick="closeModal()">Cancelar</button>` +
         `<button class="btn-confirm" onclick="confirmApproval()">Aprobar propuesta</button>`;

@@ -114,6 +114,9 @@ Primario del admin: negro `#161413`. Acciones destructivas o de cambio de estado
 - **En tablas densas el CSS solo no se nota.** La primera pasada de Propuestas (colores, espaciado, botones ligeros) no convenció a Philippe: "no veo una mejora grande". Lo que cambió la percepción fue la estructura: lista por cliente sin datos repetidos, pastillas de estado, agrupación por recencia y acciones secundarias en un menú. Si la queja es de legibilidad, proponer directamente el cambio de plantilla (marcado, sin lógica) y enseñarlo en local.
 - **Menú de acciones sin JS nuevo:** `<details class="p-menu"><summary>Más</summary>…</details>` con los mismos `data-*` que ya escuchan los manejadores. Ojo: dentro de un contenedor con `overflow-x: auto` el desplegable se recorta; el contenedor de la lista va con `overflow: visible`.
 - **Datos que se ven mal por formato, no por diseño:** `proposals.shows` llega como texto JSON y el admin contaba 0 shows en 145 de 148 clientes; `new Date("22 de octubre")` pintaba "Invalid Date". Contar y formatear en la plantilla (`JSON.parse` con `try`, fechas ISO formateadas y las escritas a mano tal cual).
+- **Subir tipografía de pantalla también engorda el PDF.** La Ola 2 agrandó concepto, nota de precio y extras y un show dejó de caber en la página 2 (39 % en blanco). Cada cambio de tamaño en pantalla necesita su contrapartida en `body.print-mode` y regenerar el PDF para medir.
+- **Doble subrayado en print:** si un enlace lleva `border-bottom` en pantalla y la regla de print añade `text-decoration: underline`, en el PDF salen dos líneas. Quitar el borde en `body.print-mode`.
+- **`::first-letter` con selector amplio** (`.card-body .meta > span:first-child`) capitalizó emails en Artistas y Proveedores. Acotar siempre al componente (`.show-meta`).
 - **Leads sin trabajar dominan el listado** (156 de 195 propuestas sin shows): marcarlos como "Por preparar" en vez de esconderlos; es trabajo pendiente, no ruido.
 
 ## Referencias
@@ -121,7 +124,7 @@ Primario del admin: negro `#161413`. Acciones destructivas o de cambio de estado
 - Evidencia y fuentes: `references/evidencia-ux-ui.md`
 - Research completo (propuesta): `OUTPUTS/eventos-barcelona/research-ux-ui-propuestas-sep2026.md` y su `QA-REPORT-…`
 - Informe publicado: https://claude.ai/artifact/NETSSk5ofGok1iuVZPS3tt
-- Rama de referencia: `visual/rider-ola-1` (Ola 1 de la propuesta + capa visual del admin + retirada de Ideas)
+- Rama de referencia: `visual/rider-ola-1` (Olas 1, 2 y 3 de la propuesta; admin con capa visual y plantillas nuevas de Propuestas, Shows, Artistas y Proveedores; retirada de Ideas). Estado por ítem en la sección 11 del research
 
 ## Checklist de cierre
 

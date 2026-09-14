@@ -275,3 +275,26 @@ Un verificador en contexto separado contrastó 11 afirmaciones de carga con el t
 - La web de la RAE devolvió 403; la norma del euro se tomó de Fundéu.
 
 Capturas y scripts de auditoría: scratchpad de la sesión (no versionados, contienen datos de clientes).
+
+## 11. Estado de implementación (rama `visual/rider-ola-1`, 2026-09-14)
+
+Philippe dio el visto bueno a la propuesta visual y pidió terminar la actualización. Las decisiones pendientes con Xavi se aplicaron con la recomendación por defecto (coral de marca en "Aprobar", acento único, DM Serif Display + Inter, formato de precios FundéuRAE) y quedan a su validación.
+
+| Bloque | Estado | Nota |
+|---|---|---|
+| Ola 1 · V01 a V12 | Aplicado | Hero móvil, contraste, acento único, hero a color, PDF a dos shows por hoja con numeración, color de edición, barra admin móvil, carrusel táctil, foco y movimiento reducido |
+| Ola 2 · V13 a V24 | Aplicado | Tokens cálidos, texto a 62ch, precio en Inter con nota debajo, "Ver vídeo" como enlace, suplementos con "+", total con filete, condiciones a 2 columnas, logos uniformes, zigzag sin `rtl`, estado del editor como pastilla, avisos abajo, "Quitar show" con texto, "Añadido" en el selector, etiquetas del builder |
+| V25 · CSS muerto | No aplicado | Sin efecto visual; se deja para una limpieza técnica |
+| V26 · Formato de precio | Aplicado | `3950 €`, `19 650 €`; `€3,950` en inglés. `formatPrice()` + `money()` |
+| V27 · Resumen sin paréntesis | Aplicado | Nota de precio en segunda línea |
+| V28 · Fecha legible y sin `null` | Aplicado | Hero (fecha · tipo · lugar) y barra admin |
+| V29 · "Propuesta para [empresa]" | Aplicado | Se omite si la empresa es un email, un teléfono o un relleno ("contacto", "particular", "empresa") |
+| V30 · Prueba social antes del precio | No aplicado | Choca con la regla de Xavi (2026-07-22) de cerrar el PDF con sobre nosotros + logos + condiciones en la última página |
+| V31 · Textos | Parcial | "En revisión / Aprobada / Enviada" y tildes del builder aplicados; "Vuestra inversión" queda como decisión de copy |
+| V32 · Fotos con logos de terceros | No aplicado | Contenido: revisar en el admin de shows |
+| V33 · IVA | No aplicado | Decisión de Xavi |
+| Admin · capa visual | Aplicado | Tokens, 5 columnas a 1600-2000 px, pestañas, filtros agrupados, estados en español |
+| Admin · Propuestas | Aplicado (plantilla) | Lista por cliente, shows reales (antes 0 por texto JSON), fechas sin "Invalid Date", menú de acciones, agrupación por recencia |
+| Admin · Shows | Aplicado (plantilla) | Título primero, categoría legible, "por artista" enlazado o "Sin artista", precio formateado, "Pendiente de revisión" y "Foto del artista" sobre la imagen, "Pasar a revisión" |
+| Admin · Artistas y Proveedores | Aplicado (plantilla) | Tarjeta compacta con miniatura o iniciales, "Completo/Incompleto" con lo que falta, "Ver ficha" |
+| Admin · pestaña Ideas | Eliminada | API `list-referencias` y `/api/gpt/catalogo` intactas |

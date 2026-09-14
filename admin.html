@@ -690,9 +690,6 @@
     }
 
     /* Ajustes tras revisar capturas */
-    /* "Pasar a pending review" lo genera el JS: se acorta y traduce solo con CSS para que quepa en una fila */
-    .card-footer .btn-archive[data-action="to-pending"] { font-size: 0; white-space: nowrap; }
-    .card-footer .btn-archive[data-action="to-pending"]::after { content: "Pasar a revisión"; font-size: 12px; }
     .card-footer { flex-wrap: nowrap; }
     .card-footer .btn { white-space: nowrap; }
     .badge { white-space: nowrap; }
@@ -716,8 +713,8 @@
     /* Tarjeta: el título manda; el artista en gris */
     .card-body .artist { color: var(--gray); }
     .card-body .artist:hover { color: var(--dark); }
-    .card-body .meta > span:first-child { display: inline-block; }
-    .card-body .meta > span:first-child::first-letter { text-transform: uppercase; }
+    .show-meta > span:first-child { display: inline-block; }
+    .show-meta > span:first-child::first-letter { text-transform: uppercase; }
     /* Iconos sobre la foto con contraste propio */
     .icon-btn { background: rgba(22, 20, 19, .58); box-shadow: none; }
     .icon-btn:hover { background: rgba(22, 20, 19, .8); }
@@ -734,6 +731,46 @@
     /* Acciones benignas más ligeras */
     .card-footer .btn-video { border-color: transparent; background: #F4F1ED; }
     .card-footer .btn-video:hover { background: #EAE5DF; color: var(--dark); border-color: transparent; }
+
+    /* =====================================================================
+       SHOWS · ARTISTAS · PROVEEDORES (plantillas de tarjeta)
+       ===================================================================== */
+    .status-badge { text-transform: none; letter-spacing: 0; }
+    .status-pendiente { background: var(--warn-bg); color: var(--warn-fg); }
+    .status-foto-artista { background: rgba(255, 255, 255, .92); color: var(--ink-2); }
+    .show-meta { align-items: baseline; }
+    .show-meta .artist { font-size: 12px; }
+    .show-meta .artist:hover { text-decoration: underline; }
+    .show-warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 999px; padding: 1px 8px; font-weight: 600; font-size: 11.5px; }
+    .show-price { display: flex; align-items: baseline; gap: 8px; min-width: 0; font-size: 12.5px; color: var(--gray); margin-top: 2px; }
+    .show-price b { color: var(--dark); font-weight: 600; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .show-price span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card-footer .btn-approve { order: 3; margin-left: auto; }
+
+    .art-card-head { display: flex; align-items: center; gap: 12px; padding: 14px 12px 2px 16px; }
+    .art-thumb {
+      flex: 0 0 56px; width: 56px; height: 56px; border-radius: 12px;
+      background: #EFEAE4 center / cover no-repeat;
+      display: grid; place-items: center;
+      font-size: 16px; font-weight: 600; color: var(--ink-2);
+    }
+    .art-head-text { flex: 1; min-width: 0; }
+    .art-head-text h3 {
+      margin: 0; font-size: 15px; font-weight: 600; line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .art-sub { font-size: 12.5px; color: var(--gray); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .art-card .art-edit { flex: 0 0 32px; align-self: flex-start; background: #F4F1ED; }
+    .art-card .art-edit::before { color: var(--ink-2); }
+    .art-card .art-edit:hover { background: #EAE5DF; }
+    .art-card .card-body { padding-top: 10px; gap: 6px; }
+    .art-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .status-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .status-pill.is-ok { background: var(--ok-bg); color: var(--ok-fg); }
+    .status-pill.is-warn { background: var(--warn-bg); color: var(--warn-fg); }
+    .art-faltan { font-size: 12px; color: var(--warn-fg); }
+    .chip-muted { color: var(--gray); background: #F4F1ED; }
 
     /* =====================================================================
        PROPUESTAS · LISTA (sustituye a la tabla; mismos datos y acciones)
@@ -1378,31 +1415,46 @@
         : a.tipo === 'venue' ? 'Venue' : 'Artista';
       // Evitar duplicación: si la compañía ya es el H3, no la repetimos en el meta.
       const tipoLabelForMeta = (tipoLabel === display) ? null : tipoLabel;
+      // Presentación: cabecera compacta con miniatura, estado con lo que falta (mismos criterios que isArtistComplete)
+      const initials = String(display || '?').split(/[\s._-]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+      const faltan = [
+        (a.email && !ph) ? null : 'email',
+        (a.telefono && String(a.telefono).trim()) ? null : 'teléfono',
+        (a.bio_show || (Array.isArray(a.fotos_urls) && a.fotos_urls.length) || a.video1) ? null : 'bio, fotos o vídeo'
+      ].filter(Boolean);
+      const subtitle = [
+        contactPerson ? `Contacto: ${contactPerson}` : null,
+        a.compania && a.compania !== display ? a.compania : null
+      ].filter(Boolean).join(' · ');
+      card.className = 'card art-card';
       card.innerHTML = `
-        <div class="card-img ${photo ? '' : 'placeholder'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}">${photo ? '' : '·'}
-          <span class="status-badge ${complete ? 'status-completa' : 'status-incompleta'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'completo' : 'incompleto'}</span>
-          <div class="card-actions-overlay">
-            <button class="icon-btn edit" data-edit-artista="${escapeHtml(a.id)}" title="Editar artista/proveedor"></button>
+        <div class="art-card-head">
+          <div class="art-thumb${photo ? '' : ' is-empty'}" style="${photo ? `background-image:url('${escapeHtml(photo)}')` : ''}" aria-hidden="true">${photo ? '' : escapeHtml(initials)}</div>
+          <div class="art-head-text">
+            <h3 title="${escapeHtml(display)}">${escapeHtml(display)}</h3>
+            ${subtitle ? `<div class="art-sub" title="${escapeHtml(subtitle)}">${escapeHtml(subtitle)}</div>` : ''}
           </div>
+          <button class="icon-btn edit art-edit" data-edit-artista="${escapeHtml(a.id)}" title="Editar artista/proveedor"></button>
         </div>
         <div class="card-body">
-          <h3>${escapeHtml(display)}</h3>
-          ${contactPerson ? `<div class="meta" style="margin-top:-4px;"><span style="color:var(--accent);font-weight:600;">contacto: ${escapeHtml(contactPerson)}</span></div>` : ''}
-          ${a.compania && a.compania !== display ? `<div class="meta"><span>${escapeHtml(a.compania)}</span></div>` : ''}
-          ${disciplinas.length ? `<div class="chips">${disciplinas.map(d => `<span class="chip">${escapeHtml(d)}</span>`).join('')}</div>` : '<div class="chips"><span class="chip" style="color:#aaa;">sin disciplina</span></div>'}
-          <div class="meta" style="margin-top:6px;">
+          <div class="art-status">
+            <span class="status-pill ${complete ? 'is-ok' : 'is-warn'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'Completo' : 'Incompleto'}</span>
+            ${!complete && faltan.length ? `<span class="art-faltan">Falta ${escapeHtml(faltan.join(', '))}</span>` : ''}
+          </div>
+          ${disciplinas.length ? `<div class="chips">${disciplinas.map(d => `<span class="chip">${escapeHtml(d)}</span>`).join('')}</div>` : '<div class="chips"><span class="chip chip-muted">Sin disciplina</span></div>'}
+          <div class="meta">
             ${[
               a.tipo === 'proveedor' ? null : `${showsCount} show${showsCount === 1 ? '' : 's'}`,
               a.ciudad ? escapeHtml(a.ciudad) : null,
               tipoLabelForMeta
             ].filter(Boolean).map(s => `<span>${s}</span>`).join(' · ')}
           </div>
-          <div class="meta ${ph ? '' : ''}" title="${escapeHtml(a.email || '')}">
-            ${ph ? `<span class="chip chip-warning" style="font-size:10px;">email placeholder</span>` : `<span>${escapeHtml(shortEmail(a.email))}</span>`}
+          <div class="meta" title="${escapeHtml(a.email || '')}">
+            ${ph ? '<span class="chip chip-warning">Email provisional</span>' : `<span>${escapeHtml(shortEmail(a.email))}</span>`}
           </div>
         </div>
         <div class="card-footer">
-          <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver detalle</button>
+          <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver ficha</button>
           <button class="btn btn-secondary btn-download" data-download-artista="${escapeHtml(a.id)}" title="Descargar las fotos del artista y de sus shows">${DOWNLOAD_ICON}Descargar fotos</button>
         </div>
       `;
@@ -1864,26 +1916,40 @@
       const cardImg = (s.image_url && String(s.image_url).trim()) || primaryFoto || '';
 
       const favClass = s.is_favorite ? 'is-favorite' : 'fav';
+      // Presentación: categoría legible, precio formateado y estados visibles (sin lógica nueva)
+      const CAT_LABELS = { danza: 'Danza', musica: 'Música', 'música': 'Música', circo: 'Circo', wow: 'WOW' };
+      const catKey = String(s.category || '').trim().toLowerCase();
+      const catLabel = CAT_LABELS[catKey] || (s.category ? String(s.category) : 'Sin categoría');
+      const fmtEur = (n) => {
+        const v = String(Math.round(Number(n) || 0));
+        return (v.length > 4 ? v.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : v) + ' €';
+      };
+      const nImgs = showImages(s).length;
+      const isPending = state.shows.substatus === 'pending_review';
+      const usesArtistPhoto = !(s.image_url && String(s.image_url).trim()) && !!cardImg;
       card.innerHTML = `
         <div class="card-img ${cardImg ? '' : 'placeholder'}" style="${cardImg ? `background-image:url('${escapeHtml(cardImg)}')` : ''}">${cardImg ? '' : '·'}
+          ${isPending
+            ? '<span class="status-badge status-pendiente">Pendiente de revisión</span>'
+            : (usesArtistPhoto ? '<span class="status-badge status-foto-artista" title="El show no tiene imagen propia: se muestra la foto del artista">Foto del artista</span>' : '')}
           <div class="card-actions-overlay">
             <button class="icon-btn ${favClass}" data-fav="${escapeHtml(s.id)}" data-fav-state="${s.is_favorite ? '1' : '0'}" title="${s.is_favorite ? 'Quitar de favoritos' : 'Marcar como favorito'}"></button>
             <button class="icon-btn edit" data-edit="${escapeHtml(s.id)}" title="Editar show"></button>
           </div>
         </div>
         <div class="card-body">
-          ${artistName
-            ? `<div class="artist" data-artista-id="${escapeHtml(primary.id)}">por ${escapeHtml(artistName)}${artistasList.length > 1 ? ` <span style="color:var(--gray);">+${artistasList.length - 1}</span>` : ''} →</div>`
-            : '<div class="artist" style="color:#aaa; cursor:default;">sin artista asignado</div>'}
-          <h3>${escapeHtml(loc.name)}${loc.missing ? '<span class="lang-missing-badge" title="Sin traducción EN — se muestra ES como fallback">sin EN</span>' : ''}</h3>
-          <div class="meta">
-            <span>${escapeHtml(s.category || '—')}${loc.subcategory ? ' · ' + escapeHtml(loc.subcategory) : ''}</span>
-            ${s.base_price ? `<span>${s.base_price}€ ${escapeHtml(loc.price_note)}</span>` : ''}
+          <h3>${escapeHtml(loc.name)}${loc.missing ? '<span class="lang-missing-badge" title="Sin traducción EN: se muestra el texto en español">sin EN</span>' : ''}</h3>
+          <div class="meta show-meta">
+            <span>${escapeHtml(catLabel)}${loc.subcategory ? ' · ' + escapeHtml(loc.subcategory) : ''}</span>
+            ${artistName
+              ? `<span class="artist" data-artista-id="${escapeHtml(primary.id)}" title="Abrir la ficha del artista">por ${escapeHtml(artistName)}${artistasList.length > 1 ? ` +${artistasList.length - 1}` : ''}</span>`
+              : '<span class="show-warn">Sin artista</span>'}
           </div>
+          ${s.base_price ? `<div class="show-price"><b>${fmtEur(s.base_price)}</b>${loc.price_note ? `<span title="${escapeHtml(loc.price_note)}">${escapeHtml(loc.price_note)}</span>` : ''}</div>` : ''}
           <p>${escapeHtml(loc.description)}</p>
         </div>
         <div class="assign-row multi" data-show-id="${escapeHtml(s.id)}">
-          <label>Artistas:</label>
+          <label>Artistas</label>
           <div class="artistas-list">
             ${artistasList.map((a, i) => `
               <span class="chip-removable chip-artista" data-art-id="${escapeHtml(a.id)}" title="#${i + 1}${i === 0 ? ' (principal)' : ''}${a.ghl_contact_id ? '' : ' · sin GHL'}">
@@ -1898,11 +1964,11 @@
           </div>
         </div>
         <div class="card-footer">
-          ${state.shows.substatus === 'pending_review'
+          ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Vídeo</a>` : ''}
+          ${nImgs ? `<button class="btn btn-video btn-download" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">${DOWNLOAD_ICON}Fotos (${nImgs})</button>` : ''}
+          ${isPending
             ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>`
-            : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="to-pending">Pasar a pending review</button>`}
-          ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Video</a>` : ''}
-          ${showImages(s).length ? `<button class="btn btn-video btn-download" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">${DOWNLOAD_ICON}Fotos (${showImages(s).length})</button>` : ''}
+            : `<button class="btn btn-archive" data-id="${escapeHtml(s.id)}" data-action="to-pending">Pasar a revisión</button>`}
         </div>
       `;
 
