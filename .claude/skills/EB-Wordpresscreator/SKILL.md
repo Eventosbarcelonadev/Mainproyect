@@ -1,10 +1,10 @@
 ---
-name: eb-crear-pagina
+name: EB-Wordpresscreator
 description: >-
   Doctrina para crear cualquier página nueva del site eventosbarcelona.com (post de blog, landing MICE, ficha de show/espectáculo, ficha de artista, caso de éxito, plantilla de archivo Elementor) SIN construir la estructura desde cero. Duplica una plantilla existente que ya renderiza bien, cambia SOLO el contenido y la imagen, y verifica visualmente antes de reportar "publicado". Invocar cuando el usuario diga "crea una página", "creemos una landing", "nuevo caso de éxito", "nueva ficha de show", "nuevo artículo", "publica esto en la web", "haz la versión EN de esta página", o dé cualquier señal de crear contenido nuevo en WordPress.
 ---
 
-# Crear una página nueva en Eventos Barcelona
+# EB-Wordpresscreator · crear una página nueva en Eventos Barcelona
 
 **Regla absoluta:** nunca construir la estructura desde cero. Siempre partir de una plantilla espejo que ya renderiza bien en producción. Cambiar SOLO contenido + imagen destacada. Verificar visualmente antes de decir "listo".
 

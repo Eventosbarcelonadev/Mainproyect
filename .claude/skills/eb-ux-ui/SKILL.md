@@ -1,8 +1,8 @@
 ---
 name: eb-ux-ui
-description: Auditoría y mejora UX/UI de las superficies web de Eventos Barcelona (propuesta cliente, editor, builder, PDF A4 y dashboard /admin) sin tocar funcionalidad. Úsala cuando el usuario diga "mejorar el diseño", "UX/UI", "auditoría visual", "revisa cómo se ve", "que se vea premium", "solo visual", "sin tocar código funcional", "contraste", "móvil se ve mal", "el PDF queda feo", "mejorar el dashboard/admin", "enséñame el antes y después", "quita esta pestaña/sección" o pase una captura de la propuesta o del admin. Cubre método (capturas medidas, evidencia, tokens, olas de CSS, preview local antes/después con escrituras bloqueadas, verificación) y las lecciones aprendidas en EB. Para copy del site usar `copywriting`; para publicar en WordPress, `eb-publicar-contenido`.
+description: Auditoría y mejora UX/UI de las superficies web de Eventos Barcelona (propuesta cliente, editor, builder, PDF A4, dashboard /admin y las páginas de documento de propuestas.eventosbarcelona.com) sin tocar funcionalidad. Úsala cuando el usuario diga "mejorar el diseño", "UX/UI", "auditoría visual", "revisa cómo se ve", "que se vea premium", "solo visual", "sin tocar código funcional", "contraste", "móvil se ve mal", "errores de márgenes", "el PDF queda feo", "mejorar el dashboard/admin", "enséñame el antes y después", "quita esta pestaña/sección", o cuando se cree o se toque cualquier HTML del repo (brief, sprint, benchmark, dashboard, propuesta suelta), o pase una captura. Cubre método (capturas medidas, evidencia, tokens, olas de CSS, preview local antes/después con escrituras bloqueadas, verificación) y las lecciones aprendidas en EB. Para copy del site usar `copywriting`; para publicar en WordPress, `eb-publicar-contenido`.
 metadata:
-  version: 1.0.0-eb
+  version: 1.1.0-eb
 ---
 
 # UX/UI · Eventos Barcelona
@@ -19,6 +19,7 @@ Eres el responsable de la capa visual de las herramientas web de Eventos Barcelo
 6. **Tono y marca EB:** sin guion largo (U+2014) en ningún texto nuestro, textos de interfaz en español peninsular, firma Scale IT (nunca Growth4U), no añadir medallas, estrellas ni urgencias (códigos de directorio).
 7. **Ceñirse a lo pedido.** Nada de avisos ajenos a la tarea en las respuestas.
 8. **Rama y sin commit** hasta que el usuario lo pida. Nunca tocar `main` ni desplegar sin OK explícito.
+9. **Ninguna página desborda a lo ancho, y todas llevan el `<head>` estándar.** Regla de Philippe del 2026-09-16, después de encontrar 4 de 10 páginas con scroll horizontal y el dominio entero sin favicon ni `og:image`. Aplica a **todo HTML del repo**, no solo a la propuesta y al admin: si Vercel lo sirve, entra. Se verifica con `scripts/anchos.js`, que sale con código 1 si algo falla. Ver [Estándar de página](#estándar-de-página-regla-9).
 
 ### Paso a producción (solo con OK explícito)
 - Vercel (`eventos-barcelona`) despliega con cada push a `origin main` (`.vercel/repo.json` → `remoteName: origin`). `client` y `personal` son remotos muertos.
@@ -39,6 +40,58 @@ Eres el responsable de la capa visual de las herramientas web de Eventos Barcelo
 | Builder | `propuesta.html` | `?mode=builder` | Formulario + rejilla de 305 shows + barra de selección |
 | PDF A4 | `propuesta.html` | `?print=1` vía `api/generate-proposal-pdf.js` | Puppeteer + Chromium 131, `preferCSSPageSize: true`, reglas `body.print-mode` |
 | Dashboard | `admin.html` | `#shows/active`, `#artistas`, `#proveedores`, `#propuestas` | Pestaña Ideas eliminada el 2026-09-14 (la API `list-referencias` y el GPT siguen) |
+| Páginas de documento | 30 HTML sueltos en la raíz y en `OUTPUTS/eventos-barcelona/` | Ruta directa o alias de `vercel.json` (`/brief`, `/sprint`, `/benchmark`, `/xavi`, `/metricas`, `/catalogo`, `/linkedin`, `/reunion`) | Briefs, cierres de sprint, benchmarks, dashboards y propuestas antiguas. **Son las que más se comparten con Xavi y las que menos se revisan.** Cada una lleva su propio `<style>`: no hay CSS compartido |
+
+## Estándar de página (regla 9)
+
+Cada HTML de este repo se escribe entero a mano, con su `<style>` inline y su `<head>`. No hay plantilla, así que los fallos se copian de una página a la siguiente. Estos son los dos mínimos que no se negocian.
+
+### `<head>` canónico
+
+Va justo detrás del `<title>`. Los assets ya existen en la raíz del repo (`favicon.ico`, `favicon.png`, `apple-touch-icon.png`, `og-eventos-barcelona.jpg`, 1200×630 sobre papel EB):
+
+```html
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#161413">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Eventos Barcelona">
+<meta property="og:title" content="…">
+<meta property="og:description" content="…">
+<meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://propuestas.eventosbarcelona.com/…">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="…">
+<meta name="twitter:description" content="…">
+<meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+```
+
+Sin esto el enlace que le pasas a Xavi por WhatsApp o Slack sale sin miniatura y la pestaña sin icono. `og:image` en JPG o PNG, nunca WebP: WhatsApp no lo previsualiza.
+
+### Cero desbordamiento horizontal
+
+Se comprueba en **siete anchos**: 1280, 1024, 834, 768, 430, 390 y 360. Los tres fallos que aparecen una y otra vez:
+
+| Patrón | Qué falla | Cómo se escribe |
+|---|---|---|
+| Rejillas | `1fr` y `repeat(n,1fr)` | `minmax(0,1fr)` siempre. Un track `1fr` nunca baja de su min-content, así que una URL con `white-space:nowrap` o un título largo ensanchan la columna por encima del contenedor |
+| Tablas | `<table>` a pelo | Envuelta en `<div class="t-scroll">` con `overflow-x:auto`. El scroll se lo queda la tabla, no la página |
+| Breakpoints | saltar a una columna en 700px | 820px. Dos columnas de tarjetas o de URLs dejan de caber sobre los 800, no sobre los 700 |
+
+El CSS nuevo va en un bloque delimitado al final del `<style>`, con la cabecera `RIDER VISUAL · responsive (<fecha>)` y el porqué en comentario, para poder revertirlo de una pieza.
+
+```bash
+# gate: sale con código 1 si algo desborda o le falta head
+node .claude/skills/eb-ux-ui/scripts/anchos.js https://propuestas.eventosbarcelona.com
+# una sola página, o contra el árbol de trabajo
+python3 -m http.server 8777 &
+node .claude/skills/eb-ux-ui/scripts/anchos.js http://127.0.0.1:8777 /index.html
+```
+
+Sin rutas descubre solo los HTML del repo. Bloquea todo lo que no sea GET o HEAD, así que es seguro contra producción.
 
 ## Flujo
 
@@ -72,6 +125,7 @@ open http://localhost:4173/comparar
 - `/pdf?v=antes|despues&id=<id>` genera el PDF con las mismas opciones que producción.
 
 ### 7. Verificación
+- **Gate de la regla 9**: `node .claude/skills/eb-ux-ui/scripts/anchos.js <base> [ruta…]`. Siete anchos, desbordamiento, head y `<img>` rotas. Tiene que salir con código 0 antes de decir "listo".
 - Repetir capturas y métricas en ambas versiones, sin errores de JS.
 - PDF: `swift .claude/skills/eb-ux-ui/scripts/pdf-blanco.swift <pdf> [franja_pie]` mide el blanco inferior por página y el número de páginas. Revisar la última página: no puede quedar casi vacía.
 - Contraste de todos los pares tocados.
@@ -109,6 +163,11 @@ Primario del admin: negro `#161413`. Acciones destructivas o de cambio de estado
 
 ## Lecciones aprendidas (no repetir)
 
+- **El desbordamiento no se ve en escritorio maximizado, que es donde se revisa todo.** En sep 2026, 4 de las 10 rutas con alias (`/brief`, `/sprint`, `/benchmark` y la home) desbordaban, y en 1440px las cuatro se veían perfectas. Peor: el desborde mayor del cierre de sprint (123px) estaba en **768px**, no en móvil. Medir a 1440 y 390 no basta, hacen falta los siete anchos.
+- **Un track `1fr` no es un track que encoge.** `grid-template-columns:1fr` equivale a `minmax(auto,1fr)`, y ese `auto` es el min-content del contenido. Con un `<a>` con `white-space:nowrap` dentro, la columna crece por encima del contenedor aunque el enlace lleve `min-width:0` y ellipsis. Comprobado en vivo sobre `/brief`: cambiando los cuatro grids a `minmax(0,1fr)`, el documento pasó de 409px a 390px y los 20 elementos desbordados se fueron a cero.
+- **El patrón correcto ya estaba en el repo, sin aplicar.** `dashboard-metricas.html` envuelve sus tablas en `.t-scroll{overflow-x:auto}` y por eso nunca falló; `benchmark` tenía dos `<table>` a pelo y desbordaba 107px. Antes de inventar una solución, mirar cómo lo resuelve la página hermana que sí funciona.
+- **Los estilos en línea se saltan todas las media queries.** El bloque de ejemplos de la home llevaba `style="display:grid;grid-template-columns:1fr 1fr 1fr"` sin clase: a 390px seguía en tres columnas y desbordaba 270px. El `@media` de 768 existía, pero apuntaba a clases que ese div no tenía. Sacar el grid a una clase, no pelearlo con `!important`.
+- **"Errores de imagen" casi nunca son imágenes rotas.** Ante esa queja, las páginas de documento no tenían ni una sola imagen y las propuestas cargaban las 21 sin una rota. Lo que fallaba era el `<head>`: `/favicon.ico` daba 404 en todo el dominio y ninguna página salvo `propuesta.html` tenía `og:image`, así que el enlace compartido salía sin miniatura. Comprobar el head antes de buscar `<img>`.
 - **Estilos en línea ganan a las clases.** El buscador de Shows lleva `style="flex:1;max-width:300px"` y en móvil se quedaba en "Bu". Se corrige con `!important` acotado a esa regla.
 - **CSS no cambia textos generados por JS.** Para etiquetas cortas vale `font-size: 0` + `::after { content: … }` (estados "En revisión"/"Aprobada", "Pasar a revisión"). Si el texto es HTML estático, cambiarlo en el HTML.
 - **Márgenes de `@page` restan altura útil.** Al añadir 10 mm arriba y 12 mm abajo, el pie del cierre saltó a una hoja casi vacía (95 % en blanco). La regla de Xavi (2026-07-22) fuerza el cierre en la última página: compactar el cierre en print y medir.
@@ -138,6 +197,7 @@ Primario del admin: negro `#161413`. Acciones destructivas o de cambio de estado
 
 ## Checklist de cierre
 
+- [ ] `anchos.js` en verde: cero desbordamiento en los siete anchos y head completo en toda página tocada (regla 9)
 - [ ] Capturas y métricas antes/después en escritorio y móvil, sin errores de JS
 - [ ] PDF regenerado, blanco por página medido y última página comprobada
 - [ ] Contraste AA de todos los pares nuevos
