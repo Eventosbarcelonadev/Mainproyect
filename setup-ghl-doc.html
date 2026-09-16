@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Setup GoHighLevel — Eventos Barcelona</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#161413">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Eventos Barcelona">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:title" content="Setup GoHighLevel · Eventos Barcelona">
+  <meta property="og:description" content="Documentación de configuración del CRM.">
+  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://propuestas.eventosbarcelona.com/setup-ghl-doc.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Setup GoHighLevel · Eventos Barcelona">
+  <meta name="twitter:description" content="Documentación de configuración del CRM.">
+  <meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -308,13 +325,25 @@
       h2 { page-break-after: avoid; }
       table { page-break-inside: avoid; }
     }
-  </style>
+  
+/* ===== RIDER VISUAL · responsive (2026-09-16) =====
+   Las tablas de referencia no caben en movil (670px de documento a 360px
+   de ventana). Cada una se lleva su propio scroll horizontal. ===== */
+.t-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+/* El residuo de 10px a 360px no sale de ningun elemento: ocultando todas las
+   tablas, los .t-scroll y el .code-block el documento sigue midiendo 370.
+   Medido: ningun elemento sin recortar pasa de x=320, asi que recortar en el
+   ancho de la ventana no puede esconder contenido. */
+html,body{overflow-x:hidden}
+
+.t-scroll>table{margin:0}
+</style>
 </head>
 <body>
 
   <!-- COVER -->
   <div class="cover">
-    <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/01/eventos-barcelona-logo-new.svg" alt="Eventos Barcelona">
+    <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
     <h1>Configuracion de GoHighLevel</h1>
     <p class="subtitle">Guia completa de setup del CRM, pipelines, automatizaciones y formularios</p>
     <p class="meta">Preparado por <strong>Growth4U</strong> — Marzo 2026</p>
@@ -342,7 +371,7 @@
   <!-- 1. CREAR CUENTA -->
   <h2>1. Crear cuenta GHL</h2>
 
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Parametro</th><th>Valor</th></tr>
     </thead>
@@ -353,7 +382,7 @@
       <tr><td>Timezone</td><td>Europe/Madrid</td></tr>
       <tr><td>Moneda</td><td>EUR (€)</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 2. PIPELINES -->
   <h2>2. Pipelines</h2>
@@ -361,7 +390,7 @@
   <h3>Pipeline 1: Clientes (ventas)</h3>
   <p>Pipeline principal para gestionar el ciclo de vida comercial de cada lead, desde la entrada hasta el cierre del evento.</p>
 
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Etapa</th><th>Descripcion</th><th>Color</th></tr>
     </thead>
@@ -372,12 +401,12 @@
       <tr><td>Won</td><td>Evento confirmado. Presupuesto aceptado.</td><td>🟢 Verde</td></tr>
       <tr><td>Lost</td><td>Oportunidad no convertida.</td><td>🔴 Rojo</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h3>Pipeline 2: Artistas</h3>
   <p>Pipeline para gestionar el alta de nuevos artistas y companias que quieren colaborar con Eventos Barcelona.</p>
 
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Etapa</th><th>Descripcion</th><th>Color</th></tr>
     </thead>
@@ -388,14 +417,14 @@
       <tr><td>En Catalogo Activo</td><td>Artista activo, aparece en propuestas comerciales.</td><td>🟢 Verde oscuro</td></tr>
       <tr><td>No Apto</td><td>Artista descartado o no encaja con el perfil.</td><td>⚪ Gris</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 3. CUSTOM FIELDS CLIENTES -->
   <h2>3. Custom Fields — Leads / Clientes</h2>
   <p>Crear estos campos personalizados en la seccion de contactos del CRM. Son los datos que se rellenan automaticamente desde el formulario inteligente y que se usan para generar propuestas.</p>
 
   <h4>Datos del evento</h4>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Campo</th><th>Tipo</th><th>Opciones / Notas</th></tr>
     </thead>
@@ -413,10 +442,10 @@
       <tr><td>Idioma del cliente</td><td>Dropdown</td><td>Espanol · Ingles</td></tr>
       <tr><td>Como nos conocio</td><td>Dropdown</td><td>Busqueda en Google · Recomendacion · Redes sociales · Evento anterior · Otro</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h4>Datos de la propuesta</h4>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Campo</th><th>Tipo</th><th>Notas</th></tr>
     </thead>
@@ -428,13 +457,13 @@
       <tr><td>Notas internas</td><td>Text (long)</td><td>Notas de Xavi sobre el lead</td></tr>
       <tr><td>Comentarios del cliente</td><td>Text (long)</td><td>Lo que escribio en el formulario</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 4. CUSTOM FIELDS ARTISTAS -->
   <h2>4. Custom Fields — Artistas</h2>
   <p>Los artistas se gestionan como contactos con el tag <span class="tag tag-tipo">tipo:artista</span> y estos campos adicionales:</p>
 
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Campo</th><th>Tipo</th><th>Opciones / Notas</th></tr>
     </thead>
@@ -459,7 +488,7 @@
       <tr><td>Acepto politica de privacidad</td><td>Checkbox</td><td>Proteccion de datos (no bloquea envio)</td></tr>
       <tr><td>Acepto visibilidad web/RRSS</td><td>Checkbox</td><td>Autoriza a EB a subir material a web y redes para mejorar visibilidad del show</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 5. TAGS -->
   <h2>5. Taxonomia de Tags</h2>
@@ -548,7 +577,7 @@
   </div>
 
   <h4>Ejemplo (rellenar cuando Xavi pase precios)</h4>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Custom Value</th><th>Valor</th></tr>
     </thead>
@@ -560,10 +589,10 @@
       <tr><td>show_musica_violin_electrico_precio_base</td><td>1.800€</td></tr>
       <tr><td>show_circo_malabares_led_precio_base</td><td>1.200€</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h4>Margenes por defecto</h4>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Custom Value</th><th>Valor</th><th>Nota</th></tr>
     </thead>
@@ -573,7 +602,7 @@
       <tr><td>margen_cocktail</td><td>20%</td><td>—</td></tr>
       <tr><td>margen_convencion</td><td>15%</td><td>Convenciones suelen ser mas sensibles al precio</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <div class="note">
     <strong>⏳ Pendiente de Xavi:</strong>
@@ -584,7 +613,7 @@
   <h2>7. Configuracion de Email (Mailgun + SMTP)</h2>
 
   <h3>Paso 1: Crear cuenta en Mailgun</h3>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Parametro</th><th>Valor</th></tr>
     </thead>
@@ -592,11 +621,11 @@
       <tr><td>Plan</td><td>Foundation ($35/mes)</td></tr>
       <tr><td>Dominio</td><td>eventosbarcelona.com</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h3>Paso 2: Configurar DNS en CDmon</h3>
   <p>Agregar estos registros DNS para garantizar que los emails no caigan en spam:</p>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Tipo</th><th>Nombre</th><th>Valor</th></tr>
     </thead>
@@ -605,7 +634,7 @@
       <tr><td>TXT (DKIM)</td><td>(proporcionado por Mailgun)</td><td>(proporcionado por Mailgun)</td></tr>
       <tr><td>TXT (DMARC)</td><td>_dmarc</td><td>v=DMARC1; p=none; rua=mailto:dev@eventosbarcelona.com</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h3>Paso 3: Conectar en GHL</h3>
   <div class="flow">
@@ -676,7 +705,7 @@
 
   <h3>Formulario de clientes — "Solicita un presupuesto"</h3>
   <p><strong>Prototipo:</strong> propuestas.eventosbarcelona.com/formulario-inteligente.html</p>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Paso</th><th>Campos</th></tr>
     </thead>
@@ -687,11 +716,11 @@
       <tr><td>4. Detalles</td><td>Fecha, num. asistentes, ubicacion, presupuesto (&lt;5k, 5-10k, 10-25k, 25k+)</td></tr>
       <tr><td>5. Comentarios</td><td>Texto libre + como nos conocio + checkbox proteccion de datos</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h3>Formulario de artistas — "Unete al talento"</h3>
   <p><strong>Prototipo:</strong> propuestas.eventosbarcelona.com/formulario-artistas.html</p>
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Paso</th><th>Campos</th></tr>
     </thead>
@@ -701,7 +730,7 @@
       <tr><td>3. Portfolio</td><td>Fotos (upload Cloudinary, sin marca de agua), links video, web/RRSS, rider tecnico + "¿Tienes otro show? Anadelo" (formularios dinamicos)</td></tr>
       <tr><td>4. Precios</td><td>Rango de cache, num. artistas, duracion, comentarios + checkbox privacidad (no bloquea) + checkbox visibilidad web/RRSS</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <div class="note note-info">
     <strong>💡 Implementacion en la web:</strong>
@@ -744,7 +773,7 @@
   <!-- 11. ACCESOS -->
   <h2>11. Estado de Accesos</h2>
 
-  <table>
+  <div class="t-scroll"><table>
     <thead>
       <tr><th>Recurso</th><th>Estado</th><th>Notas</th></tr>
     </thead>
@@ -761,7 +790,7 @@
       <tr><td>OpenAI API key</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Para fase de chat IA en propuestas</td></tr>
       <tr><td>Lista de shows con precios</td><td><span class="status status-pending">⏳ Pendiente</span></td><td>Xavi</td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <br><br>
   <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 32px 0;">

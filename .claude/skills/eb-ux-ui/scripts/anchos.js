@@ -26,11 +26,13 @@ if (!base) {
 }
 
 const repo = process.cwd();
-// `data/backups` son volcados de contenido de WordPress, no páginas servibles
-const rutas = args.length ? args : execSync(
-  `find . -name "*.html" -not -path "./node_modules/*" -not -path "./.git/*" -not -path "./wordpress-mcp/*" -not -path "./.claude/*" -not -path "./data/backups/*"`,
-  { cwd: repo, encoding: 'utf8' }
-).trim().split('\n').filter(Boolean).map(f => f.replace(/^\./, '')).sort();
+// Se descubre con `git ls-files`, no con `find`: lo versionado es exactamente lo
+// que Vercel despliega. Con `find` entraban los volcados de `data/` y de
+// `wordpress-mcp/`, que están en .gitignore y no existen en producción.
+const rutas = args.length ? args : execSync(`git ls-files "*.html"`, { cwd: repo, encoding: 'utf8' })
+  .trim().split('\n').filter(Boolean)
+  .filter(f => !f.startsWith('.claude/') && !f.startsWith('wordpress-mcp/'))
+  .map(f => '/' + f).sort();
 
 const puppeteer = require(require.resolve('puppeteer-core', { paths: [repo] }));
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -63,7 +65,9 @@ const sonda = () => {
     favicon: !!document.querySelector('link[rel~="icon"]'),
     og: !!document.querySelector('meta[property="og:image"]'),
     viewport: !!document.querySelector('meta[name="viewport"]'),
-    imgsRotas: imgs.filter(i => i.complete && i.naturalWidth === 0).map(i => (i.currentSrc || i.src).slice(-60)),
+    // los data: de 0x0 son placeholders de carga diferida de Elementor, no fallos
+    imgsRotas: imgs.filter(i => i.complete && i.naturalWidth === 0 && !(i.currentSrc || i.src || '').startsWith('data:'))
+      .map(i => (i.currentSrc || i.src).slice(-60)),
   };
 };
 

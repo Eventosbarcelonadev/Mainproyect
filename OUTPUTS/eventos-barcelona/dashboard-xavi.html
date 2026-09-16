@@ -4,6 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Eventos Barcelona — Sprint 8 · 2026</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#161413">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Eventos Barcelona">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Dashboard Eventos Barcelona · Sprint 8 · 2026">
+<meta property="og:description" content="Estado y avances del proyecto, sprint a sprint.">
+<meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://propuestas.eventosbarcelona.com/OUTPUTS/eventos-barcelona/dashboard-xavi.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dashboard Eventos Barcelona · Sprint 8 · 2026">
+<meta name="twitter:description" content="Estado y avances del proyecto, sprint a sprint.">
+<meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
 <style>
 :root{
   --ink:#0a2540;
@@ -126,6 +143,12 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
   body{background:#fff}
   .delta,.executive,.sprint-card,.callout,.honest{break-inside:avoid}
 }
+
+/* ===== RIDER VISUAL · responsive (2026-09-16) =====
+   La tabla de backlog no cabe en movil: scroll propio en vez de empujar
+   la pagina. ===== */
+.t-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+.t-scroll>table{margin:0}
 </style>
 </head>
 <body>
@@ -395,7 +418,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 
 <h2 id="backlog">Backlog priorizado <span class="sub">acciones pendientes ordenadas por impacto</span></h2>
 
-<table class="backlog">
+<div class="t-scroll"><table class="backlog">
 <tr><th>Prioridad</th><th>Acción</th><th>Sprint</th><th>Esfuerzo</th></tr>
 <tr><td><span class="p-tag p1">P1</span></td><td><b>Arrancar publicación 24 artículos pirámide</b> (3-4/sem × 6 sem × ES+EN)</td><td>Sprint 8 arranque, 9-14 ejecución</td><td>~60 h · yo solo</td></tr>
 <tr><td><span class="p-tag p1">P1</span></td><td><b>Testimonios reales de Xavi</b> (3-5 con foto + logo + cargo + métrica)</td><td>Sprint 9 deadline</td><td>1 h Xavi</td></tr>
@@ -407,7 +430,7 @@ footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:v
 <tr><td><span class="p-tag p3">P3</span></td><td>Reprocesar remaining PNG > 500 KB (Gemini AI, HP-2.jpeg, SMR6323)</td><td>Sprint 11</td><td>~3 h</td></tr>
 <tr><td><span class="p-tag p3">P3</span></td><td>Cloudflare Polish (WebP auto) — requiere upgrade a Pro $20/mes</td><td>Sprint 12 evaluar</td><td>2 h + $20/mes</td></tr>
 <tr><td><span class="p-tag p3">P3</span></td><td>Disavow file → GSC (backlog abril, requiere Ahrefs)</td><td>Sprint 13</td><td>~2 h</td></tr>
-</table>
+</table></div>
 
 <div class="callout">
 <b>Regla de compromiso.</b> Cualquier sprint que no publique al menos 3-4 artículos nuevos ES+EN <b>no cuenta como sprint SEO</b>. La cadencia es la única palanca que garantiza movimiento. Si Xavi no puede dar testimonios en Sprint 9, arrancamos la Opción B (autor bio + casos de éxito reales con métricas) para no bloquear el vector E-E-A-T.
