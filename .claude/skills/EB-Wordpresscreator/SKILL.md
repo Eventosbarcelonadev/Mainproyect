@@ -195,13 +195,153 @@ curl -sH "Cache-Control: no-cache" "<url_listado>" | grep -c "e-loop-item-<id>"
 
 **Si CUALQUIER check falla**: no reportar "publicado". Volver al Paso 3, corregir, repurgar, re-verificar.
 
+## Tipografía y estilos de marca (obligatorio)
+
+Cualquier página del site EB usa **Space Grotesk** como familia tipográfica principal. Cuando se clona una plantilla espejo, la tipografía viene incluida en los settings de Elementor (variables `--e-global-typography-*` y `font-family:"Space Grotesk", Sans-serif` scoped por widget). **No inventar font-family propia.**
+
+Sizes y pesos habituales por widget:
+- **H1** (Elementor heading `elementor-size-default`): usa la primary font. Tamaño responsive del template. NO hardcodear font-size.
+- **H2** de sección: primary font, ver espejo.
+- **Text-editor** (párrafos body): `font-family:"Space Grotesk", Sans-serif; font-size:24px; font-weight:400; line-height:36px` (desktop). El espejo ya lo tiene.
+- **Números grandes** (sección NUMBERS de shows): `font-size:100px` desktop, `95px` mobile.
+
+**Highlight de keyword en H1/H2 con las clases `kcs-*`** (patrón de marca Xavi):
+- `<span class="kcs-text2">Espectáculos </span>` → subrayado salmón grueso (usado en H1)
+- `<span class="kcs-text2-2">leading brands </span>` → subrayado salmón variante (H1 alternativo)
+- `<span class="kcs-text3">nuestras producciones </span>` → estilo variante (H2 galería)
+- `<span class="kcs-text4">01</span>` → estilo números NUMBERS section
+
+Regla: envolver EN EL H1 la keyword principal con `<span class="kcs-text2">…</span>` o `<span class="kcs-text2-2">…</span>` (según lo que use la plantilla espejo — coger el mismo). No inventar clase nueva. No dejar el H1 sin highlight (rompe el patrón de marca).
+
+Ejemplo real (pompas):
+```html
+<h1 class="elementor-heading-title elementor-size-default">
+  <span class="kcs-text2">Show de pompas de jabón</span> para eventos corporativos en Barcelona
+</h1>
+```
+
+**Snippet `eb-fix-kcs-wrap`** en el site normaliza el comportamiento responsive del kcs (desktop: `white-space:nowrap` para que no rompa el highlight; mobile: `white-space:normal` para que respire). Ya está activo, no tocar.
+
+## FAQ · formato obligatorio según post_type
+
+Hay dos formatos válidos, **elige según la pieza que estés creando**:
+
+### Formato A · Blog posts y páginas legacy (text-editor con HTML)
+
+Este es el formato que activa el snippet 106 EB-FAQ-SCHEMA (auto-inyecta FAQPage JSON-LD en `<head>`).
+
+Estructura obligatoria dentro del text-editor:
+
+```html
+<h2>Preguntas frecuentes</h2>
+
+<h3>¿Pregunta 1?</h3>
+<p>Respuesta a la pregunta 1, en 40-80 palabras.</p>
+
+<h3>¿Pregunta 2?</h3>
+<p>Respuesta a la pregunta 2.</p>
+
+<h3>¿Pregunta 3?</h3>
+<p>Respuesta a la pregunta 3.</p>
+
+<h3>¿Pregunta 4?</h3>
+<p>Respuesta a la pregunta 4.</p>
+
+<h3>¿Pregunta 5?</h3>
+<p>Respuesta a la pregunta 5.</p>
+```
+
+Restricciones para que snippet 106 lo detecte:
+- `<h2>Preguntas frecuentes</h2>` **exactamente** (sin clase, sin span) — o `<h2>Frequently asked questions</h2>` en EN, o `<h2>FAQ</h2>`
+- Pares `<h3>Q</h3>` seguidos INMEDIATAMENTE de `<p>A</p>` (solo whitespace entre medio)
+- Sin `<strong>` ni `<em>` dentro del `<h3>` o el `<p>` (el snippet los aplana con `wp_strip_all_tags`)
+- La sección FAQ termina cuando aparece otro `<h2>` o `<hr>`
+- 3 a 5 Q&A ideal
+- Cada respuesta 40-80 palabras, concreta, con números/rangos cuando aplique
+
+**Verificar tras publicar:**
+```bash
+curl -sH "Cache-Control: no-cache" "<url>" | grep -c '"@type":"FAQPage"'
+# → tiene que ser ≥1 (una FAQ schema generada)
+curl -sH "Cache-Control: no-cache" "<url>" | grep -c "Preguntas frecuentes"
+# → ≥1 (el heading visible)
+```
+
+### Formato B · Fichas de show/espectáculo (widget nested-accordion)
+
+Usar el widget nativo Elementor Pro `nested-accordion` con setting `faq_schema: yes`. El widget genera el schema propio, NO necesita snippet 106.
+
+Estructura del nested-accordion (settings del widget):
+- `faq_schema: yes` (obligatorio para JSON-LD)
+- `items`: array de 3-5 items con `title` (pregunta) y `text` (respuesta HTML)
+- Icon del acordeón: `plus` (icono minimalista de marca EB)
+- Título de sección arriba del widget: `<span class="kcs-text3">Preguntas frecuentes </span>` (dentro de un heading widget separado)
+
+Referencia visual: post 18608 (Light Boxes Show) o post 5245 (Light Art Show) — copiar el bloque completo con `nested-accordion + heading kcs-text3`.
+
+## Formulario de contacto antes del footer (obligatorio)
+
+**TODA página del site termina con el formulario de contacto justo antes del footer.** Sin excepciones. Es la última sección visible del contenido.
+
+Estructura obligatoria del último top-level container:
+
+```
+container <id>
+  ├── menu-anchor (anchor="contact" — permite scroll a #contact desde cualquier CTA)
+  └── container
+      └── global widget (form)
+          ├── templateID: 17171 en ES
+          └── templateID: 17697 en EN
+```
+
+Contenido del formulario global (viene incluido del template global, NO se toca):
+- Heading "Solicita tu propuesta personalizada" (ES) / "Request your personalized proposal" (EN)
+- Texto intro: "En el próximo paso definirás tu evento..." (ES) / "In the next step you'll define your event..." (EN)
+- Stepper de 5 pasos (1-2-3-4-5)
+- Campos: Nombre, Empresa, Email, Teléfono
+- Textarea "Cuéntanos brevemente sobre tu evento (opcional)" (ES) / "Tell us briefly about your event (optional)" (EN) — placeholder inyectado por `eb-form.js` que ya es language-aware
+- Checkbox "Acepto la Política de Privacidad"
+- Botón "Enviar solicitud →" (ES) / "Submit request →" (EN)
+
+**Reglas de la sección form:**
+- SIEMPRE la penúltima sección de la página (después vienen solo `</main>` y `<footer>`)
+- SIEMPRE con `menu-anchor` anchor=`contact` justo antes del container del form, para que cualquier `<a href="#contact">` en la página scrollee correctamente
+- SIEMPRE usa el global widget correcto según idioma (17171 ES / 17697 EN — nunca al revés)
+- Container padre `width: 100%` para que el form llene el ancho del boxed (nunca 50% ni width fijo — el bug del /en/success-stories/ del sep 2026)
+
+**Verificar tras publicar:**
+```bash
+curl -sH "Cache-Control: no-cache" "<url>" > /tmp/pagina.html
+grep -c "eb-form" /tmp/pagina.html                              # ≥1 (form injectado)
+grep -c 'id="contact"' /tmp/pagina.html                         # ≥1 (menu-anchor)
+grep -oE 'Solicita tu propuesta|Request your personalized' /tmp/pagina.html | head -1  # el heading según idioma
+# Confirmar que el form está justo antes del </main>
+grep -B 5 "</main>" /tmp/pagina.html | grep "eb-form"           # ≥1
+```
+
+Si la página nueva NO tiene form antes del footer, es un fallo bloqueante. **Nunca reportar "publicado" sin form**. Este era el bug detectado en /casos-de-exito/ sep 2026 — todos los listados y todas las pages/posts tienen que terminar con form.
+
+## Restricciones comunes de contenido FAQ (ambos formatos)
+
+- **Cero em-dash `—`**, cero middle-dot `·` como separador, cero en-dash `–`
+- **Cero "En breve"** o "En resumen" como intro de respuestas
+- Preguntas empiezan con **"¿"** en ES y con **"How"/"What"/"Why"/"When"/"Where"** en EN
+- Preguntas específicas, no genéricas ("¿Cuánto cuesta X en Barcelona?" mejor que "¿Cuál es el precio?")
+- Respuestas con números concretos: rangos de precio, duración, personas, meses de anticipación
+- No copiar-pegar preguntas entre piezas (Google detecta duplicate FAQPage y ninguna se muestra)
+
 ## Anti-patrones prohibidos
 
 - ❌ Construir el `_elementor_data` desde cero con containers `heading` + `text-editor` sueltos
 - ❌ Publicar con `featured_media` reutilizada de otra pieza
 - ❌ Publicar sin verificar la card en el listado ancestro (bug Maestros)
 - ❌ Publicar solo en ES o solo en EN
+- ❌ Publicar SIN formulario de contacto antes del footer (la última sección de la página debe ser el form con menu-anchor `contact`)
 - ❌ Publicar con el mismo global form templateID para ambos idiomas (usar 17171 ES / 17697 EN)
+- ❌ H1 sin `<span class="kcs-text2">` o `<span class="kcs-text2-2">` envolviendo la keyword principal
+- ❌ Cambiar la font-family de Space Grotesk por otra en un widget concreto
+- ❌ FAQ con `<h2 class="algo">Preguntas frecuentes</h2>` (el snippet 106 busca `<h2>` sin clase — usar `<h2>` limpio)
+- ❌ FAQ sin schema (formato A: usar el `<h2>Preguntas frecuentes</h2>` para activar snippet 106; formato B: setting `faq_schema: yes` en el nested-accordion)
 - ❌ Reportar "listo" basado en respuesta REST 200 sin `curl` + `grep` de la URL pública
 - ❌ Usar `·`, `—`, `–`, "En breve", "Sección N ·", patrón "Marca · descripción" en copy/títulos
 - ❌ Dejar strings del idioma equivocado (ej. "Request your..." en ES o "Solicita..." en EN)
