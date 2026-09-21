@@ -240,6 +240,11 @@ async function listArtistas(req, res, env) {
     params.push(`tipo=eq.${tipo}`);
   }
 
+  const review = (req.query.review || '').trim();
+  if (['pending_review', 'approved'].includes(review)) {
+    params.push(`review_status=eq.${review}`);
+  }
+
   const r = await fetch(`${env.SUPABASE_URL}/rest/v1/artistas?${params.join('&')}`, {
     headers: {
       apikey: env.SUPABASE_KEY,
@@ -1027,160 +1032,15 @@ async function addArtista(req, res, env) {
   // Best-effort: no bloquea la respuesta si falla.
   const ghlSync = await syncArtistaToGhlFull(env, artista);
 
-  // Auto-crear show vinculado al artista (Xavi 2026-05-26). 1 artista = 1 show.
-  // status=pending_review para que aparezca en la pestaña "Pending review" y
-  // Xavi lo edite (poner categoría, precio, etc.) antes de activarlo.
-  // Best-effort: si falla, devolvemos el artista igual.
-  let autoShow = { skipped: 'tipo_no_artista' };
-  if (tipoSafe === 'artista') {
-    autoShow = await autoCreateShowForArtista(env, artista);
-  }
-
-  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, auto_show: autoShow });
-}
-
-// Crea automáticamente un show vinculado a un artista recién creado.
-// Mapea la primera disciplina del artista a category cuando es posible.
-// Inserta también la fila show_artistas para que el N:M quede consistente.
-async function autoCreateShowForArtista(env, artista) {
-  if (!artista || !artista.id) return { error: 'artista without id' };
-  const displayName = artista.nombre_artistico || artista.compania || artista.nombre || 'Show sin nombre';
-  const sbHdr = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
-
-  // Dedup: si el artista ya tiene un show vinculado (N:M o legacy FK), no crear
-  // otro. Causaba duplicados cuando el artista venía de form web + se reabría
-  // en /admin (cada path llamaba a su auto-create sin chequear).
-  try {
-    const linkCheck = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/show_artistas?artista_id=eq.${encodeURIComponent(artista.id)}&select=show_id&limit=1`,
-      { headers: sbHdr }
-    );
-    if (linkCheck.ok) {
-      const rows = await linkCheck.json();
-      if (rows.length) return { skipped: 'already_linked', show_id: rows[0].show_id };
-    }
-    const legacyCheck = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/shows?artista_id=eq.${encodeURIComponent(artista.id)}&select=id&limit=1`,
-      { headers: sbHdr }
-    );
-    if (legacyCheck.ok) {
-      const rows = await legacyCheck.json();
-      if (rows.length) return { skipped: 'already_linked_legacy', show_id: rows[0].id };
-    }
-  } catch (e) { /* sigue al insert */ }
-
-  // Mapeo disciplina → category (lowercase de los enum del catálogo).
-  const DISCIPLINA_TO_CATEGORY = {
-    danza: 'danza',
-    musica: 'musica', 'música': 'musica',
-    circo: 'circo',
-    wow: 'wow', 'wow effect': 'wow',
-    proveedores: null
-  };
-  let category = null;
-  if (Array.isArray(artista.disciplinas) && artista.disciplinas.length) {
-    const firstLower = String(artista.disciplinas[0]).toLowerCase().trim();
-    if (firstLower in DISCIPLINA_TO_CATEGORY) category = DISCIPLINA_TO_CATEGORY[firstLower];
-  }
-
-  // Generar id slug único
-  const baseSlug = slugifyShowName(displayName);
-  let showId = baseSlug;
-  try {
-    const ex = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/shows?id=like.${encodeURIComponent(baseSlug + '*')}&select=id`,
-      { headers: sbHdr }
-    );
-    if (ex.ok) {
-      const taken = new Set((await ex.json()).map(r => r.id));
-      if (taken.has(showId)) {
-        let n = 2;
-        while (taken.has(`${baseSlug}-${n}`)) n++;
-        showId = `${baseSlug}-${n}`;
-      }
-    }
-  } catch (e) { /* sigue con baseSlug */ }
-
-  // Propagar fotos del artista al show recién creado para que la card del
-  // catálogo no quede vacía. image_url = primera foto (legacy single-image).
-  const artistaFotos = Array.isArray(artista.fotos_urls) ? artista.fotos_urls.filter(Boolean) : [];
-
-  // Subcategoría: disciplinas[1] si hay (la 0 ya es category)
-  const discsArr = Array.isArray(artista.disciplinas) ? artista.disciplinas.filter(Boolean) : [];
-  const subcategory = discsArr.length > 1 ? String(discsArr[1]).trim() : null;
-
-  const row = {
-    id: showId,
-    name: displayName,
-    category,
-    subcategory,
-    description: (artista.bio_show && String(artista.bio_show).trim()) || null,
-    video_url: (artista.video1 && String(artista.video1).trim()) || null,
-    base_price: 0,
-    status: 'pending_review',
-    artista_id: artista.id,
-    submitted_at: new Date().toISOString(),
-    image_url: artistaFotos[0] || null,
-    image_urls: artistaFotos.length ? artistaFotos : null
-  };
-
-  // Intento 1: con category derivada (puede ser null).
-  // Si la migración 20260526_shows_category_nullable no se aplicó todavía,
-  // Postgres tira 23502 NOT NULL — reintentamos con 'shows' como fallback.
-  let r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows`, {
-    method: 'POST',
-    headers: {
-      apikey: env.SUPABASE_KEY,
-      Authorization: `Bearer ${env.SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation'
-    },
-    body: JSON.stringify(row)
-  });
-  if (!r.ok && row.category == null) {
-    const txt = await r.clone().text();
-    if (/category.*not.*null|23502/i.test(txt)) {
-      row.category = 'shows';
-      r = await fetch(`${env.SUPABASE_URL}/rest/v1/shows`, {
-        method: 'POST',
-        headers: {
-          apikey: env.SUPABASE_KEY,
-          Authorization: `Bearer ${env.SUPABASE_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation'
-        },
-        body: JSON.stringify(row)
-      });
-    }
-  }
-  if (!r.ok) {
-    return { error: 'create_show_failed: ' + (await r.text()).slice(0, 160) };
-  }
-  const created = await r.json();
-  const show = Array.isArray(created) ? created[0] : created;
-
-  // Vincular en show_artistas (N:M) — posición 1. Idempotente si la fila ya existe.
-  try {
-    await fetch(`${env.SUPABASE_URL}/rest/v1/show_artistas`, {
-      method: 'POST',
-      headers: {
-        apikey: env.SUPABASE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({ show_id: show.id, artista_id: artista.id, posicion: 1, source: 'admin-auto-create' })
-    });
-  } catch (e) { /* no bloquea: la FK legacy shows.artista_id ya quedó */ }
-
-  return { ok: true, show_id: show.id, name: show.name, status: show.status, category: show.category };
+  // Sin show automático (Xavi 2026-09-21): el artista va solo a Artistas y el
+  // show se crea a mano con "+ Crear show con datos del artista".
+  return res.status(200).json({ success: true, artista, ghl_sync: ghlSync });
 }
 
 // Crea un NUEVO show pre-llenado con todos los datos del artista (bio, video,
-// fotos, disciplinas → category). A diferencia de autoCreateShowForArtista
-// (que corre 1 vez al crear el artista), este se llama desde el modal artista
-// con el botón "+ Crear show con datos del artista" y permite múltiples shows
-// por artista. NO dedupea — siempre crea uno nuevo con sufijo -2/-3 si hace falta.
+// fotos, disciplinas → category). Se llama desde el modal artista con el botón
+// "+ Crear show con datos del artista" y permite múltiples shows por artista.
+// NO dedupea — siempre crea uno nuevo con sufijo -2/-3 si hace falta.
 async function createShowFromArtista(req, res, env) {
   const { artistaId } = req.body || {};
   if (!artistaId) return res.status(400).json({ error: 'Missing artistaId' });
@@ -1388,6 +1248,37 @@ async function editArtista(req, res, env) {
   }
 
   return res.status(200).json({ success: true, artista, ghl_sync: ghlSync, shows_sync: showsSync, ghlErrors: ghlErrors.length ? ghlErrors : undefined });
+}
+
+// Aprobar un artista nuevo (o devolverlo a revisión). Solo toca Supabase:
+// review_status es un estado interno del panel, no viaja a GHL.
+async function reviewArtista(req, res, env) {
+  const { id, action } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: 'id must be a UUID' });
+  if (!['approve', 'to-pending'].includes(action)) {
+    return res.status(400).json({ error: 'action must be approve|to-pending' });
+  }
+  const update = action === 'approve'
+    ? { review_status: 'approved', reviewed_at: new Date().toISOString() }
+    : { review_status: 'pending_review', reviewed_at: null };
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/artistas?id=eq.${encodeURIComponent(id)}&select=id,review_status,reviewed_at`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(update)
+    }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+  if (!rows.length) return res.status(404).json({ error: 'Artista not found' });
+  return res.status(200).json({ success: true, artista: rows[0] });
 }
 
 async function showsPending(req, res, env) {
@@ -2724,6 +2615,7 @@ export default async function handler(req, res) {
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
       if (action === 'add-artista') return addArtista(req, res, env);
       if (action === 'edit-artista') return editArtista(req, res, env);
+      if (action === 'review-artista') return reviewArtista(req, res, env);
       if (action === 'delete-artista') return deleteArtista(req, res, env);
       if (action === 'create-show-from-artista') return createShowFromArtista(req, res, env);
       if (action === 'import-artista-from-ghl') return importArtistaFromGhl(req, res, env);

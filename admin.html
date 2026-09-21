@@ -786,6 +786,9 @@
     .status-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     .status-pill.is-ok { background: var(--ok-bg); color: var(--ok-fg); }
     .status-pill.is-warn { background: var(--warn-bg); color: var(--warn-fg); }
+    .status-pill.is-new { background: #E8EDFB; color: var(--ui-edit); }
+    .review-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #F3F6FE; border: 1px solid #D5DEF8; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; }
+    .review-banner .btn-approve { margin-left: auto; }
     .art-faltan { font-size: 12px; color: var(--warn-fg); }
     .chip-muted { color: var(--gray); background: #F4F1ED; }
 
@@ -958,6 +961,10 @@
 
     <!-- TAB: ARTISTAS -->
     <section id="tab-artistas" class="tab-panel hidden">
+      <div class="subtabs" id="artistas-subtabs">
+        <button class="subtab active" data-review="">Todos</button>
+        <button class="subtab" data-review="pending_review">Nuevos · pendientes de revisión<span class="subtab-badge hidden" id="artistas-pending-count">0</span></button>
+      </div>
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddArtistaModal('artista')" style="font-weight:600;">+ Agregar artista</button>
         <input id="artistas-q" type="search" placeholder="Buscar por nombre, email, compañía…">
@@ -1334,7 +1341,7 @@
     // ---------- state ----------
     const state = {
       currentTab: null,
-      artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
+      artistas: { q: '', disciplina: '', review: '', limit: 50, offset: 0, total: 0, items: [] },
       shows: { substatus: 'active', artistaFilter: null, items: [], q: '', category: '', lang: 'es' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
@@ -1356,16 +1363,54 @@
     });
 
     // ---------- ARTISTAS ----------
+    // Badge de la subpestaña "Nuevos": artistas del formulario web sin revisar.
+    async function refreshPendingArtistasBadge() {
+      try {
+        const r = await fetch('/api/admin?action=list-artistas&tipo=artista&review=pending_review&limit=1');
+        const d = await r.json();
+        const n = r.ok ? (d.total || 0) : 0;
+        const el = $('artistas-pending-count');
+        el.textContent = String(n);
+        el.classList.toggle('hidden', n === 0);
+      } catch (e) { /* silencioso */ }
+    }
+
+    async function reviewArtista(id, action, btn) {
+      const orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+      try {
+        const r = await fetch('/api/admin?action=review-artista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, action })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        return true;
+      } catch (err) {
+        showError(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+        return false;
+      }
+    }
+
+    let artistasLoadSeq = 0;
     async function loadArtistas() {
+      // Si se lanza otra carga (filtro/búsqueda) antes de que acabe esta, solo pinta la última.
+      const seq = ++artistasLoadSeq;
       $('artistas-loading').classList.remove('hidden');
       $('artistas-empty').classList.add('hidden');
       $('artistas-grid').innerHTML = '';
       $('artistas-pagination').classList.add('hidden');
+      document.querySelectorAll('#artistas-subtabs .subtab').forEach(s =>
+        s.classList.toggle('active', s.dataset.review === state.artistas.review));
+      refreshPendingArtistasBadge();
 
       const params = new URLSearchParams();
       if (state.artistas.q) params.set('q', state.artistas.q);
       if (state.artistas.disciplina) params.set('disciplina', state.artistas.disciplina);
       if (state.artistas.tipo) params.set('tipo', state.artistas.tipo);
+      if (state.artistas.review) params.set('review', state.artistas.review);
       // When filtering by status (completa/incompleta) we need all rows in
       // memory because the criterion is computed client-side. Bump the
       // limit and skip pagination in that mode.
@@ -1382,6 +1427,7 @@
         params.set('action', 'list-artistas');
         const res = await fetch('/api/admin?' + params.toString());
         const data = await res.json();
+        if (seq !== artistasLoadSeq) return;
         $('artistas-loading').classList.add('hidden');
         if (!res.ok) { showError(data.error || 'Error cargando artistas'); return; }
 
@@ -1400,7 +1446,9 @@
 
         const summary = statusFilter
           ? `${items.length} ${statusFilter === 'completa' ? 'completos' : 'incompletos'} de ${totalServer}`
-          : `${totalServer} artistas (${completeCount} completos · ${incompleteCount} incompletos en esta página)`;
+          : state.artistas.review === 'pending_review'
+            ? `${totalServer} artista${totalServer === 1 ? '' : 's'} nuevo${totalServer === 1 ? '' : 's'} por revisar`
+            : `${totalServer} artistas (${completeCount} completos · ${incompleteCount} incompletos en esta página)`;
         $('artistas-summary').textContent = summary;
 
         if (!items.length) { $('artistas-empty').classList.remove('hidden'); return; }
@@ -1433,6 +1481,7 @@
         .filter(d => !/^proveedor(es)?$/i.test(String(d).trim()));
       const ph = isPlaceholderEmail(a.email);
       const complete = isArtistComplete(a);
+      const isNew = a.review_status === 'pending_review';
       // Contact person line: prefer nombre if it's different from the display
       // (typical case: a proveedor is "Sonority" but the human contact is
       // "Juan Pérez"; we want both visible on the card).
@@ -1468,6 +1517,7 @@
         </div>
         <div class="card-body">
           <div class="art-status">
+            ${isNew ? '<span class="status-pill is-new" title="Entró por el formulario web y está pendiente de revisión">Nuevo</span>' : ''}
             <span class="status-pill ${complete ? 'is-ok' : 'is-warn'}" title="${complete ? 'Perfil completo' : 'Perfil incompleto: faltan datos para mostrar al cliente'}">${complete ? 'Completo' : 'Incompleto'}</span>
             ${!complete && faltan.length ? `<span class="art-faltan">Falta ${escapeHtml(faltan.join(', '))}</span>` : ''}
           </div>
@@ -1486,9 +1536,17 @@
         <div class="card-footer">
           <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver ficha</button>
           <button class="btn btn-secondary btn-download" data-download-artista="${escapeHtml(a.id)}" title="Descargar las fotos del artista y de sus shows">${DOWNLOAD_ICON}Descargar fotos</button>
+          ${isNew ? `<button class="btn btn-approve" data-approve-artista="${escapeHtml(a.id)}">Aprobar</button>` : ''}
         </div>
       `;
       card.querySelector('[data-detail]').addEventListener('click', () => setHash('artistas', a.id, {}));
+      const approveBtn = card.querySelector('[data-approve-artista]');
+      if (approveBtn) {
+        approveBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (await reviewArtista(a.id, 'approve', approveBtn)) loadArtistas();
+        });
+      }
       card.querySelector('[data-download-artista]').addEventListener('click', (e) => {
         e.stopPropagation();
         downloadArtistaPhotos(a, e.currentTarget);
@@ -1567,6 +1625,12 @@
         : null;
 
       $('drawer-body').innerHTML = `
+        ${a.review_status === 'pending_review' ? `
+          <div class="review-banner">
+            <span class="status-pill is-new">Nuevo</span>
+            <span>Entró por el formulario web y está pendiente de revisión.</span>
+            <button class="btn btn-approve" id="drawer-approve-artista">Aprobar artista</button>
+          </div>` : ''}
         ${ph ? '<div class="placeholder-warning">Email placeholder — este artista fue importado de GHL sin email válido. Hay que actualizarlo.</div>' : ''}
         ${formUrl ? `
           <div class="drawer-section" style="margin-top:0;">
@@ -1616,6 +1680,15 @@
       const dlDrawerBtn = $('drawer-body').querySelector('#drawer-download-fotos');
       if (dlDrawerBtn) dlDrawerBtn.addEventListener('click', () => downloadArtistaPhotos(a, dlDrawerBtn));
 
+      const approveDrawerBtn = $('drawer-body').querySelector('#drawer-approve-artista');
+      if (approveDrawerBtn) {
+        approveDrawerBtn.addEventListener('click', async () => {
+          if (!(await reviewArtista(a.id, 'approve', approveDrawerBtn))) return;
+          renderArtistaDrawer({ ...a, review_status: 'approved' });
+          if (state.currentTab === 'artistas') loadArtistas();
+        });
+      }
+
       const copyBtn = $('drawer-body').querySelector('#artist-link-copy');
       if (copyBtn) {
         copyBtn.addEventListener('click', async () => {
@@ -1643,6 +1716,13 @@
       state.artistas.disciplina = e.target.value;
       state.artistas.offset = 0;
       loadArtistas();
+    });
+    document.querySelectorAll('#artistas-subtabs .subtab').forEach(b => {
+      b.addEventListener('click', () => {
+        state.artistas.review = b.dataset.review;
+        state.artistas.offset = 0;
+        loadArtistas();
+      });
     });
     // ---------- PROVEEDORES ---------- (uses same renderArtistaCard + drawer)
     async function loadProveedores() {
