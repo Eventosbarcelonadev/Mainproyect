@@ -880,7 +880,9 @@
     }
     .p-versions:hover { text-decoration: underline; }
 
-    .p-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    /* Huecos fijos (Abrir · Copiar URL · PDF · Más): cada botón cae en la misma x en todas las filas,
+       y el de PDF se reserva aunque no haya PDF para que no se desplace nada. */
+    .p-actions { display: grid; grid-template-columns: max-content max-content 52px max-content; align-items: center; justify-content: end; gap: 4px; }
     .p-actions .btn { padding: 7px 13px; font-size: 12.5px; white-space: nowrap; }
     .p-ghost { color: var(--ink-2); background: transparent; border-color: transparent; }
     .p-ghost:hover { background: #F1EDE8; color: var(--dark); }
@@ -926,7 +928,8 @@
       .p-status { grid-column: 2; grid-row: 1; text-align: right; }
       .p-event { grid-column: 1 / -1; grid-row: 2; padding-left: 56px; }
       .p-shows { grid-column: 1; grid-row: 3; padding-left: 56px; }
-      .p-actions { grid-column: 1 / -1; grid-row: 4; justify-content: flex-start; padding-left: 52px; flex-wrap: wrap; }
+      .p-actions { grid-column: 1 / -1; grid-row: 4; display: flex; justify-content: flex-start; padding-left: 52px; flex-wrap: wrap; }
+      .p-slot { display: none; }
       .p-title, .p-sub { white-space: normal; }
       .p-date { display: block; }
       .p-menu-panel { left: 0; right: auto; }
@@ -3411,7 +3414,7 @@
             <div class="p-actions">
               <a class="btn btn-primary" href="/propuesta.html?id=${encodeURIComponent(p.id)}&admin=1" target="_blank">Abrir</a>
               <button class="btn p-ghost" data-copy="${id}">Copiar URL</button>
-              ${approved && p.pdf_url ? `<a class="btn p-ghost" href="${escapeHtml(p.pdf_url)}" target="_blank">PDF</a>` : ''}
+              ${approved && p.pdf_url ? `<a class="btn p-ghost" href="${escapeHtml(p.pdf_url)}" target="_blank">PDF</a>` : '<span class="p-slot" aria-hidden="true"></span>'}
               <details class="p-menu">
                 <summary class="btn p-ghost" title="Más acciones">Más</summary>
                 <div class="p-menu-panel">

@@ -330,9 +330,20 @@ async function listProposals(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
+// Portada por defecto de cada categoría: la misma defaultImage de
+// CATEGORY_CONFIG en propuesta.html, en la miniatura 150x150 que genera WordPress
+// (el original de "shows" pesa 1,7 MB).
+const PROPOSAL_DEFAULT_COVER = {
+  danza: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05295-150x150.jpg',
+  musica: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/GB3-150x150.jpg',
+  circo: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/MG_0093-150x150.jpg',
+  wow: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/led-dancers-eventos-barcelona-2-150x150.jpg',
+  shows: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/Captura-de-Pantalla-2025-04-06-a-las-11.40.23-150x150.png'
+};
+
 // Miniatura de cada fila en /admin → Propuestas: la misma portada que ve el
-// cliente en propuesta.html (hero_image_url elegida, o la primera foto del
-// primer show). Sin shows ni portada propia queda null y la fila usa iniciales.
+// cliente en propuesta.html (hero_image_url elegida, la primera foto del primer
+// show o, sin shows, la portada por defecto de su categoría).
 async function attachProposalCovers(env, rows) {
   const firstShowId = (p) => {
     let shows = p.shows;
@@ -356,7 +367,10 @@ async function attachProposalCovers(env, rows) {
       }
     } catch (e) { /* best-effort: sin miniatura, la fila sigue con iniciales */ }
   }
-  for (const p of rows) p.cover_url = p.hero_image_url || imageByShow.get(firstShowId(p)) || null;
+  for (const p of rows) {
+    p.cover_url = p.hero_image_url || imageByShow.get(firstShowId(p))
+      || PROPOSAL_DEFAULT_COVER[p.category] || PROPOSAL_DEFAULT_COVER.shows;
+  }
 }
 
 // Borra una propuesta de Supabase. Best-effort: borra también el PDF del
