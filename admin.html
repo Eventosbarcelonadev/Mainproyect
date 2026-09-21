@@ -1019,6 +1019,14 @@
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
         <input id="shows-q" type="search" placeholder="Buscar show por nombre…" style="flex:1;max-width:300px;">
+        <select id="shows-category">
+          <option value="">Todos los estilos</option>
+          <option value="danza">Danza</option>
+          <option value="musica">Música</option>
+          <option value="circo">Circo</option>
+          <option value="wow">WOW</option>
+          <option value="__none__">Sin estilo</option>
+        </select>
         <div id="shows-lang-toggle" class="lang-toggle">
           <button type="button" class="lang-btn active" data-lang="es">ES</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -1230,8 +1238,8 @@
         <input type="search" id="edit-artistas-input" placeholder="Buscar artista por nombre, compañía o email…" style="width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;">
         <div class="picker-results empty" id="edit-artistas-results"></div>
       </div>
-      <label>URL video (YouTube embed o similar)</label>
-      <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/embed/...">
+      <label>URL video (YouTube o similar)</label>
+      <input type="url" id="edit-video-url" placeholder="https://www.youtube.com/watch?v=...">
       <div class="actions">
         <button type="button" class="btn-delete-show hidden" id="edit-delete">Eliminar show</button>
         <span style="flex:1;"></span>
@@ -1248,6 +1256,11 @@
       return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
       }[c]));
+    }
+    // Un youtube.com/embed/ID abierto en pestaña propia da "Error 153": enlazar a watch?v=ID.
+    function videoHref(u) {
+      const m = /^https?:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/.exec(String(u || '').trim());
+      return m ? `https://www.youtube.com/watch?v=${m[1]}` : u;
     }
     function isPlaceholderEmail(e) {
       return typeof e === 'string' && /@placeholder\.eventosbarcelona\.(local|com)\b/i.test(e);
@@ -1322,7 +1335,7 @@
     const state = {
       currentTab: null,
       artistas: { q: '', disciplina: '', limit: 50, offset: 0, total: 0, items: [] },
-      shows: { substatus: 'active', artistaFilter: null, items: [], q: '', lang: 'es' },
+      shows: { substatus: 'active', artistaFilter: null, items: [], q: '', category: '', lang: 'es' },
       proveedores: { q: '', statusFilter: '', limit: 50, offset: 0, total: 0, items: [], tipo: 'proveedor' },
       propuestas: { q: '', status: '', items: [] }
     };
@@ -1579,8 +1592,8 @@
         <div class="field-row"><label>Rango caché</label><div class="value">${escapeHtml(a.rango_cache || '—')}</div></div>
         <div class="field-row"><label>Origen</label><div class="value">${escapeHtml(a.origen || '—')}</div></div>
         <div class="field-row"><label>Videos</label><div class="value">
-          ${a.video1 ? `<a href="${escapeHtml(a.video1)}" target="_blank" rel="noopener">video 1</a>` : ''}
-          ${a.video2 ? ` · <a href="${escapeHtml(a.video2)}" target="_blank" rel="noopener">video 2</a>` : ''}
+          ${a.video1 ? `<a href="${escapeHtml(videoHref(a.video1))}" target="_blank" rel="noopener">video 1</a>` : ''}
+          ${a.video2 ? ` · <a href="${escapeHtml(videoHref(a.video2))}" target="_blank" rel="noopener">video 2</a>` : ''}
           ${(!a.video1 && !a.video2) ? '—' : ''}
         </div></div>
         ${fotos.length ? `<div class="field-row"><label>Fotos</label><div class="photos">${fotos.map(p => `<img src="${escapeHtml(p)}" alt="">`).join('')}</div></div>` : ''}
@@ -1808,7 +1821,10 @@
       } catch (e) { /* silencioso */ }
     }
 
+    let showsLoadSeq = 0;
     async function loadShows() {
+      // Si se lanza otra carga (filtro/búsqueda) antes de que acabe esta, solo pinta la última.
+      const seq = ++showsLoadSeq;
       $('shows-loading').classList.remove('hidden');
       $('shows-empty').classList.add('hidden');
       $('shows-grid').innerHTML = '';
@@ -1825,6 +1841,7 @@
         }
         const res = await fetch(url);
         const data = await res.json();
+        if (seq !== showsLoadSeq) return;
         $('shows-loading').classList.add('hidden');
         if (!res.ok) { showError(data.error || data.hint || 'Error cargando shows'); return; }
 
@@ -1851,6 +1868,9 @@
           const stripAccents = (s) => String(s || '').toLowerCase().normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '');
           const needle = stripAccents(state.shows.q);
           items = items.filter(s => stripAccents(s.name).includes(needle) || stripAccents(s.name_en || '').includes(needle));
+        }
+        if (state.shows.category) {
+          items = items.filter(s => state.shows.category === '__none__' ? !s.category : s.category === state.shows.category);
         }
 
         state.shows.items = items;
@@ -1981,7 +2001,7 @@
           </div>
         </div>
         <div class="card-footer">
-          ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(s.video_url)}" target="_blank" rel="noopener">Vídeo</a>` : ''}
+          ${s.video_url ? `<a class="btn btn-video" href="${escapeHtml(videoHref(s.video_url))}" target="_blank" rel="noopener">Vídeo</a>` : ''}
           ${nImgs ? `<button class="btn btn-video btn-download" data-download="${escapeHtml(s.id)}" title="Descargar todas las fotos del show">${DOWNLOAD_ICON}Fotos (${nImgs})</button>` : ''}
           ${isPending
             ? `<button class="btn btn-approve" data-id="${escapeHtml(s.id)}" data-action="approve">Aprobar</button>`
@@ -3165,6 +3185,10 @@
       state.shows.q = $('shows-q').value.trim();
       loadShows();
     }, 250));
+    $('shows-category').addEventListener('change', (e) => {
+      state.shows.category = e.target.value;
+      loadShows();
+    });
     document.querySelectorAll('#shows-lang-toggle .lang-btn').forEach(b => {
       b.addEventListener('click', () => {
         state.shows.lang = b.dataset.lang;

@@ -63,6 +63,15 @@ function adminUrlArtista(env, artistaId) { return `${siteUrl(env)}/admin.html?ar
 function adminUrlShow(env, showSlug) { return `${siteUrl(env)}/admin.html?show=${showSlug}`; }
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 function uniq(arr) { return [...new Set(arr.filter(Boolean))]; }
+// video_url se usa como ENLACE (admin, GHL, catálogo). Una URL youtube.com/embed/ID
+// abierta en su propia pestaña da "Error 153", así que se guarda como watch?v=ID.
+function normalizeVideoUrl(u) {
+  const s = String(u || '').trim();
+  const m = /^https?:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})(?:[?#](.*))?$/.exec(s);
+  if (!m) return s || null;
+  const start = new URLSearchParams(m[2] || '').get('start');
+  return `https://www.youtube.com/watch?v=${m[1]}${start ? `&t=${start}s` : ''}`;
+}
 
 // Busca artista existente en Supabase por cualquiera de las claves duras
 // (email real no-placeholder, teléfono, ghl_contact_id). Se usa antes de
@@ -1438,6 +1447,7 @@ async function editShow(req, res, env) {
   const update = {};
   for (const k of allowed) if (k in patch) update[k] = patch[k];
   if (Object.keys(update).length === 0) return res.status(400).json({ error: 'patch is empty' });
+  if ('video_url' in update) update.video_url = normalizeVideoUrl(update.video_url);
 
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/shows?id=eq.${encodeURIComponent(id)}&select=*,artista:artista_id(id,nombre,nombre_artistico,compania,email,telefono,fotos_urls)`,
@@ -1564,7 +1574,7 @@ async function addShow(req, res, env) {
     base_price: body.base_price != null && body.base_price !== '' ? (parseInt(body.base_price, 10) || 0) : 0,
     price_note: (body.price_note || '').trim() || null,
     price_note_en: (body.price_note_en || '').trim() || null,
-    video_url: (body.video_url || '').trim() || null,
+    video_url: normalizeVideoUrl(body.video_url),
     image_url: initialImageUrl,
     image_urls: initialImageUrl ? [initialImageUrl] : null,
     status: 'active',
@@ -2173,7 +2183,7 @@ async function syncShowToWordpress(env, show) {
   const slug = (show.slug || show.name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const content = `
     ${show.description ? `<p>${show.description}</p>` : ''}
-    ${show.video_url ? `<p><a href="${show.video_url}" target="_blank" rel="noopener">Ver video</a></p>` : ''}
+    ${show.video_url ? `<p><a href="${normalizeVideoUrl(show.video_url)}" target="_blank" rel="noopener">Ver video</a></p>` : ''}
     ${show.image_url ? `<p><img src="${show.image_url}" alt="${show.name}" style="max-width:100%;height:auto;border-radius:14px" /></p>` : ''}
     <p><em>Show sincronizado desde /admin · id ${show.id}</em></p>
   `.trim();
@@ -2217,6 +2227,7 @@ async function reviewShow(req, res, env) {
   if (action === 'edit' && patch && typeof patch === 'object') {
     const allowed = ['name', 'category', 'subcategory', 'description', 'base_price', 'price_note', 'video_url', 'image_url'];
     for (const k of allowed) if (k in patch) update[k] = patch[k];
+    if ('video_url' in update) update.video_url = normalizeVideoUrl(update.video_url);
   }
 
   const r = await fetch(
