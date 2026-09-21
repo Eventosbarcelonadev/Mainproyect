@@ -839,11 +839,14 @@
 
     .p-client { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .p-avatar {
-      flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%;
+      flex: 0 0 44px; width: 44px; height: 44px; border-radius: 10px;
+      position: relative; overflow: hidden;
       display: grid; place-items: center;
       background: #EFEAE4; color: var(--ink-2);
       font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
     }
+    /* Miniatura = portada de la propuesta; tapa las iniciales, que quedan si la imagen falla */
+    .p-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .is-approved .p-avatar { background: var(--ok-bg); color: var(--ok-fg); }
     .p-avatar--version { background: transparent; color: var(--gray); font-size: 16px; }
     .p-text, .p-event, .p-shows, .p-status { min-width: 0; }
@@ -921,9 +924,9 @@
       .p-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 10px; padding: 14px; }
       .p-client { grid-column: 1; grid-row: 1; }
       .p-status { grid-column: 2; grid-row: 1; text-align: right; }
-      .p-event { grid-column: 1 / -1; grid-row: 2; padding-left: 50px; }
-      .p-shows { grid-column: 1; grid-row: 3; padding-left: 50px; }
-      .p-actions { grid-column: 1 / -1; grid-row: 4; justify-content: flex-start; padding-left: 46px; flex-wrap: wrap; }
+      .p-event { grid-column: 1 / -1; grid-row: 2; padding-left: 56px; }
+      .p-shows { grid-column: 1; grid-row: 3; padding-left: 56px; }
+      .p-actions { grid-column: 1 / -1; grid-row: 4; justify-content: flex-start; padding-left: 52px; flex-wrap: wrap; }
       .p-title, .p-sub { white-space: normal; }
       .p-date { display: block; }
       .p-menu-panel { left: 0; right: auto; }
@@ -3443,7 +3446,7 @@
           html += `
             <div data-group="${gi}" class="p-row propuesta-main${n === 0 ? ' is-empty' : ''}${latest.status === 'approved' ? ' is-approved' : ''}">
               <div class="p-client">
-                <span class="p-avatar" aria-hidden="true">${escapeHtml(initialsOf(c.title))}</span>
+                <span class="p-avatar" aria-hidden="true">${escapeHtml(initialsOf(c.title))}${latest.cover_url ? `<img src="${escapeHtml(latest.cover_url)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span>
                 <div class="p-text">
                   <div class="p-title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</div>
                   ${c.sub ? `<div class="p-sub" title="${escapeHtml(c.sub)}">${escapeHtml(c.sub)}</div>` : ''}

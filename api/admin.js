@@ -300,7 +300,7 @@ async function listProposals(req, res, env) {
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
   const params = [
-    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path',
+    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path,hero_image_url',
     'order=created_at.desc'
   ];
 
@@ -326,7 +326,37 @@ async function listProposals(req, res, env) {
 
   const rows = await r.json();
   const total = parseTotal(r.headers.get('content-range'), rows.length);
+  await attachProposalCovers(env, rows);
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
+}
+
+// Miniatura de cada fila en /admin → Propuestas: la misma portada que ve el
+// cliente en propuesta.html (hero_image_url elegida, o la primera foto del
+// primer show). Sin shows ni portada propia queda null y la fila usa iniciales.
+async function attachProposalCovers(env, rows) {
+  const firstShowId = (p) => {
+    let shows = p.shows;
+    if (typeof shows === 'string') { try { shows = JSON.parse(shows); } catch { shows = []; } }
+    const first = Array.isArray(shows) ? shows[0] : null;
+    return first && first.id ? String(first.id) : null;
+  };
+  const ids = uniq(rows.filter(p => !p.hero_image_url).map(firstShowId));
+  const imageByShow = new Map();
+  if (ids.length) {
+    try {
+      const r = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/shows?id=in.(${ids.map(encodeURIComponent).join(',')})&select=id,image_url,image_urls`,
+        { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      if (r.ok) {
+        for (const s of await r.json()) {
+          const primary = (Array.isArray(s.image_urls) ? s.image_urls.filter(Boolean)[0] : null) || s.image_url;
+          if (primary) imageByShow.set(s.id, primary);
+        }
+      }
+    } catch (e) { /* best-effort: sin miniatura, la fila sigue con iniciales */ }
+  }
+  for (const p of rows) p.cover_url = p.hero_image_url || imageByShow.get(firstShowId(p)) || null;
 }
 
 // Borra una propuesta de Supabase. Best-effort: borra también el PDF del
