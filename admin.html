@@ -1055,7 +1055,7 @@
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" onclick="openAddShowModal()" style="font-weight:600;">+ Nuevo show</button>
-        <input id="shows-q" type="search" placeholder="Buscar show por nombre…" style="flex:1;max-width:300px;">
+        <input id="shows-q" type="search" placeholder="Buscar por nombre, estilo, descripción o artista…" style="flex:1;max-width:340px;">
         <select id="shows-category">
           <option value="">Todos los estilos</option>
           <option value="danza">Danza</option>
@@ -1997,11 +1997,33 @@
           items = items.filter(s => s.id === state.shows.showFilter);
         }
         // Apply search query (client-side, normalized lower + strip acentos).
-        // Busca en ES y EN para que el resultado sea coherente entre toggles.
+        // Busca en ES y EN (nombre, estilo, subcategoría, descripción y artistas)
+        // palabra por palabra: "pompas de jabon" encuentra "Show de pompas de jabón"
+        // aunque no esté en el nombre. Ordena primero los que coinciden en el nombre.
         if (state.shows.q) {
           const stripAccents = (s) => String(s || '').toLowerCase().normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '');
-          const needle = stripAccents(state.shows.q);
-          items = items.filter(s => stripAccents(s.name).includes(needle) || stripAccents(s.name_en || '').includes(needle));
+          const STOP = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'lo', 'y', 'e', 'o', 'u', 'un', 'una', 'con', 'en', 'para', 'por', 'a', 'al', 'the', 'of', 'and', 'with', 'for']);
+          // Singular: "pompas" -> "pompa", "jabones" -> "jabon", para casar con ambas formas.
+          const stem = (w) => w.length > 5 && w.endsWith('es') ? w.slice(0, -2) : (w.length > 3 && w.endsWith('s') ? w.slice(0, -1) : w);
+          const words = stripAccents(state.shows.q).split(/[^a-z0-9ñ]+/).filter(Boolean);
+          const tokens = (words.filter(w => !STOP.has(w)).length ? words.filter(w => !STOP.has(w)) : words).map(stem);
+          const artistText = (s) => [s.artista, ...(Array.isArray(s.show_artistas) ? s.show_artistas.map(sa => sa.artista) : [])]
+            .filter(Boolean).map(a => [a.nombre_artistico, a.nombre, a.compania].join(' ')).join(' ');
+          const scored = [];
+          for (const s of items) {
+            const name = stripAccents([s.name, s.name_en].join(' '));
+            const meta = stripAccents([s.category, s.subcategory, s.subcategory_en, artistText(s)].join(' '));
+            const desc = stripAccents([s.description, s.description_en].join(' '));
+            let score = 0;
+            const allMatch = tokens.every(t => {
+              if (name.includes(t)) { score += 3; return true; }
+              if (meta.includes(t)) { score += 2; return true; }
+              if (desc.includes(t)) { score += 1; return true; }
+              return false;
+            });
+            if (allMatch) scored.push({ s, score });
+          }
+          items = scored.sort((a, b) => b.score - a.score).map(x => x.s);
         }
         if (state.shows.category) {
           items = items.filter(s => state.shows.category === '__none__' ? !s.category : s.category === state.shows.category);
