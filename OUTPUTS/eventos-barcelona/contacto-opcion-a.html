@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contacto, opción A, Eventos Barcelona</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#141414">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Eventos Barcelona">
+<meta property="og:title" content="Contacto, opción A, Eventos Barcelona">
+<meta property="og:description" content="Mock-up de la nueva página de contacto, versión directa al formulario.">
+<meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://propuestas.eventosbarcelona.com/contacto-opciones/a">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contacto, opción A, Eventos Barcelona">
+<meta name="twitter:description" content="Mock-up de la nueva página de contacto, versión directa al formulario.">
+<meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --pink:#cc3366; --pink-dark:#a82854; --pink-soft:#fbe9f0;
+  --ink:#1a1a1a; --body:#333; --muted:#6b6b6b; --line:#e6e6e6;
+  --ground:#fff; --grey:#f7f7f7; --dark:#141414;
+  --font:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--body);font-family:var(--font);font-size:18px;line-height:1.55;overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+h1,h2,h3{color:var(--ink);margin:0 0 .5em;line-height:1.12;font-weight:600;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3.6rem)}
+h2{font-size:clamp(1.6rem,3vw,2.4rem)}
+h3{font-size:1.25rem}
+p{margin:0 0 1em}
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding-inline:24px}
+@media (min-width:1024px){.wrap{padding-inline:32px}}
+.kcs{background-image:linear-gradient(transparent 62%,var(--pink) 62%,var(--pink) 92%,transparent 92%);padding:0 .06em}
+.eyebrow{display:inline-block;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--pink);color:#fff;text-decoration:none;font-weight:600;border:0;border-radius:999px;padding:14px 26px;font-family:inherit;font-size:1rem;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--pink-dark)}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.7)}
+.btn.ghost:hover{background:rgba(255,255,255,.12)}
+.mock-tag{position:fixed;left:12px;bottom:12px;z-index:50;background:var(--ink);color:#fff;font-size:.75rem;padding:6px 10px;border-radius:6px;opacity:.85;pointer-events:none}
+
+/* header replica */
+.hdr{background:var(--dark);color:#fff;position:sticky;top:0;z-index:40}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:78px;gap:16px}
+.hdr img{width:190px;max-width:48vw}
+.hdr .right{display:flex;align-items:center;gap:14px}
+.hdr .lang{font-size:.85rem;opacity:.85}
+.hdr .burger{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+.hdr .burger i{display:block;height:2px;background:#fff;border-radius:2px}
+@media (max-width:520px){.hdr .btn{padding:10px 16px;font-size:.9rem}.hdr .lang{display:none}}
+
+/* hero two columns */
+.hero{position:relative;background:var(--dark) url("https://szixutlvhtwvnyizceww.supabase.co/storage/v1/object/public/artist-assets/shows/personajes-led-chispas-iroqueses-1789113312026-2.jpg") center 30%/cover no-repeat;color:#fff}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,8,8,.88) 0%,rgba(10,8,8,.72) 45%,rgba(10,8,8,.35) 100%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center;padding-block:72px}
+.hero h1{color:#fff;margin-bottom:18px}
+.hero .lead{font-size:1.15rem;color:rgba(255,255,255,.88);max-width:34rem}
+.hero .lead strong{color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chips span{font-size:.85rem;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 12px;color:rgba(255,255,255,.9)}
+.channels{margin-top:30px;display:grid;gap:10px;font-size:.98rem}
+.channels a{text-decoration:none;color:#fff}
+.channels a:hover{text-decoration:underline}
+.channels .k{color:rgba(255,255,255,.6);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;display:block}
+@media (max-width:820px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:44px}
+  .hero::before{background:linear-gradient(180deg,rgba(10,8,8,.86) 0%,rgba(10,8,8,.8) 100%)}
+  .hero .form-card{order:-1}
+}
+
+/* form card (mismos campos que el formulario global eb-form) */
+.form-card{background:#fff;color:var(--body);border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.form-card h2{font-size:1.45rem;margin-bottom:6px}
+.form-card .sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.steps{display:flex;align-items:center;gap:6px;margin:6px 0 18px}
+.steps b{width:28px;height:28px;border-radius:50%;background:var(--line);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600}
+.steps b.on{background:var(--pink);color:#fff}
+.steps i{flex:1;height:2px;background:var(--line)}
+.fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.fields label{display:block;font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:6px}
+.fields input,.fields textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:1rem;color:var(--body);background:#fff}
+.fields input:focus,.fields textarea:focus{outline:2px solid var(--pink);outline-offset:0;border-color:var(--pink)}
+.fields .full{grid-column:1/-1}
+.fields textarea{min-height:88px;resize:vertical}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);margin:14px 0 16px}
+.consent a{color:var(--pink)}
+.form-card .btn{width:100%;padding:16px 26px;font-size:1.05rem}
+.micro{font-size:.82rem;color:var(--muted);text-align:center;margin:12px 0 0}
+@media (max-width:520px){.fields{grid-template-columns:minmax(0,1fr)}.form-card{padding:22px 18px}}
+
+/* proof strip */
+.proof{background:var(--grey);border-bottom:1px solid var(--line)}
+.proof .wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding-block:32px}
+.stat b{display:block;font-size:2.2rem;line-height:1;color:var(--ink);letter-spacing:-.02em}
+.stat span{font-size:.92rem;color:var(--muted)}
+.stat .todo{display:inline-block;margin-left:6px;font-size:.7rem;background:#ffe9a8;color:#6a4b00;border-radius:4px;padding:2px 6px;vertical-align:middle}
+@media (max-width:640px){.proof .wrap{grid-template-columns:minmax(0,1fr);gap:16px}.stat b{font-size:1.8rem}}
+
+/* sections */
+section.s{padding-block:64px}
+@media (max-width:820px){section.s{padding-block:44px}}
+.s-head{max-width:46rem;margin-bottom:28px}
+.s-head p{color:var(--muted)}
+
+/* how it works */
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.how .card{background:var(--grey);border-radius:16px;padding:26px 24px}
+.how .n{display:inline-flex;width:38px;height:38px;border-radius:50%;background:var(--pink);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:14px}
+.how p{margin:0;font-size:1rem;color:var(--body)}
+@media (max-width:820px){.how{grid-template-columns:minmax(0,1fr)}}
+
+/* logos */
+.logos p{text-align:center;color:var(--muted);font-style:italic;margin-bottom:22px}
+.logos .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px 26px;align-items:center;max-width:920px;margin:0 auto}
+.logos img{filter:grayscale(1);opacity:.65;margin:0 auto;max-height:44px;width:auto}
+@media (max-width:820px){.logos .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* testimonial */
+.quote{background:var(--dark);color:#fff}
+.quote .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:56px}
+.quote blockquote{margin:0;font-size:1.35rem;line-height:1.4;font-weight:500}
+.quote cite{display:block;margin-top:18px;font-style:normal;color:rgba(255,255,255,.65);font-size:.95rem}
+.quote .ph{border:1px dashed rgba(255,255,255,.4);border-radius:12px;padding:14px 16px;font-size:.85rem;color:rgba(255,255,255,.75);margin-top:18px}
+.quote img{border-radius:16px;aspect-ratio:4/3;object-fit:cover;width:100%}
+@media (max-width:820px){.quote .wrap{grid-template-columns:minmax(0,1fr);padding-block:44px}}
+
+/* faq */
+.faq details{border-top:1px solid var(--line);padding:18px 0}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:1.08rem;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--pink);font-weight:400;font-size:1.4rem;line-height:1}
+.faq details[open] summary::after{content:"\2013"}
+.faq details p{margin:12px 0 0;color:var(--body);max-width:52rem}
+.faq .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 48px}
+@media (max-width:820px){.faq .two{grid-template-columns:minmax(0,1fr)}}
+
+/* contact data */
+.data{background:var(--grey)}
+.data .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:56px}
+.data dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 24px;margin:0}
+.data dt{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:4px}
+.data dd{margin:0;font-size:1rem}
+.data dd a{text-decoration:none}
+.data img{border-radius:14px;width:100%}
+.artist{margin-top:22px;font-size:.92rem;color:var(--muted)}
+.artist a{color:var(--pink)}
+@media (max-width:820px){.data .wrap{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.data dl{grid-template-columns:minmax(0,1fr)}}
+
+/* footer replica */
+.ftr{background:var(--dark);color:#d9d9d9;font-size:.9rem}
+.ftr .wrap{display:grid;grid-template-columns:1.2fr repeat(3,minmax(0,1fr));gap:32px;padding-block:52px}
+.ftr h4{color:#fff;font-size:1.15rem;margin:0 0 14px}
+.ftr ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ftr a{text-decoration:none;color:#d9d9d9}
+.ftr a:hover{color:#fff}
+.ftr .logo{width:120px;margin-bottom:14px}
+.ftr .bottom{border-top:1px solid rgba(255,255,255,.12);text-align:center;padding:18px 24px;font-size:.85rem}
+.ftr .bottom span{margin:0 10px}
+@media (max-width:820px){.ftr .wrap{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:520px){.ftr .wrap{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="mock-tag">Mock-up opción A</div>
+
+<header class="hdr">
+  <div class="wrap">
+    <a href="https://www.eventosbarcelona.com/" aria-label="Eventos Barcelona"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona"></a>
+    <div class="right">
+      <a class="btn" href="#form">Contacta</a>
+      <span class="lang">EN | ES</span>
+      <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Contacto</span>
+      <h1>Cuéntanos tu evento y recibe una <span class="kcs">propuesta a medida</span> en 24 horas laborables</h1>
+      <p class="lead">Para agencias, DMCs, OPCs y equipos de marketing que organizan eventos corporativos en Barcelona. <strong>Artistas, espectáculos y producción técnica</strong> con un solo interlocutor.</p>
+      <div class="chips"><span>Galas y cenas de empresa</span><span>Convenciones y congresos</span><span>Lanzamientos e inauguraciones</span><span>Producción técnica</span></div>
+      <div class="channels">
+        <div><span class="k">Teléfono</span><a href="tel:+34931980265">+34 931 98 02 65</a> <small style="opacity:.7">lunes a viernes, 9:00 a 18:00</small></div>
+        <div><span class="k">Email</span><a href="mailto:hola@eventosbarcelona.com">hola@eventosbarcelona.com</a></div>
+      </div>
+    </div>
+
+    <div class="form-card" id="form">
+      <h2>Solicita tu propuesta personalizada</h2>
+      <p class="sub">En el siguiente paso eliges el tipo de experiencia y los detalles. Nuestro equipo revisa tu solicitud y te responde en menos de 24 horas laborables.</p>
+      <div class="steps" aria-hidden="true"><b class="on">1</b><i></i><b>2</b><i></i><b>3</b><i></i><b>4</b><i></i><b>5</b></div>
+      <form class="fields" onsubmit="return false">
+        <div><label for="a-nombre">Nombre</label><input id="a-nombre" type="text" placeholder="Tu nombre"></div>
+        <div><label for="a-empresa">Empresa</label><input id="a-empresa" type="text" placeholder="Empresa o agencia"></div>
+        <div><label for="a-email">Correo email</label><input id="a-email" type="email" placeholder="nombre@empresa.com"></div>
+        <div><label for="a-tel">Teléfono</label><input id="a-tel" type="tel" placeholder="+34"></div>
+        <div class="full"><label for="a-msg">Cuéntanos brevemente sobre tu evento (opcional)</label><textarea id="a-msg" placeholder="Fecha aproximada, número de asistentes, tipo de evento"></textarea></div>
+        <div class="full">
+          <label class="consent"><input type="checkbox"> <span>Acepto la <a href="https://www.eventosbarcelona.com/politica-de-privacidad/">Política de Privacidad</a></span></label>
+          <button class="btn" type="submit">Recibir mi propuesta →</button>
+          <p class="micro">Sin compromiso. Te responde una persona del equipo, no un formulario automático.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="wrap">
+    <div class="stat"><b>+15 años</b><span>produciendo eventos corporativos en Barcelona</span></div>
+    <div class="stat"><b>+300</b><span>espectáculos y artistas en catálogo <em class="todo">cifra a validar con Xavi</em></span></div>
+    <div class="stat"><b>24 h</b><span>laborables para recibir tu propuesta</span></div>
+  </div>
+</div>
+
+<section class="s">
+  <div class="wrap">
+    <div class="s-head">
+      <span class="eyebrow">Qué pasa después</span>
+      <h2>Tres pasos, sin reuniones innecesarias</h2>
+      <p>Trabajamos con el ritmo de las agencias: un brief corto, una propuesta visual y ajustes rápidos.</p>
+    </div>
+    <div class="how">
+      <div class="card"><span class="n">1</span><h3>Nos cuentas el evento</h3><p>Dos minutos: fecha, ciudad o venue, número de asistentes y el tipo de experiencia que buscas. Si aún no lo tienes claro, también sirve.</p></div>
+      <div class="card"><span class="n">2</span><h3>Recibes una propuesta visual</h3><p>En menos de 24 horas laborables, con los shows y artistas seleccionados, vídeos y las necesidades técnicas de cada uno.</p></div>
+      <div class="card"><span class="n">3</span><h3>Ajustamos y confirmamos</h3><p>Cambiamos artistas, formatos o producción hasta que encaje. Bloqueamos fechas y coordinamos con tu equipo y el venue.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s logos" style="padding-top:0">
+  <div class="wrap">
+    <p>Algunos de los clientes que han confiado en nosotros</p>
+    <div class="grid">
+      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_01.gif" alt="Acciona"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_02.gif" alt="McDonald's"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_03.gif" alt="Nokia"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_04.gif" alt="Chanel"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_05.gif" alt="Banco Sabadell"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_06.gif" alt="Huawei"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_07.gif" alt="Bayer"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_08.gif" alt="Airbus"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_09.gif" alt="National Geographic"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_10.gif" alt="LVMH"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_11.gif" alt="Hyundai"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_12.gif" alt="Air France"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_13.gif" alt="IKEA"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_14.gif" alt="DHL"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_15.gif" alt="Mercedes-Benz"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_16.gif" alt="Barceló Viajes"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_17.gif" alt="Almirall"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_18.gif" alt="Lidl">
+    </div>
+  </div>
+</section>
+
+<section class="quote">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Lo que dicen los clientes</span>
+      <blockquote>"Aquí va una frase textual de un cliente: qué evento era, qué montamos y qué cambió para su equipo."</blockquote>
+      <cite>Nombre y apellido, cargo, empresa</cite>
+      <div class="ph">Hueco reservado. Xavi está recopilando 5 testimonios. Entra uno aquí y el resto en Casos de éxito.</div>
+    </div>
+    <img src="https://szixutlvhtwvnyizceww.supabase.co/storage/v1/object/public/artist-assets/shows/personajes-led-aliens-1789550802299.jpg" alt="Show LED con fuego sobre escenario en un evento corporativo">
+  </div>
+</section>
+
+<section class="s faq">
+  <div class="wrap">
+    <div class="s-head">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Antes de escribirnos</h2>
+    </div>
+    <div class="two">
+      <div>
+        <details open><summary>¿Trabajáis con agencias, DMCs y OPCs?</summary><p>Sí, es la mayor parte de nuestro trabajo. Actuamos como proveedor de artistas y producción para agencias que llevan la cuenta con el cliente final, con discreción y con vuestra marca por delante si lo necesitáis.</p></details>
+        <details><summary>¿Con cuánta antelación hay que reservar?</summary><p>Para un show concreto en una fecha concreta, cuanto antes mejor: entre cuatro y ocho semanas es lo habitual. Con menos margen también resolvemos, pero con menos opciones de artistas.</p></details>
+        <details><summary>¿Hacéis eventos fuera de Barcelona?</summary><p>Sí. Producimos en toda España y acompañamos a nuestros artistas en eventos internacionales. El equipo técnico viaja con el show.</p></details>
+      </div>
+      <div>
+        <details><summary>¿Incluís la producción técnica?</summary><p>Sí. Iluminación, sonido, escenarios y audiovisuales con equipo propio, para el show o para todo el evento. Un único interlocutor para artistas y técnica.</p></details>
+        <details><summary>¿En qué idiomas trabajáis?</summary><p>Español, catalán e inglés en toda la relación: brief, propuesta, contrato y coordinación el día del evento.</p></details>
+        <details><summary>¿Cómo recibo la propuesta?</summary><p>Como una página web privada con los shows seleccionados, vídeos, fichas técnicas y el detalle de cada opción. La puedes compartir con tu cliente y también descargar en PDF.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="data">
+  <div class="wrap">
+    <div>
+      <h2>Datos de contacto</h2>
+      <dl>
+        <div><dt>Dirección</dt><dd><a href="https://maps.app.goo.gl/2iXPqXdCpms2p6bi7">Ronda del General Mitre, 126, 6ª planta<br>Sarrià-Sant Gervasi, 08021 Barcelona</a></dd></div>
+        <div><dt>Horario</dt><dd>Lunes a viernes, 9:00 a 18:00</dd></div>
+        <div><dt>Teléfono</dt><dd><a href="tel:+34931980265">+34 931 98 02 65</a></dd></div>
+        <div><dt>Email</dt><dd><a href="mailto:hola@eventosbarcelona.com">hola@eventosbarcelona.com</a></dd></div>
+      </dl>
+      <p class="artist">¿Eres artista o compañía? No uses este formulario: <a href="https://propuestas.eventosbarcelona.com/formulario-artista">envía tu material aquí</a>.</p>
+    </div>
+    <a href="https://maps.app.goo.gl/kgJ5peBCxYcQrzJX7"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/10/mapa-localizacion-eventos-barcelona-2webp.webp" alt="Mapa de la oficina de Eventos Barcelona en Sarrià-Sant Gervasi"></a>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div>
+      <img class="logo" src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+      <p>Agencia de organización y producción de eventos</p>
+      <p>Ronda del General Mitre, 126, 6ª planta<br>Sarrià-Sant Gervasi, 08021 Barcelona<br>+34 931 98 02 65<br>hola@eventosbarcelona.com</p>
+    </div>
+    <div><h4>Sobre nosotros</h4><ul><li><a href="https://www.eventosbarcelona.com/artistas-y-espectaculos/">Artistas y espectáculos</a></li><li><a href="https://www.eventosbarcelona.com/casos-exito/">Casos de éxito</a></li><li><a href="https://www.eventosbarcelona.com/produccion-tecnica-para-eventos/">Producción técnica</a></li><li><a href="https://www.eventosbarcelona.com/quienes-somos/">Sobre nosotros</a></li><li><a href="https://www.eventosbarcelona.com/unete-al-equipo/">Únete al equipo</a></li><li><a href="https://www.eventosbarcelona.com/blog/">EB Blog</a></li><li><a href="https://www.eventosbarcelona.com/contacto/">Contacto</a></li></ul></div>
+    <div><h4>Redes sociales</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">Youtube</a></li><li><a href="#">Linkedin</a></li></ul></div>
+    <div><h4>También le puede interesar</h4><ul><li><a href="https://www.eventosbarcelona.com/organizacion-de-inauguraciones-empresariales/">Organización de inauguraciones empresariales</a></li><li><a href="https://www.eventosbarcelona.com/organizacion-de-actos-institucionales/">Organización de actos institucionales</a></li><li><a href="https://www.eventosbarcelona.com/organizacion-de-congresos-y-convenciones/">Organización de congresos y convenciones</a></li><li><a href="https://www.eventosbarcelona.com/cenas-gala-corporativas/">Organización cenas de gala empresariales</a></li></ul></div>
+  </div>
+  <div class="bottom">© 2026 Eventos Barcelona <span>|</span> <a href="https://www.eventosbarcelona.com/politica-de-privacidad/">Política de privacidad</a></div>
+</footer>
+</body>
+</html>

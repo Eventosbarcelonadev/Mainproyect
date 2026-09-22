@@ -131,6 +131,22 @@
     {
       "source": "/brief/",
       "destination": "/OUTPUTS/eventos-barcelona/brief-tecnico-y-contenido.html"
+    },
+    {
+      "source": "/contacto-opciones",
+      "destination": "/OUTPUTS/eventos-barcelona/contacto-opciones.html"
+    },
+    {
+      "source": "/contacto-opciones/",
+      "destination": "/OUTPUTS/eventos-barcelona/contacto-opciones.html"
+    },
+    {
+      "source": "/contacto-opciones/a",
+      "destination": "/OUTPUTS/eventos-barcelona/contacto-opcion-a.html"
+    },
+    {
+      "source": "/contacto-opciones/b",
+      "destination": "/OUTPUTS/eventos-barcelona/contacto-opcion-b.html"
     }
   ],
   "headers": [
