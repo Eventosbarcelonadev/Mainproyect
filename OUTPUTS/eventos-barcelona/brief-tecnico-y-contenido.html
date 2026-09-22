@@ -171,6 +171,8 @@ table.serp td:nth-child(2), table.serp td:nth-child(3){
   font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);
 }
 table.serp td:nth-child(2){color:var(--sage)}
+table.serp.map td:nth-child(2){font-family:'SF Mono',Menlo,monospace;font-size:.85rem;font-weight:500;white-space:nowrap}
+table.serp.map td:nth-child(3){font-weight:400;color:var(--body)}
 
 .pipeline{margin:16px 0;padding:22px 26px;background:var(--card-2);border-radius:8px;border-left:3px solid var(--accent)}
 .pipeline h4{margin:0 0 4px;font-size:1.05rem;color:var(--ink);font-weight:600}
@@ -202,31 +204,6 @@ table.serp td:nth-child(2){color:var(--sage)}
 .guest-col ul{margin:0;padding-left:18px}
 .guest-col ul li{font-size:.9rem;margin-bottom:4px}
 
-.tree{
-  background:var(--card-2);border:1px solid var(--line);border-radius:10px;
-  padding:26px 32px;margin:14px 0 32px;font-family:'Space Grotesk','SF Mono',Menlo,monospace;
-  font-size:.94rem;line-height:1.55;
-}
-.tree-item{padding:5px 0;color:var(--body);position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.tree-lvl1{font-weight:600;color:var(--ink);border-top:1px dashed var(--line);margin-top:8px;padding-top:12px}
-.tree-lvl1:first-child{border-top:0;margin-top:0;padding-top:5px}
-.tree-lvl2{padding-left:36px;font-weight:400;font-size:.92rem}
-.tree-lvl2::before{content:"└──";color:var(--muted);position:absolute;left:12px;font-family:monospace}
-.tree-icon{font-size:1.05rem;margin-right:2px}
-.tree-path{color:var(--muted);font-size:.82rem;font-family:'SF Mono',Menlo,monospace;letter-spacing:-.01em;background:var(--card);padding:2px 8px;border-radius:4px;margin-left:auto}
-.tree-badge{
-  font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
-  background:var(--sage-soft);color:var(--sage);padding:2px 10px;border-radius:12px;margin-left:8px;
-}
-.tree-new{color:var(--accent)}
-.tree-new .tree-badge{background:var(--accent-soft);color:var(--accent)}
-.tree-new .tree-path{background:var(--accent-soft);color:var(--accent)}
-.tree-lvl2.tree-new::before{color:var(--accent)}
-@media (max-width:700px){
-  .tree{padding:20px 18px;font-size:.86rem}
-  .tree-lvl2{padding-left:26px}
-  .tree-path{margin-left:0;flex-basis:100%;margin-top:2px}
-}
 
 footer.foot{
   margin-top:80px;padding-top:24px;border-top:1px solid var(--line);
@@ -756,108 +733,92 @@ footer.foot strong{color:var(--body);font-weight:500}
 
   <section id="arbol">
     <div class="sec-eyebrow">Sección 8</div>
-    <h2 class="sec-title">Arquitectura del menú, dónde entra cada pieza publicada</h2>
-    <p class="sec-lead">Hemos publicado mucho contenido este semestre. La estructura de menú actual (7 items en el nav principal) se quedó corta para reflejarlo. Propuesta para revisar contigo el viernes.</p>
+    <h2 class="sec-title">Dónde vive cada landing dentro de las páginas existentes</h2>
+    <p class="sec-lead">Decidido en la weekly: el menú no se toca. Cada landing entra como un bloque dentro de la página que ya existe para su tema y aparece también en el "Te puede interesar" del pie de página. Las landings trabajan para Google y las IAs; quien navega sigue viendo el mismo menú, corto y directo.</p>
 
-    <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kpi">
-        <div class="lbl">Menú actual, nivel 1</div>
-        <div class="val">7</div>
-        <div class="note">items visibles hoy</div>
+    <div class="kpis kpis-4">
+      <div class="kpi hero">
+        <div class="lbl">Cambios en el menú</div>
+        <div class="val">0</div>
+        <div class="note">se queda como está</div>
+      </div>
+      <div class="kpi hero">
+        <div class="lbl">Landings con página padre</div>
+        <div class="val">17<small>/17</small></div>
+        <div class="note">todas tienen sitio</div>
       </div>
       <div class="kpi">
-        <div class="lbl">Landings totales</div>
+        <div class="lbl">Páginas publicadas</div>
         <div class="val">34</div>
-        <div class="note">ES+EN publicadas</div>
+        <div class="note">17 landings en ES y EN</div>
       </div>
       <div class="kpi">
-        <div class="lbl">Landings sin ubicación</div>
-        <div class="val">14</div>
-        <div class="note">no encajan en la estructura</div>
-      </div>
-      <div class="kpi">
-        <div class="lbl">Items propuestos</div>
-        <div class="val">8</div>
-        <div class="note">nivel 1 (adds 1 dropdown MICE)</div>
+        <div class="lbl">Páginas que reciben bloques</div>
+        <div class="val">9</div>
+        <div class="note">todas ya existentes</div>
       </div>
     </div>
 
-    <h3 class="sub">Árbol propuesto</h3>
-    <p style="color:var(--muted);font-size:.94rem;margin:0 0 14px;">Marcados en rosa los items nuevos que aún no están en el menú. Los que están en gris ya existen y se mantienen.</p>
+    <h3 class="sub">El menú de hoy, que se mantiene</h3>
+    <p>Siete entradas planas en la cabecera, sin desplegables: <strong>Artistas y espectáculos, Casos de éxito, Producción técnica, Sobre nosotros, Únete al equipo, EB Blog y Contacto</strong>. Los segundos niveles (Artistas, Bailarines, Espectáculos, Música y Fiesta temática; Iluminación, Sonido, Escenarios y Audiovisual) solo aparecen en el menú del pie de página y como tarjetas dentro de cada página principal.</p>
 
-    <div class="tree">
-      <div class="tree-item tree-lvl1"><span class="tree-icon">🏠</span> Home <span class="tree-path">/agencia-de-eventos-barcelona/</span></div>
+    <h3 class="sub">Landing, página y bloque</h3>
+    <div class="t-scroll"><table class="serp map">
+      <thead>
+        <tr>
+          <th>Landing</th>
+          <th>Página donde vive</th>
+          <th>Bloque</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Música en vivo (bandas, DJ, cantante)</td><td>/musica/</td><td>Bloque "Música en vivo para eventos corporativos", con enlace a la landing y a sus cuatro formatos</td></tr>
+        <tr><td>DJ para fiestas de empresa</td><td>/musica/</td><td>Dentro del bloque de Música en vivo</td></tr>
+        <tr><td>Cantante para eventos corporativos</td><td>/musica/</td><td>Dentro del bloque de Música en vivo</td></tr>
+        <tr><td>Violinista para cena de gala</td><td>/musica/</td><td>Dentro del bloque de Música en vivo</td></tr>
+        <tr><td>Bandas de versiones</td><td>/musica/</td><td>Dentro del bloque de Música en vivo</td></tr>
+        <tr><td>Entretenimiento corporativo</td><td>/artistas-y-espectaculos/</td><td>Un solo bloque al final de la página, junto con Espectáculos corporativos</td></tr>
+        <tr><td>Espectáculos corporativos</td><td>/artistas-y-espectaculos/</td><td>El mismo bloque final que Entretenimiento corporativo</td></tr>
+        <tr><td>Escenografía</td><td>/alquiler-escenarios/</td><td>Bloque propio</td></tr>
+        <tr><td>Pantallas LED</td><td>/alquiler-iluminacion/</td><td>Bloque propio</td></tr>
+        <tr><td>Videowall</td><td>/alquiler-audiovisual/</td><td>Bloque propio</td></tr>
+        <tr><td>Venues corporativos</td><td>/produccion-tecnica-para-eventos/</td><td>Bloque propio, junto al de "Eventos exclusivos con precisión milimétrica"</td></tr>
+        <tr><td>Organización end-to-end</td><td>/produccion-tecnica-para-eventos/</td><td>Bloque propio</td></tr>
+        <tr><td>Convenciones internacionales</td><td>/organizacion-de-congresos-y-convenciones/</td><td>Bloque propio</td></tr>
+        <tr><td>Gala dinners corporativos</td><td>/cenas-gala-corporativas/</td><td>Bloque propio</td></tr>
+        <tr><td>MICE Barcelona</td><td>/quienes-somos/</td><td>Sección de servicios MICE, con las tres landings de esta página</td></tr>
+        <tr><td>DMC Barcelona</td><td>/quienes-somos/</td><td>Dentro de la sección de servicios MICE</td></tr>
+        <tr><td>Partner DMC para agencias</td><td>/quienes-somos/</td><td>Dentro de la sección de servicios MICE</td></tr>
+      </tbody>
+    </table></div>
+    <p>En inglés, lo mismo en las páginas equivalentes (/en/music/, /en/artists-and-shows/, /en/technical-production/, /en/about-us/...). Es regla del site: ES y EN con la misma estructura.</p>
 
-      <div class="tree-item tree-lvl1 tree-new"><span class="tree-icon">📁</span> Servicios MICE <span class="tree-badge">dropdown nuevo</span></div>
-      <div class="tree-item tree-lvl2 tree-new">MICE Barcelona <span class="tree-path">/mice-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">DMC Barcelona <span class="tree-path">/dmc-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Convenciones internacionales <span class="tree-path">/convenciones-corporativas-internacionales-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Organización end-to-end <span class="tree-path">/organizacion-eventos-corporativos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Partner DMC para agencias <span class="tree-path">/partner-dmc-agencias-eventos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Gala dinners corporativos <span class="tree-path">/gala-dinners-corporativos-barcelona/</span></div>
-
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> Artistas y espectáculos <span class="tree-badge">existente + 3 nuevos</span></div>
-      <div class="tree-item tree-lvl2">Artistas <span class="tree-path">/artistas/</span></div>
-      <div class="tree-item tree-lvl2">Bailarines <span class="tree-path">/danza/</span></div>
-      <div class="tree-item tree-lvl2">Espectáculos <span class="tree-path">/espectaculos/</span></div>
-      <div class="tree-item tree-lvl2">Música <span class="tree-path">/musica/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Entretenimiento corporativo <span class="tree-path">/entretenimiento-eventos-empresariales-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Espectáculos corporativos <span class="tree-path">/espectaculos-eventos-corporativos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Música en vivo (bandas, DJ, cantante) <span class="tree-path">/musica-en-vivo-eventos-corporativos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2">Fiesta temática <span class="tree-path">/fiesta-tematica/</span></div>
-
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> Producción técnica <span class="tree-badge">existente + 4 nuevos</span></div>
-      <div class="tree-item tree-lvl2">Iluminación <span class="tree-path">/alquiler-iluminacion/</span></div>
-      <div class="tree-item tree-lvl2">Sonido <span class="tree-path">/alquiler-sonido/</span></div>
-      <div class="tree-item tree-lvl2">Escenarios <span class="tree-path">/alquiler-escenarios/</span></div>
-      <div class="tree-item tree-lvl2">Audiovisual <span class="tree-path">/alquiler-audiovisual/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Escenografía <span class="tree-path">/escenografia-eventos-corporativos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Videowall <span class="tree-path">/videowall-eventos-corporativos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Pantallas LED <span class="tree-path">/alquiler-pantallas-led-eventos-barcelona/</span></div>
-      <div class="tree-item tree-lvl2 tree-new">Venues corporativos <span class="tree-path">/venues-eventos-corporativos-barcelona/</span></div>
-
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> Casos de éxito <span class="tree-path">/casos-de-exito/</span></div>
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> EB Blog <span class="tree-path">/blog/</span></div>
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> Sobre nosotros <span class="tree-path">/quienes-somos/</span></div>
-      <div class="tree-item tree-lvl1"><span class="tree-icon">📁</span> Contacto <span class="tree-path">/contacto/</span></div>
-    </div>
-
-    <h3 class="sub">Landings que NO entran en el menú principal</h3>
-    <p style="color:var(--muted);font-size:.94rem;margin:0 0 14px;">Son sub-landings de long-tail SEO. Se accede a ellas desde el hub padre correspondiente + footer + cross-linking contextual.</p>
+    <h3 class="sub">Cómo es cada bloque</h3>
     <ul class="plain">
-      <li><strong>DJ fiesta empresa</strong>, hijo de "Música en vivo" en la sección Artistas</li>
-      <li><strong>Cantante corporativo</strong>, hijo de "Música en vivo"</li>
-      <li><strong>Violinista cena gala</strong>, hijo de "Música en vivo"</li>
-      <li><strong>Bandas de versiones</strong>, hijo de "Música en vivo"</li>
+      <li>El mismo patrón que "Eventos exclusivos con precisión milimétrica" en Producción técnica: título, dos líneas de introducción y enlace a la landing.</li>
+      <li>Tarjetas con el formato de "Casos de éxito" de la home: foto a sangre, título encima y esquinas redondeadas.</li>
+      <li>Cada landing entra además en el "Te puede interesar" del pie de página.</li>
+      <li>Las landings se maquetan como las fichas de show: un nivel de título, un nivel de subtítulo y párrafos normales.</li>
     </ul>
 
-    <h3 class="sub">Contenido que se accede vía listado, no vía menú directo</h3>
-    <ul class="plain">
-      <li><strong>26 blog posts</strong>, se acceden desde <code>/blog/</code></li>
-      <li><strong>52 fichas de show y artista</strong> (46 Daryna Shavryna + 6 solo), se acceden desde <code>/espectaculos/</code>, <code>/artistas/</code>, <code>/musica/</code></li>
-      <li><strong>16 casos de éxito</strong>, se acceden desde <code>/casos-de-exito/</code></li>
-    </ul>
-
-    <h3 class="sub">Decisiones abiertas para revisar contigo</h3>
+    <h3 class="sub">Decisiones de la weekly</h3>
 
     <div class="card">
-      <h4>1. Dropdown "Servicios MICE" nuevo, ¿ok o mantenemos los 7 items actuales?</h4>
-      <p>La pega de mantener 7 items: las 6 landings MICE (Convenciones, DMC, Partner DMC, Organización, Gala dinners, MICE Barcelona) no tienen sitio natural en el nav. Ahora mismo solo se acceden por Google directo, no por navegación interna del site. Sumar el dropdown MICE resuelve esto y refuerza el mensaje ICP: "somos agencia MICE profesional para corporate internacional".</p>
+      <span class="tag tag-hecho">Decidido</span>
+      <h4>1. ¿Desplegable "Servicios MICE" en el menú?</h4>
+      <p>No. El menú se queda con sus siete entradas. Las seis landings MICE entran como bloques: Convenciones en Congresos y convenciones, Gala dinners en Cenas de gala, Organización end-to-end en Producción técnica, y MICE Barcelona, DMC y Partner DMC en Sobre nosotros.</p>
     </div>
 
     <div class="card">
-      <h4>2. ¿Las sub-landings de música (DJ, cantante, violinista, bandas) entran en el menú?</h4>
-      <p>Opción A, más limpia: hub único <em>Música en vivo</em> en el menú, y las 4 sub-landings viven bajo ese hub (cross-link contextual). Opción B, más SEO-obvio: cada una como item en el menú "Música en vivo" dropdown. Recomendación: opción A. El menú se satura si metemos las 4 y el ICP corporate quiere ver categorías, no formatos.</p>
+      <span class="tag tag-hecho">Decidido</span>
+      <h4>2. ¿Las landings de DJ, cantante, violinista y bandas entran en el menú?</h4>
+      <p>No. Viven dentro del bloque de Música en vivo, en la página de Música, y se enlazan entre ellas.</p>
     </div>
 
     <div class="card">
-      <h4>3. Home actual vs cambio a raíz</h4>
-      <p>Ahora <code>/</code> hace redirect a <code>/agencia-de-eventos-barcelona/</code>. Funciona bien SEO (esa landing está ranked pos 5.8 para "agencia eventos corporativos", 335 imp/mes). Si quieres una home dedicada con contenido propio, podemos separar. Recomendación: <strong>no cambiar</strong>, el ROI del cambio es marginal y el riesgo de perder la posición existente es real.</p>
-    </div>
-
-    <div class="card">
-      <h4>4. ¿Mismo menú en EN?</h4>
-      <p>El árbol de arriba aplica también al menú EN (menú 59 "Menú inglés"), con las URLs equivalentes en <code>/en/</code>. Es una regla dura del site (paridad estructural bilingüe), no una decisión.</p>
+      <span class="tag tag-hecho">Decidido</span>
+      <h4>3. ¿Mismo criterio en inglés?</h4>
+      <p>Sí. Cada bloque existe en ES y en EN, con los enlaces apuntando a las versiones inglesas de cada landing.</p>
     </div>
   </section>
 
