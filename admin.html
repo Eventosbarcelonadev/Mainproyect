@@ -949,6 +949,29 @@
       .grid { grid-template-columns: 1fr; gap: 12px; }
       .card-img { aspect-ratio: 2 / 1; }
     }
+
+    /* ---------- Banco de imágenes ---------- */
+    .banco-drop {
+      display: block;
+      border: 2px dashed var(--border); border-radius: 16px; background: #fff;
+      padding: 28px 20px; text-align: center; color: var(--gray); font-size: 14px; line-height: 1.5;
+      margin-bottom: 20px; cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .banco-drop strong { color: var(--dark); }
+    .banco-drop small { display: block; margin-top: 6px; font-size: 12px; }
+    .banco-drop.dragover { border-color: var(--accent); background: #fff7f4; color: var(--dark); }
+    .banco-drop input { display: none; }
+    .banco-progress { font-size: 13px; color: var(--gray); margin: -8px 0 16px; min-height: 18px; }
+    .banco-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .banco-grid .card-img { height: 150px; display: block; }
+    .banco-grid .card-body { padding: 12px 14px; }
+    .banco-grid .card-body h3 { font-size: 14px; word-break: break-word; }
+    .banco-grid .card-footer { flex-wrap: wrap; }
+    .banco-grid .card-footer .btn { flex: 1 1 auto; justify-content: center; }
+    @media (max-width: 640px) {
+      .banco-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .banco-grid .card-img { height: 120px; aspect-ratio: auto; }
+    }
   </style>
 </head>
 <body>
@@ -959,6 +982,7 @@
       <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
+      <button class="tab" data-tab="banco">Banco de imágenes</button>
     </div>
   </div>
 
@@ -1067,6 +1091,23 @@
       <div id="propuestas-loading" class="loading">Cargando…</div>
       <div id="propuestas-empty" class="empty hidden">No hay propuestas.</div>
       <div id="propuestas-table-wrap"></div>
+    </section>
+
+    <!-- TAB: BANCO DE IMÁGENES -->
+    <section id="tab-banco" class="tab-panel hidden">
+      <label class="banco-drop" id="banco-drop">
+        <input type="file" id="banco-file" accept="image/jpeg,image/png,image/webp" multiple>
+        <strong>Arrastra aquí las imágenes</strong> o haz clic para elegirlas
+        <small>Imágenes sueltas para propuestas, por ejemplo generadas con IA. No crean ningún show y el nombre del archivo queda como título.<br>Para usarlas, abre una propuesta en modo edición: salen en «Cambiar imagen» de cada show y en la imagen de cabecera.</small>
+      </label>
+      <div class="banco-progress" id="banco-progress"></div>
+      <div class="toolbar">
+        <input id="banco-q" type="search" placeholder="Buscar por nombre…">
+        <span id="banco-summary" style="color: var(--gray); font-size: 13px;"></span>
+      </div>
+      <div id="banco-loading" class="loading hidden">Cargando…</div>
+      <div id="banco-empty" class="empty hidden">Todavía no hay imágenes en el banco.</div>
+      <div id="banco-grid" class="grid banco-grid"></div>
     </section>
 
   </main>
@@ -1317,7 +1358,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -1360,6 +1401,13 @@
       if (!VALID_TABS.includes(tab)) tab = 'artistas';
       state.currentTab = tab;
       document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      // En móvil la barra de pestañas se desplaza: que la activa quede a la vista.
+      const tabsBar = $('main-tabs');
+      const activeTab = tabsBar.querySelector(`.tab[data-tab="${tab}"]`);
+      if (activeTab && tabsBar.scrollWidth > tabsBar.clientWidth) {
+        const a = activeTab.getBoundingClientRect(), b = tabsBar.getBoundingClientRect();
+        tabsBar.scrollLeft += a.left - b.left - (b.width - a.width) / 2;
+      }
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
       $('tab-' + tab).classList.remove('hidden');
     }
@@ -3696,7 +3744,122 @@
         }
       } else if (tab === 'propuestas') {
         loadPropuestas();
+      } else if (tab === 'banco') {
+        loadBanco();
       }
+    }
+
+    // ---------- BANCO DE IMÁGENES ----------
+    // Imágenes sueltas para propuestas conceptuales (Xavi, weekly sep 2026):
+    // se usan en el builder ("Cambiar imagen" de cada show y cabecera) sin
+    // dar de alta un show. Viven en Storage (artist-assets/banco/).
+    state.banco = { items: [], q: '' };
+
+    async function loadBanco() {
+      $('banco-loading').classList.remove('hidden');
+      $('banco-empty').classList.add('hidden');
+      try {
+        const r = await fetch('/api/admin?action=list-banco');
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error cargando el banco de imágenes');
+        state.banco.items = d.items || [];
+        renderBanco();
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        $('banco-loading').classList.add('hidden');
+      }
+    }
+
+    function renderBanco() {
+      const q = state.banco.q.toLowerCase();
+      const all = state.banco.items;
+      const items = all.filter(it => !q || String(it.nombre || '').toLowerCase().includes(q));
+      $('banco-summary').textContent = !all.length ? ''
+        : q ? `${items.length} de ${all.length}`
+        : `${all.length} ${all.length === 1 ? 'imagen' : 'imágenes'}`;
+      $('banco-empty').classList.toggle('hidden', all.length > 0);
+      $('banco-grid').innerHTML = items.map(it => `
+        <div class="card">
+          <a class="card-img" href="${escapeHtml(it.url)}" target="_blank" rel="noopener" style="background-image:url('${escapeHtml(it.url)}')" aria-label="Ver imagen"></a>
+          <div class="card-body">
+            <h3>${escapeHtml(it.nombre || 'Sin nombre')}</h3>
+            <div class="meta">${it.created_at ? new Date(it.created_at).toLocaleDateString('es-ES') : ''}</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary" data-banco-copy="${escapeHtml(it.url)}">Copiar enlace</button>
+            <button class="btn btn-danger-outline" data-banco-del="${escapeHtml(it.path)}">Borrar</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function uploadBancoFiles(files) {
+      const list = [...files].filter(f => /^image\/(jpeg|png|webp)$/.test(f.type));
+      if (!list.length) { showError('Solo se aceptan imágenes JPG, PNG o WebP.'); return; }
+      const prog = $('banco-progress');
+      let ok = 0, fail = 0;
+      for (let i = 0; i < list.length; i++) {
+        const f = list[i];
+        prog.textContent = `Subiendo ${i + 1} de ${list.length}: ${f.name}`;
+        try {
+          const dataUrl = await resizeImageFile(f, 1600, 0.85);
+          const r = await fetch('/api/admin?action=upload-banco-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataUrl, nombre: f.name.replace(/\.[^.]+$/, '') })
+          });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Error subiendo');
+          state.banco.items.unshift(d.item);
+          ok++;
+        } catch (e) {
+          fail++;
+          console.error('banco upload', f.name, e);
+        }
+      }
+      const subidas = `${ok} ${ok === 1 ? 'imagen subida' : 'imágenes subidas'}`;
+      prog.textContent = fail ? `${subidas}. ${fail} no se pudieron subir: revisa que sean imágenes válidas.` : `${subidas}.`;
+      renderBanco();
+    }
+
+    async function deleteBanco(path, btn) {
+      if (!confirm('¿Borrar esta imagen del banco? Si ya la usa alguna propuesta, allí dejará de verse.')) return;
+      btn.disabled = true;
+      try {
+        const r = await fetch('/api/admin?action=delete-banco-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error borrando');
+        state.banco.items = state.banco.items.filter(it => it.path !== path);
+        renderBanco();
+      } catch (e) {
+        showError(e.message);
+        btn.disabled = false;
+      }
+    }
+
+    {
+      const drop = $('banco-drop');
+      ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('dragover'); }));
+      ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('dragover'); }));
+      drop.addEventListener('drop', (e) => uploadBancoFiles(e.dataTransfer.files));
+      $('banco-file').addEventListener('change', (e) => { uploadBancoFiles(e.target.files); e.target.value = ''; });
+      $('banco-q').addEventListener('input', debounce(() => { state.banco.q = $('banco-q').value.trim(); renderBanco(); }, 150));
+      $('banco-grid').addEventListener('click', (e) => {
+        const copy = e.target.closest('[data-banco-copy]');
+        if (copy) {
+          navigator.clipboard.writeText(copy.dataset.bancoCopy).then(() => {
+            copy.textContent = 'Copiado';
+            setTimeout(() => { copy.textContent = 'Copiar enlace'; }, 1500);
+          });
+          return;
+        }
+        const del = e.target.closest('[data-banco-del]');
+        if (del) deleteBanco(del.dataset.bancoDel, del);
+      });
     }
 
     window.addEventListener('hashchange', applyHash);

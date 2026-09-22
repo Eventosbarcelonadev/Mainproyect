@@ -345,13 +345,21 @@ const PROPOSAL_DEFAULT_COVER = {
 // cliente en propuesta.html (hero_image_url elegida, la primera foto del primer
 // show o, sin shows, la portada por defecto de su categoría).
 async function attachProposalCovers(env, rows) {
-  const firstShowId = (p) => {
+  const firstShow = (p) => {
     let shows = p.shows;
     if (typeof shows === 'string') { try { shows = JSON.parse(shows); } catch { shows = []; } }
-    const first = Array.isArray(shows) ? shows[0] : null;
+    return Array.isArray(shows) ? shows[0] : null;
+  };
+  const firstShowId = (p) => {
+    const first = firstShow(p);
     return first && first.id ? String(first.id) : null;
   };
-  const ids = uniq(rows.filter(p => !p.hero_image_url).map(firstShowId));
+  // Imagen del banco elegida para ese show solo en esta propuesta.
+  const firstShowCustom = (p) => {
+    const first = firstShow(p);
+    return first && Array.isArray(first.customImageUrls) ? first.customImageUrls[0] || null : null;
+  };
+  const ids = uniq(rows.filter(p => !p.hero_image_url && !firstShowCustom(p)).map(firstShowId));
   const imageByShow = new Map();
   if (ids.length) {
     try {
@@ -368,7 +376,7 @@ async function attachProposalCovers(env, rows) {
     } catch (e) { /* best-effort: sin miniatura, la fila sigue con iniciales */ }
   }
   for (const p of rows) {
-    p.cover_url = p.hero_image_url || imageByShow.get(firstShowId(p))
+    p.cover_url = p.hero_image_url || firstShowCustom(p) || imageByShow.get(firstShowId(p))
       || PROPOSAL_DEFAULT_COVER[p.category] || PROPOSAL_DEFAULT_COVER.shows;
   }
 }
@@ -1845,6 +1853,102 @@ async function uploadShowImage(req, res, env) {
   return await patchShowImages(env, id, nextArray, res, publicUrl);
 }
 
+// ---------- banco de imágenes (propuestas conceptuales) ----------
+// Xavi (weekly sep 2026): imágenes sueltas, p. ej. generadas con IA (un artista
+// en un escenario árabe), para usar en una propuesta sin dar de alta un show
+// falso. Viven solo en Storage (artist-assets/banco/): el nombre del archivo
+// hace de título, así no hace falta tabla ni migración.
+const BANCO_BUCKET = 'artist-assets';
+const BANCO_PREFIX = 'banco';
+
+function bancoPublicUrl(env, path) {
+  return `${env.SUPABASE_URL}/storage/v1/object/public/${BANCO_BUCKET}/${path}`;
+}
+
+// "water-drummers-dubai-1790000000000.jpg" → "water drummers dubai"
+function bancoNombre(file) {
+  return String(file || '')
+    .replace(/-\d{10,}\.(jpe?g|png|webp|gif)$/i, '')
+    .replace(/\.(jpe?g|png|webp|gif)$/i, '')
+    .replace(/[-_]+/g, ' ')
+    .trim();
+}
+
+async function listBanco(req, res, env) {
+  const r = await fetch(`${env.SUPABASE_URL}/storage/v1/object/list/${BANCO_BUCKET}`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ prefix: BANCO_PREFIX, limit: 1000, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
+  });
+  if (!r.ok) return res.status(r.status).json({ error: 'storage: ' + (await r.text()).slice(0, 200) });
+  const rows = await r.json();
+  // Las carpetas vuelven con id null y Supabase deja ".emptyFolderPlaceholder".
+  const items = (Array.isArray(rows) ? rows : [])
+    .filter(o => o && o.id && o.name && !o.name.startsWith('.'))
+    .map(o => ({
+      path: `${BANCO_PREFIX}/${o.name}`,
+      url: bancoPublicUrl(env, `${BANCO_PREFIX}/${o.name}`),
+      nombre: bancoNombre(o.name),
+      created_at: o.created_at || null,
+      size: (o.metadata && o.metadata.size) || null
+    }));
+  return res.status(200).json({ items, total: items.length });
+}
+
+async function uploadBancoImage(req, res, env) {
+  const { dataUrl, nombre } = req.body || {};
+  if (!dataUrl || typeof dataUrl !== 'string') return res.status(400).json({ error: 'Missing dataUrl' });
+
+  const m = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(dataUrl);
+  if (!m) return res.status(400).json({ error: 'dataUrl debe ser image/jpeg|png|webp|gif en base64' });
+  const mime = m[1];
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[mime];
+  const buf = Buffer.from(m[2], 'base64');
+  if (buf.length > 15 * 1024 * 1024) return res.status(413).json({ error: 'Imagen supera 15MB' });
+
+  const slug = slugifyShowName(nombre || 'imagen');
+  const path = `${BANCO_PREFIX}/${slug}-${Date.now()}.${ext}`;
+  const up = await fetch(`${env.SUPABASE_URL}/storage/v1/object/${BANCO_BUCKET}/${path}`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': mime
+    },
+    body: buf
+  });
+  if (!up.ok) return res.status(up.status).json({ error: 'storage: ' + (await up.text()).slice(0, 200) });
+
+  return res.status(200).json({
+    success: true,
+    item: { path, url: bancoPublicUrl(env, path), nombre: bancoNombre(path.split('/').pop()) }
+  });
+}
+
+async function deleteBancoImage(req, res, env) {
+  const { path } = req.body || {};
+  if (!path || typeof path !== 'string') return res.status(400).json({ error: 'Missing path' });
+  // Solo se borra dentro de banco/: nunca fotos de shows ni de artistas.
+  if (!/^banco\/[a-z0-9._-]+$/i.test(path) || path.includes('..')) {
+    return res.status(400).json({ error: 'Ruta no permitida' });
+  }
+  const r = await fetch(`${env.SUPABASE_URL}/storage/v1/object/${BANCO_BUCKET}`, {
+    method: 'DELETE',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ prefixes: [path] })
+  });
+  if (!r.ok) return res.status(r.status).json({ error: 'storage: ' + (await r.text()).slice(0, 200) });
+  return res.status(200).json({ success: true });
+}
+
 // Propaga datos del artista a los shows vinculados que tengan los campos
 // vacíos. NO pisa shows con campo ya cargado. Campos propagados:
 //   - image_url + image_urls ← artista.fotos_urls
@@ -2645,6 +2749,7 @@ export default async function handler(req, res) {
       if (action === 'list-referencias') return listReferencias(req, res, env);
       if (action === 'gpt-catalogo') return gptCatalogo(req, res, env);
       if (action === 'gpt-show') return gptShow(req, res, env);
+      if (action === 'list-banco') return listBanco(req, res, env);
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
@@ -2654,6 +2759,8 @@ export default async function handler(req, res) {
       if (action === 'add-show') return addShow(req, res, env);
       if (action === 'delete-show') return deleteShow(req, res, env);
       if (action === 'upload-show-image') return uploadShowImage(req, res, env);
+      if (action === 'upload-banco-image') return uploadBancoImage(req, res, env);
+      if (action === 'delete-banco-image') return deleteBancoImage(req, res, env);
       if (action === 'upload-artista-photo') return uploadArtistaPhoto(req, res, env);
       if (action === 'set-show-images') return setShowImages(req, res, env);
       if (action === 'toggle-favorite') return toggleFavorite(req, res, env);
@@ -2672,7 +2779,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
