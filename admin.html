@@ -972,11 +972,53 @@
       .banco-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .banco-grid .card-img { height: 120px; aspect-ratio: auto; }
     }
+
+    /* =========================================================
+       RIDER VISUAL · ADMIN header y selects (2026-09-22)
+       Philippe: header como la home de eventosbarcelona.com (foto del
+       auditorio de fondo + logo en negativo) y la flecha de los select,
+       que quedaba pegada al borde redondeado.
+       ========================================================= */
+    :root { --topbar-h: 84px; }
+    .topbar {
+      min-height: var(--topbar-h);
+      padding: 12px 32px;
+      /* Velo oscuro como el header de la home. Por debajo de .62 las
+         pestañas bajan de AA sobre las luces más claras de la foto. */
+      background:
+        linear-gradient(180deg, rgba(22, 20, 19, .70), rgba(22, 20, 19, .62)),
+        url('/img/admin-header.jpg') center 30% / cover no-repeat,
+        var(--dark);
+    }
+    .topbar h1 { display: flex; align-items: center; gap: 12px; line-height: 0; }
+    .topbar h1 img { display: block; height: 54px; width: auto; }
+    .topbar h1 small { margin-left: 0; line-height: 1; color: rgba(255, 255, 255, .92); padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .3); }
+    .tab { color: rgba(255, 255, 255, .94); }
+    /* La cabecera de la tabla de Propuestas se pega justo debajo del header */
+    .p-row--head { top: var(--topbar-h); }
+
+    /* Flecha propia a 14px del borde, igual que el texto por la izquierda */
+    .toolbar select {
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 38px;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23161413' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center / 12px 8px;
+      cursor: pointer;
+    }
+
+    /* Tablet: las pestañas ya bajan a una segunda línea, logo más bajo */
+    @media (max-width: 900px) {
+      .topbar h1 img { height: 44px; }
+    }
+    @media (max-width: 700px) {
+      .topbar { min-height: 0; padding: 10px 16px; }
+      .topbar h1 img { height: 40px; }
+    }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <h1>Eventos Barcelona <small>admin</small></h1>
+    <h1><img src="/img/logo-eb-negativo.svg" alt="Eventos Barcelona" width="180" height="54"> <small>admin</small></h1>
     <div class="tabs" id="main-tabs">
       <button class="tab" data-tab="shows">Shows</button>
       <button class="tab" data-tab="artistas">Artistas</button>
