@@ -1640,6 +1640,14 @@
 
     .btn-pdf:hover { background: rgba(255,255,255,0.2); }
 
+    .btn-save {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn-save:hover { background: rgba(255,255,255,0.2); }
+    .btn-save:disabled { opacity: 0.6; cursor: progress; }
+
     .lang-toggle {
       display: inline-flex;
       border: 1px solid rgba(255,255,255,0.25);
@@ -2318,6 +2326,7 @@
         <button type="button" data-lang="es" onclick="toggleProposalLang('es')">ES</button>
         <button type="button" data-lang="en" onclick="toggleProposalLang('en')">EN</button>
       </div>
+      <button class="btn-admin btn-save" onclick="saveProposalNow()">Guardar</button>
       <button class="btn-admin btn-pdf" onclick="exportPDF()">Exportar PDF</button>
       <button class="btn-admin btn-approve" onclick="showApproveModal()">Aprobar y enviar</button>
     </div>
@@ -2894,6 +2903,11 @@
           category: p.category,
           concept: p.concept,
           shows: p.shows.map(s => s.id || s),
+          // Overrides guardados (name/description/priceNote/*En/extras/precio),
+          // alineados por índice con `shows` ANTES de filtrar los que ya no
+          // están en el catálogo activo. loadProposal los aplica al construir
+          // el estado, no después: ver applyShowOverrides.
+          showOverrides: p.shows.map(s => (s && typeof s === 'object') ? s : null),
           showContexts: {}
         };
         p.shows.forEach(s => {
@@ -2920,27 +2934,14 @@
         proposalState.conditions = Array.isArray(p.conditions) ? p.conditions : null;
         loadProposal(showsData, isAdmin);
 
-        // Restore custom prices y overrides admin (name/description/priceNote/
-        // contextLabel/extras). priceNote/name/description viven en el catalogo
-        // pero admin puede sobreescribirlos por propuesta (ej. "4 artistas" →
-        // "3 artistas + DJ"). Sin esto el PDF saldría con el texto del catálogo.
-        p.shows.forEach((s, i) => {
-          if (!proposalState.shows[i]) return;
-          if (s.currentPrice) proposalState.shows[i].currentPrice = s.currentPrice;
-          if (s.priceNote) proposalState.shows[i].priceNote = s.priceNote;
-          if (s.priceNoteEn) proposalState.shows[i].priceNoteEn = s.priceNoteEn;
-          if (s.name) proposalState.shows[i].name = s.name;
-          if (s.nameEn) proposalState.shows[i].nameEn = s.nameEn;
-          if (s.description) proposalState.shows[i].description = s.description;
-          if (s.descriptionEn) proposalState.shows[i].descriptionEn = s.descriptionEn;
-          if (Array.isArray(s.extras)) proposalState.shows[i].extras = s.extras;
-          if (Array.isArray(s.customImageUrls) && s.customImageUrls.length) {
-            proposalState.shows[i].customImageUrls = s.customImageUrls;
-            proposalState.shows[i].imageUrls = s.customImageUrls;
-            proposalState.shows[i].imageUrl = s.customImageUrls[0];
-          }
-        });
-        renderProposal();
+        // Los overrides admin (name/description/priceNote y sus *En, extras,
+        // precio, imágenes) ya vienen aplicados desde loadProposal. Antes se
+        // restauraban AQUÍ, después del primer render, y el renderProposal()
+        // siguiente arrancaba con flushPendingEditableEdits(): en modo admin
+        // ese flush leía los contenteditable recién pintados con el texto del
+        // catálogo y los volcaba encima de lo restaurado. Resultado: la
+        // propuesta se guardaba bien pero al reabrirla con ?admin=1 volvía "el
+        // texto inicial". Bug Xavi 2026-09-23.
         // showAdminBar incluye approved (mostrar toggle + PDF) y revision (todo).
         if (proposalState.showAdminBar) {
           document.getElementById('adminBar').classList.add('visible');
@@ -2950,6 +2951,31 @@
       } catch (err) {
         document.getElementById('proposalContent').innerHTML = '<div style="padding:100px;text-align:center;"><h2>Error al cargar propuesta</h2><p>' + err.message + '</p></div>';
       }
+    }
+
+    // Vuelca sobre un show recién sacado del catálogo lo que la propuesta
+    // tenía guardado. Tiene que correr ANTES del primer render (ver el
+    // comentario de loadProposalFromAPI): si el primer render pinta el texto
+    // del catálogo, el flush del siguiente render lo devuelve al estado y se
+    // pierde el trabajo del admin.
+    function applyShowOverrides(show, saved) {
+      if (!show || !saved || typeof saved !== 'object') return show;
+      if (saved.currentPrice) show.currentPrice = saved.currentPrice;
+      // `!= null` y no truthiness: '' es un campo vaciado a propósito y hay
+      // que respetarlo; con truthiness volvía el texto del catálogo.
+      if (saved.priceNote != null) show.priceNote = saved.priceNote;
+      if (saved.priceNoteEn != null) show.priceNoteEn = saved.priceNoteEn;
+      if (saved.name != null) show.name = saved.name;
+      if (saved.nameEn != null) show.nameEn = saved.nameEn;
+      if (saved.description != null) show.description = saved.description;
+      if (saved.descriptionEn != null) show.descriptionEn = saved.descriptionEn;
+      if (Array.isArray(saved.extras)) show.extras = saved.extras;
+      if (Array.isArray(saved.customImageUrls) && saved.customImageUrls.length) {
+        show.customImageUrls = saved.customImageUrls;
+        show.imageUrls = saved.customImageUrls;
+        show.imageUrl = saved.customImageUrls[0];
+      }
+      return show;
     }
 
     function loadProposal(data, isAdmin) {
@@ -2962,16 +2988,20 @@
       //   aunque el usuario abra con admin=1 (Spec Xavi 2026-05-29).
       proposalState.showAdminBar = isAdmin;
       proposalState.isAdmin = isAdmin && proposalState.status !== 'approved';
-      proposalState.shows = data.shows.map(id => {
+      const savedOverrides = Array.isArray(data.showOverrides) ? data.showOverrides : null;
+      proposalState.shows = data.shows.map((id, i) => {
         const show = SHOW_CATALOG[id];
         if (!show) return null;
-        return {
+        const built = {
           ...show,
           id: id,
           currentPrice: show.basePrice,
           contextLabel: (data.showContexts && data.showContexts[id]) ? data.showContexts[id].label : show.subcategory,
           extras: []
         };
+        // El índice casa porque showOverrides se construye con el mismo
+        // p.shows y sin filtrar; el .filter(Boolean) viene después.
+        return savedOverrides ? applyShowOverrides(built, savedOverrides[i]) : built;
       }).filter(Boolean);
 
       const catConfig = CATEGORY_CONFIG[data.category] || CATEGORY_CONFIG.shows;
@@ -2997,7 +3027,11 @@
       if (!show) return '';
       if (LANG === 'en') {
         const enKey = base + 'En'; // nameEn, descriptionEn, priceNoteEn, subcategoryEn
-        if (show[enKey] != null && String(show[enKey]).trim()) return show[enKey];
+        // undefined/null = el show no tiene traducción -> fallback al ES.
+        // '' = el admin vació el campo en la versión EN -> se respeta vacío.
+        // (/api/catalog-active ya resuelve el EN con fallback al ES, así que
+        // un '' aquí solo llega desde una edición guardada.)
+        if (show[enKey] != null) return show[enKey];
       }
       return show[base] || '';
     }
@@ -4080,10 +4114,20 @@
         if (e.key === 'Enter') this.blur();
       });
 
+      // Reutilizamos el <small> que ya estaba en el DOM en vez de fabricar
+      // uno nuevo: conserva el texto del idioma activo (priceNoteEn en EN) y
+      // sus atributos de edición. Recrearlo escribía siempre show.priceNote
+      // (ES) y rompía el contenteditable. Bug Xavi 2026-09-23.
+      const note = el.querySelector('small');
       el.innerHTML = '';
       el.appendChild(input);
-      el.appendChild(document.createElement('small'));
-      el.querySelector('small').textContent = show.priceNote;
+      if (note) {
+        el.appendChild(note);
+      } else {
+        const fresh = document.createElement('small');
+        fresh.textContent = localizedShowField(show, 'priceNote');
+        el.appendChild(fresh);
+      }
       input.focus();
       input.select();
     }
@@ -4143,9 +4187,16 @@
       // Si la propuesta est\u00e1 aprobada, congelar la edici\u00f3n: ocultar el bot\u00f3n
       // "Aprobar y enviar" (ya aprobada) y dejar el admin-bar con toggle ES/EN
       // + Exportar PDF \u00fanicamente. Spec Xavi 2026-05-29.
+      const frozen = (proposalState.status === 'approved');
       const approveBtn = document.querySelector('.btn-admin.btn-approve');
       if (approveBtn) {
-        approveBtn.style.display = (proposalState.status === 'approved') ? 'none' : '';
+        approveBtn.style.display = frozen ? 'none' : '';
+      }
+      // "Guardar" sigue la misma regla: si ya está aprobada no hay nada que
+      // guardar porque la edición está congelada.
+      const saveBtn = document.querySelector('.btn-admin.btn-save');
+      if (saveBtn) {
+        saveBtn.style.display = frozen ? 'none' : '';
       }
     }
 
@@ -4312,34 +4363,12 @@
       updateAdminBar();
       showToast('Guardando propuesta...', '');
 
-      // Build proposal payload
-      const payload = {
-        id: proposalState.proposalId || null,
-        status: 'approved',
-        client: proposalState.client,
-        event: proposalState.event,
-        category: proposalState.category,
-        concept: proposalState.concept,
-        heroSub: proposalState.heroSub,
-        heroSubEn: proposalState.heroSubEn,
-        shows: proposalState.shows.map(s => ({
-          id: s.id,
-          name: s.name,                // override admin del nombre del show
-          description: s.description,  // override admin de la descripción
-          currentPrice: s.currentPrice,
-          contextLabel: s.contextLabel,
-          priceNote: s.priceNote,
-          base_price: s.basePrice,
-          extras: Array.isArray(s.extras) ? s.extras : [],
-          customImageUrls: Array.isArray(s.customImageUrls) && s.customImageUrls.length ? s.customImageUrls : undefined
-        })),
-        globalMargin: proposalState.globalMargin,
-        hideSummary: proposalState.hideSummary,
-        heroImageUrl: proposalState.heroImageUrl || null,
-        conditions: getPersistableConditions(),
-        ghlContactId: proposalState.ghlContactId || null,
-        ghlOpportunityId: proposalState.ghlOpportunityId || null
-      };
+      // Mismo payload que el guardado de borrador (buildProposalPayload):
+      // antes se serializaba aparte y se dejaba fuera nameEn/descriptionEn/
+      // priceNoteEn y `lang`, así que aprobar una propuesta escrita en inglés
+      // borraba los textos EN (volvían a los del catálogo) y la guardaba como
+      // 'es'. Bug Xavi 2026-09-23.
+      const payload = buildProposalPayload('approved');
 
       try {
         const res = await fetch('/api/save-proposal', {
@@ -4408,11 +4437,15 @@
     // Guarda la propuesta actual (borrador) y devuelve su id. El PDF
     // server-side se renderiza desde la BD, así que necesita una fila en
     // `proposals` — en modo builder/auto la propuesta aún no existe.
-    async function saveProposalDraft(langOverride) {
+    // Fuente UNICA del payload que se manda a /api/save-proposal. La usan el
+    // botón Guardar, el cambio de idioma, Exportar PDF y Aprobar y enviar.
+    // Teníamos dos copias divergentes y la de aprobación se comía los campos
+    // EN y el idioma; con un solo builder no puede volver a pasar.
+    function buildProposalPayload(statusOverride, langOverride) {
       flushPendingEditableEdits(); // capturar ediciones inline antes de serializar
-      const payload = {
+      return {
         id: proposalState.proposalId || null,
-        status: proposalState.status || 'revision',
+        status: statusOverride || proposalState.status || 'revision',
         client: proposalState.client,
         event: proposalState.event,
         category: proposalState.category,
@@ -4421,8 +4454,8 @@
         heroSubEn: proposalState.heroSubEn,
         shows: proposalState.shows.map(s => ({
           id: s.id,
-          name: s.name,
-          description: s.description,
+          name: s.name,                // override admin del nombre del show
+          description: s.description,  // override admin de la descripción
           nameEn: s.nameEn,
           descriptionEn: s.descriptionEn,
           priceNoteEn: s.priceNoteEn,
@@ -4438,10 +4471,16 @@
         heroImageUrl: proposalState.heroImageUrl || null,
         conditions: getPersistableConditions(),
         ghlContactId: proposalState.ghlContactId || null,
-        ghlOpportunityId: proposalState.ghlOpportunityId || null
+        ghlOpportunityId: proposalState.ghlOpportunityId || null,
+        // El idioma en el que se está redactando. Sin esto el backend lo
+        // guardaba como 'es' y la propuesta escrita en inglés se le abría al
+        // cliente en castellano.
+        lang: (langOverride === 'en' || langOverride === 'es') ? langOverride : LANG
       };
-      // Persistir el idioma: el override (p.ej. al cambiar de idioma) o el actual.
-      payload.lang = (langOverride === 'en' || langOverride === 'es') ? langOverride : LANG;
+    }
+
+    async function saveProposalDraft(langOverride) {
+      const payload = buildProposalPayload(null, langOverride);
       const r = await fetch('/api/save-proposal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4451,6 +4490,36 @@
       if (!data.success || !data.id) throw new Error(data.error || 'Error al guardar la propuesta');
       proposalState.proposalId = data.id;
       return data.id;
+    }
+
+    // Guardar sin aprobar ni generar PDF. Hasta ahora la única forma de
+    // persistir las ediciones inline era Exportar PDF, cambiar de idioma o
+    // aprobar: si Xavi editaba y recargaba, perdía el trabajo.
+    async function saveProposalNow() {
+      if (!proposalState.isAdmin) return;
+      const btn = document.querySelector('.btn-admin.btn-save');
+      const hadId = !!proposalState.proposalId;
+      if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+      try {
+        const id = await saveProposalDraft();
+        // Si la propuesta acababa de nacer en el builder, dejamos su id en la
+        // URL para que recargar no devuelva al formulario vacío.
+        if (!hadId && id) {
+          const params = new URLSearchParams(location.search);
+          params.delete('mode');
+          params.delete('data');
+          params.set('id', id);
+          params.set('admin', '1');
+          params.set('lang', LANG);
+          history.replaceState(null, '', `${location.pathname}?${params.toString()}${location.hash}`);
+        }
+        showToast('Cambios guardados ✓', 'success');
+      } catch (e) {
+        console.error('saveProposalNow error:', e);
+        showToast('No se pudo guardar: ' + e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Guardar'; }
+      }
     }
 
     async function exportPDF() {
