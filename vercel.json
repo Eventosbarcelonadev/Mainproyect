@@ -147,6 +147,22 @@
     {
       "source": "/contacto-opciones/b",
       "destination": "/OUTPUTS/eventos-barcelona/contacto-opcion-b.html"
+    },
+    {
+      "source": "/home-opciones",
+      "destination": "/OUTPUTS/eventos-barcelona/home-opciones.html"
+    },
+    {
+      "source": "/home-opciones/",
+      "destination": "/OUTPUTS/eventos-barcelona/home-opciones.html"
+    },
+    {
+      "source": "/home-opciones/a",
+      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-a.html"
+    },
+    {
+      "source": "/home-opciones/b",
+      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-b.html"
     }
   ],
   "headers": [
