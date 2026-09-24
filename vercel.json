@@ -163,14 +163,6 @@
     {
       "source": "/home-opciones/b",
       "destination": "/OUTPUTS/eventos-barcelona/home-opcion-b.html"
-    },
-    {
-      "source": "/home-opciones/c",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-c.html"
-    },
-    {
-      "source": "/home-opciones/d",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-d.html"
     }
   ],
   "headers": [
