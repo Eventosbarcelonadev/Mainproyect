@@ -149,20 +149,12 @@
       "destination": "/OUTPUTS/eventos-barcelona/contacto-opcion-b.html"
     },
     {
-      "source": "/home-opciones",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opciones.html"
+      "source": "/home-nueva",
+      "destination": "/OUTPUTS/eventos-barcelona/home-nueva.html"
     },
     {
-      "source": "/home-opciones/",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opciones.html"
-    },
-    {
-      "source": "/home-opciones/a",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-a.html"
-    },
-    {
-      "source": "/home-opciones/b",
-      "destination": "/OUTPUTS/eventos-barcelona/home-opcion-b.html"
+      "source": "/home-nueva/",
+      "destination": "/OUTPUTS/eventos-barcelona/home-nueva.html"
     }
   ],
   "headers": [
@@ -182,6 +174,28 @@
           "value": "Content-Type"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/home-opciones",
+      "destination": "/home-nueva",
+      "permanent": false
+    },
+    {
+      "source": "/home-opciones/",
+      "destination": "/home-nueva",
+      "permanent": false
+    },
+    {
+      "source": "/home-opciones/a",
+      "destination": "/home-nueva",
+      "permanent": false
+    },
+    {
+      "source": "/home-opciones/b",
+      "destination": "/home-nueva",
+      "permanent": false
     }
   ]
 }
