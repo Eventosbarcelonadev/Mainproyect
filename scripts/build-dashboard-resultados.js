@@ -106,12 +106,15 @@ ${chart('Leads nuevos', 'ghl', M.map(m => ({ m, v: D.ghl.months[m].total, url: g
 // ---------- 3. Keywords ----------
 const posClass = p => p === null ? 'nd' : p <= 10 ? 'p-top' : p <= 20 ? 'p-mid' : 'p-low';
 const KWLAB = { 'organizacion de eventos barcelona': 'organización de eventos barcelona', 'espectaculos para eventos corporativos': 'espectáculos para eventos corporativos' };
-const kwRows = D.keywords.map(k => {
+// Ordenadas por impresiones totales del periodo (de más a menos)
+const kwImp = k => M.reduce((a, m) => a + D.gsc[m].keywords[k].impressions, 0);
+const kwOrden = [...D.keywords].sort((a, b) => kwImp(b) - kwImp(a));
+const kwRows = kwOrden.map(k => {
   const first = D.gsc[M[0]].keywords[k].position, last = D.gsc[M[M.length - 1]].keywords[k].position;
   const d = (first !== null && last !== null) ? +(first - last).toFixed(1) : null;
   const dTxt = d === null ? '<span class="nd">–</span>' : `<b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '▲ ' : d < 0 ? '▼ ' : ''}${n1(Math.abs(d))}</b>`;
   const label = KWLAB[k] || k;
-  return `<tr><td>${esc(label)}${k === 'eventos barcelona' ? ' <small class="hint">marca y búsqueda de ocio</small>' : ''}</td>${M.map(m => {
+  return `<tr><td>${esc(label)}<small class="hint">${n0(kwImp(k))} impresiones en ${M.length} meses${k === 'eventos barcelona' ? ' · marca y búsqueda de ocio' : ''}</small></td>${M.map(m => {
     const x = D.gsc[m].keywords[k];
     return `<td class="num">${x.position === null ? '<span class="nd">sin datos</span>' : link(gscUrl(m, label), `<span class="${posClass(x.position)}">${n1(x.position)}</span>`, `Abrir Search Console: "${label}", ${mesNombre(m)}`)}<small class="yoy">${n0(x.impressions)} imp · ${n0(x.clicks)} clics</small></td>`;
   }).join('')}<td class="num">${dTxt}</td></tr>`;
@@ -267,7 +270,7 @@ ${tablaMeses}
 ${charts}
 
 <h2>Posiciones de las keywords principales</h2>
-<p class="h2-sub">Posición media en Google de cada búsqueda en el mes (1 es el primer resultado). Verde: primera página. Ámbar: segunda página. Gris: más abajo. Debajo, impresiones y clics de esa búsqueda.</p>
+<p class="h2-sub">Ordenadas de más a menos impresiones entre ${mesNombre(M[0])} y ${mesNombre(M[M.length - 1])}. Posición media en Google de cada búsqueda en el mes (1 es el primer resultado). Verde: primera página. Ámbar: segunda página. Gris: más abajo. Debajo, impresiones y clics de esa búsqueda.</p>
 ${tablaKw}
 
 <h2>Leads</h2>
