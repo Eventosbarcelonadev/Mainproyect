@@ -128,3 +128,5 @@ Flujo real para un caso de éxito:
 - [ ] SEO: focus keyphrase, seo_title, meta_desc, slug limpio, ≥3 enlaces internos (200)
 - [ ] Versión EN creada y enlazada por WPML
 - [ ] Preview revisada por humano antes de publicar
+- [ ] Tras publicar: `node scripts/bing-submit.js` (avisa a Bing/Copilot de todo lo modificado desde el último envío;
+      el IndexNow de Yoast falla a ratos, 0 envíos en julio 2026). Para una URL suelta: `node scripts/bing-submit.js <url>`

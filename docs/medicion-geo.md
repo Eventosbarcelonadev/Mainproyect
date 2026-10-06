@@ -1,6 +1,6 @@
 # Medición de performance GEO · Eventos Barcelona
 
-Última actualización: 2026-08-24
+Última actualización: 2026-10-06
 
 ## 1. Lo que Google lanzó (sí, es cierto)
 
@@ -33,6 +33,33 @@ Google ha dicho que irá añadiendo métricas según feedback. Hoy es una vista 
 
 Si está activo, copiar a mano cada quincena al campo `gsc_generative_ai` de `data/geo-report.json`
 (impresiones totales + top páginas). No hay automatización posible mientras siga sin API.
+
+## 1b. Bing Webmaster Tools · AI Performance (citas en Copilot)
+
+Alta hecha el 2026-10-06: `bing.com/webmasters` con "Sign in with Google" de `dev@eventosbarcelona.com`,
+sitio importado desde Search Console (verificado sin tocar web ni DNS).
+
+El informe **AI Performance** (BETA) cuenta cuántas veces Copilot y los partners de Bing **citan** una página
+de EB en sus respuestas, con las consultas que lo provocan y las páginas citadas. Es el único dato de citas
+en un asistente que tenemos de primera mano: GA4 solo ve las citas en las que el usuario hace clic.
+
+| Aspecto | Estado |
+|---|---|
+| Métricas | Citas totales y páginas citadas, por día. Consultas ("grounding queries") con intención y tema |
+| API | **No.** La API de Bing Webmaster no lo expone (probado el 2026-10-06). Se copia a mano o con el botón Download |
+| Línea base | 3 meses (6 jul a 5 oct 2026): **441 citas**. Julio 94 · agosto 91 · **septiembre 229**. 32 páginas citadas |
+| Páginas más citadas | `/eventos-mice-que-es/`, `/espacios-eventos-barcelona/`, fiesta temática oeste, `/en/organize-sales-convention/` |
+
+Para que Bing (y por tanto Copilot) vea el contenido nuevo cuanto antes, `scripts/bing-submit.js` le envía las
+URLs modificadas por la API (no depende del IndexNow de Yoast, que falla a ratos):
+
+```bash
+node scripts/bing-submit.js                    # lo modificado desde el último envío
+node scripts/bing-submit.js --since 2026-09-01 # desde una fecha
+node scripts/bing-submit.js <url> [url...]     # URLs concretas · --dry-run para probar
+```
+
+Clave en `.env` (`BING_WEBMASTER_API_KEY`), cuota 10.000 URLs/día, estado en `data/bing-submit-state.json`.
 
 ## 2. Lo que sí podemos medir hoy por API (implementado)
 
@@ -176,4 +203,5 @@ Refuerza la regla de bilingüe obligatorio.
 - **Quincenal**, junto con la actualización del dashboard de Xavi: correr `geo-report.js 90`
   (que ya alimenta la serie histórica), volcar el delta al dashboard.
 - **Mensual**: correr `geo-report.js 365`, revisar tendencia y confirmar que la infra GEO sigue en pie.
+- **Quincenal**: copiar de Bing Webmaster → AI Performance las citas del periodo y las páginas más citadas.
 - **Cuando GSC active el informe**: añadir impresiones de IA generativa al JSON y al dashboard.
