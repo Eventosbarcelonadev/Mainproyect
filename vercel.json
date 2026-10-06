@@ -69,6 +69,14 @@
       "destination": "/dashboard-metricas.html"
     },
     {
+      "source": "/dashboard",
+      "destination": "/dashboard-resultados.html"
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/dashboard-resultados.html"
+    },
+    {
       "source": "/xavi",
       "destination": "/dashboard-xavi.html"
     },
