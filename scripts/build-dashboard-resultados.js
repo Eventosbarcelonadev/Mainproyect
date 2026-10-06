@@ -110,7 +110,8 @@ const KWLAB = { 'organizacion de eventos barcelona': 'organización de eventos b
 const kwImp = k => M.reduce((a, m) => a + D.gsc[m].keywords[k].impressions, 0);
 const kwOrden = [...D.keywords].sort((a, b) => kwImp(b) - kwImp(a));
 const kwRows = kwOrden.map(k => {
-  const first = D.gsc[M[0]].keywords[k].position, last = D.gsc[M[M.length - 1]].keywords[k].position;
+  // Comparativo: mes anterior al último frente al último (ago → sep)
+  const first = D.gsc[M[M.length - 2]].keywords[k].position, last = D.gsc[M[M.length - 1]].keywords[k].position;
   const d = (first !== null && last !== null) ? +(first - last).toFixed(1) : null;
   const dTxt = d === null ? '<span class="nd">–</span>' : `<b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '▲ ' : d < 0 ? '▼ ' : ''}${n1(Math.abs(d))}</b>`;
   const label = KWLAB[k] || k;
@@ -120,7 +121,7 @@ const kwRows = kwOrden.map(k => {
   }).join('')}<td class="num">${dTxt}</td></tr>`;
 }).join('\n');
 const tablaKw = `<div class="t-scroll"><table class="tbl kw">
-<thead><tr><th>Keyword</th>${M.map(m => `<th class="num">${mesNombre(m)}</th>`).join('')}<th class="num">${mesCorto(M[0])} → ${mesCorto(M[M.length - 1])}</th></tr></thead>
+<thead><tr><th>Keyword</th>${M.map(m => `<th class="num">${mesNombre(m)}</th>`).join('')}<th class="num">${mesCorto(M[M.length - 2])} → ${mesCorto(M[M.length - 1])}</th></tr></thead>
 <tbody>${kwRows}</tbody></table></div>`;
 
 // ---------- 4. Leads ----------
@@ -145,9 +146,8 @@ const tablaLeads = `<div class="t-scroll"><table class="tbl">
 </tbody></table></div>`;
 
 // ---------- Cabecera y resumen ----------
-const f = M[0], l = M[M.length - 1];
+const f = M[M.length - 2], l = M[M.length - 1]; // los resúmenes comparan el último mes con el anterior
 const sumLeads = M.reduce((a, m) => a + L(m).total, 0);
-const totalSesiones = M.reduce((a, m) => a + D.ga4[m].sessions, 0);
 const kpi = (lab, val, sub, url, srcK) => `<div class="kpi"><div class="k-lab">${lab}</div><div class="k-val">${url ? link(url, val, `Abrir ${srcName[srcK]}`) : val}</div><div class="k-sub">${sub}</div></div>`;
 
 const html = `<!doctype html>
@@ -257,8 +257,8 @@ footer code{background:#f2efe7;padding:1px 5px;border-radius:2px;font-size:11.5p
 <div class="kpis">
 ${kpi(`Impresiones ${mesCorto(l)}`, n0(D.gsc[l].impressions), `${mesCorto(f)}: ${n0(D.gsc[f].impressions)}`, gscUrl(l), 'gsc')}
 ${kpi(`Clics desde Google ${mesCorto(l)}`, n0(D.gsc[l].clicks), `${mesCorto(f)}: ${n0(D.gsc[f].clicks)}`, gscUrl(l), 'gsc')}
-${kpi(`Visitas ${mesCorto(l)}`, n0(D.ga4[l].sessions), `${n0(totalSesiones)} en los ${M.length} meses`, ga4Url(l), 'ga4')}
-${kpi(`Leads ${mesCorto(l)}`, n0(L(l).total), `${n0(sumLeads)} en los ${M.length} meses`, ghlUrl, 'ghl')}
+${kpi(`Visitas ${mesCorto(l)}`, n0(D.ga4[l].sessions), `${mesCorto(f)}: ${n0(D.ga4[f].sessions)}`, ga4Url(l), 'ga4')}
+${kpi(`Leads ${mesCorto(l)}`, n0(L(l).total), `${mesCorto(f)}: ${n0(L(f).total)}`, ghlUrl, 'ghl')}
 </div>
 
 <h2>Mes a mes</h2>
