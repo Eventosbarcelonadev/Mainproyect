@@ -33,6 +33,9 @@ const GHL_API = 'https://services.leadconnectorhq.com';
 // Custom field url_generador_propuesta en el modelo OPPORTUNITY (pipeline
 // Clientes). Es el link que Xavi abre desde GHL para armar/editar la propuesta.
 const OPP_URL_GENERADOR_PROPUESTA = 'LJMLhmfJN6W9xHZFXVpB';
+// contact.contact_type (SINGLE_OPTIONS). Solo los clientes llevan propuesta.
+const GHL_CONTACT_TYPE_FIELD = '0LBySc0XI7qKiPQVrQs9';
+const NON_CLIENT_CONTACT_TYPES = new Set(['Artista', 'Proveedor', 'Freelance', 'Venue', 'Partner']);
 
 // IDs de custom fields GHL (sync admin↔GHL en cada CRUD). Spec en memoria
 // project_ghl_spec.md. Si añades un campo nuevo, actualiza también ese memo.
@@ -531,14 +534,47 @@ async function ensureProposalForLead(req, res, env) {
   //    opp (delay habitual 1-3s), la primera búsqueda devuelve vacío. Segundo
   //    intento con 3.5s de espera cubre el 95% de casos y evita el barrido
   //    diario para escrituras urgentes.
-  if (!opportunityId) {
+  //    Entre varias opps se queda con la del pipeline Clientes: antes cogía la
+  //    primera, y si era la de Proveedores le escribía ahí la URL.
+  const CLIENTES = env.GHL_PIPELINE_CLIENTES;
+  let oppPipelineId = '';
+  let otherPipelineOpps = 0;
+  const pickOpp = (opps) => {
+    const list = Array.isArray(opps) ? opps : [];
+    const mine = CLIENTES ? list.find(x => x.pipelineId === CLIENTES) : list[0];
+    otherPipelineOpps = CLIENTES ? list.filter(x => x.pipelineId !== CLIENTES).length : 0;
+    if (mine) { opportunityId = mine.id; oppPipelineId = mine.pipelineId || ''; }
+    return list.length;
+  };
+  if (opportunityId) {
+    const go = await ghlFetch('GET', `/opportunities/${encodeURIComponent(opportunityId)}`, env);
+    if (go.ok) oppPipelineId = parse(go).opportunity?.pipelineId || '';
+  } else {
     const o = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
-    if (o.ok) opportunityId = (parse(o).opportunities || [])[0]?.id || '';
+    const found = o.ok ? pickOpp(parse(o).opportunities) : 0;
+    if (!found) {
+      await new Promise(r => setTimeout(r, 3500));
+      const o2 = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
+      if (o2.ok) pickOpp(parse(o2).opportunities);
+    }
   }
-  if (!opportunityId) {
-    await new Promise(r => setTimeout(r, 3500));
-    const o2 = await ghlFetch('GET', `/opportunities/search?location_id=${env.GHL_LOC}&contact_id=${encodeURIComponent(contactId)}`, env);
-    if (o2.ok) opportunityId = (parse(o2).opportunities || [])[0]?.id || '';
+
+  // 2b. Solo los clientes llevan propuesta (weekly 7-oct, Xavi: "no puede ser
+  //     que me genere una propuesta de proveedores"). Entre el 14-sep y el
+  //     7-oct se crearon 25 propuestas vacías para proveedores y artistas que
+  //     escribían a hola@. Se corta aquí, en el servidor, para que dé igual
+  //     quién llame (n8n, workflows de GHL, el barrido). Se responde 200 para
+  //     que n8n no lo trate como error y reintente.
+  //     Sin ninguna opp todavía se sigue creando como antes: n8n a veces llama
+  //     antes de crear la opp y no queremos perder leads.
+  const ctField = (contact?.customFields || []).find(f => f.id === GHL_CONTACT_TYPE_FIELD);
+  const contactType = ctField ? (Array.isArray(ctField.value) ? ctField.value[0] : ctField.value) : '';
+  let notClient = '';
+  if (NON_CLIENT_CONTACT_TYPES.has(contactType)) notClient = `contact_type=${contactType}`;
+  else if (CLIENTES && oppPipelineId && oppPipelineId !== CLIENTES) notClient = 'opportunity_not_in_clientes_pipeline';
+  else if (CLIENTES && !oppPipelineId && otherPipelineOpps > 0) notClient = 'contact_only_in_other_pipelines';
+  if (notClient) {
+    return res.status(200).json({ success: true, skipped: 'not_a_client', reason: notClient, contactId, opportunityId: opportunityId || null });
   }
 
   // 3. ¿Ya existe propuesta para este lead? (por ghl_contact_id o email)
@@ -2730,6 +2766,7 @@ export default async function handler(req, res) {
     SUPABASE_KEY: trim(process.env.SUPABASE_SERVICE_KEY),
     GHL_TOKEN: trim(process.env.GHL_API_KEY),
     GHL_LOC: trim(process.env.GHL_LOCATION_ID),
+    GHL_PIPELINE_CLIENTES: trim(process.env.GHL_PIPELINE_CLIENTES),
     GPT_TOKEN: trim(process.env.GPT_ACTION_TOKEN)
   };
   if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
