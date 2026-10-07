@@ -22,7 +22,8 @@ const DEF_ES = [
   'El cliente debe proporcionar comida y agua para todo el equipo artístico, técnico y de coordinación',
   'IVA del 21% no incluido',
   'Cancelación: 50% de cargo en la última semana, 100% en las últimas 48 horas',
-  'Pago: 100% a la aceptación salvo acuerdo previo con Eventos Barcelona'
+  'Pago: 100% a la aceptación salvo acuerdo previo con Eventos Barcelona',
+  'La disponibilidad del show depende del momento de la confirmación'
 ];
 const DEF_EN = [
   'Pre-booking valid for 5 days, after which the reservation may be released',
@@ -30,7 +31,8 @@ const DEF_EN = [
   'The client must provide food and water for the full artistic, technical and coordination team',
   '21% VAT not included',
   'Cancellation: 50% charge in the last week, 100% in the last 48 hours',
-  'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona'
+  'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona',
+  'The availability of the show depends on the moment of the confirmation'
 ];
 const norm = a => JSON.stringify((a || []).map(s => String(s == null ? '' : s).trim()));
 const NORM_ES = norm(DEF_ES), NORM_EN = norm(DEF_EN);

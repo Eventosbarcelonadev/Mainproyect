@@ -2497,7 +2497,9 @@
           'El cliente debe proporcionar comida y agua para todo el equipo artístico, técnico y de coordinación',
           'IVA del 21% no incluido',
           'Cancelación: 50% de cargo en la última semana, 100% en las últimas 48 horas',
-          'Pago: 100% a la aceptación salvo acuerdo previo con Eventos Barcelona'
+          'Pago: 100% a la aceptación salvo acuerdo previo con Eventos Barcelona',
+          // Weekly 7-oct (Xavi): la disponibilidad se confirma al cerrar, no al enviar la propuesta.
+          'La disponibilidad del show depende del momento de la confirmación'
         ],
         ctaDownloadPdf: 'Descargar PDF',
         ctaPdfGenerating: 'Generando PDF\u2026',
@@ -2533,7 +2535,9 @@
           'The client must provide food and water for the full artistic, technical and coordination team',
           '21% VAT not included',
           'Cancellation: 50% charge in the last week, 100% in the last 48 hours',
-          'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona'
+          'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona',
+          // Texto de Xavi, el que ya añadía a mano en sus propuestas en inglés.
+          'The availability of the show depends on the moment of the confirmation'
         ],
         ctaDownloadPdf: 'Download PDF',
         ctaPdfGenerating: 'Generating PDF\u2026',
@@ -3629,7 +3633,7 @@
     }
     function addCondition() {
       ensureConditionsArr();
-      proposalState.conditions.push('Nueva condición — haz click para editar');
+      proposalState.conditions.push('Nueva condición: haz clic para editar');
       renderProposal();
       if (proposalState.isAdmin) {
         document.getElementById('adminBar').classList.add('visible');
