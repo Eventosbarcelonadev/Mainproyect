@@ -1933,8 +1933,9 @@
     @media (max-width: 600px) {
       .nav { padding: 16px 20px; }
       .nav-logo img { height: 38px; }
-      .nav .btn-pdf-client { display: none; }   /* sigue disponible en el cierre */
-      .nav .btn-approve-client { padding: 9px 16px; font-size: 13px; white-space: nowrap; }
+      /* 2026-10-07: retirado el cierre con "Aprobar presupuesto"; este botón es
+         ahora el único acceso al PDF, así que se ve también en móvil. */
+      .nav .btn-pdf-client { padding: 9px 16px; font-size: 13px; white-space: nowrap; }
       .hero-image-change { padding: 7px 10px; font-size: 11px; }
     }
 
@@ -2498,12 +2499,9 @@
           'Cancelación: 50% de cargo en la última semana, 100% en las últimas 48 horas',
           'Pago: 100% a la aceptación salvo acuerdo previo con Eventos Barcelona'
         ],
-        ctaSub: 'Acepta esta propuesta o cuéntanos qué necesitas para tu evento',
-        ctaConfirm: 'Aprobar presupuesto',
-        ctaConfirmed: 'Presupuesto aprobado',
         ctaDownloadPdf: 'Descargar PDF',
         ctaPdfGenerating: 'Generando PDF\u2026',
-        ctaConfirmError: 'No se pudo aprobar. Intenta de nuevo en unos minutos.',
+        ctaPdfError: 'No se pudo generar el PDF. Inténtalo de nuevo en unos minutos.',
         footerTitle: 'Tu equipo de gestión de eventos',
         roleDirector: 'Director de Eventos y Co-Fundador',
         roleManager: 'Event Manager',
@@ -2537,12 +2535,9 @@
           'Cancellation: 50% charge in the last week, 100% in the last 48 hours',
           'Payment: 100% on acceptance unless otherwise agreed with Eventos Barcelona'
         ],
-        ctaSub: 'Accept this proposal or tell us what you need for your event',
-        ctaConfirm: 'Approve budget',
-        ctaConfirmed: 'Budget approved',
         ctaDownloadPdf: 'Download PDF',
         ctaPdfGenerating: 'Generating PDF\u2026',
-        ctaConfirmError: 'Could not approve. Please try again in a few minutes.',
+        ctaPdfError: 'Could not generate the PDF. Please try again in a few minutes.',
         footerTitle: 'Your event management team',
         roleDirector: 'Head of Events & Co-Founder',
         roleManager: 'Event Manager',
@@ -2562,7 +2557,6 @@
         heroSub: 'Professional dance shows blending elegance, energy and emotion. Each show is designed to connect with your audience and turn your event into a memorable experience.',
         conceptTitle: 'The language of the body',
         conceptText: 'A curated selection of dance shows combining flawless technique with stage presence. From the passion of flamenco to the energy of hip-hop, every piece is choreographed to complement your event.',
-        ctaTitle: 'Ready to get your guests dancing?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05295-scaled.jpg'
       },
       musica: {
@@ -2570,7 +2564,6 @@
         heroSub: 'Artists and musicians who transform your event\'s atmosphere with unique live performances. From solo instrumentalists to full audiovisual shows.',
         conceptTitle: 'Sound that moves',
         conceptText: 'A sonic experience designed for every moment of your event: the welcome, dinner, the party. Each act is crafted to complement the atmosphere you want to create.',
-        ctaTitle: 'Ready to feel the music?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/GB3.jpg'
       },
       circo: {
@@ -2578,7 +2571,6 @@
         heroSub: 'Contemporary circus shows that blend athleticism, art and technology. Moments of wonder your guests will never forget.',
         conceptTitle: 'Defying gravity',
         conceptText: 'Acrobats, jugglers and aerialists who create moments of tensión, beauty and surprise. Each show is adapted to the space and format of your event.',
-        ctaTitle: 'Ready to be amazed?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/MG_0093.jpg'
       },
       wow: {
@@ -2586,7 +2578,6 @@
         heroSub: 'Visual and artistic experiences that defy the conventional. Shows that deliver the surprise factor and create viral moments at your event.',
         conceptTitle: 'The never-seen-before',
         conceptText: 'Artists and technologies that break the rules of traditional entertainment. From holograms to fire painting, every show is designed to leave a mark.',
-        ctaTitle: 'Looking for the WOW factor?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/led-dancers-eventos-barcelona-2.jpg'
       },
       shows: {
@@ -2594,7 +2585,6 @@
         heroSub: 'A personalized selection of shows across disciplines, designed specifically for your event. Every show complements the artistic concept we\'ve created for you.',
         conceptTitle: 'Designed for you',
         conceptText: 'We combine the best artistic disciplines to build a bespoke show programme. Each act is picked for how well it pairs with the others and its ability to move your audience.',
-        ctaTitle: 'Ready to get started?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/Captura-de-Pantalla-2025-04-06-a-las-11.40.23.png'
       }
     };
@@ -2607,7 +2597,6 @@
         heroSub: 'Espectáculos de danza profesional que fusionan elegancia, energía y emoción. Cada show está diseñado para conectar con tu audiencia y transformar tu evento en una experiencia memorable.',
         conceptTitle: 'El lenguaje del cuerpo',
         conceptText: 'Una selección de espectáculos de danza que combinan técnica impecable con presencia escénica. Desde la pasión del flamenco hasta la energía del hip-hop, cada show está coreografiado para complementar tu evento.',
-        ctaTitle: '¿Quieres que tus invitados bailen?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05295-scaled.jpg'
       },
       musica: {
@@ -2617,7 +2606,6 @@
         heroSub: 'Artistas y músicos que transforman el ambiente de tu evento con actuaciones en vivo únicas. Desde instrumentistas solistas hasta shows audiovisuales completos.',
         conceptTitle: 'Sonido que emociona',
         conceptText: 'Una experiencia sonora diseñada para cada momento de tu evento: la bienvenida, la cena, la fiesta. Cada actuación está pensada para complementar la atmósfera que quieres crear.',
-        ctaTitle: '¿Listo para sentir la música?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/04/GB3.jpg'
       },
       circo: {
@@ -2627,7 +2615,6 @@
         heroSub: 'Espectáculos de circo contemporáneo que combinan atletismo, arte y tecnología. Momentos de asombro que tus invitados no olvidarán.',
         conceptTitle: 'Desafiando la gravedad',
         conceptText: 'Acróbatas, malabaristas y artistas aéreos que crean momentos de tensión, belleza y sorpresa. Cada show está adaptado al espacio y al formato de tu evento.',
-        ctaTitle: '¿Preparado para el asombro?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/08/MG_0093.jpg'
       },
       wow: {
@@ -2637,7 +2624,6 @@
         heroSub: 'Experiencias visuales y artísticas que desafían lo convencional. Shows que generan el factor sorpresa y crean momentos virales en tu evento.',
         conceptTitle: 'Lo nunca visto',
         conceptText: 'Artistas y tecnologías que rompen las reglas del espectáculo tradicional. Desde hologramas hasta pintura con fuego, cada show está diseñado para dejar huella.',
-        ctaTitle: '¿Quieres el factor WOW?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2024/03/led-dancers-eventos-barcelona-2.jpg'
       },
       shows: {
@@ -2647,7 +2633,6 @@
         heroSub: 'Una selección personalizada de espectáculos de diferentes disciplinas, diseñada específicamente para tu evento. Cada show complementa el concepto artístico que hemos creado para ti.',
         conceptTitle: 'Diseñado para ti',
         conceptText: 'Combinamos las mejores disciplinas artísticas para crear un programa de espectáculos a medida. Cada show está seleccionado por su complementariedad y su capacidad de emocionar a tu audiencia.',
-        ctaTitle: '¿Listos para empezar?',
         defaultImage: 'https://www.eventosbarcelona.com/wp-content/uploads/2025/06/Captura-de-Pantalla-2025-04-06-a-las-11.40.23.png'
       }
     };
@@ -3185,7 +3170,7 @@
             <div class="nav-right">
               ${isAdmin
                 ? `<button class="hero-image-change" onclick="openHeroImagePicker()">Cambiar imagen</button>`
-                : `${clientPdfBtn()}<button id="ctaConfirmBtnTop" class="btn-approve-client" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>`}
+                : clientPdfBtn()}
             </div>
           </div>
           ${clientForLine(client) ? `<p class="hero-for">${T.heroFor} ${escapeHtmlText(clientForLine(client))}</p>` : ''}
@@ -3276,16 +3261,6 @@
             `).join('')}
           </ul>
           ${isAdmin ? `<button class="cond-add" onclick="addCondition()">+ Añadir condición</button>` : ''}
-        </div>
-
-        <!-- CTA FINAL -->
-        <div class="cta-section">
-          <h2>${catConfig.ctaTitle}</h2>
-          <p>${T.ctaSub}</p>
-          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <button id="ctaConfirmBtn" class="btn-approve-client large" onclick="confirmProposalByEmail()">${T.ctaConfirm}</button>
-            ${clientPdfBtn('large')}
-          </div>
         </div>
 
         <!-- FOOTER -->
@@ -4244,7 +4219,11 @@
     }
 
     // =============================================
-    // CLIENT CONFIRMATION (público)
+    // DESCARGA DEL PDF (vista cliente)
+    // El botón "Aprobar presupuesto" del cliente se retiró el 2026-10-07 (Xavi,
+    // weekly 7-oct): un cliente lo pulsó sin querer y creyó que ya había
+    // comprado, y además ponía la etiqueta Won en GHL. /api/validate-proposal
+    // con clientConfirm sigue existiendo, pero la propuesta ya no lo llama.
     // =============================================
     // Botón "Descargar PDF" para la vista CLIENTE de propuestas ya validadas.
     // Solo se renderiza si NO es admin (el admin ya tiene "Exportar PDF" en su
@@ -4274,43 +4253,12 @@
         window.open(d.url, '_blank');
       } catch (e) {
         console.error('downloadProposalPdf:', e);
-        showToast(T.ctaConfirmError || 'Error', 'error');
+        showToast(T.ctaPdfError || 'Error', 'error');
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = orig; }
       }
     }
 
-    async function confirmProposalByEmail() {
-      const btns = ['ctaConfirmBtn', 'ctaConfirmBtnTop']
-        .map(id => document.getElementById(id))
-        .filter(Boolean);
-      if (btns.some(b => b.disabled)) return;
-
-      if (!proposalState.proposalId) {
-        showToast(T.ctaConfirmError || 'Error', 'error');
-        return;
-      }
-
-      const originals = btns.map(b => b.textContent);
-      btns.forEach(b => { b.disabled = true; b.textContent = '...'; });
-
-      try {
-        const r = await fetch('/api/validate-proposal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ proposalId: proposalState.proposalId, clientConfirm: true })
-        });
-        const data = await r.json();
-        if (!r.ok || !data.success) throw new Error(data.error || `confirm ${r.status}`);
-
-        btns.forEach(b => { b.textContent = T.ctaConfirmed; });
-        showToast(T.ctaConfirmed, 'success');
-      } catch (err) {
-        console.error('confirm error:', err);
-        btns.forEach((b, i) => { b.disabled = false; b.textContent = originals[i]; });
-        showToast(T.ctaConfirmError, 'error');
-      }
-    }
 
     // =============================================
     // APPROVE FLOW
