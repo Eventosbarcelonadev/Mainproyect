@@ -2203,6 +2203,34 @@
     /* V24 · Builder: etiquetas en tipo oración */
     .form-group label { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 500; color: #4A4541; }
     .form-group input, .form-group select { height: 42px; }
+
+    /* ===== RIDER VISUAL · editor: mover shows (2026-10-07) =====
+       Weekly 7-oct (Xavi): ordenar los shows para contar la historia del evento
+       sin borrar y volver a añadir. Solo modo editor; el cliente y el PDF no lo ven.
+       Va al principio de la columna de texto y no sobre la foto: en la esquina
+       de la foto ya está "Cambiar imagen". Mismo trato que "+ Añadir línea de coste". */
+    .block-move { display: none; align-self: flex-start; align-items: center; gap: 6px; margin-bottom: 18px; }
+    .block.admin-mode .block-move { display: inline-flex; }
+    .block-drag, .block-move-btn {
+      height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      border: 1px dashed var(--border); border-radius: 6px; background: none;
+      color: var(--ui-edit); font: 500 13px/1 'Inter', sans-serif;
+    }
+    .block-drag { padding: 0 12px 0 10px; cursor: grab; user-select: none; -webkit-user-select: none; }
+    .block-drag:active { cursor: grabbing; }
+    .block-move-btn { width: 32px; font-size: 15px; cursor: pointer; }
+    .block-drag:hover, .block-move-btn:hover:not(:disabled) { background: rgba(59, 91, 219, .06); border-color: var(--ui-edit); }
+    .block-move-btn:disabled { opacity: .35; cursor: default; }
+    .block-move :focus-visible { outline: 2px solid var(--ui-edit); outline-offset: 2px; }
+    .block.is-dragging { opacity: .45; }
+    .block.drop-before::before,
+    .block.drop-after::after {
+      content: ""; position: absolute; left: 0; right: 0; height: 4px; z-index: 11;
+      background: var(--ui-edit); border-radius: 2px; pointer-events: none;
+    }
+    .block.drop-before::before { top: -2px; }
+    .block.drop-after::after { bottom: -2px; }
+    body.print-mode .block-move { display: none !important; }
   </style>
 </head>
 <body>
@@ -3105,6 +3133,11 @@
             ${isAdmin ? `<button class="block-remove" onclick="removeShow(${i})" title="Eliminar show">&times;</button>` : ''}
             ${blockImageHTML}
             <div class="block-content">
+              ${isAdmin && shows.length > 1 ? `<div class="block-move" role="group" aria-label="Cambiar el orden del show">
+                <span class="block-drag" draggable="true" data-index="${i}" title="Arrastra para cambiar el orden">&#10303; Mover</span>
+                <button type="button" class="block-move-btn" onclick="moveShow(${i}, -1)" aria-label="Subir show" title="Subir" ${i === 0 ? 'disabled' : ''}>&uarr;</button>
+                <button type="button" class="block-move-btn" onclick="moveShow(${i}, 1)" aria-label="Bajar show" title="Bajar" ${i === shows.length - 1 ? 'disabled' : ''}>&darr;</button>
+              </div>` : ''}
               <div class="section-label ${isAdmin ? 'editable-text' : ''}" ${isAdmin ? `contenteditable="true" data-show-field="contextLabel" data-show-index="${i}"` : ''}>${show.contextLabel}</div>
               <h2 ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'nameEn' : 'name'}" data-show-index="${i}"` : ''}>${localizedShowField(show, 'name')}</h2>
               <p ${isAdmin ? `class="editable-text" contenteditable="true" data-show-field="${LANG === 'en' ? 'descriptionEn' : 'description'}" data-show-index="${i}"` : ''}>${localizedShowField(show, 'description')}</p>
@@ -3545,6 +3578,77 @@
       }
       showToast('Eliminado: ' + show.name);
     }
+
+    // Reordenar shows en el editor (weekly 7-oct, Xavi: dar hilo a la propuesta,
+    // cóctel antes que cena, sin borrar y volver a añadir). El orden de
+    // proposalState.shows es el que se pinta y el que se guarda. Las ediciones
+    // inline se resuelven por id de show, no por posición, así que mover no las
+    // cruza (ver persistEditableField).
+    function moveShowTo(from, to) {
+      const list = proposalState.shows;
+      if (!Array.isArray(list)) return;
+      if (!Number.isInteger(from) || !Number.isInteger(to)) return;
+      if (from === to || from < 0 || to < 0 || from >= list.length || to >= list.length) return;
+      flushPendingEditableEdits();
+      const [show] = list.splice(from, 1);
+      list.splice(to, 0, show);
+      renderProposal();
+      if (proposalState.isAdmin) {
+        document.getElementById('adminBar').classList.add('visible');
+        updateAdminBar();
+      }
+      showToast('Movido: ' + (localizedShowField(show, 'name') || show.name || ''));
+      setTimeout(() => {
+        const b = document.querySelector(`.block[data-index="${to}"]`);
+        if (b) b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 60);
+    }
+    function moveShow(index, delta) { moveShowTo(index, index + delta); }
+
+    // Arrastrar con el asa "Mover". Solo reacciona a arrastres que empiezan en
+    // el asa (dragFrom), así que no choca con soltar fotos del escritorio sobre
+    // un show, que va por los listeners de archivos (_hasFiles).
+    let _dragShowFrom = null;
+    function _clearShowDrag() {
+      _dragShowFrom = null;
+      document.querySelectorAll('.block.is-dragging, .block.drop-before, .block.drop-after')
+        .forEach(b => b.classList.remove('is-dragging', 'drop-before', 'drop-after'));
+    }
+    document.addEventListener('dragstart', (e) => {
+      const h = e.target.closest && e.target.closest('.block-drag');
+      if (!h || !proposalState.isAdmin) return;
+      _dragShowFrom = parseInt(h.dataset.index, 10);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(_dragShowFrom));
+      const block = h.closest('.block');
+      if (block) block.classList.add('is-dragging');
+    });
+    document.addEventListener('dragover', (e) => {
+      if (_dragShowFrom === null) return;
+      const block = e.target.closest && e.target.closest('.block[data-index]');
+      if (!block) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const r = block.getBoundingClientRect();
+      const after = e.clientY > r.top + r.height / 2;
+      document.querySelectorAll('.block.drop-before, .block.drop-after').forEach(b => { if (b !== block) b.classList.remove('drop-before', 'drop-after'); });
+      block.classList.toggle('drop-before', !after);
+      block.classList.toggle('drop-after', after);
+    });
+    document.addEventListener('drop', (e) => {
+      if (_dragShowFrom === null) return;
+      e.preventDefault();
+      const block = e.target.closest && e.target.closest('.block[data-index]');
+      const from = _dragShowFrom;
+      let to = null;
+      if (block) {
+        to = parseInt(block.dataset.index, 10) + (block.classList.contains('drop-after') ? 1 : 0);
+        if (from < to) to -= 1; // al sacar el show, los de debajo suben una posición
+      }
+      _clearShowDrag();
+      if (to !== null) moveShowTo(from, to);
+    });
+    document.addEventListener('dragend', _clearShowDrag);
 
     function toggleSummary() {
       proposalState.hideSummary = !proposalState.hideSummary;
