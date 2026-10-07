@@ -3363,7 +3363,26 @@
       const s = String(v).trim();
       return (s === 'null' || s === 'undefined') ? '' : s;
     }
-    // Fechas ISO a texto legible; las escritas a mano ("22 de octubre") se respetan.
+    // Fechas ISO a texto legible en el idioma de la propuesta. Las escritas a mano
+    // ("12 de noviembre", "November 11th", "Fecha por confirmar") también se pasan
+    // al idioma de la propuesta si se reconocen; si no, se respetan tal cual.
+    // (Antes una propuesta en inglés enseñaba "3 de noviembre": 9 propuestas EN así.)
+    const MESES_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    function monthIndex(name) {
+      const n = String(name || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      if (n === 'setiembre') return 8;
+      let i = MESES_ES.indexOf(n);
+      if (i < 0) i = MONTHS_EN.findIndex(m => m.toLowerCase() === n);
+      if (i < 0 && n.length >= 3) i = MONTHS_EN.findIndex(m => m.toLowerCase().slice(0, 3) === n.slice(0, 3) && n.length <= 4);
+      return i;
+    }
+    function fmtDayMonth(day, mi, year) {
+      if (!(day >= 1 && day <= 31) || mi < 0) return '';
+      return LANG === 'en'
+        ? `${day} ${MONTHS_EN[mi]}${year ? ' ' + year : ''}`
+        : `${day} de ${MESES_ES[mi]}${year ? ' de ' + year : ''}`;
+    }
     function fmtEventDate(v) {
       const s = cleanField(v);
       if (!s) return '';
@@ -3371,10 +3390,39 @@
         const d = new Date(s + 'T12:00:00');
         if (!isNaN(d)) return d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
       }
+      if (/^((fecha\s+)?(por|a)\s+confirmar|(date\s+)?to\s+be\s+confirmed|tbc|tbd)$/i.test(s)) {
+        return LANG === 'en' ? 'Date to be confirmed' : 'Fecha por confirmar';
+      }
+      let m = s.match(/^(\d{1,2})\s+de\s+([a-záéíóú]+)(?:\s+(?:de|del)\s+(\d{4}))?$/i)            // 12 de noviembre (de 2026)
+        || s.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?([a-z]+)\.?,?(?:\s+(\d{4}))?$/i);       // 12 November 2026 · 12th of November
+      if (m) { const r = fmtDayMonth(+m[1], monthIndex(m[2]), m[3]); if (r) return r; }
+      m = s.match(/^([a-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(?:of\s+)?(\d{4}))?$/i);        // November 11th · January 13th of 2027
+      if (m) { const r = fmtDayMonth(+m[2], monthIndex(m[1]), m[3]); if (r) return r; }
+      return s;
+    }
+    // Tipo de evento en el idioma de la propuesta (mismas etiquetas que el formulario).
+    const EVENT_TYPES = [
+      ['Cena de gala', 'Gala dinner'], ['Cocktail / Welcome drink', 'Cocktail / Welcome drink'], ['Lanzamiento de producto', 'Product launch'],
+      ['Convención / Congreso', 'Convention / Conference'], ['Entrega de premios', 'Awards ceremony'], ['Family Day corporativo', 'Corporate Family Day'],
+      ['Fiesta temática', 'Themed party'], ['Fiesta de empresa', 'Company party'], ['Otro', 'Other'],
+      ['Fiesta corporativa', 'Corporate party'], ['Congreso', 'Conference'], ['Fiesta privada', 'Private party'],
+      ['Cóctel / Bebida de bienvenida', 'Cocktail / Welcome drink'], ['Fiesta corporativa/privada', 'Corporate / private party'],
+      ['Lanzamiento', 'Product launch'], ['Evento', 'Event'],   // etiquetas cortas del constructor
+    ];
+    function fmtEventType(v) {
+      const s = cleanField(v);
+      const key = x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
+      const hit = EVENT_TYPES.find(([es, en]) => key(es) === key(s) || key(en) === key(s));
+      return hit ? hit[LANG === 'en' ? 1 : 0] : s;
+    }
+    // Lugar: solo se traduce el relleno "Por confirmar" del constructor; el resto es un nombre propio.
+    function fmtEventPlace(v) {
+      const s = cleanField(v);
+      if (/^((lugar\s+)?por\s+confirmar|(venue\s+)?to\s+be\s+confirmed|tbc|tbd)$/i.test(s)) return LANG === 'en' ? 'Venue to be confirmed' : 'Lugar por confirmar';
       return s;
     }
     function eventDetailLine(ev) {
-      return [fmtEventDate(ev && ev.date), cleanField(ev && ev.type), cleanField(ev && ev.location)].filter(Boolean).join(' · ');
+      return [fmtEventDate(ev && ev.date), fmtEventType(ev && ev.type), fmtEventPlace(ev && ev.location)].filter(Boolean).join(' · ');
     }
     // Empresa para "Propuesta para …": se omite si parece un email, un teléfono o un relleno.
     function clientForLine(cl) {
@@ -4280,7 +4328,7 @@
           break;
       }
 
-      meta.textContent = [cleanField(client.company), cleanField(event.type), fmtEventDate(event.date)].filter(Boolean).join(' · ');
+      meta.textContent = [cleanField(client.company), fmtEventType(event.type), fmtEventDate(event.date)].filter(Boolean).join(' · ');
 
       // Marca el lang actual en el toggle
       document.querySelectorAll('#langToggle button').forEach(b => {
