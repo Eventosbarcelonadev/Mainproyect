@@ -2231,6 +2231,19 @@
     .block.drop-before::before { top: -2px; }
     .block.drop-after::after { bottom: -2px; }
     body.print-mode .block-move { display: none !important; }
+
+    /* ===== RIDER VISUAL · logos de clientes (2026-10-07) =====
+       Con SpaceX son 19 logos: en rejilla la última fila quedaba con un logo
+       descolgado a la izquierda. Flex centrado con el mismo número de columnas
+       y los mismos huecos que ya tenía cada ancho (6 / 3 / 3, y 3 en el PDF,
+       que se pinta a ancho A4 y entra en la regla de 900 px). */
+    .clients-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+    .clients-grid .client-logo {
+      flex: 0 0 calc((100% - 5 * 36px) / 6 - 0.5px); min-width: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    @media (max-width: 900px) { .clients-grid .client-logo { flex-basis: calc((100% - 2 * 24px) / 3 - 0.5px); } }
+    @media (max-width: 480px) { .clients-grid .client-logo { flex-basis: calc((100% - 2 * 20px) / 3 - 0.5px); } }
   </style>
 </head>
 <body>
@@ -2495,10 +2508,17 @@
 
     // Logos de clientes ("han confiado en nosotros"). Hosteados en el WP de
     // eventosbarcelona.com (mismos que la home y los mails automáticos). Para
-    // actualizar la lista, subir los nuevos a WP media y añadir la URL acá.
-    const CLIENT_LOGOS = Array.from({ length: 18 }, (_, i) =>
-      `https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_${String(i + 1).padStart(2, '0')}.gif`
-    );
+    // actualizar la lista, subir los nuevos a WP media y añadir { src, alt } acá.
+    // SpaceX va primero (weekly 7-oct, Xavi: "no todo el mundo lo tiene").
+    const CLIENT_LOGOS = [
+      // Mismo lienzo que los GIF (159 px de alto, fondo blanco y margen), el
+      // mismo archivo que los carruseles de logos de WordPress.
+      { src: 'https://www.eventosbarcelona.com/wp-content/uploads/2026/10/logos_19-spacex.png', alt: 'SpaceX' },
+      ...['Acciona', "McDonald's", 'Nokia', 'Chanel', 'Banco Sabadell', 'Huawei',
+          'Bayer', 'Airbus', 'National Geographic', 'LVMH', 'Hyundai', 'Air France',
+          'IKEA', 'DHL', 'Mercedes-Benz', 'Barceló Viajes', 'Almirall', 'Lidl'
+        ].map((alt, i) => ({ src: `https://www.eventosbarcelona.com/wp-content/uploads/2025/09/logos_${String(i + 1).padStart(2, '0')}.gif`, alt }))
+    ];
 
     const I18N = {
       es: {
@@ -3282,7 +3302,7 @@
         <div class="clients-section">
           <span class="section-label">${T.clientsTitle}</span>
           <div class="clients-grid">
-            ${CLIENT_LOGOS.map((url, i) => `<img src="${url}" alt="Cliente ${i + 1}" loading="lazy">`).join('')}
+            ${CLIENT_LOGOS.map(l => `<span class="client-logo"><img src="${l.src}" alt="${escapeHtmlText(l.alt)}" loading="lazy"></span>`).join('')}
           </div>
         </div>
 
