@@ -9,6 +9,17 @@
       var tipo = form.getAttribute('data-form-type') || 'cliente';
       // Solo para form cliente — para artista/proveedor no aplica
       if (tipo !== 'cliente') return;
+      // El formulario completo tiene 3 pasos (reunión 7-oct-2026). Las plantillas
+      // de WP ya pintan 3 puntos; esto corrige las páginas que sigan en caché con 5.
+      var steps = form.querySelector('.eb-steps');
+      if (steps) {
+        var dots = steps.querySelectorAll('.eb-step');
+        for (var i = dots.length - 1; i >= 3; i--) {
+          var prev = dots[i].previousElementSibling;
+          if (prev && prev.classList.contains('eb-step-line')) prev.remove();
+          dots[i].remove();
+        }
+      }
       if (form.querySelector('textarea[name="mensaje"]')) return;
       var check = form.querySelector('.eb-check, .eb-submit, button[type="submit"]');
       if (!check) return;

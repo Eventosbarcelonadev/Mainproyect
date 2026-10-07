@@ -4,1530 +4,613 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Request a quote — Eventos Barcelona</title>
-  <link rel="icon" type="image/webp" href="/EB-eventos-barcelona-logo-3d.webp">
-  <link rel="apple-touch-icon" href="/EB-eventos-barcelona-logo-3d.webp">
-  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/EB-eventos-barcelona-logo-3d.webp">
-  <meta property="og:title" content="Eventos Barcelona — Request a proposal">
-  <meta property="og:description" content="Get a tailored proposal for your corporate event in less than 24 hours.">
+  <title>Request your proposal · Eventos Barcelona</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#161413">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Eventos Barcelona">
+  <meta property="og:title" content="Eventos Barcelona · Request your proposal">
+  <meta property="og:description" content="Tell us about your event in three steps and get a visual proposal within 24 hours.">
+  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://propuestas.eventosbarcelona.com/formulario-inteligente-en.html">
   <meta name="twitter:card" content="summary_large_image">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="twitter:title" content="Eventos Barcelona · Request your proposal">
+  <meta name="twitter:description" content="Tell us about your event in three steps and get a visual proposal within 24 hours.">
+  <meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05312-1536x1026.jpg">
+  <!-- Generado por data/forms-tools/build_formulario_cliente.py: editar ahí, no aquí. -->
   <style>
-    :root {
-      --accent: #cc3366;
-      --accent-light: #fdf0f4;
-      --dark: #1a1a1a;
-      --text: #333;
-      --gray: #666;
-      --light-gray: #f9f9f9;
-      --border: #e0e0e0;
-      --white: #fff;
-      --green: #2ecc71;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
-      background: var(--white);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    h1, h2, h3 {
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
-      font-weight: 700;
-    }
-
-    /* === NAV === */
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 80px;
-      background: var(--dark);
-    }
-
-    .nav-logo img { height: 36px; width: auto; }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .nav-btn {
-      padding: 8px 20px;
-      border: 1px solid var(--accent);
-      border-radius: 3px;
-      color: var(--accent);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      background: transparent;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .nav-flags {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .nav-flags img {
-      width: 24px;
-      height: 16px;
-      object-fit: cover;
-      border-radius: 2px;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-    }
-
-    .nav-flags img:hover,
-    .nav-flags img.active { opacity: 1; }
-
-    .nav-hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .nav-hamburger span {
-      width: 22px;
-      height: 2px;
-      background: #fff;
-      border-radius: 1px;
-    }
-
-    /* === DEMO BANNER === */
-    .demo-banner {
-      background: var(--accent);
-      color: #fff;
-      text-align: center;
-      padding: 10px 24px;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-
-    /* === FORM CONTAINER === */
-    .form-container {
-      max-width: 720px;
-      margin: 48px auto;
-      padding: 0 24px;
-    }
-
-    .form-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .form-header h1 {
-      font-size: 36px;
-      color: var(--dark);
-      margin-bottom: 12px;
-    }
-
-    .form-header p {
-      font-size: 16px;
-      color: var(--gray);
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* === PROGRESS BAR === */
-    .progress-bar {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 40px;
-    }
-
-    .progress-step {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .progress-dot {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--border);
-      color: var(--gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .progress-dot.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .progress-dot.completed {
-      background: var(--green);
-      color: #fff;
-    }
-
-    .progress-line {
-      width: 40px;
-      height: 2px;
-      background: var(--border);
-      align-self: center;
-    }
-
-    .progress-line.active {
-      background: var(--accent);
-    }
-
-    .progress-label {
-      font-size: 11px;
-      color: var(--gray);
-      display: none;
-    }
-
-    /* === FORM CARD === */
-    .form-card {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 48px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-
-    .step { display: none; }
-    .step.active { display: block; }
-
-    .step-title {
-      font-size: 24px;
-      color: var(--dark);
-      margin-bottom: 8px;
-    }
-
-    .step-subtitle {
-      font-size: 14px;
-      color: var(--gray);
-      margin-bottom: 32px;
-    }
-
-    /* === FORM INPUTS === */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      transition: border-color 0.2s;
-      background: var(--white);
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    /* === VISUAL SELECTORS (event type) === */
-    .option-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .option-card {
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--white);
-    }
-
-    .option-card:hover {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .option-card.selected {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .option-card .option-icon {
-      font-size: 22px;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    .option-card .option-label {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    /* === SHOW CARDS === */
-    .show-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .show-card {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--white);
-    }
-
-    .show-card:hover {
-      border-color: var(--accent);
-    }
-
-    .show-card.selected {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .show-card-image {
-      height: 140px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-
-    .show-card-check {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--white);
-      border: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      transition: all 0.2s;
-    }
-
-    .show-card.selected .show-card-check {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .show-card-body {
-      padding: 14px 16px;
-    }
-
-    .show-card-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--dark);
-      margin-bottom: 4px;
-    }
-
-    .show-card-desc {
-      font-size: 12px;
-      color: var(--gray);
-      line-height: 1.5;
-    }
-
-    /* === SUBCATEGORY CHIPS === */
-    .subcategory-panel {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-      padding: 0 16px;
-    }
-
-    .show-card.selected .subcategory-panel {
-      max-height: 400px;
-      padding: 0 16px 14px;
-    }
-
-    .subcategory-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-    }
-
-    .sub-chip {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1.5px solid var(--border);
-      background: var(--white);
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .sub-chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .sub-chip.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    /* === BUDGET SELECTOR === */
-    .budget-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .budget-card {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-    }
-
-    .budget-card:hover {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .budget-card.selected {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .budget-amount {
-      font-family: 'DM Serif Display', Georgia, serif;
-      font-size: 22px;
-      color: var(--dark);
-      margin-bottom: 4px;
-    }
-
-    .budget-desc {
-      font-size: 12px;
-      color: var(--gray);
-    }
-
-    /* === BUTTONS === */
-    .form-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 32px;
-    }
-
-    .btn-next {
-      padding: 14px 36px;
-      background: var(--dark);
-      color: #fff;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      border: none;
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .btn-next:hover { background: #333; }
-
-    .btn-back {
-      padding: 14px 24px;
-      background: none;
-      color: var(--gray);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .btn-back:hover { color: var(--text); }
-
-    .btn-submit {
-      padding: 16px 48px;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      border: none;
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .btn-submit:hover { background: #aa2855; }
-
-    /* === SUCCESS === */
-    .success-screen {
-      display: none;
-      text-align: center;
-      padding: 0;
-      overflow: hidden;
-      border-radius: 16px;
-    }
-
-    .success-screen.active { display: block; }
-
-    .success-hero {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      background-size: cover;
-      background-position: center;
-      background-image: url('https://www.eventosbarcelona.com/wp-content/uploads/2024/09/Sodify_d2_soire_239.jpg');
-    }
-    .success-hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(26,26,26,0) 0%, rgba(26,26,26,.45) 70%, rgba(26,26,26,.85) 100%);
-    }
-
-    .success-body {
-      padding: 48px 40px 56px;
-    }
-
-    .success-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: -88px auto 24px;
-      box-shadow: 0 12px 32px rgba(204,51,102,.35);
-      position: relative;
-      z-index: 1;
-      animation: successPulse .6s ease-out;
-    }
-
-    @keyframes successPulse {
-      0%   { transform: scale(.6); opacity: 0; }
-      60%  { transform: scale(1.08); opacity: 1; }
-      100% { transform: scale(1); }
-    }
-
-    .success-screen h2 {
-      font-size: 32px;
-      color: var(--dark);
-      margin-bottom: 12px;
-    }
-
-    .success-screen p {
-      font-size: 16px;
-      color: var(--gray);
-      max-width: 480px;
-      margin: 0 auto 8px;
-      line-height: 1.7;
-    }
-
-    .success-meta {
-      margin-top: 24px;
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      flex-wrap: wrap;
-      font-size: 13px;
-      color: var(--gray);
-    }
-    .success-meta div { display: flex; align-items: center; gap: 6px; }
-    .success-meta strong { color: var(--dark); }
-
-    @media (max-width: 640px) {
-      .success-hero { height: 160px; }
-      .success-body { padding: 36px 20px 44px; }
-      .success-icon { width: 60px; height: 60px; font-size: 30px; margin-top: -68px; }
-      .success-screen h2 { font-size: 24px; }
-    }
-
-    .input-error {
-      border-color: #c0392b !important;
-      background: #fdf0f0 !important;
-    }
-
-    .field-error {
-      color: #c0392b;
-      font-size: 12px;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    /* === CUSTOM SELECT (single + multi) === */
-    .eb-select { position: relative; }
-    .eb-select-control {
-      width: 100%;
-      min-height: 50px;
-      padding: 10px 40px 10px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      background: var(--white);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      position: relative;
-      transition: border-color 0.2s;
-    }
-    .eb-select-control:hover { border-color: var(--accent); }
-    .eb-select.open .eb-select-control { border-color: var(--accent); }
-    .eb-select-placeholder { color: var(--gray); font-size: 15px; }
-    .eb-select-value { color: var(--text); font-size: 15px; }
-    .eb-select-value.placeholder { color: var(--gray); }
-    .eb-select-caret {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray);
-      font-size: 12px;
-      pointer-events: none;
-      transition: transform 0.2s;
-    }
-    .eb-select.open .eb-select-caret { transform: translateY(-50%) rotate(180deg); }
-
-    .eb-select-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      flex: 1;
-    }
-    .eb-select-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 6px 4px 12px;
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .eb-select-pill-x {
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      opacity: 0.5;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-    .eb-select-pill-x:hover { opacity: 1; background: rgba(204,51,102,0.15); }
-
-    .eb-select-panel {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-      max-height: 340px;
-      overflow-y: auto;
-      z-index: 50;
-      display: none;
-      padding: 4px 0;
-    }
-    .eb-select.open .eb-select-panel { display: block; }
-
-    .eb-select-option {
-      padding: 11px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--text);
-      transition: background 0.15s;
-    }
-    .eb-select-option:hover { background: var(--accent-light); color: var(--accent); }
-    .eb-select-option.active {
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .eb-select-section { padding: 6px 0; }
-    .eb-select-section + .eb-select-section { border-top: 1px solid var(--border); }
-    .eb-select-section-title {
-      padding: 8px 16px 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--gray);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-    .eb-select-section-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      padding: 4px 14px 8px;
-    }
-    .eb-chip-option {
-      padding: 4px 10px;
-      border-radius: 14px;
-      font-size: 11.5px;
-      font-weight: 500;
-      border: 1.5px solid var(--border);
-      background: var(--white);
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.15s;
-      user-select: none;
-    }
-    .eb-chip-option:hover { border-color: var(--accent); color: var(--accent); }
-    .eb-chip-option.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    /* === NO SURE CARD === */
-    #no-sure-card:hover { border-color: var(--accent) !important; }
-    #no-sure-card.selected {
-      border-color: var(--accent) !important;
-      background: var(--accent-light) !important;
-    }
-
-    /* === COMPACT FORMAT CARDS === */
-    .option-card-compact {
-      padding: 10px 12px !important;
-      display: flex !important;
-      align-items: center;
-      gap: 10px;
-      text-align: left;
-    }
-    .option-card-compact .option-icon {
-      font-size: 18px !important;
-      margin-bottom: 0 !important;
-      display: inline-block !important;
-    }
-    .option-card-compact .option-label {
-      font-size: 13px !important;
-      line-height: 1.3;
-    }
-
-    /* === ARTIST SWITCH BANNER === */
-    .artist-switch {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 18px;
-      background: var(--accent-light);
-      border: 1.5px solid #f3c4d4;
-      border-radius: 12px;
-      margin-bottom: 28px;
-    }
-    .artist-switch-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-    .artist-switch-text {
-      flex: 1;
-      font-size: 14px;
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .artist-switch-text strong { color: var(--dark); }
-    .artist-switch-btn {
-      padding: 10px 20px;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-    .artist-switch-btn:hover { background: #aa2855; }
-    @media (max-width: 640px) {
-      .artist-switch {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 14px;
-      }
-      .artist-switch-btn { width: 100%; }
-    }
-
-    /* === RESPONSIVE === */
-    @media (max-width: 768px) {
-      .nav { padding: 14px 20px; }
-      .nav-logo img { height: 28px; }
-      .nav-btn { display: none; }
-      .nav-flags img { width: 20px; height: 14px; }
-      .form-container { margin: 32px auto; padding: 0 16px; }
-      .form-card { padding: 28px 20px; }
-      .form-row { grid-template-columns: 1fr; }
-      .option-grid { grid-template-columns: 1fr 1fr; }
-      .show-grid { grid-template-columns: 1fr; }
-      .budget-grid { grid-template-columns: 1fr 1fr; }
-      .form-header h1 { font-size: 26px; }
-      .form-header p { font-size: 14px; }
-      .step-title { font-size: 20px; }
-      .form-actions { gap: 12px; }
-      .btn-next, .btn-submit { padding: 14px 28px; width: 100%; }
-      .btn-back { padding: 14px 16px; }
-      .progress-line { width: 24px; }
-      .demo-banner { font-size: 11px; padding: 8px 16px; }
-    }
-
-    @media (max-width: 480px) {
-      .option-grid { grid-template-columns: 1fr; }
-      .budget-grid { grid-template-columns: 1fr; }
-      .form-actions { flex-direction: column-reverse; gap: 8px; }
-      .btn-next, .btn-submit, .btn-back { width: 100%; text-align: center; }
-      .nav-flags { gap: 8px; }
-      .nav-right { gap: 14px; }
-    }
-  </style>
+:root{
+  --paper:#faf6ef; --paper-2:#f3ece1; --card:#fffdf9; --ink:#17150f; --ink-2:#5e5853; --muted:#6f685e;
+  --gold:#b8873b; --gold-text:#8a6424; --line:#e2d9c9; --line-2:#d2c6b2;
+  --accent:#cc3366; --accent-hover:#b02a56; --accent-soft:#fbeef3; --night:#161413; --ok:#1a7340;
+  --r-lg:18px; --r-md:12px; --r-sm:8px;
+  --f:'Space Grotesk',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--f);background:var(--paper);color:var(--ink);line-height:1.55;font-size:16px;min-height:100vh}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Barra superior */
+.topbar{position:sticky;top:0;z-index:30;background:var(--night);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,40px)}
+.topbar img{height:42px;width:auto}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.topbar .contact{font-size:14px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 16px}
+.topbar .contact:hover{border-color:#fff}
+.lang{display:flex;border:1px solid rgba(255,255,255,.25);border-radius:999px;overflow:hidden;font-size:12.5px;font-weight:600}
+.lang a,.lang span{padding:6px 11px;text-decoration:none}
+.lang span{background:#fff;color:var(--night)}
+
+/* Estructura: foto a la izquierda, formulario a la derecha */
+.shell{display:grid;grid-template-columns:minmax(0,40%) minmax(0,60%);min-height:calc(100vh - 66px)}
+.panel{position:relative;color:#fff;background:var(--night) var(--panel-img) center/cover no-repeat}
+.panel::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,20,19,.45) 0%,rgba(22,20,19,.72) 45%,rgba(22,20,19,.92) 100%)}
+.panel-inner{position:sticky;top:66px;z-index:1;padding:clamp(40px,6vw,72px) clamp(24px,4vw,56px);display:flex;flex-direction:column;gap:22px;min-height:calc(100vh - 66px);justify-content:flex-end}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#e6c98f;font-weight:600}
+.panel h1{font-size:clamp(34px,3.6vw,52px);line-height:1.05;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.lede{font-size:17px;color:#e9e3db;max-width:34ch}
+.steps{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.steps li{display:flex;align-items:center;gap:12px;font-size:15px;color:#bdb6ae}
+.steps .n{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);display:grid;place-items:center;font-size:13px;font-weight:600;flex-shrink:0}
+.steps li.active{color:#fff;font-weight:600}
+.steps li.active .n{background:var(--accent);border-color:var(--accent);color:#fff}
+.steps li.completed .n{background:#fff;border-color:#fff;color:var(--night)}
+.trust{list-style:none;display:flex;flex-direction:column;gap:6px;padding-top:18px;border-top:1px solid rgba(255,255,255,.2);font-size:14px;color:#d9d3cc}
+.trust li::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#e6c98f;margin-right:10px;vertical-align:middle}
+
+.formcol{padding:clamp(24px,5vw,64px) clamp(16px,5vw,72px) 80px;display:flex;justify-content:center}
+.form-card{width:100%;max-width:720px}
+
+/* Pasos */
+.step{display:none}
+.step.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step.active{animation:none}}
+.step-count{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text);font-weight:600;margin-bottom:10px}
+.step-title{font-size:clamp(26px,2.6vw,34px);line-height:1.15;font-weight:600;letter-spacing:-.01em;margin-bottom:6px;text-wrap:balance}
+.step-subtitle{color:var(--ink-2);margin-bottom:30px}
+.block{margin-top:30px}
+.block-label{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-bottom:12px}
+.block-hint{font-size:14px;color:var(--muted);margin:-6px 0 12px}
+
+/* Campos */
+.form-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 24px}
+.form-row.three{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
+.form-row + .form-row{margin-top:18px}
+.form-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.form-group label{font-size:14px;font-weight:600;color:var(--ink)}
+.form-group label .opt{font-weight:400;color:var(--muted)}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],select,textarea{
+  width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:13px 14px;transition:border-color .15s,box-shadow .15s;min-width:0}
+textarea{min-height:110px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#756e64}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,135,59,.18)}
+.phone{display:flex;gap:8px}
+.phone select{width:108px;flex-shrink:0}
+.input-error{border-color:#b42318!important}
+.field-error{color:#b42318;font-size:13.5px;margin-top:6px}
+
+/* Tarjetas con foto (mismo formato que las cards de la home) */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tile{position:relative;display:block;width:100%;aspect-ratio:4/3;border:0;border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--night);color:#fff;text-align:left;isolation:isolate}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,20,19,0) 35%,rgba(22,20,19,.82) 100%);z-index:0}
+.tile .option-label,.tile .tile-label{position:absolute;left:14px;right:14px;bottom:12px;z-index:1;font-weight:600;font-size:15.5px;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.tile:hover img{transform:scale(1.04)}
+.tile .check{position:absolute;top:10px;right:10px;z-index:2;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:none;place-items:center;font-size:15px;font-weight:700}
+.tile.selected,.cat-tile.open{box-shadow:0 0 0 3px var(--accent)}
+.tile.selected .check{display:grid}
+.tile-otro{background:var(--card);color:var(--ink);border:1.5px dashed var(--line-2)}
+.tile-otro::after{display:none}
+.tile-otro .plus{position:absolute;top:50%;left:50%;transform:translate(-50%,-62%);font-size:34px;font-weight:300;color:var(--gold-text)}
+.tile-otro .option-label{text-shadow:none;text-align:center;color:var(--ink)}
+.tile-otro.selected{border-color:var(--accent);background:var(--accent-soft)}
+.otro-field{margin-top:14px}
+.otro-field[hidden]{display:none}
+
+/* Formato: tarjetas compactas */
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.choice{border:1.5px solid var(--line);background:var(--card);border-radius:var(--r-md);padding:14px 14px 13px;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.choice:hover{border-color:var(--line-2)}
+.choice .option-label{display:block;font-weight:600;font-size:15px}
+.choice .desc{display:block;font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+.choice.selected{border-color:var(--accent);background:var(--accent-soft)}
+
+/* Estilos: categorías con foto + chips */
+.cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.cat-tile{aspect-ratio:1/1}
+.cat-tile .count{position:absolute;top:10px;right:10px;z-index:2;min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:none;place-items:center}
+.cat-tile .count.on{display:grid}
+.chips-panel{margin-top:12px;padding:16px;border-radius:var(--r-md);background:var(--card);border:1.5px solid var(--line)}
+.chips-panel[hidden]{display:none}
+.chips-panel h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.eb-chip-option{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;user-select:none}
+.eb-chip-option:hover{border-color:var(--line-2)}
+.eb-chip-option.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.eb-chip-option.active::before{content:"✓";font-size:12px}
+.chip-otro{border-style:dashed}
+.chip-otro::before{content:"+";font-size:15px;line-height:1}
+.chip-otro.active::before{content:"✓";font-size:12px}
+
+/* Tarjetas de selección simple */
+.toggle-card{display:flex;gap:14px;align-items:flex-start;width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:var(--r-md);padding:16px;text-align:left;cursor:pointer}
+.toggle-card .box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line-2);flex-shrink:0;display:grid;place-items:center;margin-top:1px;background:#fff}
+.toggle-card.selected,.toggle-card:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.toggle-card.selected .box,.toggle-card:has(input:checked) .box{background:var(--accent);border-color:var(--accent)}
+.toggle-card.selected .box::after,.toggle-card:has(input:checked) .box::after{content:"✓";color:#fff;font-size:13px;font-weight:700}
+.toggle-card strong{display:block;font-size:15px}
+.toggle-card span.s{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
+.toggle-card input{position:absolute;opacity:0;pointer-events:none}
+.toggles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+
+/* Presupuesto */
+.budget-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.budget-card{border:1.5px solid var(--line);background:var(--card);border-radius:var(--r-md);padding:14px 10px;text-align:center;cursor:pointer;font-variant-numeric:tabular-nums}
+.budget-card .budget-amount{font-weight:600;font-size:15px}
+.budget-card.selected{border-color:var(--accent);background:var(--accent-soft)}
+
+/* Aviso artistas */
+.artist-note{margin-top:30px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:var(--r-md);background:var(--paper-2);font-size:14px;color:var(--ink-2)}
+.artist-note strong{color:var(--ink)}
+.link-btn{background:none;border:0;font-weight:600;color:var(--accent-hover);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:14px}
+
+/* Acciones */
+.form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
+.btn-next,.btn-submit{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:15px 30px;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none;transition:background .15s}
+.btn-next:hover,.btn-submit:hover{background:var(--accent-hover)}
+.btn-next::after,.btn-submit::after{content:"→"}
+.btn-submit:disabled{opacity:.7;cursor:progress}
+.btn-back{background:none;border:0;color:var(--ink-2);font-weight:600;cursor:pointer;padding:12px 4px;font-size:15px;text-decoration:none}
+.btn-back:hover{color:var(--ink)}
+.priv{font-size:13px;color:var(--muted);margin-top:14px}
+
+/* Éxito */
+.success-screen{display:none}
+.success-screen.active{display:block;animation:fade .4s ease}
+.success-hero{aspect-ratio:16/7;border-radius:var(--r-lg);background:var(--night) var(--ok-img) center/cover no-repeat;margin-bottom:28px}
+.success-icon{width:52px;height:52px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:700;margin-bottom:16px}
+.success-screen h2{font-size:clamp(28px,3vw,38px);font-weight:600;margin-bottom:10px}
+.success-screen p{color:var(--ink-2);max-width:56ch}
+.success-meta{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:24px 0 30px}
+.success-meta li{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:14px;font-size:14px;font-weight:600}
+.success-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+
+/* Responsive */
+@media (max-width:1023px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .panel-inner{position:relative;top:0;min-height:0;padding:32px clamp(16px,5vw,40px) 28px;gap:14px}
+  .panel h1{font-size:clamp(30px,6vw,42px)}
+  .steps{flex-direction:row;flex-wrap:wrap;gap:8px 18px}
+  .steps li{font-size:13.5px}
+  .trust{display:none}
+}
+@media (max-width:820px){
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cat-tile{aspect-ratio:16/10}
+  .choices{grid-template-columns:minmax(0,1fr)}
+  .budget-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .form-row.three{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .form-row.three .form-group:last-child{grid-column:1/-1}
+  .success-meta{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .topbar img{height:34px}
+  .topbar .contact{display:none}
+  .form-row,.toggles{grid-template-columns:minmax(0,1fr)}
+  .form-row.three{grid-template-columns:minmax(0,1fr)}
+  .tile .option-label,.tile .tile-label{font-size:14.5px;left:11px;right:11px;bottom:10px}
+  .lede{font-size:15.5px}
+  .steps .lbl{display:none}
+  .steps li.active .lbl{display:inline}
+  .btn-next,.btn-submit{padding:14px 24px}
+}
+</style>
 </head>
 <body>
-
-<div class="nav">
-    <div class="nav-logo">
-      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+  <header class="topbar">
+    <a href="https://www.eventosbarcelona.com/en/" aria-label="Eventos Barcelona"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona" width="160" height="42"></a>
+    <div class="topbar-right">
+      <a class="contact" href="https://www.eventosbarcelona.com/en/contact/">Contact</a>
+      <nav class="lang" aria-label="Idioma / Language"><span aria-current="true">EN</span><a href="/formulario-inteligente.html" hreflang="es">ES</a></nav>
     </div>
-    <div class="nav-right">
-      <a href="https://www.eventosbarcelona.com/en/contact/" class="nav-btn">Contact</a>
-      <div class="nav-flags">
-        <a href="/formulario-inteligente-en.html" title="English"><img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.svg" alt="English" class="active"></a>
-        <a href="/formulario-inteligente.html" title="Español"><img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.svg" alt="Español"></a>
-      </div>
-      <div class="nav-hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
+  </header>
 
-  <div class="form-container">
-
-    <div class="form-header">
-      <h1>Request a quote</h1>
-      <p>Tell us about your event and we'll prepare a tailored proposal within 24 hours.</p>
-    </div>
-
-    <!-- PROGRESS BAR -->
-    <div class="progress-bar">
-      <div class="progress-step">
-        <div class="progress-dot active" id="dot-1">1</div>
+  <main class="shell">
+    <aside class="panel" style="--panel-img:url('https://www.eventosbarcelona.com/wp-content/uploads/2025/06/DSC05312-1536x1026.jpg')">
+      <div class="panel-inner">
+        <p class="eyebrow">Request your proposal</p>
+        <h1>Tell us about your event</h1>
+        <p class="lede">Three steps. We reply with a visual proposal within 24 working hours.</p>
+        <ol class="steps"><li id="dot-1" class="active"><span class="n">1</span><span class="lbl">Your details</span></li><li id="dot-2"><span class="n">2</span><span class="lbl">Your event</span></li><li id="dot-3"><span class="n">3</span><span class="lbl">The show</span></li></ol>
+        <ul class="trust"><li>Proposal within 24 hours</li><li>500 shows and 300 artists</li><li>15 years producing corporate events</li></ul>
       </div>
-      <div class="progress-line" id="line-1"></div>
-      <div class="progress-step">
-        <div class="progress-dot" id="dot-2">2</div>
-      </div>
-      <div class="progress-line" id="line-2"></div>
-      <div class="progress-step">
-        <div class="progress-dot" id="dot-3">3</div>
-      </div>
-      <div class="progress-line" id="line-3"></div>
-      <div class="progress-step">
-        <div class="progress-dot" id="dot-4">4</div>
-      </div>
-      <div class="progress-line" id="line-4"></div>
-      <div class="progress-step">
-        <div class="progress-dot" id="dot-5">5</div>
-      </div>
-    </div>
+    </aside>
 
-    <div class="form-card">
+    <section class="formcol">
+      <div class="form-card">
 
-      <!-- STEP 1: Basic data -->
-      <div class="step active" id="step-1">
-        <h2 class="step-title">Your contact details</h2>
-        <p class="step-subtitle">So we can send you the tailored proposal.</p>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="f-nombre" placeholder="Your full name">
+        <!-- PASO 1: datos de contacto -->
+        <div class="step active" id="step-1">
+          <p class="step-count">1 / 3</p>
+          <h2 class="step-title">Your contact details</h2>
+          <p class="step-subtitle">So we can send you the tailored proposal.</p>
+          <div class="form-row">
+            <div class="form-group"><label for="f-nombre">Name</label><input type="text" id="f-nombre" autocomplete="name" placeholder="Your full name"></div>
+            <div class="form-group"><label for="f-empresa">Company</label><input type="text" id="f-empresa" autocomplete="organization" placeholder="Company name"></div>
           </div>
-          <div class="form-group">
-            <label>Company</label>
-            <input type="text" id="f-empresa" placeholder="Company name">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="f-email" placeholder="you@company.com">
-          </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <div style="display: flex; gap: 8px;">
-              <select id="f-prefix" style="width: 100px; flex-shrink: 0; padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); background: var(--white); cursor: pointer;">
-                <option value="+34" selected>&#127466;&#127480; +34</option>
-                <option value="+33">&#127467;&#127479; +33</option>
-                <option value="+44">&#127468;&#127463; +44</option>
-                <option value="+49">&#127465;&#127466; +49</option>
-                <option value="+39">&#127470;&#127481; +39</option>
-                <option value="+351">&#127477;&#127481; +351</option>
-                <option value="+31">&#127475;&#127473; +31</option>
-                <option value="+32">&#127463;&#127466; +32</option>
-                <option value="+41">&#127464;&#127469; +41</option>
-                <option value="+1">&#127482;&#127480; +1</option>
-              </select>
-              <input type="tel" id="f-phone" placeholder="600 000 000" style="flex: 1;">
+          <div class="form-row">
+            <div class="form-group"><label for="f-email">Email</label><input type="email" id="f-email" autocomplete="email" placeholder="you@company.com"></div>
+            <div class="form-group"><label for="f-phone">Phone</label>
+              <div class="phone"><select id="f-prefix" aria-label="Prefijo"><option value="+34" selected>&#127466;&#127480; +34</option><option value="+33">&#127467;&#127479; +33</option><option value="+44">&#127468;&#127463; +44</option><option value="+49">&#127465;&#127466; +49</option><option value="+39">&#127470;&#127481; +39</option><option value="+351">&#127477;&#127481; +351</option><option value="+31">&#127475;&#127473; +31</option><option value="+32">&#127463;&#127466; +32</option><option value="+41">&#127464;&#127469; +41</option><option value="+1">&#127482;&#127480; +1</option></select><input type="tel" id="f-phone" autocomplete="tel-national" placeholder="600 000 000"></div>
             </div>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Company website <span style="font-weight: 400; color: var(--gray);">(optional)</span></label>
-            <input type="url" id="f-web" placeholder="https://yourcompany.com">
+          <div class="form-row">
+            <div class="form-group"><label for="f-web">Company website <span class="opt">(optional)</span></label><input type="url" id="f-web" placeholder="https://yourcompany.com"></div>
+            <div class="form-group"><label for="f-cargo">Job title <span class="opt">(optional)</span></label><input type="text" id="f-cargo" autocomplete="organization-title" placeholder="E.g. Marketing Director, CEO, Event Manager"></div>
           </div>
-          <div class="form-group">
-            <label>Job title / role <span style="font-weight: 400; color: var(--gray);">(optional)</span></label>
-            <input type="text" id="f-cargo" placeholder="E.g. Marketing Director, CEO, Event Manager">
-          </div>
+          <p class="priv">We only use your details to prepare your proposal.</p>
+          <div class="form-actions"><span></span><button type="button" class="btn-next" onclick="validateAndGo(1, 2)">Next</button></div>
         </div>
 
-        <div class="form-actions">
-          <div></div>
-          <button class="btn-next" onclick="validateAndGo(1, 2)">Next</button>
+        <!-- PASO 2: el evento -->
+        <div class="step" id="step-2">
+          <p class="step-count">2 / 3</p>
+          <h2 class="step-title">What event are you organising?</h2>
+          <p class="step-subtitle">Choose the one that describes it best.</p>
+          <div class="tiles" role="group" aria-label="What event are you organising?"><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2026/07/gala-dinner-corporativo-espectaculo-barcelona-768x576.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Gala dinner</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2024/03/personajes-ballon-768x480.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Cocktail / Welcome drink</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/01/product-launch-768x512.png" alt="" loading="lazy" decoding="async"><span class="option-label">Product launch</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2026/08/convencion-empresa-keynote-speaker-barcelona-768x512.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Convention / Conference</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2024/04/IMG_1262-768x576.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Awards ceremony</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/06/family-days-para-empresas-768x512.png" alt="" loading="lazy" decoding="async"><span class="option-label">Corporate Family Day</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2024/04/fiesta-tematica-halloween-768x459.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Themed party</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile" aria-pressed="false" onclick="selectOption(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2024/03/Foto_laser_4-768x447.jpg" alt="" loading="lazy" decoding="async"><span class="option-label">Company party</span><span class="check" aria-hidden="true">✓</span></button><button type="button" class="option-card tile tile-otro" aria-pressed="false" onclick="selectOption(this)"><span class="plus" aria-hidden="true">+</span><span class="option-label">Other</span><span class="check" aria-hidden="true">✓</span></button></div>
+          <div class="otro-field form-group" id="otro-evento" hidden><label for="f-tipo-otro">What kind of event is it?</label><input type="text" id="f-tipo-otro" placeholder="E.g. office opening, incentive trip, anniversary..."></div>
+          <div class="block form-row three">
+            <div class="form-group"><label for="f-fecha">Event date</label><input type="date" id="f-fecha"></div>
+            <div class="form-group"><label for="f-asistentes">Guests</label><input type="number" id="f-asistentes" min="1" inputmode="numeric" placeholder="E.g. 200"></div>
+            <div class="form-group"><label for="f-ubicacion">City or venue</label><input type="text" id="f-ubicacion" placeholder="E.g. Barcelona, Hotel W"></div>
+          </div>
+          <div class="block">
+            <span class="block-label">Approximate budget</span>
+            <div class="budget-grid" role="group" aria-label="Approximate budget"><button type="button" class="budget-card" aria-pressed="false" onclick="selectOption(this)"><span class="budget-amount">&lt; &euro;5,000</span></button><button type="button" class="budget-card" aria-pressed="false" onclick="selectOption(this)"><span class="budget-amount">&euro;5,000 - &euro;10,000</span></button><button type="button" class="budget-card" aria-pressed="false" onclick="selectOption(this)"><span class="budget-amount">&euro;10,000 - &euro;25,000</span></button><button type="button" class="budget-card" aria-pressed="false" onclick="selectOption(this)"><span class="budget-amount">&gt; &euro;25,000</span></button></div>
+          </div>
+          <div class="artist-note"><span><strong>Are you an artist, band or company?</strong> This form is for booking shows.</span><button type="button" class="link-btn" onclick="switchToArtista()">Join our catalogue</button></div>
+          <div class="form-actions"><button type="button" class="btn-back" onclick="goToStep(1)">Back</button><button type="button" class="btn-next" onclick="validateAndGo(2, 3)">Next</button></div>
         </div>
+
+        <!-- PASO 3: el espectáculo -->
+        <div class="step" id="step-3">
+          <p class="step-count">3 / 3</p>
+          <h2 class="step-title">What kind of show are you looking for?</h2>
+          <p class="step-subtitle">Tick everything that fits. If you&#x27;re not sure, we&#x27;ll advise you.</p>
+          <span class="block-label">Format</span>
+          <div class="choices" role="group" aria-label="Format"><button type="button" class="option-card choice" aria-pressed="false" onclick="selectOption(this)"><span class="option-label">Stage show</span><span class="desc">One headline moment with every guest watching</span></button><button type="button" class="option-card choice" aria-pressed="false" onclick="selectOption(this)"><span class="option-label">Ambient / strolling</span><span class="desc">Performers moving among your guests</span></button><button type="button" class="option-card choice" aria-pressed="false" onclick="selectOption(this)"><span class="option-label">Full event management</span><span class="desc">We take care of the show and the production</span></button></div>
+          <div class="block" id="estilos">
+            <span class="block-label">Styles</span>
+            <p class="block-hint">Tap a style to see the options.</p>
+            <div class="cats"><button type="button" class="tile cat-tile" data-key="danza" aria-expanded="false" aria-controls="chips-danza" onclick="toggleCat(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/05/DSC05339-768x513.jpg" alt="" loading="lazy" decoding="async"><span class="tile-label">Dance</span><span class="count" aria-hidden="true">0</span></button><button type="button" class="tile cat-tile" data-key="musica" aria-expanded="false" aria-controls="chips-musica" onclick="toggleCat(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/01/WhatsApp-Image-2025-01-28-at-11.22.56-768x576.jpeg" alt="" loading="lazy" decoding="async"><span class="tile-label">Music</span><span class="count" aria-hidden="true">0</span></button><button type="button" class="tile cat-tile" data-key="circo" aria-expanded="false" aria-controls="chips-circo" onclick="toggleCat(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2024/03/acrobatas-para-eventos-768x459.jpg" alt="" loading="lazy" decoding="async"><span class="tile-label">Circus</span><span class="count" aria-hidden="true">0</span></button><button type="button" class="tile cat-tile" data-key="wow" aria-expanded="false" aria-controls="chips-wow" onclick="toggleCat(this)"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2026/09/led-feather-dancers-grupo-768x512.jpg" alt="" loading="lazy" decoding="async"><span class="tile-label">WOW Effect</span><span class="count" aria-hidden="true">0</span></button></div>
+            <div class="chips-panel" id="chips-danza" hidden><h4>Dance</h4><div class="chips"><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Contemporary" onclick="toggleMsChip(this)">Contemporary</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Classical" onclick="toggleMsChip(this)">Classical</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Cabaret" onclick="toggleMsChip(this)">Cabaret</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Flamenco" onclick="toggleMsChip(this)">Flamenco</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="1920s" onclick="toggleMsChip(this)">1920s</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Hip-hop" onclick="toggleMsChip(this)">Hip-hop</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Salsa" onclick="toggleMsChip(this)">Salsa</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Dance" data-val="Themed" onclick="toggleMsChip(this)">Themed</span></div></div><div class="chips-panel" id="chips-musica" hidden><h4>Music</h4><div class="chips"><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Live bands" onclick="toggleMsChip(this)">Live bands</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Classical" onclick="toggleMsChip(this)">Classical</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Soloists" onclick="toggleMsChip(this)">Soloists</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Singers" onclick="toggleMsChip(this)">Singers</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Jazz" onclick="toggleMsChip(this)">Jazz</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="DJ" onclick="toggleMsChip(this)">DJ</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Rumba" onclick="toggleMsChip(this)">Rumba</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Music" data-val="Percussionists" onclick="toggleMsChip(this)">Percussionists</span></div></div><div class="chips-panel" id="chips-circo" hidden><h4>Circus</h4><div class="chips"><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="LED juggling" onclick="toggleMsChip(this)">LED juggling</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Tightrope walker" onclick="toggleMsChip(this)">Tightrope walker</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Acrobats" onclick="toggleMsChip(this)">Acrobats</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Aerialists" onclick="toggleMsChip(this)">Aerialists</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Stilt walkers" onclick="toggleMsChip(this)">Stilt walkers</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Fire" onclick="toggleMsChip(this)">Fire</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="Circus" data-val="Unique characters" onclick="toggleMsChip(this)">Unique characters</span></div></div><div class="chips-panel" id="chips-wow" hidden><h4>WOW Effect</h4><div class="chips"><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="LED dancers" onclick="toggleMsChip(this)">LED dancers</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="Video mapping" onclick="toggleMsChip(this)">Video mapping</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="Light shows" onclick="toggleMsChip(this)">Light shows</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="Laser" onclick="toggleMsChip(this)">Laser</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="Immersive" onclick="toggleMsChip(this)">Immersive</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="LED percussionists" onclick="toggleMsChip(this)">LED percussionists</span><span class="eb-chip-option" role="button" tabindex="0" aria-pressed="false" data-cat="WOW Effect" data-val="Custom" onclick="toggleMsChip(this)">Custom</span></div></div>
+            <div class="chips" style="margin-top:12px"><span class="eb-chip-option chip-otro" role="button" tabindex="0" aria-pressed="false" data-cat="Other" data-val="Other" onclick="toggleMsChip(this)">Other</span></div>
+            <div class="otro-field form-group" id="otro-estilo" hidden><label for="f-estilo-otro">What other style are you looking for?</label><input type="text" id="f-estilo-otro" placeholder="E.g. magic, comedy, gospel choir..."></div>
+          </div>
+          <div class="block toggles">
+            <button type="button" class="toggle-card" id="no-sure-card" aria-pressed="false" onclick="toggleNoSure(this)"><span class="box" aria-hidden="true"></span><span><strong>I&#x27;m not sure, please advise me</strong><span class="s">We will recommend the shows that best fit your event</span></span></button>
+            <label class="toggle-card" style="position:relative"><input type="checkbox" id="produccion-check"><span class="box" aria-hidden="true"></span><span><strong>Do you need technical production?</strong><span class="s">Sound, lighting, staging, LED screens... We&#x27;ll prepare a full proposal.</span></span></label>
+          </div>
+          <div class="block form-group"><label for="f-comentarios">Anything else we should know? <span class="opt">(optional)</span></label><textarea id="f-comentarios" placeholder="E.g. We want a space theme, performers interacting with guests during dinner..."></textarea></div>
+          <div class="block form-group"><label for="f-conocido">How did you hear about us?</label><select id="f-conocido"><option value="">Select an option</option><option value="Website">Website</option><option value="Google search">Google search</option><option value="Referral">Referral</option><option value="Social media">Social media</option><option value="Previous event">Previous event</option><option value="Other">Other</option></select></div>
+          <div class="form-actions"><button type="button" class="btn-back" onclick="goToStep(2)">Back</button><button type="button" class="btn-submit" onclick="submitForm()">Submit request</button></div>
+        </div>
+
+        <!-- ÉXITO -->
+        <div class="success-screen" id="success" role="status" aria-live="polite" style="--ok-img:url('https://www.eventosbarcelona.com/wp-content/uploads/2025/05/DSC05339-1536x1026.jpg')">
+          <div class="success-hero" role="img" aria-label="Eventos Barcelona"></div>
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <h2>Request received</h2>
+          <p>We are reviewing your event details and will send you a tailored proposal within 24 hours.</p>
+          <p>In the meantime, take a look at our catalogue.</p>
+          <ul class="success-meta"><li>Proposal within 24 hours</li><li>We will email you</li><li>Over 200 events a year</li></ul>
+          <div class="success-actions"><a class="btn-submit" href="https://www.eventosbarcelona.com/en/artists-and-shows/">See artists and shows</a><a class="btn-back" href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener">Follow us on Instagram</a></div>
+        </div>
+
       </div>
-
-      <!-- STEP 2: Event type -->
-      <div class="step" id="step-2">
-        <h2 class="step-title">What type of event are you organizing?</h2>
-        <p class="step-subtitle">Select the one that best describes your event.</p>
-
-        <div class="artist-switch">
-          <div class="artist-switch-icon">&#127913;</div>
-          <div class="artist-switch-text">
-            <strong>Are you an artist, group or company?</strong><br>
-            This form is for booking shows. If you want to join our roster, switch to the artists form.
-          </div>
-          <button type="button" class="artist-switch-btn" onclick="switchToArtista()">I'm an artist &rarr;</button>
-        </div>
-
-        <div class="option-grid">
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127864;</span>
-            <span class="option-label">Gala dinner</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127863;</span>
-            <span class="option-label">Cocktail / Welcome drink</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127775;</span>
-            <span class="option-label">Product launch</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127979;</span>
-            <span class="option-label">Convention / Conference</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127942;</span>
-            <span class="option-label">Awards ceremony</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127968;</span>
-            <span class="option-label">Corporate Family Day</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127881;</span>
-            <span class="option-label">Themed party</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#127867;</span>
-            <span class="option-label">Company party</span>
-          </div>
-          <div class="option-card" onclick="selectOption(this, 'event-type')">
-            <span class="option-icon">&#10067;</span>
-            <span class="option-label">Other</span>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(1)">Back</button>
-          <button class="btn-next" onclick="validateAndGo(2, 3)">Next</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: Show type -->
-      <div class="step" id="step-3">
-        <h2 class="step-title">What kind of entertainment are you looking for?</h2>
-        <p class="step-subtitle">Choose the format and category you're interested in. You can select multiple.</p>
-
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Show format</label>
-        <div class="option-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 24px;">
-          <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
-            <span class="option-icon">&#127917;</span>
-            <span class="option-label">Stage show</span>
-          </div>
-          <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
-            <span class="option-icon">&#127865;</span>
-            <span class="option-label">Ambient / strolling</span>
-          </div>
-          <div class="option-card option-card-compact" onclick="selectOption(this, 'show-format')">
-            <span class="option-icon">&#127919;</span>
-            <span class="option-label">Full event management</span>
-          </div>
-        </div>
-
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Artistic styles</label>
-        <div class="eb-select" id="ms-categoria">
-          <div class="eb-select-control" onclick="toggleEbSelect('ms-categoria', event)">
-            <span class="eb-select-placeholder" id="ms-categoria-placeholder">Select the styles you're interested in...</span>
-            <div class="eb-select-pills" id="ms-categoria-pills"></div>
-            <span class="eb-select-caret">&#9662;</span>
-          </div>
-          <div class="eb-select-panel" onclick="event.stopPropagation()">
-            <div class="eb-select-section">
-              <div class="eb-select-section-title">&#129665; Dance</div>
-              <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="Dance" data-val="Contemporary" onclick="toggleMsChip(this, 'ms-categoria')">Contemporary</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Classical" onclick="toggleMsChip(this, 'ms-categoria')">Classical</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Cabaret" onclick="toggleMsChip(this, 'ms-categoria')">Cabaret</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Flamenco" onclick="toggleMsChip(this, 'ms-categoria')">Flamenco</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="1920s" onclick="toggleMsChip(this, 'ms-categoria')">1920s</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Hip-hop" onclick="toggleMsChip(this, 'ms-categoria')">Hip-hop</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Salsa" onclick="toggleMsChip(this, 'ms-categoria')">Salsa</span>
-                <span class="eb-chip-option" data-cat="Dance" data-val="Themed" onclick="toggleMsChip(this, 'ms-categoria')">Themed</span>
-              </div>
-            </div>
-            <div class="eb-select-section">
-              <div class="eb-select-section-title">&#127925; Music</div>
-              <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="Music" data-val="Live bands" onclick="toggleMsChip(this, 'ms-categoria')">Live bands</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Classical" onclick="toggleMsChip(this, 'ms-categoria')">Classical</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Soloists" onclick="toggleMsChip(this, 'ms-categoria')">Soloists</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Singers" onclick="toggleMsChip(this, 'ms-categoria')">Singers</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Jazz" onclick="toggleMsChip(this, 'ms-categoria')">Jazz</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="DJ" onclick="toggleMsChip(this, 'ms-categoria')">DJ</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Rumba" onclick="toggleMsChip(this, 'ms-categoria')">Rumba</span>
-                <span class="eb-chip-option" data-cat="Music" data-val="Percussionists" onclick="toggleMsChip(this, 'ms-categoria')">Percussionists</span>
-              </div>
-            </div>
-            <div class="eb-select-section">
-              <div class="eb-select-section-title">&#127914; Circus</div>
-              <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="Circus" data-val="LED juggling" onclick="toggleMsChip(this, 'ms-categoria')">LED juggling</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Tightrope walker" onclick="toggleMsChip(this, 'ms-categoria')">Tightrope walker</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Acrobats" onclick="toggleMsChip(this, 'ms-categoria')">Acrobats</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Aerialists" onclick="toggleMsChip(this, 'ms-categoria')">Aerialists</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Stilt walkers" onclick="toggleMsChip(this, 'ms-categoria')">Stilt walkers</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Fire" onclick="toggleMsChip(this, 'ms-categoria')">Fire</span>
-                <span class="eb-chip-option" data-cat="Circus" data-val="Unique characters" onclick="toggleMsChip(this, 'ms-categoria')">Unique characters</span>
-              </div>
-            </div>
-            <div class="eb-select-section">
-              <div class="eb-select-section-title">&#10024; WOW Effect</div>
-              <div class="eb-select-section-chips">
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="LED dancers" onclick="toggleMsChip(this, 'ms-categoria')">LED dancers</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Video mapping" onclick="toggleMsChip(this, 'ms-categoria')">Video mapping</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Light shows" onclick="toggleMsChip(this, 'ms-categoria')">Light shows</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Laser" onclick="toggleMsChip(this, 'ms-categoria')">Laser</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Immersive" onclick="toggleMsChip(this, 'ms-categoria')">Immersive</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="LED percussionists" onclick="toggleMsChip(this, 'ms-categoria')">LED percussionists</span>
-                <span class="eb-chip-option" data-cat="WOW Effect" data-val="Custom" onclick="toggleMsChip(this, 'ms-categoria')">Custom</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="no-sure-card" onclick="toggleNoSure(this)" style="margin-top: 14px; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; text-align: center; transition: all 0.2s; background: var(--white);">
-          <div style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 2px;">Not sure, I'd like your recommendation</div>
-          <div style="font-size: 12px; color: var(--gray);">Our team will recommend the best shows for your event</div>
-        </div>
-
-        <div style="margin-top: 8px; padding: 20px; background: var(--light-gray); border-radius: 12px; border-left: 3px solid var(--accent);">
-          <label class="checkbox-group" style="margin-bottom: 0; padding: 0; background: none;">
-            <input type="checkbox" id="produccion-check">
-            <span class="checkbox-label" style="font-size: 14px;"><strong>Do you need technical production?</strong><br><span style="color: var(--gray); font-size: 13px;">Sound, lighting, staging, LED screens… We'll put together a full solution.</span></span>
-          </label>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(2)">Back</button>
-          <button class="btn-next" onclick="goToStep(4)">Next</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: Event details -->
-      <div class="step" id="step-4">
-        <h2 class="step-title">Your event details</h2>
-        <p class="step-subtitle">The more details you give us, the better our proposal.</p>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Event date</label>
-            <input type="date" id="f-fecha">
-          </div>
-          <div class="form-group">
-            <label>Number of guests</label>
-            <input type="number" id="f-asistentes" placeholder="e.g. 200">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>City / Venue</label>
-          <input type="text" id="f-ubicacion" placeholder="e.g. Barcelona, Hotel W">
-        </div>
-
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Approximate budget</label>
-        <div class="budget-grid">
-          <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&lt; &euro;5,000</div>
-          </div>
-          <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&euro;5,000 - &euro;10,000</div>
-          </div>
-          <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&euro;10,000 - &euro;25,000</div>
-          </div>
-          <div class="budget-card" onclick="selectOption(this, 'budget')">
-            <div class="budget-amount">&gt; &euro;25,000</div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(3)">Back</button>
-          <button class="btn-next" onclick="goToStep(5)">Next</button>
-        </div>
-      </div>
-
-      <!-- STEP 5: Comments -->
-      <div class="step" id="step-5">
-        <h2 class="step-title">Anything else we should know?</h2>
-        <p class="step-subtitle">Share any additional details about your event. This step is optional.</p>
-
-        <div class="form-group">
-          <label>Additional comments</label>
-          <textarea id="f-comentarios" placeholder="e.g. We'd like a space theme, we need artists to interact with guests during dinner…"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>How did you hear about us?</label>
-          <div class="eb-select" id="sel-conocido">
-            <div class="eb-select-control" onclick="toggleEbSelect('sel-conocido', event)">
-              <span class="eb-select-value placeholder" id="sel-conocido-value">Select an option</span>
-              <span class="eb-select-caret">&#9662;</span>
-            </div>
-            <div class="eb-select-panel">
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Website', this)">Website</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Google search', this)">Google search</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Referral', this)">Referral</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Social media', this)">Social media</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Previous event', this)">Previous event</div>
-              <div class="eb-select-option" onclick="setEbSelect('sel-conocido', 'Other', this)">Other</div>
-            </div>
-          </div>
-          <input type="hidden" id="f-conocido" value="">
-        </div>
-
-        <div class="form-actions">
-          <button class="btn-back" onclick="goToStep(4)">Back</button>
-          <button class="btn-submit" onclick="submitForm()">Submit request</button>
-        </div>
-      </div>
-
-      <!-- SUCCESS -->
-      <div class="success-screen" id="success">
-        <div class="success-hero" role="img" aria-label="Corporate events in Barcelona"></div>
-        <div class="success-body">
-          <div class="success-icon">&#10003;</div>
-          <h2>Request received!</h2>
-          <p>Our team will review your event details and send you a tailored proposal within 24 hours.</p>
-          <p style="font-size:14px;margin-top:8px;">In the meantime, check out our catalog.</p>
-
-          <div class="success-meta">
-            <div>&#128338; <span><strong>&lt; 24h</strong> for your proposal</span></div>
-            <div>&#128231; <span>We'll email you at <strong>your inbox</strong></span></div>
-            <div>&#127881; <span>+200 events per year</span></div>
-          </div>
-
-          <div style="margin-top: 36px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://www.eventosbarcelona.com/en/artistas-y-espectaculos/" class="btn-submit" style="display: inline-flex; align-items: center; text-decoration: none;">View catalog</a>
-            <a href="https://www.instagram.com/eventos.barcelona/" target="_blank" rel="noopener" class="btn-back" style="display: inline-flex; align-items: center; text-decoration: none;">Follow on Instagram</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
+    </section>
+  </main>
   <script>
-    function validateAndGo(from, to) {
-      document.querySelectorAll('.field-error').forEach(el => el.remove());
-      document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+const L = {"e_nombre": "Name is required", "e_email": "Enter a valid email", "e_tel": "Phone is required", "e_tipo": "Choose an event type", "e_otro": "Tell us what kind of event it is", "e_submit": "We couldn't send your request. Please try again in a few seconds.", "sending": "Submitting...", "submit": "Submit request", "otro_prefix": "Event type: ", "otro_estilo_prefix": "Other: ", "nosure_value": "Not sure", "artist_form": "/formulario-artistas-en.html", "lang": "en"};
+const STEPS = 3;
+function q(s, r) { return (r || document).querySelector(s); }
+function qa(s, r) { return Array.from((r || document).querySelectorAll(s)); }
 
-      const errors = [];
+function clearErrors() {
+  qa('.field-error').forEach(el => el.remove());
+  qa('.input-error').forEach(el => el.classList.remove('input-error'));
+}
+function addError(target, msg, after) {
+  const m = document.createElement('div');
+  m.className = 'field-error';
+  m.textContent = msg;
+  if (after) after.insertAdjacentElement('afterend', m);
+  else target.closest('.form-group').appendChild(m);
+  if (target && target.classList) target.classList.add('input-error');
+}
 
-      if (from === 1) {
-        const nombre = document.getElementById('f-nombre');
-        const email = document.getElementById('f-email');
-        const phone = document.getElementById('f-phone');
+function validateAndGo(from, to) {
+  clearErrors();
+  let ok = true;
+  if (from === 1) {
+    const nombre = q('#f-nombre'), email = q('#f-email'), phone = q('#f-phone');
+    if (!nombre.value.trim()) { addError(nombre, L.e_nombre); ok = false; }
+    if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { addError(email, L.e_email); ok = false; }
+    if (!phone.value.trim()) { addError(phone, L.e_tel); ok = false; }
+  }
+  if (from === 2) {
+    const sel = q('#step-2 .option-card.selected');
+    if (!sel) { addError({}, L.e_tipo, q('#step-2 .tiles')); ok = false; }
+    else if (sel.classList.contains('tile-otro') && !q('#f-tipo-otro').value.trim()) { addError(q('#f-tipo-otro'), L.e_otro); ok = false; }
+  }
+  if (!ok) {
+    const first = q('.field-error');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  // Envío parcial tras el paso 1, para que los leads que abandonan lleguen a GHL.
+  if (from === 1 && !sessionStorage.getItem('eb_partial_sent')) {
+    sessionStorage.setItem('eb_partial_sent', '1');
+    const partialPayload = {
+      partial: true,
+      ...(L.lang ? { lang: L.lang } : {}),
+      nombre: q('#f-nombre')?.value || '',
+      empresa: q('#f-empresa')?.value || '',
+      email: q('#f-email')?.value || '',
+      telefono: fullPhone(),
+      webEmpresa: q('#f-web')?.value || '',
+      cargo: q('#f-cargo')?.value || '',
+      origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
+    };
+    fetch('/api/lead-cliente', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(partialPayload), keepalive: true
+    }).catch(err => console.error('Partial submit error:', err));
+  }
+  goToStep(to);
+}
 
-        if (!nombre.value.trim()) errors.push({ el: nombre, msg: 'Name is required' });
-        if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
-          errors.push({ el: email, msg: 'Enter a valid email' });
-        }
-        if (!phone.value.trim()) errors.push({ el: phone, msg: 'Phone is required' });
-      }
+// Teléfono completo. Si el número ya trae prefijo internacional (lo escribe así el
+// usuario o llega del formulario de la web) no se le antepone el del desplegable:
+// antes salían cosas como "+34+447..." (15 leads entre abril y octubre de 2026).
+function fullPhone() {
+  const phone = (q('#f-phone')?.value || '').trim();
+  if (!phone) return (q('#f-prefix')?.value || '+34');
+  return phone.startsWith('+') ? phone : (q('#f-prefix')?.value || '+34') + phone;
+}
+// Separa el prefijo de un número internacional y lo pone en el desplegable si lo tiene.
+function setPhone(tel) {
+  tel = (tel || '').trim();
+  const opts = qa('#f-prefix option').map(o => o.value).sort((a, b) => b.length - a.length);
+  const m = tel.startsWith('+') && opts.find(v => tel.replace(/\s/g, '').startsWith(v));
+  if (m) { q('#f-prefix').value = m; let rest = tel.replace(/\s/g, '').slice(m.length); q('#f-phone').value = rest; }
+  else q('#f-phone').value = tel;
+}
 
-      if (from === 2) {
-        const selected = document.querySelector('#step-2 .option-card.selected');
-        if (!selected) {
-          const grid = document.querySelector('#step-2 .option-grid');
-          const msg = document.createElement('div');
-          msg.className = 'field-error';
-          msg.textContent = 'Select an event type';
-          grid.parentElement.insertBefore(msg, grid.nextSibling);
-          errors.push({});
-        }
-      }
+function setDots(n, done) {
+  for (let i = 1; i <= STEPS; i++) {
+    const dot = q('#dot-' + i);
+    dot.classList.remove('active', 'completed');
+    const num = dot.querySelector('.n');
+    if (done || i < n) { dot.classList.add('completed'); num.textContent = '✓'; }
+    else { num.textContent = i; if (i === n) dot.classList.add('active'); }
+  }
+}
+function goToStep(n) {
+  qa('.step').forEach(s => s.classList.remove('active'));
+  q('#step-' + n).classList.add('active');
+  setDots(n);
+  const top = q('.formcol').getBoundingClientRect().top + window.scrollY - 70;
+  window.scrollTo({ top: window.innerWidth < 1024 ? Math.max(top, 0) : 0, behavior: 'smooth' });
+}
 
-      if (errors.length > 0) {
-        errors.forEach(err => {
-          if (err.el) {
-            err.el.classList.add('input-error');
-            const msg = document.createElement('div');
-            msg.className = 'field-error';
-            msg.textContent = err.msg;
-            err.el.closest('.form-group, div').appendChild(msg);
-          }
-        });
-        return;
-      }
+function switchToArtista() {
+  const params = new URLSearchParams();
+  const nombre = q('#f-nombre')?.value?.trim() || '';
+  const email = q('#f-email')?.value?.trim() || '';
+  const phone = q('#f-phone')?.value?.trim() || '';
+  if (nombre) params.set('nombre', nombre);
+  if (email) params.set('email', email);
+  if (phone) params.set('telefono', fullPhone());
+  params.set('from', 'cliente_form');
+  if (L.lang) params.set('lang', L.lang);
+  const qs = params.toString();
+  window.location.href = L.artist_form + (qs ? '?' + qs : '');
+}
 
-      // Fire partial submit after step 1 so abandoned leads still land in GHL
-      if (from === 1 && !sessionStorage.getItem('eb_partial_sent')) {
-        sessionStorage.setItem('eb_partial_sent', '1');
-        const partialPayload = {
-          partial: true,
-          lang: 'en',
-          nombre: document.getElementById('f-nombre')?.value || '',
-          empresa: document.getElementById('f-empresa')?.value || '',
-          email: document.getElementById('f-email')?.value || '',
-          telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
-          webEmpresa: document.getElementById('f-web')?.value || '',
-          cargo: document.getElementById('f-cargo')?.value || '',
-          origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
-        };
-        fetch('/api/lead-cliente', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(partialPayload),
-          keepalive: true
-        }).catch(err => console.error('Partial submit error:', err));
-      }
+// Selección única dentro de su grupo (tipo de evento, formato, presupuesto).
+function selectOption(el) {
+  const group = el.parentElement;
+  group.querySelectorAll('.option-card, .budget-card').forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
+  el.classList.add('selected');
+  el.setAttribute('aria-pressed', 'true');
+  if (group.closest('#step-2') && group.classList.contains('tiles')) {
+    const otro = el.classList.contains('tile-otro');
+    q('#otro-evento').hidden = !otro;
+    if (otro) setTimeout(() => q('#f-tipo-otro').focus(), 50);
+  }
+}
 
-      goToStep(to);
+// Estilos: una categoría con foto abre su panel de chips.
+function toggleCat(tile) {
+  const panel = q('#chips-' + tile.dataset.key);
+  const open = panel.hidden;
+  panel.hidden = !open;
+  tile.classList.toggle('open', open);
+  tile.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function toggleMsChip(chip) {
+  chip.classList.toggle('active');
+  chip.setAttribute('aria-pressed', chip.classList.contains('active') ? 'true' : 'false');
+  if (chip.classList.contains('chip-otro')) {
+    const f = q('#otro-estilo');
+    f.hidden = !chip.classList.contains('active');
+    if (!f.hidden) setTimeout(() => q('#f-estilo-otro').focus(), 50);
+  }
+  updateCounts();
+}
+function updateCounts() {
+  qa('.cat-tile').forEach(t => {
+    const n = qa('#chips-' + t.dataset.key + ' .eb-chip-option.active').length;
+    const c = t.querySelector('.count');
+    c.textContent = n; c.classList.toggle('on', n > 0);
+  });
+}
+function toggleNoSure(el) {
+  el.classList.toggle('selected');
+  el.setAttribute('aria-pressed', el.classList.contains('selected') ? 'true' : 'false');
+}
+
+async function submitForm() {
+  const btn = q('.btn-submit');
+  btn.textContent = L.sending;
+  btn.disabled = true;
+  clearErrors();
+
+  const selEvento = q('#step-2 .option-card.selected');
+  const tipoEvento = selEvento ? selEvento.querySelector('.option-label').textContent : '';
+  const tipoOtro = (selEvento && selEvento.classList.contains('tile-otro')) ? q('#f-tipo-otro').value.trim() : '';
+  const formatoShow = q('#step-3 .choices .option-card.selected .option-label')?.textContent || '';
+  const categoriasSet = new Set();
+  const subcategorias = [];
+  qa('#estilos .eb-chip-option.active').forEach(chip => {
+    if (chip.classList.contains('chip-otro')) {
+      const t = q('#f-estilo-otro').value.trim();
+      categoriasSet.add(chip.dataset.cat);
+      subcategorias.push(L.otro_estilo_prefix + (t || chip.dataset.val));
+      return;
     }
+    if (chip.dataset.cat) categoriasSet.add(chip.dataset.cat);
+    if (chip.dataset.val) subcategorias.push(chip.dataset.val);
+  });
+  if (q('#no-sure-card')?.classList.contains('selected')) categoriasSet.add(L.nosure_value);
+  const categorias = Array.from(categoriasSet);
+  const presupuesto = q('.budget-card.selected .budget-amount')?.textContent || '';
+  let comentarios = q('#f-comentarios')?.value || '';
+  if (tipoOtro) comentarios = L.otro_prefix + tipoOtro + (comentarios ? '\n\n' + comentarios : '');
 
-    function goToStep(n) {
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      document.getElementById('step-' + n).classList.add('active');
+  const payload = {
+    ...(L.lang ? { lang: L.lang } : {}),
+    nombre: q('#f-nombre')?.value || '',
+    empresa: q('#f-empresa')?.value || '',
+    email: q('#f-email')?.value || '',
+    telefono: fullPhone(),
+    webEmpresa: q('#f-web')?.value || '',
+    cargo: q('#f-cargo')?.value || '',
+    tipoEvento,
+    formatoShow,
+    categorias,
+    subcategorias,
+    fechaEvento: q('#f-fecha')?.value || '',
+    numAsistentes: q('#f-asistentes')?.value || '',
+    ubicacion: q('#f-ubicacion')?.value || '',
+    presupuesto,
+    necesitaProduccion: q('#produccion-check')?.checked || false,
+    comentarios,
+    comoNosConocio: q('#f-conocido')?.value || '',
+    origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
+  };
 
-      for (let i = 1; i <= 5; i++) {
-        const dot = document.getElementById('dot-' + i);
-        const line = document.getElementById('line-' + (i - 1));
-        dot.classList.remove('active', 'completed');
-        if (i < n) {
-          dot.classList.add('completed');
-          dot.innerHTML = '&#10003;';
-        } else if (i === n) {
-          dot.classList.add('active');
-          dot.innerHTML = i;
-        } else {
-          dot.innerHTML = i;
-        }
-        if (line) {
-          line.classList.toggle('active', i < n);
-        }
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function switchToArtista() {
-      const params = new URLSearchParams();
-      const nombre = document.getElementById('f-nombre')?.value?.trim() || '';
-      const email = document.getElementById('f-email')?.value?.trim() || '';
-      const phone = document.getElementById('f-phone')?.value?.trim() || '';
-      const prefix = document.getElementById('f-prefix')?.value || '+34';
-      if (nombre) params.set('nombre', nombre);
-      if (email) params.set('email', email);
-      if (phone) params.set('telefono', prefix + phone);
-      params.set('from', 'cliente_form');
-      params.set('lang', 'en');
-      const qs = params.toString();
-      window.location.href = '/formulario-artistas-en.html' + (qs ? '?' + qs : '');
-    }
-
-    function selectOption(el, group) {
-      const parent = el.parentElement;
-      parent.querySelectorAll('.option-card, .budget-card').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-    }
-
-    /* === Custom dropdown helpers === */
-    function toggleEbSelect(id, e) {
-      if (e) e.stopPropagation();
-      document.querySelectorAll('.eb-select.open').forEach(s => {
-        if (s.id !== id) s.classList.remove('open');
-      });
-      document.getElementById(id).classList.toggle('open');
-    }
-
-    function setEbSelect(id, value, optionEl) {
-      const valueEl = document.getElementById(id + '-value');
-      valueEl.textContent = value;
-      valueEl.classList.remove('placeholder');
-      const hidden = document.getElementById('f-' + id.replace(/^sel-/, ''));
-      if (hidden) hidden.value = value;
-      const panel = optionEl.parentElement;
-      panel.querySelectorAll('.eb-select-option.active').forEach(o => o.classList.remove('active'));
-      optionEl.classList.add('active');
-      document.getElementById(id).classList.remove('open');
-    }
-
-    function toggleMsChip(chip, msId) {
-      chip.classList.toggle('active');
-      updateMsPills(msId);
-    }
-
-    function updateMsPills(msId) {
-      const ms = document.getElementById(msId);
-      const pillsContainer = document.getElementById(msId + '-pills');
-      const placeholder = document.getElementById(msId + '-placeholder');
-      const activeChips = ms.querySelectorAll('.eb-chip-option.active');
-      pillsContainer.innerHTML = '';
-      if (activeChips.length === 0) {
-        placeholder.style.display = '';
-        return;
-      }
-      placeholder.style.display = 'none';
-      activeChips.forEach(chip => {
-        const pill = document.createElement('span');
-        pill.className = 'eb-select-pill';
-        pill.textContent = chip.dataset.val;
-        const x = document.createElement('span');
-        x.className = 'eb-select-pill-x';
-        x.textContent = '×';
-        x.onclick = function(ev) {
-          ev.stopPropagation();
-          chip.classList.remove('active');
-          updateMsPills(msId);
-        };
-        pill.appendChild(x);
-        pillsContainer.appendChild(pill);
-      });
-    }
-
-    function toggleNoSure(el) {
-      el.classList.toggle('selected');
-    }
-
-    document.addEventListener('click', function() {
-      document.querySelectorAll('.eb-select.open').forEach(s => s.classList.remove('open'));
+  let submitFailed = false, submitError = '';
+  try {
+    const res = await fetch('/api/lead-cliente', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
     });
-
-    async function submitForm() {
-      const btn = document.querySelector('.btn-submit');
-      btn.textContent = 'Submitting...';
-      btn.disabled = true;
-
-      // Collect data
-      const tipoEvento = document.querySelector('#step-2 .option-card.selected .option-label')?.textContent || '';
-      const formatoShow = document.querySelector('#step-3 .option-grid .option-card.selected .option-label')?.textContent || '';
-
-      const categoriasSet = new Set();
-      const subcategorias = [];
-      document.querySelectorAll('#ms-categoria .eb-chip-option.active').forEach(chip => {
-        if (chip.dataset.cat) categoriasSet.add(chip.dataset.cat);
-        if (chip.dataset.val) subcategorias.push(chip.dataset.val);
-      });
-      if (document.getElementById('no-sure-card')?.classList.contains('selected')) {
-        categoriasSet.add('Not sure');
-      }
-      const categorias = Array.from(categoriasSet);
-
-      const presupuesto = document.querySelector('.budget-card.selected .budget-amount')?.textContent || '';
-
-      const payload = {
-        lang: 'en',
-        nombre: document.getElementById('f-nombre')?.value || '',
-        empresa: document.getElementById('f-empresa')?.value || '',
-        email: document.getElementById('f-email')?.value || '',
-        telefono: (document.getElementById('f-prefix')?.value || '+34') + (document.getElementById('f-phone')?.value || ''),
-        webEmpresa: document.getElementById('f-web')?.value || '',
-        cargo: document.getElementById('f-cargo')?.value || '',
-        tipoEvento,
-        formatoShow,
-        categorias,
-        subcategorias,
-        fechaEvento: document.getElementById('f-fecha')?.value || '',
-        numAsistentes: document.getElementById('f-asistentes')?.value || '',
-        ubicacion: document.getElementById('f-ubicacion')?.value || '',
-        presupuesto,
-        necesitaProduccion: document.getElementById('produccion-check')?.checked || false,
-        comentarios: document.getElementById('f-comentarios')?.value || '',
-        comoNosConocio: document.getElementById('f-conocido')?.value || '',
-        origen: (typeof captureOriginInfo === 'function') ? captureOriginInfo() : null
-      };
-
-      try {
-        const res = await fetch('/api/lead-cliente', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (!result.success) console.error('GHL error:', result);
-      } catch (err) {
-        console.error('Submit error:', err);
-      }
-
-      // Show success to client
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      document.getElementById('success').classList.add('active');
-
-      for (let i = 1; i <= 5; i++) {
-        const dot = document.getElementById('dot-' + i);
-        dot.classList.remove('active');
-        dot.classList.add('completed');
-        dot.innerHTML = '&#10003;';
-        const line = document.getElementById('line-' + i);
-        if (line) line.classList.add('active');
-      }
+    const result = await res.json().catch(() => null);
+    if (!res.ok || !result || !result.success) {
+      submitFailed = true;
+      submitError = (result && (result.error || JSON.stringify(result))) || `HTTP ${res.status}`;
+      console.error('Lead cliente error:', { status: res.status, result });
     }
+  } catch (err) {
+    submitFailed = true;
+    submitError = err.message || 'Network error';
+    console.error('Submit error:', err);
+  }
+  if (submitFailed) {
+    btn.disabled = false;
+    btn.textContent = L.submit;
+    const msg = document.createElement('div');
+    msg.className = 'field-error submit-error';
+    msg.textContent = L.e_submit + ' (' + submitError + ')';
+    q('#step-3 .form-actions').after(msg);
+    return;
+  }
+  qa('.step').forEach(s => s.classList.remove('active'));
+  q('#success').classList.add('active');
+  setDots(STEPS, true);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    // Auto-fill from URL params and skip step 1
-    (function() {
-      var params = new URLSearchParams(window.location.search);
-      if (params.get('skip') === '1') {
-        if (params.get('nombre')) document.getElementById('f-nombre').value = params.get('nombre');
-        if (params.get('empresa')) document.getElementById('f-empresa').value = params.get('empresa');
-        if (params.get('email')) document.getElementById('f-email').value = params.get('email');
-        if (params.get('telefono')) document.getElementById('f-phone').value = params.get('telefono');
-        if (params.get('web')) document.getElementById('f-web').value = params.get('web');
-        if (params.get('cargo')) document.getElementById('f-cargo').value = params.get('cargo');
-        goToStep(2);
-      }
-    })();
-    // Origin capture: referrer + UTMs + landing URL on load.
-    // Persisted in sessionStorage across internal navigation.
-    // submitForm() reads it and sends it to the backend to populate contact.source.
-    function captureOriginInfo() {
-      const KEY = 'eb_origin_info_v1';
-      const stored = sessionStorage.getItem(KEY);
-      if (stored) { try { return JSON.parse(stored); } catch (e) {} }
-      const params = new URLSearchParams(window.location.search);
-      const referrer = document.referrer || '';
-      let referrerSlug = '';
-      let referrerHost = '';
-      if (referrer) {
-        try {
-          const u = new URL(referrer);
-          referrerHost = u.hostname;
-          if (u.hostname.includes('eventosbarcelona.com')) {
-            referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
-          }
-        } catch (e) {}
-      }
-      const info = {
-        referrer, referrerHost, referrerSlug,
-        landingUrl: window.location.href,
-        utm_source: params.get('utm_source') || '',
-        utm_medium: params.get('utm_medium') || '',
-        utm_campaign: params.get('utm_campaign') || '',
-        utm_content: params.get('utm_content') || '',
-        utm_term: params.get('utm_term') || '',
-        fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
-      };
-      // Fallback UTM cross-page (WP snippet EB-UTM-TRACKING)
-      try {
-        const wpUtm = JSON.parse(sessionStorage.getItem('eb_utm') || '{}');
-        ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k => {
-          if (!info[k] && wpUtm[k]) info[k] = wpUtm[k];
-        });
-        if (wpUtm.landing_page && info.landingUrl.includes('formulario-inteligente')) {
-          info.landingUrl = window.location.origin + wpUtm.landing_page;
-        }
-      } catch (e) {}
-      try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
-      return info;
+// Viene del formulario corto de la web (?skip=1): rellena los datos y salta al paso 2.
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('skip') === '1') {
+    if (params.get('nombre')) q('#f-nombre').value = params.get('nombre');
+    if (params.get('empresa')) q('#f-empresa').value = params.get('empresa');
+    if (params.get('email')) q('#f-email').value = params.get('email');
+    if (params.get('telefono')) setPhone(params.get('telefono'));
+    if (params.get('web')) q('#f-web').value = params.get('web');
+    if (params.get('cargo')) q('#f-cargo').value = params.get('cargo');
+    if (params.get('mensaje')) { const tx = q('#f-comentarios'); if (tx) tx.value = params.get('mensaje'); }
+    goToStep(2);
+  }
+})();
+
+// Captura de origen: referrer + UTMs + landing URL al cargar. Persistido en
+// sessionStorage; lo lee submitForm() para popular contact.source en GHL.
+function captureOriginInfo() {
+  const KEY = 'eb_origin_info_v1';
+  const stored = sessionStorage.getItem(KEY);
+  if (stored) { try { return JSON.parse(stored); } catch (e) {} }
+  const params = new URLSearchParams(window.location.search);
+  const referrer = document.referrer || '';
+  let referrerSlug = '', referrerHost = '';
+  if (referrer) {
+    try {
+      const u = new URL(referrer);
+      referrerHost = u.hostname;
+      if (u.hostname.includes('eventosbarcelona.com')) referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
+    } catch (e) {}
+  }
+  const info = {
+    referrer, referrerHost, referrerSlug,
+    landingUrl: window.location.href,
+    utm_source: params.get('utm_source') || '',
+    utm_medium: params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content: params.get('utm_content') || '',
+    utm_term: params.get('utm_term') || '',
+    fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
+  };
+  // Fallback UTM entre páginas: el snippet WP EB-UTM-TRACKING guarda las UTMs
+  // de la primera landing en sessionStorage.eb_utm.
+  try {
+    const wpUtm = JSON.parse(sessionStorage.getItem('eb_utm') || '{}');
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(k => {
+      if (!info[k] && wpUtm[k]) info[k] = wpUtm[k];
+    });
+    if (wpUtm.landing_page && info.landingUrl.includes('formulario-inteligente')) {
+      info.landingUrl = window.location.origin + wpUtm.landing_page;
     }
-    captureOriginInfo();
-  </script>
-
+  } catch (e) {}
+  try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
+  return info;
+}
+captureOriginInfo();
+</script>
 </body>
 </html>

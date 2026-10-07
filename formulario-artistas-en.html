@@ -4,13 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Join the talent — Eventos Barcelona</title>
-  <link rel="icon" type="image/webp" href="/EB-eventos-barcelona-logo-3d.webp">
-  <link rel="apple-touch-icon" href="/EB-eventos-barcelona-logo-3d.webp">
-  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/EB-eventos-barcelona-logo-3d.webp">
-  <meta property="og:title" content="Eventos Barcelona — Join the team">
-  <meta property="og:description" content="We're looking for artists and suppliers to create unforgettable moments at corporate events.">
+  <title>Join the team · Eventos Barcelona</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#161413">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Eventos Barcelona">
+  <meta property="og:title" content="Eventos Barcelona · Join the team">
+  <meta property="og:description" content="We&#x27;re looking for artists and suppliers to create unforgettable moments at corporate events.">
+  <meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://propuestas.eventosbarcelona.com/formulario-artistas-en.html">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Eventos Barcelona · Join the team">
+  <meta name="twitter:description" content="We&#x27;re looking for artists and suppliers to create unforgettable moments at corporate events.">
+  <meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="https://www.eventosbarcelona.com/wp-content/uploads/2024/02/VORTEX-STUDIO-REHEARSAL-20F-05-1536x864.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -749,34 +762,221 @@
       .nav-flags { gap: 8px; }
       .nav-right { gap: 14px; }
     }
+  
+    /* ============================================================
+       RIDER VISUAL · formulario artistas (2026-10-07)
+       Misma línea que la home nueva, /contacto/ y el formulario de clientes:
+       papel crema, tinta, rosa EB en acciones, fotos con degradado.
+       Solo capa visual: el JS no cambia. Revertir = borrar este bloque y
+       volver a la cabecera/estructura de main.
+       ============================================================ */
+    :root {
+      --paper:#faf6ef; --paper-2:#f3ece1; --card:#fffdf9; --ink:#17150f; --ink-2:#5e5853; --muted:#6f685e;
+      --gold:#b8873b; --gold-text:#8a6424; --line:#e2d9c9; --line-2:#d2c6b2;
+      --accent:#cc3366; --accent-hover:#b02a56; --accent-light:#fbeef3; --night:#161413; --ok:#1a7340;
+      /* tokens antiguos, usados en estilos en línea y en el JS */
+      --dark:#17150f; --text:#17150f; --gray:#5e5853; --light-gray:#f3ece1; --border:#e2d9c9; --white:#fffdf9; --green:#1a7340;
+      --r-lg:18px; --r-md:12px;
+    }
+    html { -webkit-text-size-adjust:100%; }
+    body { background:var(--paper); color:var(--ink); line-height:1.55; font-size:16px; }
+    h1, h2, h3 { font-weight:600; }
+    :focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+
+    /* Barra superior */
+    .topbar { position:sticky; top:0; z-index:30; background:var(--night); color:#fff; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px clamp(16px,4vw,40px); }
+    .topbar img { height:42px; width:auto; display:block; }
+    .topbar-right { display:flex; align-items:center; gap:14px; }
+    .topbar .contact { color:#fff; font-size:14px; font-weight:600; text-decoration:none; border:1px solid rgba(255,255,255,.35); border-radius:999px; padding:8px 16px; }
+    .topbar .contact:hover { border-color:#fff; }
+    .lang { display:flex; border:1px solid rgba(255,255,255,.25); border-radius:999px; overflow:hidden; font-size:12.5px; font-weight:600; }
+    .lang a, .lang span { padding:6px 11px; text-decoration:none; color:#fff; }
+    .lang span { background:#fff; color:var(--night); }
+
+    /* Foto a la izquierda, formulario a la derecha */
+    .shell { display:grid; grid-template-columns:minmax(0,40%) minmax(0,60%); min-height:calc(100vh - 66px); }
+    .panel { position:relative; color:#fff; background:var(--night) var(--panel-img) center/cover no-repeat; }
+    .panel::before { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(22,20,19,.45) 0%,rgba(22,20,19,.72) 45%,rgba(22,20,19,.92) 100%); }
+    .panel-inner { position:sticky; top:66px; z-index:1; padding:clamp(40px,6vw,72px) clamp(24px,4vw,56px); display:flex; flex-direction:column; gap:22px; min-height:calc(100vh - 66px); justify-content:flex-end; }
+    .eyebrow { font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#e6c98f; font-weight:600; }
+    .panel .form-header { text-align:left; margin:0; }
+    .panel .form-header h1 { font-size:clamp(34px,3.6vw,52px); line-height:1.05; color:#fff; letter-spacing:-.01em; text-wrap:balance; margin-bottom:16px; }
+    .panel .form-header p { font-size:17px; color:#e9e3db; max-width:36ch; margin:0; }
+    .trust { list-style:none; display:flex; flex-direction:column; gap:6px; padding-top:18px; border-top:1px solid rgba(255,255,255,.2); font-size:14px; color:#d9d3cc; }
+    .trust li::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:#e6c98f; margin-right:10px; vertical-align:middle; }
+
+    .formcol { padding:clamp(24px,5vw,64px) clamp(16px,5vw,72px) 80px; display:flex; justify-content:center; min-width:0; }
+    .form-container { width:100%; max-width:720px; margin:0; padding:0; }
+    .form-card { background:none; border:0; box-shadow:none; border-radius:0; padding:0; }
+
+    /* Progreso (lo pinta el JS: #dot-1..4, #line-1..3) */
+    .progress-bar { display:flex; justify-content:flex-start; align-items:center; margin:0 0 30px; }
+    .progress-dot { width:30px; height:30px; background:var(--card); border:1.5px solid var(--line-2); color:var(--ink-2); font-size:13px; }
+    .progress-dot.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .progress-dot.completed { background:var(--ink); border-color:var(--ink); color:#fff; }
+    .progress-line { width:44px; height:1.5px; background:var(--line-2); margin:0 6px; }
+    .progress-line.active { background:var(--ink); }
+
+    /* Títulos de paso */
+    .step.active { animation:ebfade .35s ease; }
+    @keyframes ebfade { from { opacity:.4; transform:translateY(6px); } to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce) { .step.active { animation:none; } }
+    .step-title { font-size:clamp(26px,2.6vw,34px); line-height:1.15; color:var(--ink); letter-spacing:-.01em; margin-bottom:6px; text-wrap:balance; }
+    .step-subtitle { font-size:16px; color:var(--ink-2); margin-bottom:30px; }
+
+    /* Campos */
+    .form-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:0 24px; }
+    .form-group { margin-bottom:18px; min-width:0; }
+    .form-group label { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+    .form-group input, .form-group textarea, .form-group select {
+      font-size:16px; color:var(--ink); background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-md); padding:13px 14px; min-width:0; }
+    .form-group input::placeholder, .form-group textarea::placeholder { color:#756e64; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,135,59,.18); }
+    #a-prefix { border-radius:var(--r-md) !important; font-size:16px !important; }
+    .input-error { border-color:#b42318 !important; background:#fdf3f2 !important; }
+    .field-error { color:#b42318; }
+
+    /* Tarjetas de opción (proveedor, formato, "qué hace único tu show", shows) */
+    .option-grid { gap:10px; }
+    .option-card { position:relative; background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-md); padding:14px 34px 14px 14px; text-align:left; transition:border-color .15s, background .15s; }
+    .option-card:hover { border-color:var(--line-2); background:var(--card); }
+    .option-card.selected { border-color:var(--accent); background:var(--accent-light); }
+    .option-card.selected::after { content:"✓"; position:absolute; top:10px; right:12px; color:var(--accent-hover); font-weight:700; font-size:14px; }
+    .option-card .option-icon, .option-card-compact .option-icon { display:none !important; }
+    .option-card .option-label { display:block; font-size:14.5px; color:var(--ink); line-height:1.3; }
+    .option-card .option-desc { display:block; font-size:13px; color:var(--muted); line-height:1.4; }
+
+    /* Paso 0: perfil con foto (mismo formato que las cards de la home) */
+    .profile-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+    .option-card.profile-tile { display:block; padding:0; border:0; border-radius:var(--r-lg); overflow:hidden; aspect-ratio:4/5; background:var(--night); color:#fff; isolation:isolate; cursor:pointer; }
+    .option-card.profile-tile:hover { background:var(--night); box-shadow:0 0 0 3px var(--accent); }
+    .profile-tile img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .5s ease; }
+    .profile-tile:hover img { transform:scale(1.04); }
+    .profile-tile::before { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(22,20,19,0) 25%,rgba(22,20,19,.6) 55%,rgba(22,20,19,.92) 100%); }
+    .profile-tile .profile-body { position:absolute; left:20px; right:20px; bottom:20px; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+    .profile-tile .option-label { font-size:26px; font-weight:600; color:#fff; line-height:1.1; }
+    .profile-tile .option-desc { font-size:14px; color:#e9e3db; line-height:1.45; margin:0; }
+    .profile-tile .profile-go { margin-top:6px; display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#fff; border-radius:999px; padding:9px 18px; font-size:14px; font-weight:600; }
+    .profile-tile .profile-go::after { content:"→"; }
+    .profile-tile:hover .profile-go { background:var(--accent-hover); }
+
+    /* Desplegable de disciplinas */
+    .eb-select-control { min-height:52px; border:1.5px solid var(--line); border-radius:var(--r-md); background:var(--card); font-size:16px; }
+    .eb-select-control:hover, .eb-select.open .eb-select-control { border-color:var(--gold); }
+    .eb-select-placeholder, .eb-select-value.placeholder { color:var(--muted); }
+    .eb-select-panel { background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-md); box-shadow:0 18px 40px rgba(23,21,15,.12); }
+    .eb-select-section-title { color:var(--gold-text); font-size:12px; letter-spacing:.08em; }
+    .eb-select-option:hover, .eb-select-option.active { background:var(--paper-2); }
+    .eb-select-pill { background:var(--ink); color:#fff; }
+    .eb-select-pill-x { color:#fff; }
+    .eb-chip-option { padding:7px 13px; font-size:13.5px; border-radius:999px; border:1.5px solid var(--line); background:#fff; color:var(--ink); }
+    .eb-chip-option:hover { border-color:var(--line-2); color:var(--ink); }
+    .eb-chip-option.active { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+    /* Subidas */
+    .upload-area { border:1.5px dashed var(--line-2); background:var(--card); border-radius:var(--r-lg); }
+    .upload-area:hover { border-color:var(--accent); background:var(--accent-light); }
+    .upload-area.has-files { border-color:var(--ok); background:#eef7f1; }
+    .upload-icon { display:none !important; }
+    .upload-area::before { content:"+"; display:grid; place-items:center; width:44px; height:44px; margin:0 auto 10px; border-radius:50%; background:var(--paper-2); color:var(--gold-text); font-size:26px; font-weight:300; line-height:1; }
+    .upload-title { font-size:15.5px; color:var(--ink); }
+    .upload-desc { font-size:13.5px; color:var(--muted); }
+    .file-item { background:var(--paper-2); border-radius:var(--r-md); }
+
+    /* Shows */
+    .show-block { background:var(--card) !important; border:1.5px solid var(--line); border-radius:var(--r-lg) !important; }
+    #shows-add-btn-wrap > div { border-width:1.5px !important; border-radius:var(--r-lg) !important; }
+    #shows-add-btn-wrap > div > div:last-child { color:var(--accent-hover) !important; }  /* 4,4:1 → 5,6:1 sobre el rosa claro */
+
+    /* Precios */
+    .price-grid { gap:10px; }
+    .price-card { border:1.5px solid var(--line); background:var(--card); border-radius:var(--r-md); padding:16px 12px; }
+    .price-card:hover { border-color:var(--line-2); background:var(--card); }
+    .price-card.selected { border-color:var(--accent); background:var(--accent-light); }
+    .price-amount { font-family:inherit; font-weight:600; font-size:17px; color:var(--ink); font-variant-numeric:tabular-nums; }
+    .price-desc { font-size:13px; color:var(--muted); }
+
+    /* Casillas */
+    .checkbox-group { display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border:1.5px solid var(--line); border-radius:var(--r-md); background:var(--card); margin-bottom:10px; cursor:pointer; }
+    .checkbox-group:has(input:checked) { border-color:var(--accent); background:var(--accent-light); }
+    .checkbox-label { font-size:14px; color:var(--ink-2); }
+    .checkbox-label a { color:var(--accent-hover); }
+
+    /* Acciones */
+    .form-actions { display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:12px; margin-top:36px; padding-top:24px; border-top:1px solid var(--line); }
+    .btn-next, .btn-submit { display:inline-flex; align-items:center; justify-content:center; gap:10px; width:auto; background:var(--accent); color:#fff; border:0; border-radius:999px; padding:15px 30px; font-size:16px; font-weight:600; text-decoration:none; transition:background .15s; }
+    .btn-next:hover, .btn-submit:hover { background:var(--accent-hover); }
+    .btn-next::after, .btn-submit::after { content:"→"; }
+    .btn-submit:disabled { opacity:.7; cursor:progress; }
+    .btn-back { width:auto; color:var(--ink-2); font-weight:600; padding:12px 4px; font-size:15px; }
+    .btn-back:hover { color:var(--ink); }
+
+    /* Éxito */
+    .success-screen { background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-lg); overflow:hidden; text-align:center; }
+    .success-hero::after { background:linear-gradient(180deg,rgba(22,20,19,0) 0%,rgba(22,20,19,.45) 70%,rgba(22,20,19,.85) 100%); }
+    .success-icon { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:30px; color:#fff; background:var(--ok); box-shadow:0 12px 32px rgba(26,115,64,.3); }
+    .success-screen h2 { color:var(--ink); font-size:clamp(26px,3vw,34px); }
+    .success-screen p { color:var(--ink-2); }
+    .success-meta { color:var(--ink-2); }
+    /* los emojis de la lista son texto suelto: se ocultan con font-size 0 y se pone un punto dorado */
+    .success-meta div { font-size:0; }
+    .success-meta div span { font-size:13.5px; }
+    .success-meta div::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+    .success-meta strong { color:var(--ink); }
+
+    @media (max-width:1023px) {
+      .shell { grid-template-columns:minmax(0,1fr); min-height:0; }
+      .panel-inner { position:relative; top:0; min-height:0; padding:32px clamp(16px,5vw,40px) 28px; gap:12px; }
+      .panel .form-header h1 { font-size:clamp(30px,6vw,42px); margin-bottom:10px; }
+      .trust { display:none; }
+    }
+    @media (max-width:820px) {
+      .form-card { padding:0; }
+      .form-container { margin:0; padding:0; }
+    }
+    @media (max-width:560px) {
+      .topbar img { height:34px; }
+      .topbar .contact { display:none; }
+      .form-row { grid-template-columns:minmax(0,1fr); }
+      .panel .form-header p { font-size:15.5px; }
+      .profile-grid { grid-template-columns:minmax(0,1fr); }
+      /* 14 servicios de proveedor: a dos columnas para no hacer una lista interminable */
+      #cats-proveedor { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      #cats-proveedor .option-card { padding:12px 28px 12px 12px; }
+      .option-card.profile-tile { aspect-ratio:16/10; }
+      .profile-tile .option-label { font-size:22px; }
+      .progress-line { width:28px; }
+      .form-actions { flex-direction:row; gap:12px; }
+      .btn-next, .btn-submit { width:auto; padding:14px 24px; }
+      .btn-back { width:auto; }
+    }
   </style>
 </head>
 <body>
 
-<div class="nav">
-    <div class="nav-logo">
-      <img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona">
+<header class="topbar">
+    <a href="https://www.eventosbarcelona.com/en/" aria-label="Eventos Barcelona"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona" width="160" height="42"></a>
+    <div class="topbar-right">
+      <a class="contact" href="https://www.eventosbarcelona.com/en/contact/">Contact</a>
+      <nav class="lang" aria-label="Idioma / Language"><span aria-current="true">EN</span><a href="/formulario-artistas.html" hreflang="es">ES</a></nav>
     </div>
-    <div class="nav-right">
-      <a href="https://www.eventosbarcelona.com/en/contact/" class="nav-btn">Contact</a>
-      <div class="nav-flags">
-        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.svg" alt="English" class="active">
-        <img src="https://www.eventosbarcelona.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.svg" alt="Español">
-      </div>
-      <div class="nav-hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
+  </header>
 
+
+  <main class="shell">
+    <aside class="panel" style="--panel-img:url('https://www.eventosbarcelona.com/wp-content/uploads/2024/02/VORTEX-STUDIO-REHEARSAL-20F-05-1536x864.jpg')">
+      <div class="panel-inner">
+        <p class="eyebrow">Join the team</p>
+        <div class="form-header" id="form-header">
+          <h1>Become part of Eventos Barcelona</h1>
+          <p>We connect the best talent and the best suppliers with unique corporate events in Barcelona. Who are you?</p>
+        </div>
+        <ul class="trust"><li>Over 200 corporate events a year</li><li>300 artists and 500 shows in our catalogue</li><li>We review your profile in 2 to 5 days</li></ul>
+      </div>
+    </aside>
+
+    <section class="formcol">
   <div class="form-container">
-
-    <div class="form-header" id="form-header">
-      <h1>Become part of Eventos Barcelona</h1>
-      <p>We connect the best talent and the best suppliers with unique corporate events in Barcelona. Who are you?</p>
-    </div>
 
     <!-- PROGRESS BAR -->
     <div class="progress-bar" id="progress-bar" style="display:none;">
@@ -801,19 +1001,28 @@
 
       <!-- STEP 0: Artist / Supplier selector -->
       <div class="step active" id="step-0">
-        <div class="option-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div class="option-card" onclick="selectProfile('artista')" style="padding: 40px 24px; text-align: center;">
-            <span class="option-icon" style="font-size: 48px;">&#127917;</span>
-            <span class="option-label" style="font-size: 20px; margin-top: 8px;">I'm an Artist</span>
-            <span class="option-desc" style="font-size: 13px; line-height: 1.5; margin-top: 8px;">Dancer, musician, circus artist, performer… I want to showcase my act in the corporate events world.</span>
+        <h2 class="step-title">Choose your profile</h2>
+        <p class="step-subtitle">So we only ask for what&#x27;s relevant to you.</p>
+        <div class="option-grid profile-grid">
+          <div class="option-card profile-tile" role="button" tabindex="0" onclick="selectProfile('artista')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+            <img src="https://www.eventosbarcelona.com/wp-content/uploads/2026/09/show-tribal-fusion-bellydance-hero-768x384.jpg" alt="" decoding="async">
+            <span class="profile-body">
+              <span class="option-label">I&#x27;m an artist</span>
+              <span class="option-desc">Dancer, musician, circus artist, performer... I want to showcase my act in the corporate events world.</span>
+              <span class="profile-go" aria-hidden="true">Start</span>
+            </span>
           </div>
-          <div class="option-card" onclick="selectProfile('proveedor')" style="padding: 40px 24px; text-align: center;">
-            <span class="option-icon" style="font-size: 48px;">&#128736;</span>
-            <span class="option-label" style="font-size: 20px; margin-top: 8px;">I'm a Supplier</span>
-            <span class="option-desc" style="font-size: 13px; line-height: 1.5; margin-top: 8px;">Sound, lighting, catering, tents, technology… I offer technical or logistical services for events.</span>
+          <div class="option-card profile-tile" role="button" tabindex="0" onclick="selectProfile('proveedor')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+            <img src="https://www.eventosbarcelona.com/wp-content/uploads/2026/08/iluminacion-conciertoescenario-cenital-eventos-barcelona-768x512.jpg" alt="" decoding="async">
+            <span class="profile-body">
+              <span class="option-label">I&#x27;m a supplier</span>
+              <span class="option-desc">Sound, lighting, catering, tents, technology... I offer technical or logistical services for events.</span>
+              <span class="profile-go" aria-hidden="true">Start</span>
+            </span>
           </div>
         </div>
       </div>
+
 
       <!-- STEP 1: Contact details -->
       <div class="step" id="step-1">
@@ -1217,13 +1426,15 @@
 
       <!-- SUCCESS -->
       <div class="success-screen" id="success">
-        <div class="success-icon">&#10004;&#65039;</div>
+        <div class="success-icon">&#10003;</div>
         <h2>Profile received</h2>
         <p>Our team will review your profile and get in touch if there are matching opportunities. Thanks for wanting to be part of Eventos Barcelona.</p>
       </div>
 
     </div>
   </div>
+    </section>
+  </main>
 
   <script>
     const totalSteps = 4;
@@ -1382,7 +1593,7 @@
           data.fotosUrls.forEach(url => {
             uploadedUrls.push(url);
             const filename = url.split('/').pop();
-            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${filename} — existing photo</div>`;
+            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${filename}: existing photo</div>`;
           });
           document.getElementById('photo-upload').classList.add('has-files');
           document.getElementById('upload-status').textContent = `${data.fotosUrls.length} existing photo(s)`;
@@ -1654,7 +1865,7 @@
 
       for (const file of files) {
         if (file.size > 10 * 1024 * 1024) {
-          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — too large (max 10MB)</div>`;
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name}: too large (max 10MB)</div>`;
           continue;
         }
 
@@ -1671,12 +1882,12 @@
 
           if (data.secure_url) {
             uploadedUrls.push(data.secure_url);
-            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${file.name} — uploaded successfully</div>`;
+            list.innerHTML += `<div class="file-item"><span class="file-icon">&#10003;</span> ${file.name}: uploaded successfully</div>`;
           } else {
-            list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — upload error</div>`;
+            list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name}: upload error</div>`;
           }
         } catch (err) {
-          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name} — connection error</div>`;
+          list.innerHTML += `<div class="file-item" style="color:#c0392b;"><span>✕</span> ${file.name}: connection error</div>`;
         }
       }
 
