@@ -1,0 +1,54 @@
+{
+  "fuente": "Bing Webmaster Tools > AI Performance (BETA, muestra). Sin API: copiado a mano.",
+  "copiado": "2026-10-06",
+  "meses": {
+    "2026-07": 94,
+    "2026-08": 91,
+    "2026-09": 229
+  },
+  "paginas": {
+    "periodo": [
+      "2026-07-06",
+      "2026-10-05"
+    ],
+    "top": [
+      {
+        "url": "/eventos-mice-que-es/",
+        "citas": 91
+      },
+      {
+        "url": "/espacios-eventos-barcelona/",
+        "citas": 81
+      },
+      {
+        "url": "/como-organizar-una-fiesta-tematica-oeste-country-inolvidable/",
+        "citas": 49
+      },
+      {
+        "url": "/en/organize-sales-convention/",
+        "citas": 35
+      },
+      {
+        "url": "/en/10-unique-venues-corporate-gala-dinners-barcelona/",
+        "citas": 19
+      },
+      {
+        "url": "/como-organizar-evento-cultural-paso-a-paso/",
+        "citas": 18
+      },
+      {
+        "url": "/en/artists/caricaturistas-barcelona/",
+        "citas": 16
+      },
+      {
+        "url": "/",
+        "citas": 16
+      }
+    ]
+  },
+  "notas_mes": {
+    "2026-06": "pendiente",
+    "2026-07": "desde el 6 de julio"
+  },
+  "pendiente": "Junio y del 1 al 5 de julio: copiar de Bing Webmaster > AI Performance (vista 6 M) y quitar notas_mes"
+}

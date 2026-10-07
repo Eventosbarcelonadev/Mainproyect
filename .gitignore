@@ -12,6 +12,8 @@ data/*
 # archivo ES el archivo. Si no se versiona, la historia se pierde.
 !data/geo-timeline.json
 !data/seo-keywords.json
+# Citas en Copilot (Bing AI Performance): sin API, se copian a mano. Igual que arriba, es el archivo.
+!data/bing-ai-citas.json
 
 # Sensitive
 scripts/service-account-key.json

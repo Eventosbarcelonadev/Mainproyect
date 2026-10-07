@@ -13,6 +13,10 @@
  *   - GA4, propiedad 324831331, sesiones por canal (sessionDefaultChannelGroup).
  *   - GHL, oportunidades del pipeline Clientes por fecha de creación (createdAt).
  *     El evento generate_lead de GA4 NO se usa: está inflado (oct 2026).
+ *   - Bing Webmaster Tools, GetRankAndTrafficStats (clics e impresiones diarios en Bing), con
+ *     BING_WEBMASTER_API_KEY de .env. Bing solo guarda desde el 6-jun-2025 y en 2025 le faltan días:
+ *     se guarda cuántos días tiene cada mes para no comparar contra un mes incompleto.
+ *     Las citas en Copilot (AI Performance) no tienen API: van a mano en data/bing-ai-citas.json.
  */
 const fs = require('fs');
 const path = require('path');
@@ -108,6 +112,26 @@ function readEnv(file) {
     .map(l => { const i = l.indexOf('='); return [l.slice(0, i), l.slice(i + 1).trim().replace(/^["']|["']$/g, '')]; }));
 }
 
+async function bingTraffic(months) {
+  const env = readEnv(path.join(ROOT, '.env'));
+  const u = `https://ssl.bing.com/webmaster/api.svc/json/GetRankAndTrafficStats?siteUrl=${encodeURIComponent(SITE)}&apikey=${env.BING_WEBMASTER_API_KEY}`;
+  const r = await fetch(u); const j = await r.json();
+  if (!r.ok) throw new Error(`Bing ${r.status}: ${JSON.stringify(j).slice(0, 200)}`);
+  const byMonth = {};
+  for (const row of j.d || []) {
+    const day = new Date(Number(/\d+/.exec(row.Date)[0])).toISOString().slice(0, 10);
+    const x = byMonth[day.slice(0, 7)] ||= { clicks: 0, impressions: 0, days: 0 };
+    x.clicks += row.Clicks; x.impressions += row.Impressions; x.days++;
+  }
+  const pick = m => {
+    const x = byMonth[m] || { clicks: 0, impressions: 0, days: 0 };
+    return { ...x, complete: x.days === Number(lastDay(m).slice(8)) };
+  };
+  const out = { months: {}, prevYear: {} };
+  for (const m of months) { out.months[m] = pick(m); out.prevYear[m] = pick(prevYear(m)); }
+  return out;
+}
+
 function entryChannel(o) {
   const s = `${o.source || ''} | ${o.contactSource || ''}`;
   if (/Web Elementor|Form Cliente/i.test(s)) return 'formulario';
@@ -190,11 +214,14 @@ async function ghlLeads(months) {
   process.stdout.write('GHL… ');
   data.ghl = await ghlLeads(MONTHS);
   console.log('ok');
+  process.stdout.write('Bing… ');
+  data.bing = await bingTraffic(MONTHS);
+  console.log('ok');
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify(data, null, 1));
   console.log(`Escrito ${path.relative(ROOT, OUT)}`);
   for (const m of MONTHS) {
-    const g = data.gsc[m], a = data.ga4[m], l = data.ghl.months[m];
-    console.log(`${m}: imp ${g.impressions} · clics ${g.clicks} · top10 ${g.top10Impressions} · sesiones ${a.sessions} (Google ${a.channels['Organic Search'] || 0}, IA ${a.channels['AI Assistant'] || 0}) · leads ${l.total}`);
+    const g = data.gsc[m], a = data.ga4[m], l = data.ghl.months[m], b = data.bing.months[m];
+    console.log(`${m}: imp ${g.impressions} · clics ${g.clicks} · top10 ${g.top10Impressions} · sesiones ${a.sessions} (Google ${a.channels['Organic Search'] || 0}, IA ${a.channels['AI Assistant'] || 0}) · leads ${l.total} · Bing ${b.clicks} clics / ${b.impressions} imp (${b.days} días)`);
   }
 })().catch(e => { console.error('ERROR:', e.message); process.exit(1); });

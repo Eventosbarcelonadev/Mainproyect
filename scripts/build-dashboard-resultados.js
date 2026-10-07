@@ -5,13 +5,18 @@
  *   node scripts/build-dashboard-resultados.js
  *
  * Cada cifra enlaza a su fuente filtrada por el mismo periodo: Search Console, Google Analytics 4 o GHL.
+ * Bing Webmaster Tools no admite fechas en la URL: sus enlaces abren el informe y el periodo se elige allí.
  * La página es pública: solo lleva cifras agregadas.
+ *
+ * Las citas en Copilot salen de data/bing-ai-citas.json, que se rellena a mano desde Bing Webmaster Tools
+ * > AI Performance (no hay API). Ese archivo sí se versiona: es el único registro de esa serie.
  */
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const D = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'dashboard-resultados.json'), 'utf8'));
+const CITAS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'bing-ai-citas.json'), 'utf8'));
 const OUT = path.join(ROOT, 'dashboard-resultados.html');
 
 const MES = { '01': 'enero', '02': 'febrero', '03': 'marzo', '04': 'abril', '05': 'mayo', '06': 'junio', '07': 'julio', '08': 'agosto', '09': 'septiembre', '10': 'octubre', '11': 'noviembre', '12': 'diciembre' };
@@ -42,6 +47,9 @@ const ga4Url = m => {
   return `https://analytics.google.com/analytics/web/#/p${D.ga4Property}/reports/explorer?params=${params}&r=lifecycle-traffic-acquisition-v2&ruid=lifecycle-traffic-acquisition-v2,life-cycle,acquisition&collectionId=life-cycle`;
 };
 const ghlUrl = `https://app.gohighlevel.com/v2/location/${D.ghl.locationId}/opportunities/list`;
+const bingUrl = `https://www.bing.com/webmasters/searchperf?siteUrl=${SITE_ENC}`;
+const bingAiUrl = `https://www.bing.com/webmasters/aiperformance?siteUrl=${SITE_ENC}`;
+const srcUrl = { gsc: m => gscUrl(m), ga4: m => ga4Url(m), ghl: () => ghlUrl, bing: () => bingUrl, bingai: () => bingAiUrl };
 const link = (url, txt, title) => `<a class="src" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(title)}">${txt}</a>`;
 
 const M = D.months;
@@ -57,6 +65,10 @@ const ROWS = [
   { lab: 'Clics desde Google', hint: 'visitas que llegaron desde esos resultados', src: 'gsc', get: (m, p) => (p ? D.gscPrevYear : D.gsc)[m].clicks, fmt: n0 },
   { lab: 'CTR', hint: 'clics por cada 100 impresiones', src: 'gsc', get: (m, p) => (p ? D.gscPrevYear : D.gsc)[m].ctr, fmt: v => pct(v), noDelta: true },
   { lab: 'Posición media', hint: 'de todas las búsquedas, más bajo es mejor', src: 'gsc', get: (m, p) => (p ? D.gscPrevYear : D.gsc)[m].position, fmt: n1, noDelta: true },
+  { sec: 'Bing y Copilot · Bing Webmaster Tools' },
+  { lab: 'Citas en Copilot', hint: 'veces que Copilot citó una página de EB en su respuesta', src: 'bingai', get: (m, p) => (p ? null : (CITAS.meses[m] ?? null)), fmt: n0 },
+  { lab: 'Impresiones en Bing', hint: 'veces que la web salió en resultados de Bing', src: 'bing', get: (m, p) => (p ? D.bing.prevYear : D.bing.months)[m].impressions, fmt: n0 },
+  { lab: 'Clics desde Bing', hint: 'visitas que llegaron desde esos resultados', src: 'bing', get: (m, p) => (p ? D.bing.prevYear : D.bing.months)[m].clicks, fmt: n0 },
   { sec: 'Visitas · Google Analytics 4' },
   { lab: 'Visitas totales', hint: 'sesiones de todos los canales', src: 'ga4', get: (m, p) => (p ? D.ga4PrevYear : D.ga4)[m].sessions, fmt: n0 },
   { lab: 'Visitas desde Google', hint: 'canal Organic Search', src: 'ga4', get: (m, p) => ch(m, 'Organic Search', p), fmt: n0 },
@@ -66,20 +78,24 @@ const ROWS = [
   { lab: 'Leads nuevos', hint: 'oportunidades creadas en el pipeline Clientes', src: 'ghl', get: (m, p) => (p ? null : D.ghl.months[m].total), fmt: n0 },
   { lab: 'Leads por cada 100 visitas', hint: 'cálculo: leads / visitas totales × 100', src: 'calc', get: (m, p) => (p ? null : D.ghl.months[m].total / D.ga4[m].sessions * 100), fmt: n1 },
 ];
-const srcName = { gsc: 'Search Console', ga4: 'Google Analytics 4', ghl: 'GoHighLevel', calc: 'Cálculo' };
+const srcName = { gsc: 'Search Console', ga4: 'Google Analytics 4', ghl: 'GoHighLevel', bing: 'Bing Webmaster Tools', bingai: 'Bing Webmaster Tools (AI Performance)', calc: 'Cálculo' };
 function cell(r, m) {
   const v = r.get(m, false), p = r.get(m, true);
-  const url = r.src === 'gsc' ? gscUrl(m) : r.src === 'ga4' ? ga4Url(m) : r.src === 'ghl' ? ghlUrl : null;
-  const main = url ? link(url, r.fmt(v), `Abrir ${srcName[r.src]}: ${mesNombre(m)} ${m.slice(0, 4)}`) : `<span>${r.fmt(v)}</span>`;
+  const url = srcUrl[r.src] ? srcUrl[r.src](m) : null;
+  const main = url && v !== null ? link(url, r.fmt(v), `Abrir ${srcName[r.src]}: ${mesNombre(m)} ${m.slice(0, 4)}`) : `<span>${r.fmt(v)}</span>`;
+  const pm = prevYear(m);
   let sub = '';
-  if (r.src === 'gsc' || r.src === 'ga4') {
-    const pm = prevYear(m);
-    const purl = r.src === 'gsc' ? gscUrl(pm) : ga4Url(pm);
+  if (r.src === 'gsc' || r.src === 'ga4' || (r.src === 'bing' && D.bing.prevYear[m].complete)) {
+    const purl = srcUrl[r.src](pm);
     const d = r.noDelta ? null : delta(v, p);
     const dTxt = d === null ? '' : ` <b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '+' : ''}${d} %</b>`;
     sub = `<small class="yoy">${link(purl, `${pm.slice(0, 4)}: ${r.fmt(p)}`, `Abrir ${srcName[r.src]}: ${mesNombre(pm)} ${pm.slice(0, 4)}`)}${dTxt}</small>`;
-  } else if (r.src === 'ghl') {
-    sub = '<small class="yoy nd">2025: sin datos</small>';
+  } else if (r.src === 'bing') {
+    sub = `<small class="yoy nd">${pm.slice(0, 4)}: mes incompleto</small>`;
+  } else if (r.src === 'bingai' && (CITAS.notas_mes || {})[m]) {
+    sub = `<small class="yoy nd">${esc(CITAS.notas_mes[m])}</small>`;
+  } else if (r.src === 'ghl' || r.src === 'bingai') {
+    sub = `<small class="yoy nd">${pm.slice(0, 4)}: sin datos</small>`;
   }
   return `<td class="num">${main}${sub}</td>`;
 }
@@ -87,14 +103,14 @@ const tablaMeses = `<div class="t-scroll"><table class="tbl mes">
 <thead><tr><th>Métrica</th>${M.map(m => `<th class="num">${mesNombre(m)}</th>`).join('')}<th>Fuente</th></tr></thead>
 <tbody>
 ${ROWS.map(r => r.sec ? `<tr class="sec"><td colspan="${M.length + 2}">${r.sec}</td></tr>` :
-  `<tr><td><span class="lab">${r.lab}</span><small class="hint">${r.hint}</small></td>${M.map(m => cell(r, m)).join('')}<td class="srcname">${r.src === 'calc' ? 'Cálculo' : link(r.src === 'gsc' ? gscUrl(M[M.length - 1]) : r.src === 'ga4' ? ga4Url(M[M.length - 1]) : ghlUrl, srcName[r.src] + ' ↗', `Abrir ${srcName[r.src]}`)}</td></tr>`).join('\n')}
+  `<tr><td><span class="lab">${r.lab}</span><small class="hint">${r.hint}</small></td>${M.map(m => cell(r, m)).join('')}<td class="srcname">${r.src === 'calc' ? 'Cálculo' : link(srcUrl[r.src](M[M.length - 1]), (r.src.startsWith('bing') ? 'Bing Webmaster' : srcName[r.src]) + ' ↗', `Abrir ${srcName[r.src]}`)}</td></tr>`).join('\n')}
 </tbody></table></div>`;
 
 // ---------- 2. Gráficos relacionados ----------
 function chart(title, srcKey, vals, fmt, unit) {
-  const max = Math.max(...vals.map(v => v.v), 1);
+  const max = Math.max(...vals.map(v => v.v ?? 0), 1);
   return `<div class="chart"><div class="c-title"><b>${title}</b> · ${unit}</div>
-<div class="bars">${vals.map((x, i) => `<div class="bar${i === vals.length - 1 ? ' current' : ''}"><div class="b-col"><div class="b-num">${x.url ? link(x.url, fmt(x.v), `Abrir ${srcName[srcKey]}`) : fmt(x.v)}</div><div class="b-fill" style="height:${Math.max(2, Math.round(x.v / max * 100))}%"></div></div><div class="b-lab">${mesCorto(x.m)}</div></div>`).join('')}</div></div>`;
+<div class="bars">${vals.map((x, i) => `<div class="bar${i === vals.length - 1 ? ' current' : ''}"><div class="b-col"><div class="b-num">${x.url && x.v !== null ? link(x.url, fmt(x.v), `Abrir ${srcName[srcKey]}`) : fmt(x.v)}</div><div class="b-fill" style="height:${Math.max(2, Math.round((x.v ?? 0) / max * 100))}%"></div></div><div class="b-lab">${mesCorto(x.m)}</div></div>`).join('')}</div></div>`;
 }
 const charts = `<div class="charts">
 ${chart('Impresiones en Google', 'gsc', M.map(m => ({ m, v: D.gsc[m].impressions, url: gscUrl(m) })), n0, 'Search Console')}
@@ -102,6 +118,20 @@ ${chart('Clics desde Google', 'gsc', M.map(m => ({ m, v: D.gsc[m].clicks, url: g
 ${chart('Visitas totales', 'ga4', M.map(m => ({ m, v: D.ga4[m].sessions, url: ga4Url(m) })), n0, 'Google Analytics 4')}
 ${chart('Leads nuevos', 'ghl', M.map(m => ({ m, v: D.ghl.months[m].total, url: ghlUrl })), n0, 'GoHighLevel')}
 </div>`;
+
+// ---------- 2b. Asistentes de IA ----------
+const chartsIa = `<div class="charts">
+${chart('Citas en Copilot', 'bingai', M.map(m => ({ m, v: CITAS.meses[m] ?? null, url: bingAiUrl })), n0, 'Bing Webmaster Tools')}
+${chart('Visitas desde ChatGPT y otras IA', 'ga4', M.map(m => ({ m, v: ch(m, 'AI Assistant', false), url: ga4Url(m) })), n0, 'Google Analytics 4')}
+</div>`;
+// <wbr> tras cada / y - para que en móvil las URLs largas partan por ahí y no a mitad de palabra
+const urlLab = u => u === '/' ? '/ (home)' : esc(u).replace(/([/-])/g, '$1<wbr>');
+const pagCitadas = CITAS.paginas.top.map(x => `<tr><td>${link(D.site.replace(/\/$/, '') + x.url, urlLab(x.url), 'Abrir la página')}</td><td class="num">${link(bingAiUrl, n0(x.citas), 'Abrir AI Performance en Bing Webmaster Tools')}</td></tr>`).join('\n');
+const [pIni, pFin] = CITAS.paginas.periodo;
+const fechaLarga = s => `${Number(s.slice(8, 10))} de ${MES[s.slice(5, 7)]}`;
+const tablaCitadas = `<div class="t-scroll"><table class="tbl citadas">
+<thead><tr><th>Página citada por Copilot</th><th class="num">Citas</th></tr></thead>
+<tbody>${pagCitadas}</tbody></table></div>`;
 
 // ---------- 3. Keywords ----------
 const posClass = p => p === null ? 'nd' : p <= 10 ? 'p-top' : p <= 20 ? 'p-mid' : 'p-low';
@@ -164,7 +194,7 @@ const html = `<!doctype html>
 <meta property="og:site_name" content="Eventos Barcelona">
 <meta property="og:locale" content="es_ES">
 <meta property="og:title" content="Resultados ${rango} · Eventos Barcelona">
-<meta property="og:description" content="Impresiones y clics en Google, visitas por canal, posiciones de las keywords y leads, mes a mes. Cada cifra enlaza a su fuente.">
+<meta property="og:description" content="Impresiones y clics en Google y Bing, citas en Copilot, visitas por canal, posiciones de las keywords y leads, mes a mes. Cada cifra enlaza a su fuente.">
 <meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -241,6 +271,8 @@ footer code{background:#f2efe7;padding:1px 5px;border-radius:2px;font-size:11.5p
    En móvil la tabla se desplaza dentro de .t-scroll; sin esto la keyword se partía en 3 líneas y se perdía al deslizar. */
 .tbl th:first-child,.tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--card);min-width:190px}
 .tbl th:first-child{background:var(--ink)}
+.tbl.citadas{max-width:640px}
+.tbl.citadas td:first-child{overflow-wrap:anywhere}
 .tbl tr.sec td:first-child{background:#f2efe7}
 @media(max-width:820px){.tbl th:first-child,.tbl td:first-child{min-width:150px;box-shadow:2px 0 0 var(--line)}}
 </style>
@@ -250,8 +282,8 @@ footer code{background:#f2efe7;padding:1px 5px;border-radius:2px;font-size:11.5p
 <header>
 <div class="kicker">Eventos Barcelona · Resultados</div>
 <h1>Resultados de ${rango}</h1>
-<p class="sub-h">Impresiones y clics en Google, visitas por canal, posiciones de las keywords principales y leads, mes a mes. Cada cifra es un enlace que abre ese mismo dato en su fuente y con el mismo periodo.</p>
-<div class="badges"><span>Datos del ${genTxt}</span><span>Search Console</span><span>Google Analytics 4</span><span>GoHighLevel</span></div>
+<p class="sub-h">Impresiones y clics en Google y Bing, citas en Copilot, visitas por canal, posiciones de las keywords principales y leads, mes a mes. Cada cifra es un enlace que abre ese mismo dato en su fuente.</p>
+<div class="badges"><span>Datos del ${genTxt}</span><span>Search Console</span><span>Bing Webmaster Tools</span><span>Google Analytics 4</span><span>GoHighLevel</span></div>
 </header>
 
 <div class="kpis">
@@ -269,6 +301,12 @@ ${tablaMeses}
 <p class="h2-sub">De la búsqueda al lead: cuántas veces aparece la web en Google, cuántos entran, cuántas visitas llegan en total y cuántos leads se crean. El último mes va resaltado.</p>
 ${charts}
 
+<h2>Asistentes de IA</h2>
+<p class="h2-sub">Dos señales distintas. Las citas en Copilot cuentan las veces que el asistente de Microsoft usó una página de EB en su respuesta, aunque nadie hiciera clic. Las visitas desde ChatGPT y otras IA son las personas que sí hicieron clic en una de esas respuestas y llegaron a la web.</p>
+${chartsIa}
+<p class="h2-sub">Páginas que más cita Copilot entre el ${fechaLarga(pIni)} y el ${fechaLarga(pFin)} de ${pFin.slice(0, 4)}:</p>
+${tablaCitadas}
+
 <h2>Posiciones de las keywords principales</h2>
 <p class="h2-sub">Ordenadas de más a menos impresiones entre ${mesNombre(M[0])} y ${mesNombre(M[M.length - 1])}. Posición media en Google de cada búsqueda en el mes (1 es el primer resultado). Verde: primera página. Ámbar: segunda página. Gris: más abajo. Debajo, impresiones y clics de esa búsqueda.</p>
 ${tablaKw}
@@ -280,6 +318,8 @@ ${tablaLeads}
 <div class="callout info"><b>Cómo leer estos datos</b>
 <ul>
 <li><b>Search Console</b>: datos finales de la propiedad ${esc(D.site)}. La posición media mezcla todas las búsquedas, así que conviene mirar las keywords una a una.</li>
+<li><b>Citas en Copilot</b>: informe AI Performance de Bing Webmaster Tools, en fase de pruebas. Bing avisa de que es una muestra y de que las cifras pueden ajustarse. No tiene API, así que se copia a mano. Bing Webmaster no admite fechas en el enlace: el periodo se elige al abrirlo.${(CITAS.notas_mes || {})['2026-07'] ? ' Julio cuenta desde el día 6 y junio se añadirá en la próxima actualización.' : ''}</li>
+<li><b>Bing</b>: clics e impresiones en el buscador Bing. Bing solo guarda datos desde junio de ${Number(M[0].slice(0, 4)) - 1} y a varios meses de ese año les faltan días, así que solo se compara con el año anterior cuando el mes está completo.</li>
 <li><b>Visitas</b>: sesiones de Google Analytics 4 por canal. En ${mesNombre(l)} las visitas directas se disparan (${n0(ch(l, 'Direct', false))}); pueden incluir visitas del propio equipo.</li>
 <li><b>Leads</b>: GoHighLevel tiene datos desde el ${new Date(D.ghl.firstOpportunity).getUTCDate()} de ${MES[D.ghl.firstOpportunity.slice(5, 7)]} de ${D.ghl.firstOpportunity.slice(0, 4)}; antes no hay comparación posible. No se usa el evento de leads de Google Analytics porque cuenta de más.</li>
 <li><b>Origen de cada lead</b>: los UTM llegan vacíos en ${n0(M.reduce((a, m) => a + L(m).total - L(m).utmInformado, 0))} de ${n0(sumLeads)} leads, así que todavía no se puede decir cuántos vienen de Google y cuántos de ChatGPT. "¿Cómo nos conoció?" solo está contestado en ${n0(M.reduce((a, m) => a + L(m).total - L(m).comoNosConocio.sinRespuesta, 0))}.</li>
@@ -287,7 +327,7 @@ ${tablaLeads}
 </ul></div>
 
 <footer>
-Generado el ${genTxt} desde <code>data/dashboard-resultados.json</code>.<br>
+Generado el ${genTxt} desde <code>data/dashboard-resultados.json</code> y <code>data/bing-ai-citas.json</code>.<br>
 Para regenerar: <code>node scripts/dashboard-resultados-data.js &amp;&amp; node scripts/build-dashboard-resultados.js</code><br>
 Scale IT para Eventos Barcelona · <b>propuestas.eventosbarcelona.com/dashboard</b>
 </footer>
