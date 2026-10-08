@@ -163,6 +163,14 @@
     {
       "source": "/home-nueva/",
       "destination": "/OUTPUTS/eventos-barcelona/home-nueva.html"
+    },
+    {
+      "source": "/bocetos/",
+      "destination": "/OUTPUTS/eventos-barcelona/bocetos-web/index.html"
+    },
+    {
+      "source": "/bocetos/:path*",
+      "destination": "/OUTPUTS/eventos-barcelona/bocetos-web/:path*"
     }
   ],
   "headers": [
@@ -185,6 +193,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/bocetos",
+      "destination": "/bocetos/",
+      "permanent": false
+    },
     {
       "source": "/home-opciones",
       "destination": "/home-nueva",

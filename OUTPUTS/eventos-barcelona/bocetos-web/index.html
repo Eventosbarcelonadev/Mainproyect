@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title>Propuesta páginas de catálogo · Eventos Barcelona</title>
+<link rel="icon" href="https://propuestas.eventosbarcelona.com/favicon.ico" sizes="any"><link rel="icon" type="image/png" href="https://propuestas.eventosbarcelona.com/favicon.png"><link rel="apple-touch-icon" href="https://propuestas.eventosbarcelona.com/apple-touch-icon.png">
+<meta name="theme-color" content="#161413"><meta property="og:type" content="website"><meta property="og:site_name" content="Eventos Barcelona"><meta property="og:title" content="Propuesta páginas de catálogo · Eventos Barcelona"><meta property="og:description" content="Propuesta de diseño para las páginas de catálogo de eventosbarcelona.com: música, espectáculos, bailarines, artistas, fiesta temática y fichas."><meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="https://propuestas.eventosbarcelona.com/bocetos/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Propuesta páginas de catálogo · Eventos Barcelona"><meta name="twitter:description" content="Propuesta de diseño para las páginas de catálogo de eventosbarcelona.com: música, espectáculos, bailarines, artistas, fiesta temática y fichas."><meta name="twitter:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+<style>:root{--pink:#cc3366;--pink-dark:#a82854;--gold:#b8873b;--ink:#17150f;--body:#403b33;--muted:#6f685e;--line:#e2d9c9;--bg:#faf6ef;--bg-2:#f3ece1;--dark:#141414;--star:#c9922f;--font:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:light}
+body{background:var(--bg);color:var(--body)}h1,h2,h3{color:var(--ink)}.eyebrow{color:var(--gold)}.link{color:var(--ink)}
+.hero{position:relative;overflow:hidden;min-height:min(86vh,760px);display:flex;align-items:center;background:var(--bg) right center/auto 100% no-repeat}
+.hero::before{content:"";position:absolute;top:0;right:0;height:100%;aspect-ratio:1600/1068;background:linear-gradient(90deg,var(--bg) 0%,var(--bg) 19%,rgba(250,246,239,.9) 27%,rgba(250,246,239,.6) 34%,rgba(250,246,239,.3) 42%,rgba(250,246,239,.1) 48%,rgba(250,246,239,0) 53%)}
+.hero .wrap{position:relative;z-index:1;padding-block:72px}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0,var(--bg) calc(max(32px,calc((100vw - 1200px)/2 + 32px)) + 380px),rgba(250,246,239,.72) calc(max(32px,calc((100vw - 1200px)/2 + 32px)) + 490px),rgba(250,246,239,.28) calc(max(32px,calc((100vw - 1200px)/2 + 32px)) + 600px),rgba(250,246,239,0) calc(max(32px,calc((100vw - 1200px)/2 + 32px)) + 710px))}
+.hero .h1{max-width:12ch;margin:0 0 20px;font-size:clamp(2.4rem,5vw,4.5rem);letter-spacing:-.025em;line-height:1.08;font-weight:600;color:var(--ink)}
+.hero h1.eyebrow{font-size:.78rem;line-height:1.4;letter-spacing:.16em;margin:0 0 13px;color:var(--gold)}
+.hero .lead{font-size:1.15rem;max-width:30rem;color:var(--body)}.hero .cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:28px}
+.hero .note{margin-top:32px;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:1024px){.hero::after{display:none}.hero{min-height:0;align-items:flex-start;background-size:100% auto;background-position:50% 0}.hero::before{left:0;width:100%;height:100%;aspect-ratio:auto;background:linear-gradient(180deg,rgba(250,246,239,0) 0,rgba(250,246,239,0) 44vw,rgba(250,246,239,.75) 56vw,var(--bg) 66vw)}.hero .wrap{padding-block:58vw 56px}.hero .h1{max-width:14ch}}
+@media(max-width:767px){.hero{background-size:140% auto;background-position:52% 0}.hero::before{background:linear-gradient(180deg,rgba(250,246,239,0) 0,rgba(250,246,239,0) 54vw,rgba(250,246,239,.8) 74vw,var(--bg) 90vw)}.hero .wrap{padding-block:80vw 48px}.hero .h1{max-width:none}}
+.intro{background:var(--bg)}
+.idx{border-top:1px solid var(--line)}
+.idx a{display:grid;grid-template-columns:70px minmax(0,1fr) minmax(0,1.15fr) 40px;gap:24px;align-items:center;padding:32px 0;border-bottom:1px solid var(--line);text-decoration:none;transition:background .2s,padding .2s}
+.idx a:hover{background:var(--bg-2);padding-inline:18px}
+.idx .n{font-size:.85rem;letter-spacing:.1em;color:var(--gold);font-weight:600}
+.idx h3{margin:0;font-size:clamp(1.3rem,2.3vw,1.8rem);color:var(--ink)}.idx p{margin:0;color:var(--muted);font-size:1rem}
+.idx .go{justify-self:end;font-size:1.4rem;color:var(--pink)}
+@media(max-width:820px){.idx a{grid-template-columns:44px minmax(0,1fr);gap:8px 14px;padding:24px 0}.idx .go{display:none}.idx p{grid-column:2}}
+.about{position:relative;color:#fff;background:var(--dark) center/cover no-repeat}
+.about::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(24,15,5,.64) 0%,rgba(24,15,5,.88) 100%)}
+.about .wrap{position:relative}.about h2{color:#fff;max-width:22ch}.about p{color:rgba(255,255,255,.8);max-width:44rem}.about .eyebrow{color:#e8c98d}
+.about .stats{border-top-color:rgba(255,255,255,.22)}.about .stat b{color:#fff}.about .stat span{color:rgba(255,255,255,.65)}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.duo .d{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.duo img{aspect-ratio:16/10;object-fit:cover;width:100%}
+.duo .b{padding:26px 28px 30px;display:flex;flex-direction:column;flex:1}.duo h2{font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:10px}
+.duo .small{font-size:.98rem;color:var(--muted)}.duo .link{margin-top:auto;align-self:flex-start;padding-top:8px}
+@media(max-width:820px){.duo{grid-template-columns:minmax(0,1fr)}}
+.quote{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 24px 28px}
+.artist{background:var(--bg-2);border-top:1px solid var(--line)}
+
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);font-size:18px;line-height:1.55;overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}a{color:inherit}
+h1,h2,h3{margin:0 0 .5em;line-height:1.08;font-weight:600;letter-spacing:-.015em}
+h1{font-size:clamp(2.3rem,5.4vw,4.4rem)}h2{font-size:clamp(1.7rem,3.4vw,2.7rem)}h3{font-size:1.3rem}p{margin:0 0 1em}
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding-inline:24px}@media(min-width:1024px){.wrap{padding-inline:32px}}
+.eyebrow{display:inline-block;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--pink);color:#fff;text-decoration:none;font-weight:600;border:0;border-radius:999px;padding:15px 28px;font-family:inherit;font-size:1rem;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--pink-dark)}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.7)}.btn.ghost:hover{background:rgba(255,255,255,.12)}
+.btn.outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}.btn.outline:hover{background:var(--ink);color:#fff}
+.link{font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--pink);padding-bottom:2px}
+.mock-tag{position:fixed;left:12px;bottom:12px;z-index:50;background:#111;color:#fff;font-size:.75rem;padding:6px 10px;border-radius:6px;opacity:.85;pointer-events:none}
+.hdr{background:#141414;color:#fff;position:sticky;top:0;z-index:40}.hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:78px;gap:16px}
+.hdr img{width:190px;max-width:48vw}.hdr .right{display:flex;align-items:center;gap:14px}.hdr .lang{font-size:.85rem;opacity:.85}
+.hdr .burger{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between}.hdr .burger i{display:block;height:2px;background:#fff;border-radius:2px}
+@media(max-width:520px){.hdr .btn{padding:10px 16px;font-size:.9rem}.hdr .lang{display:none}}
+section.s{padding-block:84px}@media(max-width:820px){section.s{padding-block:50px}}
+.s-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:30px;flex-wrap:wrap}.s-head h2{margin:0;max-width:22ch}.s-head .link{white-space:nowrap}
+/* intro narrativo */
+.intro .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.intro h2{max-width:16ch;margin-bottom:0}
+.intro .txt p:last-child{margin-bottom:0}
+.intro .cierre{color:var(--ink);font-weight:600;font-size:1.12rem;margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:52px;padding-top:32px;border-top:1px solid var(--line)}
+.stat b{display:block;font-size:2.6rem;line-height:1;letter-spacing:-.03em;color:var(--ink)}.stat span{font-size:.9rem;color:var(--muted)}
+@media(max-width:820px){.intro .cols{grid-template-columns:minmax(0,1fr);gap:20px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:36px}.stat b{font-size:2rem}}
+/* pilares */
+.pillar{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center;padding-block:34px}
+.pillar:nth-of-type(even) .txt{order:-1}
+.pillar img{border-radius:20px;aspect-ratio:4/3;object-fit:cover;width:100%}
+.pillar h2{font-size:clamp(2rem,4vw,3.2rem);margin-bottom:14px}
+.pillar .small{font-size:1rem;color:var(--muted)}
+@media(max-width:820px){.pillar{grid-template-columns:minmax(0,1fr);gap:20px;padding-block:22px}.pillar:nth-of-type(even) .txt{order:0}}
+/* marquee */
+.marq{padding-block:38px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.marq p{text-align:center;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 20px}
+.mq{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq-track{display:flex;align-items:center;gap:64px;width:max-content;animation:mq 48s linear infinite}.mq:hover .mq-track{animation-play-state:paused}
+.mq-track img{height:var(--h,32px);width:auto;max-width:none;object-fit:contain;opacity:.62}@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:767px){.mq-track{gap:40px;animation-duration:36s}.mq-track img{height:calc(var(--h,32px)*.78)}}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.cards.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{position:relative;display:block;aspect-ratio:4/5;border-radius:20px;overflow:hidden;text-decoration:none;color:#fff;background:#141414}
+.cards.four .card{aspect-ratio:3/4}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}.card:hover img{transform:scale(1.05)}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 28%,rgba(0,0,0,.88) 100%)}
+.card .t{position:absolute;left:0;right:0;bottom:0;padding:20px;z-index:1}
+.card .t b{font-size:1.1rem;line-height:1.25;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .t span{font-size:.84rem;color:rgba(255,255,255,.8)}
+@media(max-width:820px){.cards,.cards.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.cards{grid-template-columns:minmax(0,1fr)}.cards.four .card{aspect-ratio:4/5}}
+.after{display:flex;justify-content:center;margin-top:28px}
+/* quotes, en formato reseña */
+.quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.quote{display:flex;flex-direction:column}
+.stars{color:var(--star);font-size:1.02rem;letter-spacing:.16em;line-height:1;margin-bottom:14px}
+.quote p{font-size:1rem;color:var(--ink);flex:1}.quote b{display:block;color:var(--ink);margin-top:4px}.quote span{color:var(--muted);font-size:.92rem}
+@media(max-width:980px){.quotes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.quotes{grid-template-columns:minmax(0,1fr)}}
+/* form */
+.formsec{position:relative;color:#fff;background:#141414 center/cover no-repeat}.formsec::before{content:"";position:absolute;inset:0;background:rgba(8,8,10,.82)}
+.formsec .wrap{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start;padding-block:80px}
+.formsec h2{color:#fff}.formsec .lead{color:rgba(255,255,255,.85);max-width:30rem}.formsec .eyebrow{color:rgba(255,255,255,.7)}
+.channels{margin-top:26px;display:grid;gap:12px;font-size:.98rem}.channels a{text-decoration:none;color:#fff}
+.channels .k{color:rgba(255,255,255,.6);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;display:block}
+@media(max-width:820px){.formsec .wrap{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:52px}}
+.form-card{background:#fff;color:#333;border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.form-card h3{font-size:1.45rem;margin-bottom:6px;text-align:center;color:#1a1a1a}.form-card .sub{font-size:.92rem;color:#6b6b6b;margin-bottom:16px;text-align:center}
+.steps{display:flex;align-items:center;gap:6px;margin:6px 0 18px}.steps b{width:28px;height:28px;border-radius:50%;background:#eee;color:#999;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600}.steps b.on{background:var(--pink);color:#fff}.steps i{flex:1;height:2px;background:#eee}
+.fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.fields label{display:block;font-size:.8rem;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+.fields input,.fields textarea{width:100%;border:1.5px solid #e6e6e6;border-radius:10px;padding:12px 14px;font:inherit;font-size:1rem;background:#fff}.fields .full{grid-column:1/-1}.fields textarea{min-height:80px;resize:vertical}
+.fields label.consent{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;font-weight:400;color:#6b6b6b;margin:14px 0 16px}
+.fields label.consent input{width:auto;flex:0 0 auto;margin-top:2px}.consent a{color:var(--pink)}.form-card .btn{width:100%}
+.micro{font-size:.82rem;color:#6b6b6b;text-align:center;margin:12px 0 0}
+@media(max-width:520px){.fields{grid-template-columns:minmax(0,1fr)}.form-card{padding:22px 18px}}
+/* artist */
+.artist .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;padding-block:30px}.artist p{margin:0}
+/* footer: fondo liso, sin neón ni foto de focos, misma rejilla de 1200 que el resto */
+.ftr{background:#111;color:rgba(255,255,255,.78);font-size:.93rem;line-height:1.6}
+.ftr a{color:rgba(255,255,255,.78);text-decoration:none;transition:color .15s}.ftr a:hover{color:#fff}
+.ftr-top{display:grid;grid-template-columns:1.15fr .85fr 1.6fr .75fr;gap:40px;padding-block:64px 52px}
+.ftr .logo{width:190px;margin-bottom:18px}.ftr .tag{color:#fff;font-weight:500;margin:0 0 14px}.ftr-brand p{margin:0 0 12px}
+.ftr h4{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,.5);margin:4px 0 18px}
+.ftr ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.ftr .icons{display:flex;gap:10px;margin-bottom:22px}
+.ftr .icons a{width:40px;height:40px;border:1px solid rgba(255,255,255,.22);border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.ftr .icons a:hover{border-color:#fff}.ftr .icons svg{width:18px;height:18px;fill:currentColor}
+.ftr .btn{padding:12px 22px;font-size:.92rem;color:#fff}
+.ftr-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;padding-block:20px 24px;border-top:1px solid rgba(255,255,255,.1);font-size:.84rem;color:rgba(255,255,255,.5)}
+.ftr-bottom a{color:rgba(255,255,255,.5)}
+@media(max-width:1023px){.ftr-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px 32px}}
+@media(max-width:560px){.ftr-top{grid-template-columns:minmax(0,1fr);padding-block:48px 36px}.ftr-bottom{flex-direction:column}}
+
+/* ===== BOCETOS · componentes añadidos (8-oct-2026) ===== */
+:root{--panel:#1c1a17;--hdr-h:78px}
+.skip{position:absolute;left:-999px}
+.skip:focus{left:12px;top:12px;z-index:100;background:#fff;color:#000;padding:8px 12px;border-radius:6px}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+
+/* --- Menú: barra --- */
+.nav{position:sticky;top:0;z-index:60;background:#141414;color:#fff}
+.nav .wrap{max-width:1360px}
+.nav-bar{display:flex;align-items:center;gap:14px;height:var(--hdr-h)}
+.nav-logo{flex:0 0 auto}
+.nav-logo img{width:156px}
+.nav-main{display:flex;align-items:center;gap:4px;margin-left:auto}
+.nav-main>a,.nav-item>a{display:inline-flex;align-items:center;height:var(--hdr-h);padding:0 10px;font-size:.9rem;font-weight:500;color:rgba(255,255,255,.86);text-decoration:none;white-space:nowrap;position:relative}
+.nav-main>a:hover,.nav-item>a:hover,.nav-item.open>a{color:#fff}
+.nav-main a[aria-current="page"]{color:#fff}
+.nav-main a[aria-current="page"]::after{content:"";position:absolute;left:10px;right:10px;bottom:22px;height:2px;background:var(--pink);border-radius:2px}
+.nav-item{position:relative;display:flex;align-items:center}
+.nav-item>a{padding-right:4px}
+.nav-caret{background:none;border:0;color:rgba(255,255,255,.7);cursor:pointer;padding:8px 8px 8px 2px;font-size:.7rem;line-height:1;transition:transform .2s}
+.nav-item.open .nav-caret{transform:rotate(180deg);color:#fff}
+.nav-right{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+.nav-lang{display:flex;gap:2px;font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.25);border-radius:999px;overflow:hidden}
+.nav-lang a,.nav-lang span{padding:5px 10px;text-decoration:none;color:#fff}
+.nav-lang span{background:#fff;color:#141414}
+.nav .btn{padding:11px 20px;font-size:.92rem}
+.nav-burger{display:none;align-items:center;gap:10px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.nav-burger i{display:block;width:16px;height:2px;background:#fff;box-shadow:0 5px 0 #fff,0 -5px 0 #fff;border-radius:2px}
+
+/* --- Menú: panel desplegable con fotos --- */
+.nav-panel{position:fixed;left:0;right:0;top:var(--hdr-h);background:var(--panel);border-top:1px solid rgba(255,255,255,.08);box-shadow:0 30px 60px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s,visibility .18s}
+.nav-item.open .nav-panel{opacity:1;visibility:visible;transform:none}
+.nav-panel .wrap{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,3.2fr);gap:36px;padding-block:30px 34px}
+.nav-panel .np-intro b{display:block;font-size:1.35rem;line-height:1.15;color:#fff;margin-bottom:10px;font-weight:600}
+.nav-panel .np-intro p{font-size:.92rem;color:rgba(255,255,255,.7);margin-bottom:16px}
+.nav-panel .np-intro a{color:#fff}
+.nav-cards{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:12px}
+.nav-cards a{position:relative;display:block;aspect-ratio:4/5;border-radius:14px;overflow:hidden;text-decoration:none;color:#fff;background:#000}
+.nav-cards img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.nav-cards a:hover img{transform:scale(1.05)}
+.nav-cards a::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)}
+.nav-cards span{position:absolute;left:14px;right:14px;bottom:12px;z-index:1;font-weight:600;font-size:.98rem;line-height:1.2}
+.nav-cards small{display:block;font-weight:400;font-size:.78rem;color:rgba(255,255,255,.75);margin-top:2px}
+.nav-scrim{position:fixed;inset:var(--hdr-h) 0 0 0;background:rgba(0,0,0,.35);opacity:0;visibility:hidden;transition:opacity .18s;z-index:-1}
+.nav.panel-open .nav-scrim{opacity:1;visibility:visible}
+
+/* --- Menú: móvil y portátil estrecho --- */
+.nav-drawer{position:fixed;inset:var(--hdr-h) 0 0 0;background:#141414;overflow-y:auto;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.nav.drawer-open .nav-drawer{opacity:1;visibility:visible}
+.nav-drawer .wrap{padding-block:18px 40px}
+.nav-drawer .d-item{border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-drawer .d-row{display:flex;align-items:center;justify-content:space-between}
+.nav-drawer .d-row a{flex:1;display:block;padding:16px 0;font-size:1.25rem;font-weight:500;color:#fff;text-decoration:none}
+.nav-drawer .d-row button{background:none;border:0;color:#fff;font-size:1rem;padding:16px 4px 16px 20px;cursor:pointer}
+.nav-drawer .d-sub{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 0 18px}
+.nav-drawer .d-item.open .d-sub{display:grid}
+.nav-drawer .d-sub a{position:relative;display:block;aspect-ratio:16/10;border-radius:12px;overflow:hidden;color:#fff;text-decoration:none;background:#000}
+.nav-drawer .d-sub img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
+.nav-drawer .d-sub span{position:absolute;left:10px;right:10px;bottom:8px;font-size:.88rem;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.nav-drawer .d-foot{margin-top:26px;display:grid;gap:16px}
+.nav-drawer .d-foot .btn{width:100%}
+.nav-drawer .d-contact{font-size:.95rem;color:rgba(255,255,255,.75)}
+.nav-drawer .d-contact a{color:#fff;text-decoration:none}
+.nav-drawer .d-lang{display:flex;gap:8px}
+.nav-drawer .d-lang a,.nav-drawer .d-lang span{border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;font-size:.88rem;font-weight:600;color:#fff;text-decoration:none}
+.nav-drawer .d-lang span{background:#fff;color:#141414}
+@media(max-width:1319px){.nav-main{display:none}.nav-burger{display:inline-flex}.nav-right{margin-left:auto}}
+@media(max-width:560px){:root{--hdr-h:64px}.nav-logo img{width:140px}.nav .nav-right .btn,.nav .nav-lang{display:none}}
+body.lock{overflow:hidden}
+
+/* --- Migas, encabezado de página interior --- */
+.crumbs{font-size:.8rem;letter-spacing:.06em;color:var(--muted);margin-bottom:14px}
+.crumbs a{color:var(--muted);text-decoration:none}
+.crumbs a:hover{color:var(--ink)}
+.crumbs i{font-style:normal;margin:0 8px;opacity:.6}
+.hero.inner{min-height:min(70vh,620px)}
+.hero.inner .h1,.hero.inner h1.big{max-width:15ch;font-size:clamp(2.2rem,4.4vw,3.8rem);letter-spacing:-.025em;line-height:1.08;font-weight:600;color:var(--ink);margin:0 0 18px}
+.hero::before{aspect-ratio:var(--ar,1600/1068)}
+.hero.inner h1.big.long{font-size:clamp(2rem,3.4vw,3rem);max-width:19ch}
+.hero .chips-mini{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.hero .chips-mini span{font-size:.82rem;border:1px solid var(--line);background:rgba(255,255,255,.7);border-radius:999px;padding:6px 12px;color:var(--body)}
+@media(max-width:1024px){.hero::before{aspect-ratio:auto}}
+
+/* cabecera sobria sin foto (blog, casos) */
+.phead{padding-block:64px 34px;border-bottom:1px solid var(--line)}
+.phead h1{max-width:20ch;font-size:clamp(2.2rem,4.6vw,3.8rem);margin-bottom:16px}
+.phead .lead{max-width:44rem;font-size:1.12rem;color:var(--body)}
+
+/* --- Filtros del catálogo --- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.filters button{font:inherit;font-size:.9rem;font-weight:500;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 16px;cursor:pointer;transition:all .15s}
+.filters button:hover{border-color:var(--ink)}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.filters .count{opacity:.6;margin-left:4px;font-size:.8rem}
+.card[hidden]{display:none}
+.card .tag{position:absolute;top:14px;left:14px;z-index:1;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;background:rgba(20,20,20,.55);backdrop-filter:blur(4px);color:#fff;border-radius:999px;padding:5px 10px}
+.card.otro{background:var(--bg-2);border:1.5px dashed var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.card.otro::after{display:none}
+.card.otro b{display:block;font-size:1.2rem;margin-bottom:8px}
+.card.otro span{font-size:.92rem;color:var(--muted)}
+.card.otro .plus{display:block;font-size:2.2rem;color:var(--gold);line-height:1;margin-bottom:10px}
+
+/* --- Momentos del evento (cómo elegir) --- */
+.moments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;counter-reset:m}
+.moment{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 22px 26px}
+.moment .n{font-size:.8rem;letter-spacing:.12em;color:var(--gold);font-weight:600}
+.moment h3{font-size:1.15rem;margin:10px 0 8px}
+.moment p{font-size:.95rem;color:var(--muted);margin:0 0 12px}
+.moment .picks{font-size:.88rem;color:var(--ink);margin:0}
+.moment .picks a{color:var(--ink)}
+@media(max-width:1023px){.moments{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.moments{grid-template-columns:minmax(0,1fr)}}
+
+/* --- Vídeo destacado --- */
+.vband{background:#141414;color:#fff}
+.vband .wrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:40px;align-items:center;padding-block:72px}
+.vband h2{color:#fff}
+.vband p{color:rgba(255,255,255,.78)}
+.vband .eyebrow{color:#e8c98d}
+.vplay{position:relative;display:block;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000}
+.vplay img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.vplay::after{content:"";position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:var(--pink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/34px no-repeat;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+@media(max-width:900px){.vband .wrap{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:52px}}
+
+/* --- Texto SEO a dos columnas, sobrio --- */
+.prose2{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
+.prose2 h2{max-width:16ch}
+.prose2 .txt p{color:var(--body)}
+.prose2 .txt a{color:var(--ink);text-decoration-color:var(--pink);text-underline-offset:3px}
+@media(max-width:820px){.prose2{grid-template-columns:minmax(0,1fr);gap:16px}}
+
+/* --- Guías relacionadas (landings que cuelgan de la página) --- */
+.guides{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:14px}
+.guide{display:flex;flex-direction:column;justify-content:space-between;gap:18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:var(--ink);min-height:150px;transition:border-color .15s,transform .15s}
+.guide:hover{border-color:var(--ink);transform:translateY(-2px)}
+.guide small{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.guide b{font-size:1.05rem;line-height:1.3}
+.guide span{color:var(--pink);font-weight:600}
+@media(max-width:1023px){.guides{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.guides{grid-template-columns:minmax(0,1fr)}}
+
+/* --- Preguntas frecuentes --- */
+.faq{border-top:1px solid var(--line);max-width:860px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:18px;padding:22px 0;font-weight:600;font-size:1.08rem;color:var(--ink)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.5rem;line-height:1;color:var(--gold);font-weight:400}
+.faq details[open] summary::after{content:"−"}
+.faq details p{margin:0 0 22px;color:var(--body);max-width:46rem}
+
+/* --- Ventajas / garantías en fila --- */
+.perks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px;border-top:1px solid var(--line);padding-top:30px}
+.perks b{display:block;color:var(--ink);font-size:1.05rem;margin-bottom:6px}
+.perks p{font-size:.95rem;color:var(--muted);margin:0}
+@media(max-width:900px){.perks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.perks{grid-template-columns:minmax(0,1fr)}}
+
+/* --- Ajustes tras revisión (8-oct) --- */
+.hero .note{max-width:34rem}
+@media(max-width:560px){
+ .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-24px;padding:2px 24px 6px}
+ .filters::-webkit-scrollbar{display:none}
+ .filters button{flex:0 0 auto}
+ .cards.four .card::after{background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.9) 100%)}
+ .cards.four .card .t{padding:14px}
+ .cards.four .card .t b{font-size:.95rem;-webkit-line-clamp:3}
+ .cards.four .card .t span{display:none}
+}
+/* --- Contraste AA (8-oct): el dorado #b8873b da 2,97:1 sobre crema. Texto pequeño en dorado oscuro. --- */
+:root{--gold-text:#8a6424}
+.eyebrow,.hero h1.eyebrow,.idx .n,.moment .n,.guide small,.story .n,.casefacts dt,.fcard dt,.art-body .tldr b.k,.art-body ol.ideas li::before,.chips-panel h4{color:var(--gold-text)}
+.about .eyebrow,.vband .eyebrow,.formsec .eyebrow{color:#e8c98d}
+.formsec .eyebrow{color:rgba(255,255,255,.75)}
+/* --- Nota de boceto --- */
+.bnote{position:fixed;right:14px;bottom:14px;z-index:70;display:flex;align-items:center;gap:10px;background:#111;color:#fff;font-size:.78rem;padding:8px 8px 8px 14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.bnote a{color:#111;background:#fff;border-radius:999px;padding:5px 11px;text-decoration:none;font-weight:600}
+@media print{.bnote{display:none}}
+.mock-tag{display:none}
+
+.ix-h{background:#141414;color:#fff}.ix-h .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}.ix-h img{width:160px}.ix-h span{font-size:.85rem;opacity:.8}
+.ix-intro{padding-block:56px 30px}.ix-intro h1{font-size:clamp(2.2rem,4.6vw,3.6rem);max-width:18ch}.ix-intro .lead{max-width:48rem;font-size:1.12rem}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px}.how div{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}.how b{display:block;color:var(--ink);margin-bottom:6px}.how p{margin:0;font-size:.95rem;color:var(--muted)}
+.toc2{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.toc2 a{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:.9rem;text-decoration:none;color:var(--ink)}
+.bx{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:36px;padding-block:36px;border-top:1px solid var(--line)}
+.pics{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 120px;gap:12px;align-items:start}.pics figure{margin:0}.pics img{border-radius:12px;border:1px solid var(--line);width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}.pics .m img{aspect-ratio:390/844}
+.pics figcaption{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.tx h3{font-size:1.5rem;margin-bottom:12px}.tx h3 a{text-decoration:none;color:var(--ink)}.lk{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}.lk .btn{padding:10px 18px;font-size:.92rem}.lk>a:not(.btn){font-size:.92rem;color:var(--muted)}
+.tx .k{display:block;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text,#8a6424);margin:14px 0 6px}.tx ul{margin:0;padding-left:1.1em}.tx li{font-size:.98rem;margin-bottom:4px}
+.find{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.find div{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}.find b{display:block;color:var(--ink);margin-bottom:6px}.find p{margin:0;font-size:.95rem}
+ol.big{padding-left:1.2em}ol.big li{margin-bottom:8px}
+@media(max-width:1023px){.bx{grid-template-columns:minmax(0,1fr)}.how,.find{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.pics{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pics .m{display:none}}
+</style></head><body>
+<header class="ix-h"><div class="wrap"><img src="https://www.eventosbarcelona.com/wp-content/uploads/2025/03/logo-slogan-negativo.svg" alt="Eventos Barcelona"><span>Propuesta para revisar</span></div></header>
+<main>
+<section class="wrap ix-intro">
+ <span class="eyebrow">Páginas de catálogo · Scale IT</span>
+ <h1>Las páginas de catálogo, con la línea de la home nueva</h1>
+ <p class="lead">Una sola plantilla para Música, Espectáculos, Bailarines, Artistas y Fiesta temática, y otra para las fichas de cada show. Mismo diseño que la home y /contacto/, con los textos, fotos y vídeos que ya tenéis. Ninguna página nueva en el menú.</p>
+ <div class="how">
+  <div><b>Cómo revisarlo</b><p>Abre cada propuesta y navega: los filtros, la galería y los enlaces funcionan. Míralo también en el móvil.</p></div>
+  <div><b>El menú de arriba</b><p>También es una propuesta (los mismos apartados, visibles en escritorio). Lo revisamos aparte; ahora céntrate en el contenido.</p></div>
+  <div><b>Qué no es definitivo</b><p>Los textos nuevos y las cifras. Al final te dejamos lo que necesitamos que valides.</p></div>
+ </div>
+ <div class="toc2"><a href="#musica">Música</a><a href="#espectaculos">Espectáculos</a><a href="#danza">Bailarines</a><a href="#artistas">Artistas</a><a href="#fiesta-tematica">Fiesta temática</a><a href="#ficha-show">Ficha de espectáculo</a><a href="#ficha-artista">Ficha de artista</a></div>
+</section>
+<section class="s" style="padding-top:10px"><div class="wrap">
+ <div class="s-head"><div><span class="eyebrow">Una sola plantilla</span><h2>Todas las categorías, iguales</h2></div></div>
+ <p style="max-width:46rem;color:var(--muted);margin-top:-14px">Como comentaste en la weekly: primero las categorías, todas iguales. Cada página de catálogo tiene, en este orden:</p>
+ <ol class="big"><li>Cabecera con la foto difuminada de la home y el H1 de siempre</li><li>Catálogo con filtros y tarjetas a sangre, más la tarjeta &quot;lo creamos a medida&quot;</li><li>Cómo elegir según el momento del evento</li><li>Vídeo destacado del canal de YouTube</li><li>Casos de éxito relacionados y logos de clientes</li><li>Texto SEO a dos columnas (el de hoy, ordenado)</li><li>Guías: las landings que cuelgan de cada página</li><li>Preguntas frecuentes</li><li>Formulario en 3 pasos</li></ol>
+</div></section>
+<section class="s" style="padding-top:0"><div class="wrap"><article class="bx" id="musica">
+ <div class="pics"><figure><img src="img/antes/musica-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="musica.html"><img src="img/bocetos/musica-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="musica.html"><img src="img/bocetos/musica-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="musica.html">Música</a></h3><div class="lk"><a class="btn" href="musica.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/musica/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Los 20 formatos, con filtro por estilo: flamenco y rumba, jazz y soul, clásica, fiesta y ambiente</li><li>La música según el momento del evento: cóctel, cena, momento show y fiesta</li><li>El vídeo de Raíces del Flamenco del canal de EB</li><li>Las landings de DJ, cantante, violinista y bandas como guías dentro de la página</li></ul></div>
+</article><article class="bx" id="espectaculos">
+ <div class="pics"><figure><img src="img/antes/espectaculos-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="espectaculos.html"><img src="img/bocetos/espectaculos-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="espectaculos.html"><img src="img/bocetos/espectaculos-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="espectaculos.html">Espectáculos</a></h3><div class="lk"><a class="btn" href="espectaculos.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/espectaculos/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Los shows con filtro: luz y LED, mapping y láser, arte en directo, agua</li><li>Dónde encaja cada show: opening, entre platos, momento final y bienvenida</li><li>El vídeo de 3D Dreams</li></ul></div>
+</article><article class="bx" id="danza">
+ <div class="pics"><figure><img src="img/antes/danza-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="danza.html"><img src="img/bocetos/danza-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="danza.html"><img src="img/bocetos/danza-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="danza.html">Bailarines</a></h3><div class="lk"><a class="btn" href="danza.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/danza/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Los 19 espectáculos con filtro: gran formato, flamenco y latina, urbana, clásica y aérea, temática</li><li>La danza según el momento del evento</li><li>El vídeo de Pulsar Dancers</li></ul></div>
+</article><article class="bx" id="artistas">
+ <div class="pics"><figure><img src="img/antes/artistas-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="artistas.html"><img src="img/bocetos/artistas-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="artistas.html"><img src="img/bocetos/artistas-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="artistas.html">Artistas</a></h3><div class="lk"><a class="btn" href="artistas.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/artistas/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Los 15 artistas con filtro: bienvenida e itinerantes, presentadores y magia, circo y fuego, arte en directo</li><li>Un artista para cada momento: recepción, cóctel, programa y cierre</li></ul></div>
+</article><article class="bx" id="fiesta-tematica">
+ <div class="pics"><figure><img src="img/antes/fiesta-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="fiesta-tematica.html"><img src="img/bocetos/fiesta-tematica-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="fiesta-tematica.html"><img src="img/bocetos/fiesta-tematica-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="fiesta-tematica.html">Fiesta temática</a></h3><div class="lk"><a class="btn" href="fiesta-tematica.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/fiesta-tematica/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Las seis temáticas y la tarjeta &quot;tu propia temática&quot;</li><li>Cómo construimos una fiesta: concepto, casting y vestuario, escenografía y dirección</li><li>El vídeo de la fiesta cabaret</li></ul></div>
+</article><article class="bx" id="ficha-show">
+ <div class="pics"><figure><img src="img/antes/ficha-show-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="ficha-show.html"><img src="img/bocetos/ficha-show-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="ficha-show.html"><img src="img/bocetos/ficha-show-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="ficha-show.html">Ficha de espectáculo</a></h3><div class="lk"><a class="btn" href="ficha-show.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/espectaculos/bailarinas-luz-golden-light-dancers/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>Lo que pediste: cabecera, título, texto, fotos y formulario</li><li>Galería en mosaico que se abre a pantalla completa</li><li>Tarjeta &quot;Ficha&quot; al lado del texto: formato, momento, espacio y botón para pedirlo</li></ul></div>
+</article><article class="bx" id="ficha-artista">
+ <div class="pics"><figure><img src="img/antes/ficha-artista-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="ficha-artista.html"><img src="img/bocetos/ficha-artista-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="ficha-artista.html"><img src="img/bocetos/ficha-artista-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
+ <div class="tx"><h3><a href="ficha-artista.html">Ficha de artista</a></h3><div class="lk"><a class="btn" href="ficha-artista.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/artistas/magos-en-barcelona/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
+ <b class="k">Qué cambia</b><ul><li>La misma plantilla que la ficha de espectáculo</li><li>Magos e ilusionistas como ejemplo</li></ul></div>
+</article></div></section>
+<section class="s"><div class="wrap">
+ <div class="s-head"><div><span class="eyebrow">Necesitamos tu OK</span><h2>Cuatro cosas para validar</h2></div></div>
+ <div class="find"><div><b>Unas mismas cifras en toda la web</b><p>Hoy cada página da las suyas (100 shows y 750 artistas en espectáculos, 200 grupos y 150 clientes en música y danza, 1.500 clientes en artistas). Proponemos usar solo las de la home: +15 años, +500 espectáculos, +300 artistas, +1.000 eventos.</p></div><div><b>Los textos nuevos</b><p>&quot;Cómo elegir&quot;, las preguntas frecuentes y las entradillas los hemos escrito nosotros a partir de los textos de hoy. Corrige lo que no encaje con cómo trabajáis.</p></div><div><b>Los filtros</b><p>¿Te cuadran las agrupaciones por estilo de cada página? Se pueden cambiar sin tocar el diseño.</p></div><div><b>El H1 de música</b><p>Proponemos &quot;Grupos de música para eventos en Barcelona&quot; en lugar de &quot;Grupos de música en Barcelona&quot;, para que incluya &quot;para eventos&quot;.</p></div></div>
+</div></section>
+<section class="s" style="padding-top:0"><div class="wrap">
+ <div class="s-head"><div><span class="eyebrow">Revisando las páginas de hoy</span><h2>Lo que hemos visto</h2></div></div>
+ <div class="find"><div><b>Fotos con marcas de otras empresas</b><p>La foto principal de Maestros de ceremonias lleva el rótulo &quot;Better…&quot; y la de Magos el de Park Place Technologies. Las de las fiestas oriental y ochentera llevan un lema de cliente y el logo de VMware. En los bocetos ya no salen; en la web siguen.</p></div><div><b>Fotos pequeñas</b><p>Se ven borrosas en tarjeta grande: Percusionistas y batucadas, Bailarines LED, Danza aérea, Artista de arena, Show violín láser, Bollywood, Orquesta y Caricaturistas. Nos vendrían bien fotos más grandes de estos shows.</p></div><div><b>Una ficha que lleva a otra</b><p>&quot;Artista Light Painting&quot; sale en el listado de espectáculos pero al entrar lleva a Show Malabares LED. En el boceto la hemos quitado: ¿la damos de baja o la recuperamos?</p></div><div><b>Vídeos cambiados</b><p>En la ficha de Cantantes de ópera sale el vídeo de The Crazy Waiters y en la de Pole Dance el de unos acróbatas aéreos.</p></div></div>
+</div></section>
+</main>
+<footer class="ftr"><div class="wrap ftr-bottom"><span>Propuesta preparada por Scale IT para Eventos Barcelona · octubre de 2026</span><span>Textos, fotos y vídeos de eventosbarcelona.com</span></div></footer>
+</body></html>
