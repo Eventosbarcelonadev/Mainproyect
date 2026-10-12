@@ -304,6 +304,24 @@ body.lock{overflow:hidden}
 .eyebrow,.hero h1.eyebrow,.idx .n,.moment .n,.guide small,.story .n,.casefacts dt,.fcard dt,.art-body .tldr b.k,.art-body ol.ideas li::before,.chips-panel h4{color:var(--gold-text)}
 .about .eyebrow,.vband .eyebrow,.formsec .eyebrow{color:#e8c98d}
 .formsec .eyebrow{color:rgba(255,255,255,.75)}
+/* --- Revisión de Xavi (12-oct): texto de entrada tras la cabecera, selección sin filtros, botón "a medida", miniaturas horizontales --- */
+.pintro{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
+.pintro h2{max-width:14ch}
+.pintro .big{font-size:clamp(1.25rem,2vw,1.6rem);line-height:1.45;letter-spacing:-.01em;color:var(--ink);margin:0 0 16px}
+.pintro .txt p:not(.big){color:var(--body);max-width:40rem;margin:0}
+@media(max-width:820px){.pintro{grid-template-columns:minmax(0,1fr);gap:12px}}
+.cards.h{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cards.h .card{aspect-ratio:3/2}
+@media(max-width:820px){.cards.h{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.cards.h{grid-template-columns:minmax(0,1fr)}.cards.h .card{aspect-ratio:16/10}}
+.more{margin:22px 0 0;font-size:.95rem;color:var(--muted);max-width:62rem}
+.more a{color:var(--body);text-decoration-color:var(--line);text-underline-offset:3px}
+.more a:hover{color:var(--ink)}
+.tailor{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:30px;background:var(--bg-2);border-radius:20px;padding:26px 30px}
+.tailor b{display:block;font-size:1.2rem;line-height:1.3;color:var(--ink);margin-bottom:4px}
+.tailor span{color:var(--body)}
+.tailor .btn{flex:0 0 auto}
+@media(max-width:700px){.tailor{flex-direction:column;align-items:stretch;padding:22px}.tailor .btn{width:100%}}
 /* --- Nota de boceto --- */
 .bnote{position:fixed;right:14px;bottom:14px;z-index:70;display:flex;align-items:center;gap:10px;background:#111;color:#fff;font-size:.78rem;padding:8px 8px 8px 14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .bnote a{color:#111;background:#fff;border-radius:999px;padding:5px 11px;text-decoration:none;font-weight:600}
@@ -331,49 +349,53 @@ ol.big{padding-left:1.2em}ol.big li{margin-bottom:8px}
  <h1>Las páginas de catálogo, con la línea de la home nueva</h1>
  <p class="lead">Una sola plantilla para Música, Espectáculos, Bailarines, Artistas y Fiesta temática, y otra para las fichas de cada show. Mismo diseño que la home y /contacto/, con los textos, fotos y vídeos que ya tenéis. Ninguna página nueva en el menú.</p>
  <div class="how">
-  <div><b>Cómo revisarlo</b><p>Abre cada propuesta y navega: los filtros, la galería y los enlaces funcionan. Míralo también en el móvil.</p></div>
+  <div><b>Cómo revisarlo</b><p>Abre cada propuesta y navega: la galería, los botones y los enlaces funcionan. Míralo también en el móvil.</p></div>
   <div><b>El menú de arriba</b><p>También es una propuesta (los mismos apartados, visibles en escritorio). Lo revisamos aparte; ahora céntrate en el contenido.</p></div>
   <div><b>Qué no es definitivo</b><p>Los textos nuevos y las cifras. Al final te dejamos lo que necesitamos que valides.</p></div>
  </div>
  <div class="toc2"><a href="#musica">Música</a><a href="#espectaculos">Espectáculos</a><a href="#danza">Bailarines</a><a href="#artistas">Artistas</a><a href="#fiesta-tematica">Fiesta temática</a><a href="#ficha-show">Ficha de espectáculo</a><a href="#ficha-artista">Ficha de artista</a></div>
 </section>
 <section class="s" style="padding-top:10px"><div class="wrap">
+ <div class="s-head"><div><span class="eyebrow">Tu revisión del 12 de octubre</span><h2>Lo que hemos cambiado</h2></div></div>
+ <div class="find"><div><b>Texto de entrada tras la cabecera</b><p>Cada categoría abre con un texto corto sobre cómo trabajamos. En las fichas, el texto y la tarjeta &quot;Ficha&quot; van ahora entre la cabecera y la galería, y la foto de la cabecera no se repite en la galería.</p></div><div><b>Fuera los filtros</b><p>En lugar de todo el catálogo con filtros, una selección de seis que enseña una parte de lo que hacemos. El resto queda en una línea discreta debajo, para que Google siga llegando a cada ficha.</p></div><div><b>&quot;Crea tu show&quot; como botón</b><p>La tarjeta punteada pasa a ser una banda con el botón &quot;Crea tu show a medida&quot;, que lleva al formulario.</p></div><div><b>Miniaturas en horizontal</b><p>Las tarjetas de cada categoría y las de &quot;También te puede interesar&quot; en las fichas, ahora apaisadas: tres por fila.</p></div></div>
+</div></section>
+<section class="s" style="padding-top:0"><div class="wrap">
  <div class="s-head"><div><span class="eyebrow">Una sola plantilla</span><h2>Todas las categorías, iguales</h2></div></div>
  <p style="max-width:46rem;color:var(--muted);margin-top:-14px">Como comentaste en la weekly: primero las categorías, todas iguales. Cada página de catálogo tiene, en este orden:</p>
- <ol class="big"><li>Cabecera con la foto difuminada de la home y el H1 de siempre</li><li>Catálogo con filtros y tarjetas a sangre, más la tarjeta &quot;lo creamos a medida&quot;</li><li>Cómo elegir según el momento del evento</li><li>Vídeo destacado del canal de YouTube</li><li>Casos de éxito relacionados y logos de clientes</li><li>Texto SEO a dos columnas (el de hoy, ordenado)</li><li>Guías: las landings que cuelgan de cada página</li><li>Preguntas frecuentes</li><li>Formulario en 3 pasos</li></ol>
+ <ol class="big"><li>Cabecera con la foto difuminada de la home y el H1 de siempre</li><li>Texto de entrada: qué hacemos y cómo trabajamos</li><li>Una selección de seis, en tarjetas horizontales, y la banda &quot;a medida&quot; con el botón al formulario</li><li>Cómo elegir según el momento del evento</li><li>Vídeo destacado del canal de YouTube</li><li>Casos de éxito relacionados y logos de clientes</li><li>Texto SEO a dos columnas (el de hoy, ordenado)</li><li>Guías: las landings que cuelgan de cada página</li><li>Preguntas frecuentes</li><li>Formulario en 3 pasos</li></ol>
 </div></section>
 <section class="s" style="padding-top:0"><div class="wrap"><article class="bx" id="musica">
  <div class="pics"><figure><img src="img/antes/musica-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="musica.html"><img src="img/bocetos/musica-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="musica.html"><img src="img/bocetos/musica-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="musica.html">Música</a></h3><div class="lk"><a class="btn" href="musica.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/musica/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Los 20 formatos, con filtro por estilo: flamenco y rumba, jazz y soul, clásica, fiesta y ambiente</li><li>La música según el momento del evento: cóctel, cena, momento show y fiesta</li><li>El vídeo de Raíces del Flamenco del canal de EB</li><li>Las landings de DJ, cantante, violinista y bandas como guías dentro de la página</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Texto de entrada tras la cabecera y una selección de seis formatos, sin filtros</li><li>La música según el momento del evento: cóctel, cena, momento show y fiesta</li><li>El vídeo de Raíces del Flamenco del canal de EB</li><li>Las landings de DJ, cantante, violinista y bandas como guías dentro de la página</li></ul></div>
 </article><article class="bx" id="espectaculos">
  <div class="pics"><figure><img src="img/antes/espectaculos-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="espectaculos.html"><img src="img/bocetos/espectaculos-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="espectaculos.html"><img src="img/bocetos/espectaculos-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="espectaculos.html">Espectáculos</a></h3><div class="lk"><a class="btn" href="espectaculos.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/espectaculos/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Los shows con filtro: luz y LED, mapping y láser, arte en directo, agua</li><li>Dónde encaja cada show: opening, entre platos, momento final y bienvenida</li><li>El vídeo de 3D Dreams</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Texto de entrada y seis shows destacados, sin filtros</li><li>Banda &quot;¿Un show con tu marca?&quot; con el botón Crea tu show a medida</li><li>Dónde encaja cada show: opening, entre platos, momento final y bienvenida</li><li>El vídeo de 3D Dreams</li></ul></div>
 </article><article class="bx" id="danza">
  <div class="pics"><figure><img src="img/antes/danza-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="danza.html"><img src="img/bocetos/danza-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="danza.html"><img src="img/bocetos/danza-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="danza.html">Bailarines</a></h3><div class="lk"><a class="btn" href="danza.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/danza/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Los 19 espectáculos con filtro: gran formato, flamenco y latina, urbana, clásica y aérea, temática</li><li>La danza según el momento del evento</li><li>El vídeo de Pulsar Dancers</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Texto de entrada y seis espectáculos de danza destacados, sin filtros</li><li>La danza según el momento del evento</li><li>El vídeo de Pulsar Dancers</li></ul></div>
 </article><article class="bx" id="artistas">
  <div class="pics"><figure><img src="img/antes/artistas-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="artistas.html"><img src="img/bocetos/artistas-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="artistas.html"><img src="img/bocetos/artistas-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="artistas.html">Artistas</a></h3><div class="lk"><a class="btn" href="artistas.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/artistas/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Los 15 artistas con filtro: bienvenida e itinerantes, presentadores y magia, circo y fuego, arte en directo</li><li>Un artista para cada momento: recepción, cóctel, programa y cierre</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Texto de entrada y seis artistas destacados, sin filtros</li><li>Un artista para cada momento: recepción, cóctel, programa y cierre</li></ul></div>
 </article><article class="bx" id="fiesta-tematica">
  <div class="pics"><figure><img src="img/antes/fiesta-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="fiesta-tematica.html"><img src="img/bocetos/fiesta-tematica-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="fiesta-tematica.html"><img src="img/bocetos/fiesta-tematica-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="fiesta-tematica.html">Fiesta temática</a></h3><div class="lk"><a class="btn" href="fiesta-tematica.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/fiesta-tematica/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Las seis temáticas y la tarjeta &quot;tu propia temática&quot;</li><li>Cómo construimos una fiesta: concepto, casting y vestuario, escenografía y dirección</li><li>El vídeo de la fiesta cabaret</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Texto de entrada y las seis temáticas</li><li>Banda &quot;Tu propia temática&quot; con el botón Crea tu fiesta a medida</li><li>Cómo construimos una fiesta: concepto, casting y vestuario, escenografía y dirección</li><li>El vídeo de la fiesta cabaret</li></ul></div>
 </article><article class="bx" id="ficha-show">
  <div class="pics"><figure><img src="img/antes/ficha-show-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="ficha-show.html"><img src="img/bocetos/ficha-show-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="ficha-show.html"><img src="img/bocetos/ficha-show-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="ficha-show.html">Ficha de espectáculo</a></h3><div class="lk"><a class="btn" href="ficha-show.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/espectaculos/bailarinas-luz-golden-light-dancers/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>Lo que pediste: cabecera, título, texto, fotos y formulario</li><li>Galería en mosaico que se abre a pantalla completa</li><li>Tarjeta &quot;Ficha&quot; al lado del texto: formato, momento, espacio y botón para pedirlo</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>Cabecera, y justo debajo el texto con la tarjeta &quot;Ficha&quot;: formato, momento, espacio y botón para pedirlo</li><li>Después la galería, con su título, que se abre a pantalla completa</li><li>Por qué funciona, otros shows y formulario</li></ul></div>
 </article><article class="bx" id="ficha-artista">
  <div class="pics"><figure><img src="img/antes/ficha-artista-desk-top.jpg" alt="" loading="lazy"><figcaption>Hoy</figcaption></figure><figure><a href="ficha-artista.html"><img src="img/bocetos/ficha-artista-desk.jpg" alt="" loading="lazy"></a><figcaption>Propuesta</figcaption></figure><figure class="m"><a href="ficha-artista.html"><img src="img/bocetos/ficha-artista-mob.jpg" alt="" loading="lazy"></a><figcaption>Móvil</figcaption></figure></div>
  <div class="tx"><h3><a href="ficha-artista.html">Ficha de artista</a></h3><div class="lk"><a class="btn" href="ficha-artista.html">Ver la propuesta</a><a href="https://www.eventosbarcelona.com/artistas/magos-en-barcelona/" target="_blank" rel="noopener">Ver la página de hoy</a></div>
- <b class="k">Qué cambia</b><ul><li>La misma plantilla que la ficha de espectáculo</li><li>Magos e ilusionistas como ejemplo</li></ul></div>
+ <b class="k">Qué cambia</b><ul><li>La misma plantilla que la ficha de espectáculo: el texto separa la cabecera de la galería</li><li>La foto de la cabecera ya no se repite en la galería</li><li>Magos e ilusionistas como ejemplo</li></ul></div>
 </article></div></section>
 <section class="s"><div class="wrap">
  <div class="s-head"><div><span class="eyebrow">Necesitamos tu OK</span><h2>Cuatro cosas para validar</h2></div></div>
- <div class="find"><div><b>Unas mismas cifras en toda la web</b><p>Hoy cada página da las suyas (100 shows y 750 artistas en espectáculos, 200 grupos y 150 clientes en música y danza, 1.500 clientes en artistas). Proponemos usar solo las de la home: +15 años, +500 espectáculos, +300 artistas, +1.000 eventos.</p></div><div><b>Los textos nuevos</b><p>&quot;Cómo elegir&quot;, las preguntas frecuentes y las entradillas los hemos escrito nosotros a partir de los textos de hoy. Corrige lo que no encaje con cómo trabajáis.</p></div><div><b>Los filtros</b><p>¿Te cuadran las agrupaciones por estilo de cada página? Se pueden cambiar sin tocar el diseño.</p></div><div><b>El H1 de música</b><p>Proponemos &quot;Grupos de música para eventos en Barcelona&quot; en lugar de &quot;Grupos de música en Barcelona&quot;, para que incluya &quot;para eventos&quot;.</p></div></div>
+ <div class="find"><div><b>Unas mismas cifras en toda la web</b><p>Hoy cada página da las suyas (100 shows y 750 artistas en espectáculos, 200 grupos y 150 clientes en música y danza, 1.500 clientes en artistas). Proponemos usar solo las de la home: +15 años, +500 espectáculos, +300 artistas, +1.000 eventos.</p></div><div><b>Los textos nuevos</b><p>&quot;Cómo elegir&quot;, las preguntas frecuentes y las entradillas los hemos escrito nosotros a partir de los textos de hoy. Corrige lo que no encaje con cómo trabajáis.</p></div><div><b>Las seis destacadas</b><p>¿Te cuadran los seis shows que enseñamos en cada página? Se cambian sin tocar el diseño. El resto queda en una línea discreta debajo, para que Google siga llegando a cada ficha.</p></div><div><b>El H1 de música</b><p>Proponemos &quot;Grupos de música para eventos en Barcelona&quot; en lugar de &quot;Grupos de música en Barcelona&quot;, para que incluya &quot;para eventos&quot;.</p></div></div>
 </div></section>
 <section class="s" style="padding-top:0"><div class="wrap">
  <div class="s-head"><div><span class="eyebrow">Revisando las páginas de hoy</span><h2>Lo que hemos visto</h2></div></div>
