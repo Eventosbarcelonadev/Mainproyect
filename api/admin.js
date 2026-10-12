@@ -303,7 +303,7 @@ async function listProposals(req, res, env) {
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
   const params = [
-    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path,hero_image_url',
+    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path,hero_image_url,first_opened_at,last_opened_at,open_count',
     'order=created_at.desc'
   ];
 
@@ -331,6 +331,44 @@ async function listProposals(req, res, env) {
   const total = parseTotal(r.headers.get('content-range'), rows.length);
   await attachProposalCovers(env, rows);
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
+}
+
+// GET /api/admin?action=proposal-views&id=<proposalId>[&limit=200]
+// Eventos que registra api/track-proposal.js en la vista cliente, agrupados por
+// visita (session_id) para el diálogo "Aperturas" de /admin.
+async function proposalViews(req, res, env) {
+  const id = (req.query.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  const limit = clampInt(req.query.limit, 200, 1, 1000);
+
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/proposal_views?proposal_id=eq.${encodeURIComponent(id)}` +
+    `&select=id,session_id,event,detail,lang,country,city,device,is_bot,created_at&order=created_at.desc&limit=${limit}`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+
+  const sessions = {};
+  [...rows].reverse().forEach(ev => {
+    const key = ev.session_id || `ev-${ev.id}`;
+    const s = sessions[key] || (sessions[key] = {
+      session_id: key, started_at: ev.created_at, country: ev.country, city: ev.city,
+      device: ev.device, lang: ev.lang, is_bot: !!ev.is_bot, engaged: false, seconds: 0, scroll: 0, sections: [], clicks: []
+    });
+    const d = ev.detail || {};
+    if (ev.event === 'engaged') s.engaged = true;
+    if (ev.event === 'leave') {
+      s.seconds = Math.max(s.seconds, Number(d.seconds) || 0);
+      s.scroll = Math.max(s.scroll, Number(d.scroll) || 0);
+    }
+    if (ev.event === 'section' && d.section && !s.sections.some(x => x.section === d.section)) {
+      s.sections.push({ section: d.section, name: d.name || null });
+    }
+    if (ev.event === 'click') s.clicks.push({ kind: d.kind || null, text: d.text || null });
+  });
+  const visits = Object.values(sessions).sort((a, b) => (a.started_at < b.started_at ? 1 : -1));
+  return res.status(200).json({ success: true, count: rows.length, visits, events: rows });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
@@ -2779,6 +2817,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       if (action === 'list-artistas') return listArtistas(req, res, env);
       if (action === 'list-proposals') return listProposals(req, res, env);
+      if (action === 'proposal-views') return proposalViews(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);

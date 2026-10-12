@@ -5102,5 +5102,101 @@
     });
   </script>
 
+<script>
+// Seguimiento de la vista CLIENTE (api/track-proposal.js): aperturas, secciones
+// vistas, clics y tiempo. No se envía nada en modo admin, builder, demo ni al
+// generar el PDF (print=1). Xavi 2026-10-11: "quiero saber si abren la propuesta,
+// cuándo, qué clics hacen y dónde".
+(function () {
+  const q = new URLSearchParams(location.search);
+  const id = q.get('id');
+  if (!id || id === 'demo' || q.get('admin') === '1' || q.get('print') === '1' || q.get('mode')) return;
+  const lang = q.get('lang') === 'en' ? 'en' : 'es';
+  let sid = null;
+  try {
+    sid = sessionStorage.getItem('eb_sid');
+    if (!sid) { sid = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2)); sessionStorage.setItem('eb_sid', sid); }
+  } catch (e) { sid = Date.now() + '-' + Math.random().toString(16).slice(2); }
+
+  const send = (event, detail, beacon) => {
+    const body = JSON.stringify({ proposalId: id, sessionId: sid, event, detail: detail || null, lang });
+    try {
+      if (beacon && navigator.sendBeacon) { navigator.sendBeacon('/api/track-proposal', new Blob([body], { type: 'text/plain' })); return; }
+      fetch('/api/track-proposal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
+    } catch (e) {}
+  };
+
+  // "open" una vez por minuto y sesión: la página se recarga sola para cambiar de idioma.
+  let skipOpen = false;
+  try {
+    const k = 'eb_open_' + id, prev = Number(sessionStorage.getItem(k) || 0);
+    skipOpen = Date.now() - prev < 60000;
+    if (!skipOpen) sessionStorage.setItem(k, String(Date.now()));
+  } catch (e) {}
+  if (!skipOpen) send('open', { ref: document.referrer || null, w: innerWidth, h: innerHeight });
+
+  // Persona real = 4 s con la pestaña visible + al menos un gesto. Los escáneres
+  // de correo (Safe Links, Proofpoint...) cargan la página pero no interactúan.
+  let visibleMs = 0, last = document.hidden ? null : Date.now(), interacted = false, engaged = false, maxScroll = 0;
+  const tick = () => { if (last) { const n = Date.now(); visibleMs += n - last; last = n; } };
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { tick(); last = null; } else { last = Date.now(); } });
+  ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(ev => addEventListener(ev, () => { interacted = true; }, { passive: true }));
+  addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight || 1;
+    const p = Math.min(100, Math.round(100 * (scrollY + innerHeight) / h));
+    if (p > maxScroll) maxScroll = p;
+  }, { passive: true });
+  const engageTimer = setInterval(() => {
+    tick();
+    if (!engaged && interacted && visibleMs >= 4000) { engaged = true; clearInterval(engageTimer); send('engaged', { seconds: Math.round(visibleMs / 1000) }); }
+  }, 1000);
+
+  // Secciones: se registra la primera vez que cada bloque queda a la vista (40 %).
+  const seen = new Set();
+  const labelOf = (el) => {
+    if (el.dataset.show) {
+      const h = el.querySelector('h2, h3');
+      return { section: 'show:' + el.dataset.show, name: h ? h.textContent.trim().slice(0, 80) : null };
+    }
+    const c = el.classList;
+    const section = c.contains('hero') ? 'hero' : c.contains('concept-section') ? 'concept' : c.contains('summary-section') ? 'summary' : c.contains('conditions-section') ? 'conditions' : (c[0] || 'bloque');
+    return { section };
+  };
+  const observe = () => {
+    const els = document.querySelectorAll('#proposalContent .hero, #proposalContent .concept-section, #proposalContent [data-show], #proposalContent .summary-section, #proposalContent .conditions-section');
+    if (!els.length || !('IntersectionObserver' in window)) return false;
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const l = labelOf(en.target);
+      if (seen.has(l.section)) return;
+      seen.add(l.section);
+      tick();
+      send('section', { section: l.section, name: l.name || null, t: Math.round(visibleMs / 1000) });
+    }), { threshold: [0.4] });
+    els.forEach(el => io.observe(el));
+    return true;
+  };
+  // El contenido llega por fetch y se renderiza después: reintentar hasta que exista.
+  let tries = 0;
+  const obsTimer = setInterval(() => { if (observe() || ++tries > 40) clearInterval(obsTimer); }, 500);
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a, button');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    const kind = a.classList.contains('btn-pdf-client') ? 'pdf'
+      : href.startsWith('mailto:') ? 'email'
+      : href.startsWith('tel:') ? 'tel'
+      : /wa\.me|whatsapp/.test(href) ? 'whatsapp'
+      : href.startsWith('http') ? 'link' : 'boton';
+    send('click', { kind, text: (a.textContent || '').trim().slice(0, 60), href: href.slice(0, 120) });
+  }, true);
+
+  addEventListener('pagehide', () => {
+    tick();
+    send('leave', { seconds: Math.round(visibleMs / 1000), scroll: maxScroll, sections: Array.from(seen) }, true);
+  });
+})();
+</script>
 </body>
 </html>

@@ -1014,6 +1014,19 @@
       .topbar { min-height: 0; padding: 10px 16px; }
       .topbar h1 img { height: 40px; }
     }
+    /* Aperturas de propuesta (diálogo "Aperturas" de la lista de propuestas) */
+    .views-dialog { border: 0; border-radius: 12px; padding: 0; width: min(680px, 92vw); max-height: 82vh; }
+    .views-dialog::backdrop { background: rgba(0,0,0,.45); }
+    .views-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #eee; margin: 0; }
+    .views-dialog-head h3 { margin: 0; font-size: 16px; }
+    #views-dialog-body { padding: 10px 18px 18px; overflow: auto; max-height: calc(82vh - 62px); font-size: 13px; line-height: 1.45; }
+    .v-row { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .v-row:last-child { border-bottom: 0; }
+    .v-when { font-weight: 600; }
+    .v-who, .v-what { color: #555; margin-top: 2px; }
+    .v-bot { opacity: .55; }
+    .v-empty { color: #777; padding: 12px 0; }
+
   </style>
 </head>
 <body>
@@ -3505,6 +3518,16 @@
         const statusPill = (p) => p.status === 'approved'
           ? '<span class="p-pill p-pill--ok">Aprobada</span>'
           : '<span class="p-pill p-pill--info">En revisión</span>';
+        // Aperturas del cliente (api/track-proposal.js, desde el 12-oct-2026). Las
+        // propuestas anteriores sin aperturas no muestran nada: no hay datos de ellas.
+        const TRACK_SINCE = '2026-10-12';
+        const fmtOpened = (v) => v ? new Date(v).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+        const openPill = (p) => {
+          const n = Number(p.open_count) || 0;
+          if (n > 0) return `<span class="p-pill p-pill--ok" title="Primera apertura: ${escapeHtml(fmtOpened(p.first_opened_at))}">Abierta ${n}× · ${escapeHtml(fmtOpened(p.last_opened_at))}</span>`;
+          if ((p.created_at || '') >= TRACK_SINCE) return '<span class="p-pill p-pill--warn">Sin abrir</span>';
+          return '';
+        };
         const showsPill = (n) => n > 0
           ? `<span class="p-pill p-pill--neutral">${n} show${n === 1 ? '' : 's'}</span>`
           : '<span class="p-pill p-pill--warn">Por preparar</span>';
@@ -3534,6 +3557,7 @@
                   ${approved
                     ? `<button class="p-menu-item" data-gen-pdf="${id}">${p.pdf_url ? 'Regenerar PDF' : 'Generar PDF'}</button>`
                     : `<button class="p-menu-item" data-validate="${id}">Validar</button>`}
+                  <button class="p-menu-item" data-views="${id}" title="Quién ha abierto la propuesta y qué ha mirado">Aperturas</button>
                   <button class="p-menu-item p-menu-item--danger" data-del-proposal="${id}" title="Eliminar esta versión">Eliminar</button>
                 </div>
               </details>
@@ -3572,7 +3596,7 @@
                 ${ev.meta || verLabel ? `<div class="p-sub">${ev.meta ? escapeHtml(ev.meta) : ''}${verLabel}</div>` : ''}
               </div>
               <div class="p-shows">${showsPill(n)}</div>
-              <div class="p-status">${statusPill(latest)}<div class="p-date">${escapeHtml(fmtCreated(latest.created_at))}</div></div>
+              <div class="p-status">${statusPill(latest)}${openPill(latest)}<div class="p-date">${escapeHtml(fmtCreated(latest.created_at))}</div></div>
               ${rowActions(latest)}
             </div>`;
           // Versiones anteriores (ocultas por defecto)
@@ -3582,7 +3606,7 @@
                 <div class="p-client"><span class="p-avatar p-avatar--version" aria-hidden="true">↳</span><div class="p-text"><div class="p-sub">Versión anterior</div></div></div>
                 <div class="p-event"><div class="p-sub">Creada ${escapeHtml(fmtCreated(p.created_at))}</div></div>
                 <div class="p-shows">${showsPill(countShows(p))}</div>
-                <div class="p-status">${statusPill(p)}</div>
+                <div class="p-status">${statusPill(p)}${openPill(p)}</div>
                 ${rowActions(p)}
               </div>`;
           });
@@ -3660,6 +3684,43 @@
             const url = `${location.origin}/propuesta.html?id=${b.dataset.copy}`;
             try { await navigator.clipboard.writeText(url); b.textContent = 'Copiado'; setTimeout(() => b.textContent = 'Copiar URL', 1500); }
             catch { prompt('Copia la URL:', url); }
+          });
+        });
+
+        // Aperturas: visitas del cliente registradas por api/track-proposal.js.
+        const DEVICE_ES = { mobile: 'móvil', tablet: 'tablet', desktop: 'escritorio' };
+        const SECTION_ES = { hero: 'Portada', concept: 'Concepto', summary: 'Resumen y precios', conditions: 'Condiciones' };
+        const sectionLabel = (x) => SECTION_ES[x.section] || (x.name ? `Show: ${x.name}` : x.section);
+        const renderVisits = (visits) => {
+          if (!visits.length) return '<div class="v-empty">Todavía nadie ha abierto esta propuesta.</div>';
+          return visits.map(v => {
+            const who = [v.country, v.city].filter(Boolean).join(' · ') || 'origen desconocido';
+            const what = v.engaged
+              ? `${v.seconds} s en la página · scroll ${v.scroll}%`
+              : (v.is_bot ? 'escáner de correo, no una persona' : 'sin interacción');
+            const secs = v.sections.length ? `Vio: ${v.sections.map(sectionLabel).map(escapeHtml).join(', ')}.` : '';
+            const clicks = v.clicks.length ? ` Clics: ${v.clicks.map(c => escapeHtml([c.kind, c.text].filter(Boolean).join(' '))).join(', ')}.` : '';
+            return `<div class="v-row${v.is_bot ? ' v-bot' : ''}">
+              <div class="v-when">${escapeHtml(fmtOpened(v.started_at))}</div>
+              <div class="v-who">${escapeHtml(who)} · ${DEVICE_ES[v.device] || v.device || ''} · ${v.lang || ''}</div>
+              <div class="v-what">${escapeHtml(what)} ${secs}${clicks}</div>
+            </div>`;
+          }).join('');
+        };
+        $('propuestas-table-wrap').querySelectorAll('[data-views]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const dlg = $('views-dialog');
+            $('views-dialog-body').innerHTML = '<div class="v-empty">Cargando…</div>';
+            dlg.showModal();
+            try {
+              const r = await fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(b.dataset.views)}`);
+              const data = await r.json();
+              if (!r.ok || !data.success) throw new Error(data.error || `views ${r.status}`);
+              $('views-dialog-body').innerHTML = renderVisits(data.visits || []);
+            } catch (err) {
+              $('views-dialog-body').innerHTML = `<div class="v-empty">Error: ${escapeHtml(err.message)}</div>`;
+            }
           });
         });
 
@@ -3947,5 +4008,9 @@
     // así Xavi ve cuántos shows tiene que revisar apenas entra a /admin.
     refreshPendingReviewBadge();
   </script>
+<dialog id="views-dialog" class="views-dialog">
+  <form method="dialog" class="views-dialog-head"><h3>Aperturas de la propuesta</h3><button class="btn p-ghost">Cerrar</button></form>
+  <div id="views-dialog-body"></div>
+</dialog>
 </body>
 </html>
