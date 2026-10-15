@@ -226,7 +226,7 @@
 <body>
   <div class="topbar">
     <div class="title" id="docTitle">Documento</div>
-    <a href="propuesta-retainer-2000.html">← Volver a la propuesta</a>
+    <a id="backLink" href="propuesta-retainer-2000.html">← Volver a la propuesta</a>
   </div>
 
   <main>
@@ -246,7 +246,8 @@
         'estrategia-seo-geo': { file: 'Eventos-Barcelona-Estrategia-SEO-GEO.md', title: 'Estrategia SEO/GEO · Abril 2026' },
         'medicion-mayo': { file: 'docs/medicion-seo-geo-aeo-mayo2026.md', title: 'Medición SEO/GEO/AEO · Mayo 2026' },
         'plan-accion-mayo': { file: 'docs/plan-accion-detallado-mayo2026.md', title: 'Plan de acción detallado · Mayo 2026' },
-        'arquitectura-show-artista': { file: 'docs/arquitectura-show-artista.md', title: 'Arquitectura show ↔ artista' }
+        'arquitectura-show-artista': { file: 'docs/arquitectura-show-artista.md', title: 'Arquitectura show ↔ artista' },
+        'youtube-seo': { file: 'docs/youtube-seo.md', title: 'Instructivo SEO de YouTube', cta: false }
       };
 
       const params = new URLSearchParams(location.search);
@@ -267,6 +268,7 @@
       }
 
       titleEl.textContent = entry.title;
+      if (entry.cta === false) document.getElementById('backLink').style.display = 'none';
       document.title = entry.title + ' — Eventos Barcelona × Growth4U';
 
       try {
@@ -284,7 +286,7 @@
         contentEl.innerHTML = marked.parse(md);
         loadingEl.style.display = 'none';
         contentEl.style.display = 'block';
-        footerEl.style.display = 'flex';
+        if (entry.cta !== false) footerEl.style.display = 'flex';
       } catch (e) {
         loadingEl.style.display = 'none';
         errorEl.textContent = 'No se pudo cargar el documento (' + e.message + ').';
