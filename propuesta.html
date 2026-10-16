@@ -5109,6 +5109,14 @@
 // cuándo, qué clics hacen y dónde".
 (function () {
   const q = new URLSearchParams(location.search);
+  // Visitas del equipo de EB: no cuentan como aperturas del cliente. admin.html
+  // marca su navegador solo; en otro dominio o en el móvil basta abrir una vez
+  // propuesta.html?interno=1 (?interno=0 lo deshace).
+  try {
+    if (q.get('interno') === '1') localStorage.setItem('eb_interno', '1');
+    if (q.get('interno') === '0') localStorage.removeItem('eb_interno');
+    if (localStorage.getItem('eb_interno') === '1') return;
+  } catch (e) {}
   const id = q.get('id');
   if (!id || id === 'demo' || q.get('admin') === '1' || q.get('print') === '1' || q.get('mode')) return;
   const lang = q.get('lang') === 'en' ? 'en' : 'es';
@@ -5151,8 +5159,17 @@
     if (!engaged && interacted && visibleMs >= 4000) { engaged = true; clearInterval(engageTimer); send('engaged', { seconds: Math.round(visibleMs / 1000) }); }
   }, 1000);
 
-  // Secciones: se registra la primera vez que cada bloque queda a la vista (40 %).
+  // Secciones: un bloque está "a la vista" si se ve el 40 % de él o si ocupa el
+  // 40 % de la pantalla (un show más alto que el móvil nunca llega a verse al 40 %).
+  // Se registra la primera vez que aparece y se acumula el tiempo que pasa a la
+  // vista con la pestaña visible: es lo que dice qué show ha mirado más.
   const seen = new Set();
+  const viewing = new Set();
+  let dwell = {};
+  setInterval(() => {
+    if (document.hidden) return;
+    viewing.forEach(s => { dwell[s] = (dwell[s] || 0) + 1; });
+  }, 1000);
   const labelOf = (el) => {
     if (el.dataset.show) {
       const h = el.querySelector('h2, h3');
@@ -5166,13 +5183,16 @@
     const els = document.querySelectorAll('#proposalContent .hero, #proposalContent .concept-section, #proposalContent [data-show], #proposalContent .summary-section, #proposalContent .conditions-section');
     if (!els.length || !('IntersectionObserver' in window)) return false;
     const io = new IntersectionObserver(entries => entries.forEach(en => {
-      if (!en.isIntersecting) return;
       const l = labelOf(en.target);
+      const vh = (en.rootBounds && en.rootBounds.height) || innerHeight || 1;
+      const inView = en.isIntersecting && (en.intersectionRatio >= 0.4 || en.intersectionRect.height / vh >= 0.4);
+      if (!inView) { viewing.delete(l.section); return; }
+      viewing.add(l.section);
       if (seen.has(l.section)) return;
       seen.add(l.section);
       tick();
       send('section', { section: l.section, name: l.name || null, t: Math.round(visibleMs / 1000) });
-    }), { threshold: [0.4] });
+    }), { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] });
     els.forEach(el => io.observe(el));
     return true;
   };
@@ -5192,10 +5212,22 @@
     send('click', { kind, text: (a.textContent || '').trim().slice(0, 60), href: href.slice(0, 120) });
   }, true);
 
-  addEventListener('pagehide', () => {
+  // "leave" sale al ocultar la pestaña, no solo al cerrarla: en el móvil se cambia
+  // de app y pagehide no llega casi nunca. seconds y scroll son el total de la
+  // página; dwell, los segundos por sección desde el envío anterior (el servidor
+  // los suma).
+  let flushed = false;
+  const flush = () => {
+    if (flushed) return;
+    flushed = true;
     tick();
-    send('leave', { seconds: Math.round(visibleMs / 1000), scroll: maxScroll, sections: Array.from(seen) }, true);
-  });
+    const d = {};
+    Object.keys(dwell).forEach(s => { if (dwell[s] > 0) d[s] = dwell[s]; });
+    dwell = {};
+    send('leave', { seconds: Math.round(visibleMs / 1000), scroll: maxScroll, sections: Array.from(seen), dwell: d }, true);
+  };
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else flushed = false; });
+  addEventListener('pagehide', flush);
 })();
 </script>
 </body>

@@ -4,7 +4,8 @@
 //   engaged  → persona real: 4 s visible + un gesto (descarta escáneres de correo)
 //   section  → un bloque (portada, concepto, show, resumen, condiciones) ha quedado a la vista
 //   click    → clic en un botón o enlace (PDF, email, teléfono...)
-//   leave    → cierra la pestaña: segundos visibles, scroll máximo, secciones vistas
+//   leave    → oculta o cierra la pestaña: segundos visibles, scroll máximo, secciones
+//              vistas y dwell (segundos por sección desde el envío anterior)
 // Body JSON (o text/plain vía sendBeacon): { proposalId, sessionId, event, detail, lang }
 //
 // En cada "engaged" actualiza proposals.first_opened_at / last_opened_at / open_count,
