@@ -22,6 +22,7 @@
 // POST /api/admin?action=save-radar       body: {resultado}  -> publica informe del radar
 // GET  /api/gpt/catalogo   (rewrite -> action=gpt-catalogo)  auth: Bearer GPT_ACTION_TOKEN
 // GET  /api/gpt/show        (rewrite -> action=gpt-show)      auth: Bearer GPT_ACTION_TOKEN
+// POST /api/init-opp-proposal (rewrite -> action=init-opp-proposal)  webhook GHL, customData: {opportunityId}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -36,6 +37,16 @@ const OPP_URL_GENERADOR_PROPUESTA = 'LJMLhmfJN6W9xHZFXVpB';
 // contact.contact_type (SINGLE_OPTIONS). Solo los clientes llevan propuesta.
 const GHL_CONTACT_TYPE_FIELD = '0LBySc0XI7qKiPQVrQs9';
 const NON_CLIENT_CONTACT_TYPES = new Set(['Artista', 'Proveedor', 'Freelance', 'Venue', 'Partner']);
+// Custom fields de la OPPORTUNITY que usa init-opp-proposal (GHL GET devuelve
+// solo {id, fieldValue}, sin key) y contact.contact_idioma.
+const OPP_TIPO_EVENTO = 'kM1ru1CRbgMCq7rLbCGt';
+const OPP_FECHA_EVENTO = 'vNUbgACM4fzO9te0pdyU';
+const OPP_NUMERO_ASISTENTES = 'zN0Dx77QRdTYZ9MqEKQs';
+const OPP_CIUDAD_EVENTO = 'kERM4ww6ih27aj4aNySH';
+const CONTACT_IDIOMA = 'sz3cgYEWMZ0ysmmFxffE';
+// source que ponen a la opp los flujos automáticos (lead-cliente,
+// webhook-elementor, inbound-email). Esas opps ya tienen su camino de propuesta.
+const AUTO_OPP_SOURCE_RE = /^(Form Cliente|Web Elementor|Inbound Email)/i;
 
 // IDs de custom fields GHL (sync admin↔GHL en cada CRUD). Spec en memoria
 // project_ghl_spec.md. Si añades un campo nuevo, actualiza también ese memo.
@@ -701,6 +712,140 @@ async function ensureProposalForLead(req, res, env) {
   }
 
   return res.status(200).json({ success: true, proposalId, url, reused, contactId, opportunityId: opportunityId || null, oppSync });
+}
+
+// Propuesta para las opps que Xavi crea a mano en GHL. Las llama el workflow
+// GHL "Opportunity Created (Pipeline Clientes)" con un Webhook POST a
+// /api/init-opp-proposal (rewrite a esta acción) y custom data
+// { opportunityId: {{opportunity.id}} }.
+// Era api/init-opp-proposal.js (45dcd86, may-2026). Se borró en d274aea al
+// consolidar funciones por el límite Hobby de 12, porque nada del repo lo
+// llamaba; lo llamaba GHL. Desde el 24-jun el webhook daba 404 y las opps
+// manuales se quedaban sin propuesta (Xavi 16-oct: Noelia López, Alex Salloum).
+// A diferencia de ensure-proposal-for-lead, va por opp y no por contacto: un
+// cliente que repite con otro evento tiene opp nueva y necesita propuesta nueva.
+// Idempotente por ghl_opportunity_id (GHL puede reenviar el webhook).
+async function initOppProposal(req, res, env) {
+  const body = req.body || {};
+  const cd = body.customData || {};
+  const td = body.triggerData || {};
+  const q = req.query || {};
+  // Primero las claves explícitas de opp; los `id` genéricos al final, porque
+  // en el payload de GHL el `id` de primer nivel puede ser el del contacto.
+  const opportunityId = String(
+    body.opportunityId || body.opportunity_id || body.opportunityID || body.opportunity?.id ||
+    cd.opportunityId || cd.opportunity_id || td.opportunityId || td.opportunity_id ||
+    q.opportunityId || q.opportunity_id ||
+    cd.id || td.id || body.id || q.id || ''
+  ).trim();
+  if (!opportunityId) {
+    console.error('init-opp-proposal: sin opportunityId. Body keys:', Object.keys(body),
+      'customData:', JSON.stringify(cd).slice(0, 300));
+    return res.status(400).json({
+      error: 'opportunityId required',
+      hint: 'En el Webhook del workflow GHL, Custom Data: opportunityId = {{opportunity.id}}',
+      receivedKeys: Object.keys(body),
+      customDataKeys: Object.keys(cd)
+    });
+  }
+  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
+
+  // 1. Opp y contacto
+  const go = await ghlFetch('GET', `/opportunities/${encodeURIComponent(opportunityId)}`, env);
+  if (!go.ok) return res.status(go.status || 502).json({ error: 'No se pudo leer la opportunity', opportunityId, status: go.status });
+  const opp = parse(go).opportunity;
+  if (!opp) return res.status(404).json({ error: 'Opportunity not found', opportunityId });
+  const contactId = opp.contactId || opp.contact?.id || '';
+  if (!contactId) return res.status(400).json({ error: 'Opportunity has no contact', opportunityId });
+
+  const oppCf = opp.customFields || [];
+  const oppVal = (id) => { const f = oppCf.find(x => x.id === id); return f?.fieldValue ?? f?.field_value ?? ''; };
+  // Los skips responden 200 para que el workflow de GHL no lo marque como error.
+  const skip = (reason) => res.status(200).json({ success: true, skipped: reason, opportunityId, contactId });
+
+  // 2. Solo opps de Clientes hechas a mano. Las de formulario y email entrante
+  //    tienen su propio camino de propuesta: crear otra aquí dejaría una
+  //    propuesta vacía duplicada en /admin. Y si la opp ya tiene URL, no se pisa.
+  if (oppVal(OPP_URL_GENERADOR_PROPUESTA)) return skip('already_has_url');
+  if (env.GHL_PIPELINE_CLIENTES && opp.pipelineId && opp.pipelineId !== env.GHL_PIPELINE_CLIENTES) {
+    return skip('opportunity_not_in_clientes_pipeline');
+  }
+  if (AUTO_OPP_SOURCE_RE.test(opp.source || '')) return skip('auto_source');
+
+  const cr = await ghlFetch('GET', `/contacts/${encodeURIComponent(contactId)}`, env);
+  const contact = cr.ok ? (parse(cr).contact || {}) : {};
+  const contactVal = (id) => {
+    const f = (contact.customFields || []).find(x => x.id === id);
+    return f ? (Array.isArray(f.value) ? f.value[0] : f.value) : '';
+  };
+  const contactType = contactVal(GHL_CONTACT_TYPE_FIELD);
+  if (NON_CLIENT_CONTACT_TYPES.has(contactType)) return skip(`contact_type=${contactType}`);
+
+  const sbHdr = {
+    apikey: env.SUPABASE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+
+  // 3. ¿Ya hay propuesta para esta opp?
+  let proposalId = null;
+  const fr = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/proposals?ghl_opportunity_id=eq.${encodeURIComponent(opportunityId)}&select=id&order=created_at.desc&limit=1`,
+    { headers: sbHdr }
+  );
+  if (fr.ok) proposalId = (await fr.json())[0]?.id || null;
+
+  // 4. Si no, crearla con lo que Xavi haya rellenado en la opp
+  if (!proposalId) {
+    const tipoRaw = oppVal(OPP_TIPO_EVENTO);
+    const tipoEvento = String((Array.isArray(tipoRaw) ? tipoRaw[0] : tipoRaw) || '');
+    // El form guarda la fecha como YYYY-MM-DD; el campo fecha de GHL puede
+    // venir en milisegundos o ISO con hora.
+    const fechaRaw = oppVal(OPP_FECHA_EVENTO);
+    let fecha = String(fechaRaw || '');
+    if (/^\d{10,}$/.test(fecha)) fecha = new Date(Number(fecha)).toISOString().slice(0, 10);
+    else if (/^\d{4}-\d{2}-\d{2}T/.test(fecha)) fecha = fecha.slice(0, 10);
+    const clientName = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim()
+      || contact.contactName || opp.name || 'Cliente';
+    const row = {
+      status: 'revision',
+      lang: contactVal(CONTACT_IDIOMA) === 'English' ? 'en' : 'es',
+      client_name: clientName,
+      client_company: contact.companyName || '',
+      client_email: contact.email || '',
+      client_phone: contact.phone || '',
+      event_name: `${tipoEvento || 'Evento'} — ${contact.companyName || clientName}`,
+      event_type: tipoEvento,
+      event_date: fecha,
+      event_guests: parseInt(oppVal(OPP_NUMERO_ASISTENTES), 10) || 0,
+      event_location: String(oppVal(OPP_CIUDAD_EVENTO) || ''),
+      category: 'shows',
+      concept_title: '',
+      concept_text: '',
+      shows: '[]',
+      ghl_contact_id: contactId,
+      ghl_opportunity_id: opportunityId
+    };
+    const ins = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals`, {
+      method: 'POST', headers: { ...sbHdr, Prefer: 'return=representation' }, body: JSON.stringify(row)
+    });
+    if (!ins.ok) return res.status(502).json({ error: 'No se pudo crear la propuesta', detail: (await ins.text()).slice(0, 200) });
+    proposalId = (await ins.json())[0]?.id || null;
+    if (!proposalId) return res.status(502).json({ error: 'Propuesta creada sin id', opportunityId });
+  }
+
+  // 5. URL del generador en la opp
+  const url = `${siteUrl(env)}/propuesta.html?id=${encodeURIComponent(proposalId)}&admin=1`;
+  const put = await ghlFetch('PUT', `/opportunities/${encodeURIComponent(opportunityId)}`, env, {
+    customFields: [{ id: OPP_URL_GENERADOR_PROPUESTA, field_value: url }]
+  });
+  const oppSync = { ok: put.ok, status: put.status };
+  if (!put.ok) {
+    oppSync.error = put.body.slice(0, 160);
+    console.error('init-opp-proposal: PUT opp', put.status, oppSync.error);
+  }
+
+  return res.status(200).json({ success: true, proposalId, opportunityId, contactId, url, oppSync });
 }
 
 // Busca contactos en GHL por texto (para el picker de artistas). GHL es la
@@ -2881,13 +3026,14 @@ export default async function handler(req, res) {
       if (action === 'delete-proposal') return deleteProposal(req, res, env);
       if (action === 'duplicate-proposal') return duplicateProposal(req, res, env);
       if (action === 'ensure-proposal-for-lead') return ensureProposalForLead(req, res, env);
+      if (action === 'init-opp-proposal') return initOppProposal(req, res, env);
       if (action === 'save-referencia') return saveReferencia(req, res, env);
       if (action === 'delete-referencia') return deleteReferencia(req, res, env);
       if (action === 'save-radar') return saveRadar(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead'
+      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

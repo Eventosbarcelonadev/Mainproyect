@@ -17,6 +17,10 @@
       "destination": "/api/admin?action=gpt-show"
     },
     {
+      "source": "/api/init-opp-proposal",
+      "destination": "/api/admin?action=init-opp-proposal"
+    },
+    {
       "source": "/formulario-cliente",
       "destination": "/formulario-inteligente.html"
     },
