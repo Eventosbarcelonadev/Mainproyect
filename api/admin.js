@@ -333,13 +333,14 @@ async function listProposals(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
-// GET /api/admin?action=proposal-views&id=<proposalId>[&limit=200]
+// GET /api/admin?action=proposal-views&id=<proposalId>[&limit=1000]
 // Eventos que registra api/track-proposal.js en la vista cliente, agrupados por
-// visita (session_id) para el diálogo "Aperturas" de /admin.
+// visita (session_id) para el diálogo "Aperturas" de /admin, más un resumen de
+// las visitas de personas: tiempo total y secciones que más han mirado.
 async function proposalViews(req, res, env) {
   const id = (req.query.id || '').trim();
   if (!id) return res.status(400).json({ error: 'Missing id' });
-  const limit = clampInt(req.query.limit, 200, 1, 1000);
+  const limit = clampInt(req.query.limit, 1000, 1, 5000);
 
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/proposal_views?proposal_id=eq.${encodeURIComponent(id)}` +
@@ -354,13 +355,17 @@ async function proposalViews(req, res, env) {
     const key = ev.session_id || `ev-${ev.id}`;
     const s = sessions[key] || (sessions[key] = {
       session_id: key, started_at: ev.created_at, country: ev.country, city: ev.city,
-      device: ev.device, lang: ev.lang, is_bot: !!ev.is_bot, engaged: false, seconds: 0, scroll: 0, sections: [], clicks: []
+      device: ev.device, lang: ev.lang, is_bot: !!ev.is_bot, engaged: false, seconds: 0, scroll: 0, sections: [], clicks: [], dwell: {}
     });
     const d = ev.detail || {};
     if (ev.event === 'engaged') s.engaged = true;
     if (ev.event === 'leave') {
       s.seconds = Math.max(s.seconds, Number(d.seconds) || 0);
       s.scroll = Math.max(s.scroll, Number(d.scroll) || 0);
+      // dwell: segundos por sección desde el envío anterior (propuesta.html, desde el 16-oct-2026).
+      if (d.dwell && typeof d.dwell === 'object') {
+        Object.entries(d.dwell).forEach(([k, v]) => { s.dwell[k] = (s.dwell[k] || 0) + (Number(v) || 0); });
+      }
     }
     if (ev.event === 'section' && d.section && !s.sections.some(x => x.section === d.section)) {
       s.sections.push({ section: d.section, name: d.name || null });
@@ -368,7 +373,34 @@ async function proposalViews(req, res, env) {
     if (ev.event === 'click') s.clicks.push({ kind: d.kind || null, text: d.text || null });
   });
   const visits = Object.values(sessions).sort((a, b) => (a.started_at < b.started_at ? 1 : -1));
-  return res.status(200).json({ success: true, count: rows.length, visits, events: rows });
+  visits.forEach(v => {
+    Object.keys(v.dwell).forEach(k => {
+      if (!v.sections.some(x => x.section === k)) v.sections.push({ section: k, name: null });
+    });
+    v.sections.forEach(x => { x.seconds = Math.round(v.dwell[x.section] || 0); });
+    delete v.dwell;
+  });
+
+  // Resumen de las visitas de personas (sin escáneres ni cargas sin interacción).
+  const human = visits.filter(v => v.engaged && !v.is_bot);
+  const bySection = new Map();
+  human.forEach(v => v.sections.forEach(x => {
+    const a = bySection.get(x.section) || { section: x.section, name: x.name, seconds: 0, visits: 0 };
+    a.seconds += x.seconds;
+    a.visits += 1;
+    if (!a.name && x.name) a.name = x.name;
+    bySection.set(x.section, a);
+  }));
+  const clicks = {};
+  human.forEach(v => v.clicks.forEach(c => { const k = c.kind || 'boton'; clicks[k] = (clicks[k] || 0) + 1; }));
+  const summary = {
+    visits: human.length,
+    seconds: human.reduce((t, v) => t + v.seconds, 0),
+    scroll: human.reduce((m, v) => Math.max(m, v.scroll), 0),
+    sections: [...bySection.values()].sort((a, b) => b.seconds - a.seconds || b.visits - a.visits),
+    clicks
+  };
+  return res.status(200).json({ success: true, count: rows.length, summary, visits, events: rows });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
