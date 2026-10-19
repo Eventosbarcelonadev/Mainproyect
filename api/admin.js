@@ -2,9 +2,9 @@
 // endpoints separados. Este handler los unifica via ?action=...
 //
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
-// GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=  (con "activity": resumen de aperturas)
+// GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
 // GET  /api/admin?action=proposal-views&id=<proposalId>   -> visitas del cliente a una propuesta
-// GET  /api/admin?action=proposal-insights                -> panel "Cómo leen las propuestas"
+// GET  /api/admin?action=proposal-dashboard               -> pestaña Indicadores (propuestas y visitas)
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
 // POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
@@ -342,7 +342,7 @@ async function listProposals(req, res, env) {
 
   const rows = await r.json();
   const total = parseTotal(r.headers.get('content-range'), rows.length);
-  await Promise.all([attachProposalCovers(env, rows), attachProposalActivity(env, rows)]);
+  await attachProposalCovers(env, rows);
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
@@ -473,30 +473,6 @@ function summarizeProposalVisits(visits, shows) {
   };
 }
 
-// list-proposals: resumen de aperturas de cada propuesta con datos, para la línea
-// de actividad de la lista de /admin sin abrir el diálogo. Si falla, la lista sale igual.
-async function attachProposalActivity(env, rows) {
-  const ids = rows
-    .filter(p => (Number(p.open_count) || 0) > 0 || (p.created_at || '') >= PROPOSAL_TRACK_SINCE || (p.approved_at || '') >= PROPOSAL_TRACK_SINCE)
-    .map(p => p.id);
-  if (!ids.length) return;
-  try {
-    const byProposal = new Map();
-    (await fetchProposalViewRows(env, ids)).forEach(ev => {
-      if (!byProposal.has(ev.proposal_id)) byProposal.set(ev.proposal_id, []);
-      byProposal.get(ev.proposal_id).push(ev);
-    });
-    rows.forEach(p => {
-      const evs = byProposal.get(p.id);
-      if (!evs) return;
-      const s = summarizeProposalVisits(groupProposalVisits(evs), p.shows);
-      if (s.visits || s.glimpses) p.activity = s;
-    });
-  } catch (err) {
-    console.error('list-proposals activity', err.message);
-  }
-}
-
 // GET /api/admin?action=proposal-views&id=<proposalId>[&limit=1000]
 // Eventos que registra api/track-proposal.js en la vista cliente, agrupados por
 // visita (session_id) para el diálogo "Aperturas" de /admin, más un resumen de
@@ -524,124 +500,65 @@ async function proposalViews(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, summary, visits, events: rows });
 }
 
-// GET /api/admin?action=proposal-insights
-// Cómo leen los clientes las propuestas desde que hay registro (12-oct-2026), para
-// el panel de la pestaña Propuestas: cuántas aprobadas se abren, cuánto las leen,
-// qué shows miran más y a quién toca llamar.
-async function proposalInsights(req, res, env) {
+// GET /api/admin?action=proposal-dashboard
+// Datos de la pestaña Indicadores de /admin: cada propuesta con registro (desde el
+// 12-oct-2026) y las visitas de personas, una a una, para que la página filtre por
+// fechas y empresa sin volver a pedir nada. Las propuestas sin shows (las que crea
+// GHL "Por preparar") no se envían al cliente y no cuentan.
+const GENERIC_MAIL = /^(gmail|googlemail|hotmail|outlook|live|msn|yahoo|ymail|icloud|me|mac|aol|proton|protonmail|gmx|telefonica|movistar)\./i;
+function proposalCompany(p) {
+  const company = (p.client_company || '').trim();
+  if (company) return company;
+  const domain = ((p.client_email || '').split('@')[1] || '').toLowerCase().trim();
+  if (domain && !GENERIC_MAIL.test(domain)) return domain.replace(/\.(com|es|net|org|eu|io|co|cat|fr|de|it|uk|co\.uk)$/i, '');
+  return (p.client_name || '').trim() || 'Sin empresa';
+}
+
+async function proposalDashboard(req, res, env) {
   const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
   const sel = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,shows,created_at,approved_at,first_opened_at,last_opened_at,open_count';
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/proposals?select=${sel}` +
-    `&or=(approved_at.gte.${PROPOSAL_TRACK_SINCE},open_count.gt.0)&order=created_at.desc&limit=1000`,
+    `&or=(created_at.gte.${PROPOSAL_TRACK_SINCE},approved_at.gte.${PROPOSAL_TRACK_SINCE},open_count.gt.0)&order=created_at.desc&limit=2000`,
     { headers }
   );
   if (!r.ok) return res.status(r.status).json({ error: await r.text() });
-  const props = await r.json();
+  const props = (await r.json()).filter(p => proposalShowList(p.shows).length > 0);
 
   const byProposal = new Map();
-  (await fetchProposalViewRows(env, props.filter(p => (Number(p.open_count) || 0) > 0).map(p => p.id))).forEach(ev => {
+  (await fetchProposalViewRows(env, props.map(p => p.id))).forEach(ev => {
     if (!byProposal.has(ev.proposal_id)) byProposal.set(ev.proposal_id, []);
     byProposal.get(ev.proposal_id).push(ev);
   });
 
-  const now = Date.now();
-  const who = (p) => (p.client_name || '').trim() || (p.client_company || '').trim() || (p.client_email || '').trim() || 'Sin nombre';
-  const median = (xs) => {
-    if (!xs.length) return null;
-    const s = [...xs].sort((a, b) => a - b), m = Math.floor(s.length / 2);
-    return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
-  };
-  const pct = (n, d) => (d ? Math.round((100 * n) / d) : null);
-
-  // Al aprobar, save-proposal escribe la URL en la oportunidad de GHL, que es lo que
-  // la envía al cliente. approved_at se reescribe en cada guardado de una aprobada:
-  // es la última aprobación, no la primera.
-  // Se cuenta por cliente (misma clave que agrupa la lista de /admin): si abre una
-  // versión y no la otra, la ha abierto.
+  // Misma clave que agrupa la lista de /admin: si el cliente abre otra versión, la ha abierto.
   const clientKey = (p) => (p.client_email || '').toLowerCase().trim()
     || `${(p.client_name || '').toLowerCase().trim()}|${(p.client_phone || '').trim()}` || p.id;
-  const openedClients = new Set(props.filter(p => (Number(p.open_count) || 0) > 0).map(clientKey));
-  const sent = props.filter(p => p.status === 'approved' && (p.approved_at || '') >= PROPOSAL_TRACK_SINCE);
-  const sentClients = new Set(sent.map(clientKey));
-  const sentOpenedClients = [...sentClients].filter(k => openedClients.has(k));
 
-  const read = [];
-  props.forEach(p => {
-    const evs = byProposal.get(p.id);
-    if (!evs) return;
-    const visits = groupProposalVisits(evs);
-    const s = summarizeProposalVisits(visits, p.shows);
-    if (s.visits) read.push({ p, s, human: visits.filter(v => v.engaged && !v.is_bot) });
+  const proposals = props.map(p => {
+    const visits = groupProposalVisits(byProposal.get(p.id) || [])
+      .filter(v => v.engaged && !v.is_bot)
+      .map(v => ({
+        at: v.started_at, seconds: v.seconds, scroll: v.scroll, device: v.device,
+        sections: v.sections.map(x => ({ section: x.section, seconds: x.seconds })),
+        clicks: v.clicks.map(c => ({ kind: c.kind, section: c.section }))
+      }));
+    return {
+      id: p.id,
+      client: (p.client_name || '').trim() || (p.client_email || '').trim() || 'Sin nombre',
+      company: proposalCompany(p),
+      client_key: clientKey(p),
+      event: (p.event_name || '').trim() || (p.event_type || '').trim() || null,
+      status: p.status,
+      created_at: p.created_at,
+      approved_at: p.approved_at,
+      open_count: Number(p.open_count) || 0,
+      last_opened_at: p.last_opened_at,
+      shows: proposalShowList(p.shows).map(s => ({ section: s.section, name: s.name })),
+      visits
+    };
   });
-
-  // Medias de segundos solo con las propuestas que tienen tiempo por sección (desde el 16-oct).
-  const timed = read.filter(x => x.s.timed);
-  const SECTION_KEYS = ['hero', 'concept', 'summary', 'conditions'];
-  const sections = SECTION_KEYS.map(key => {
-    const withIt = read.filter(x => x.s.sections.some(y => y.section === key && y.visits));
-    const secs = timed.map(x => x.s.sections.find(y => y.section === key)).filter(Boolean).map(y => y.seconds);
-    return { section: key, seen: withIt.length, avg_seconds: secs.length ? Math.round(secs.reduce((t, n) => t + n, 0) / secs.length) : null };
-  });
-
-  // Por show: en cuántas propuestas leídas estaba, en cuántas lo vieron, segundos medios y clics.
-  const showsAgg = new Map();
-  read.forEach(({ p, s }) => {
-    proposalShowList(p.shows).forEach(sh => {
-      const a = showsAgg.get(sh.id) || { id: sh.id, name: sh.name, proposals: 0, seen: 0, timed: 0, seconds: 0, video: 0, fotos: 0 };
-      const x = s.sections.find(y => y.section === sh.section);
-      a.proposals += 1;
-      if (x && x.visits) a.seen += 1;
-      if (s.timed) { a.timed += 1; a.seconds += x ? x.seconds : 0; }
-      a.video += x ? (x.clicks.video || 0) : 0;
-      a.fotos += x ? (x.clicks.fotos || 0) : 0;
-      showsAgg.set(sh.id, a);
-    });
-  });
-  const shows = [...showsAgg.values()]
-    .map(a => ({ ...a, avg_seconds: a.timed ? Math.round(a.seconds / a.timed) : null }))
-    .sort((a, b) => (b.avg_seconds ?? -1) - (a.avg_seconds ?? -1) || b.proposals - a.proposals);
-
-  const allVisits = read.flatMap(x => x.human);
-  const reading = {
-    proposals: read.length,
-    visits: allVisits.length,
-    median_seconds: median(read.map(x => x.s.seconds)),
-    revisit_pct: pct(read.filter(x => x.s.visits > 1).length, read.length),
-    end_pct: pct(read.filter(x => x.s.scroll >= 90).length, read.length),
-    conditions_pct: pct(read.filter(x => x.s.sections.some(y => y.section === 'conditions' && y.visits)).length, read.length),
-    pdf_pct: pct(read.filter(x => x.s.clicks.pdf).length, read.length),
-    video_pct: pct(read.filter(x => x.s.clicks.video).length, read.length),
-    fotos_pct: pct(read.filter(x => x.s.clicks.fotos).length, read.length),
-    mobile_pct: pct(allVisits.filter(v => v.device === 'mobile' || v.device === 'tablet').length, allVisits.length)
-  };
-
-  // Seguimiento: abiertas en las últimas 48 h y aprobadas que siguen sin abrir.
-  const hot = read
-    .filter(x => x.s.last_at && now - new Date(x.s.last_at) < 48 * 36e5)
-    .sort((a, b) => new Date(b.s.last_at) - new Date(a.s.last_at))
-    .map(({ p, s }) => ({ id: p.id, client: who(p), event: p.event_name || p.event_type || null, last_at: s.last_at, visits: s.visits, seconds: s.seconds, pdf: s.clicks.pdf || 0 }));
-  // La aprobada más reciente de cada cliente que no ha abierto ninguna versión.
-  const seenUnopened = new Set();
-  const unopened = sent
-    .filter(p => !openedClients.has(clientKey(p)))
-    .sort((a, b) => new Date(b.approved_at) - new Date(a.approved_at))
-    .filter(p => !seenUnopened.has(clientKey(p)) && seenUnopened.add(clientKey(p)))
-    .map(p => ({ id: p.id, client: who(p), event: p.event_name || p.event_type || null, approved_at: p.approved_at, days: Math.floor((now - new Date(p.approved_at)) / 864e5) }))
-    .sort((a, b) => b.days - a.days);
-
-  return res.status(200).json({
-    success: true,
-    since: PROPOSAL_TRACK_SINCE,
-    // Clientes con alguna propuesta aprobada desde el 12-oct y cuántos han abierto alguna.
-    sent: { total: sentClients.size, opened: sentOpenedClients.length, open_pct: pct(sentOpenedClients.length, sentClients.size) },
-    timed_proposals: timed.length,
-    reading,
-    sections,
-    shows,
-    hot,
-    unopened
-  });
+  return res.status(200).json({ success: true, since: PROPOSAL_TRACK_SINCE, proposals });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
@@ -3225,7 +3142,7 @@ export default async function handler(req, res) {
       if (action === 'list-artistas') return listArtistas(req, res, env);
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'proposal-views') return proposalViews(req, res, env);
-      if (action === 'proposal-insights') return proposalInsights(req, res, env);
+      if (action === 'proposal-dashboard') return proposalDashboard(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
@@ -3264,7 +3181,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|proposal-views|proposal-insights|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
+      hint: 'GET list-artistas|list-proposals|proposal-views|proposal-dashboard|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
