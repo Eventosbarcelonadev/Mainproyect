@@ -47,6 +47,15 @@ const PUBLICAS = new Set([
 
 const DESTINO_POR_DEFECTO = '/admin.html';
 
+// Un solo dominio para el equipo y para los clientes. La sesión del admin solo vale
+// en el dominio donde se inicia, y con ella api/track-proposal.js sabe que una visita
+// a una propuesta es de Xavi y no del cliente. Los enlaces que reciben los clientes
+// van por propuestas.eventosbarcelona.com, así que el alias de producción de Vercel
+// redirige ahí. Las previews de los PR (eventos-barcelona-git-…) no se tocan, y los
+// POST tampoco (el formulario del login perdería los datos).
+const DOMINIO = 'propuestas.eventosbarcelona.com';
+const ALIAS_VERCEL = 'eventos-barcelona.vercel.app';
+
 function esPublica(url: URL): boolean {
   const p = url.pathname;
   if (p === '/propuesta.html' || p.startsWith('/propuesta/')) {
@@ -79,6 +88,13 @@ function redirigir(destino: string, base: URL, extra: Record<string, string> = {
 
 export default async function middleware(request: Request): Promise<Response> {
   const url = new URL(request.url);
+
+  if (url.hostname === ALIAS_VERCEL && (request.method === 'GET' || request.method === 'HEAD')) {
+    return new Response(null, {
+      status: 307,
+      headers: { Location: `https://${DOMINIO}${url.pathname}${url.search}`, 'Cache-Control': 'no-store' },
+    });
+  }
 
   if (url.pathname === '/login' || url.pathname === '/login/') return login(request, url);
   if (url.pathname === '/logout') return redirigir('/login', url, { 'Set-Cookie': cookieBorrada });

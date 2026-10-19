@@ -3976,6 +3976,19 @@
       loadPropuestas();
     });
 
+    // Menú "Más" de cada propuesta: se cierra al pulsar fuera, al elegir una opción, al
+    // abrir otro o con Escape (antes había que volver a pulsar "Más"). En captura,
+    // porque los botones del menú paran la propagación del clic. El que se está
+    // abriendo aún no tiene [open] aquí: el navegador lo abre después del clic.
+    document.addEventListener('click', (e) => {
+      document.querySelectorAll('details.p-menu[open]').forEach(d => {
+        if (!d.contains(e.target) || e.target.closest('.p-menu-item')) d.removeAttribute('open');
+      });
+    }, true);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') document.querySelectorAll('details.p-menu[open]').forEach(d => d.removeAttribute('open'));
+    });
+
     // ---------- DRAWER ----------
     function openDrawer() {
       $('drawer').classList.add('open');
