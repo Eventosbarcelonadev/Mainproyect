@@ -1051,75 +1051,52 @@
     .v-who, .v-what { color: #555; margin-top: 2px; }
     .v-bot { opacity: .55; }
     .v-empty { color: #777; padding: 12px 0; }
-    .v-summary { background: #F4F1ED; border-radius: 8px; padding: 10px 12px; margin: 8px 0 4px; }
     .v-muted { color: #888; }
-    .v-note { color: #888; font-size: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
-    .v-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12.5px; }
-    .v-table th { text-align: left; font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 4px 8px 4px 0; }
-    .v-table td { padding: 5px 8px 5px 0; border-top: 1px solid #E9E3DC; vertical-align: middle; }
-    .v-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .v-timecell { display: flex; align-items: center; gap: 8px; min-width: 150px; }
-    .v-timecell .v-num { min-width: 56px; }
-    .v-warn { color: var(--warn-fg); }
-    .v-h { margin: 16px 0 2px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); }
-    /* Barra de una sola serie (segundos a la vista); el valor va siempre en texto al lado */
-    .v-bar { position: relative; flex: 1; display: block; height: 6px; min-width: 60px; border-radius: 3px; background: #EFEAE4; }
-    .v-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: #8C7B6B; }
+    .v-note { color: #888; font-size: 12px; padding-top: 12px; margin-top: 12px; border-top: 1px solid #f0f0f0; }
 
-    /* Lista: botón al detalle de la actividad del cliente */
+    /* "Ver más": actividad del cliente en gráficos (una sola serie por gráfico, el
+       valor siempre en texto al lado) */
+    .views-dialog { width: min(720px, 94vw); }
+    .views-dialog-head h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vx-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 6px 0 4px; }
+    .vx-tile { background: #F7F4F0; border-radius: 10px; padding: 10px 12px; }
+    .vx-value { font-size: 22px; font-weight: 700; color: var(--dark); line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .vx-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .vx-block { margin-top: 18px; }
+    .vx-block h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--dark); }
+    .vx-cols { display: flex; align-items: flex-end; gap: 3px; height: 128px; padding-bottom: 2px; border-bottom: 1px solid #E3DED8; }
+    .vx-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
+    .vx-cbar { display: block; width: min(100%, 26px); background: #8C7B6B; border-radius: 3px 3px 0 0; }
+    .vx-col:hover .vx-cbar { background: #6E6053; }
+    .vx-cval { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; margin-bottom: 2px; }
+    .vx-clabel { position: absolute; top: calc(100% + 5px); font-size: 10.5px; color: var(--gray); white-space: nowrap; }
+    .vx-cols { margin-bottom: 20px; }   /* sitio para las fechas, que van debajo en absoluto */
+    .vx-hbars { display: grid; gap: 6px; }
+    .vx-hbar { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 64px; align-items: center; gap: 10px; font-size: 13px; }
+    .vx-hname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+    .vx-htrack { height: 10px; border-radius: 5px; background: #EFEAE4; position: relative; overflow: hidden; }
+    .vx-htrack i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: #8C7B6B; }
+    .vx-hval { text-align: right; font-variant-numeric: tabular-nums; color: var(--dark); white-space: nowrap; }
+    .vx-hbar.is-top .vx-hname, .vx-hbar.is-top .vx-hval { font-weight: 700; color: var(--dark); }
+    .vx-hbar.is-top .vx-htrack i { background: #5E5248; }
+    .vx-hbar.is-muted .vx-hname, .vx-hbar.is-muted .vx-hval { color: #A39A92; }
+    .vx-note { font-size: 12px; color: var(--gray); margin-top: 6px; }
+    .vx-empty { text-align: center; padding: 28px 0 16px; }
+    .vx-empty-title { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .vx-details { margin-top: 18px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+    .vx-details > summary { cursor: pointer; font-weight: 600; color: var(--ui-edit); font-size: 13px; }
+
+    /* Lista: botón "Ver más" bajo la apertura */
     .p-act { display: block; border: 0; background: none; padding: 0; margin-top: 4px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ui-edit); cursor: pointer; text-align: left; }
     .p-act::after { content: " ›"; }
     .p-act:hover { text-decoration: underline; }
-
-    /* Pestaña Indicadores */
-    .ind-filters label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray); }
-    .ind-filters input[type="date"] { min-width: 0; width: 150px; }
-    #ind-range { margin: 0; }
-    .ind-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
-    .ind-tile { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-    .ind-label { font-size: 12px; color: var(--gray); }
-    .ind-value { font-size: 24px; font-weight: 600; color: var(--dark); font-variant-numeric: tabular-nums; line-height: 1.3; }
-    .ind-tile.is-warn .ind-value { color: var(--warn-fg); }
-    .ind-sub { font-size: 11.5px; color: var(--gray); line-height: 1.45; margin-top: 4px; }
-    .ind-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; min-width: 0; }
-    .ind-card + .ind-card { margin-top: 16px; }
-    .ind-kpis + .ind-card { margin-top: 0; }
-    .ind-banner { background: var(--warn-bg); color: var(--warn-fg); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
-    .ind-tile.is-ok .ind-value { color: var(--ok-fg); }
-    .ind-compare { min-width: 520px; }
-    .ind-compare td:first-child { color: var(--dark); }
-    .ind-compare tbody tr { cursor: default; }
-    .ind-compare tbody tr:hover { background: transparent; }
-    .ind-compare small { font-size: 11.5px; }
     .p-pill--crit { background: var(--crit-bg); color: var(--crit-fg); }
-    .ind-card h4 { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); }
-    .ind-table-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-    .ind-table-head h4 { margin: 0; }
-    .ind-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .ind-chip { background: #fff; color: var(--ink-2); border: 1px solid var(--border-strong); padding: 5px 12px; border-radius: 999px; font: inherit; font-size: 12.5px; cursor: pointer; }
-    .ind-chip b { font-variant-numeric: tabular-nums; margin-left: 2px; }
-    .ind-chip.active { background: var(--dark); border-color: var(--dark); color: #fff; }
-    .ind-table-wrap { overflow-x: auto; }
-    .ind-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; }
-    .ind-table th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    .ind-table td { padding: 8px 10px 8px 0; border-bottom: 1px solid #F0ECE7; vertical-align: top; }
-    .ind-table th.v-num, .v-table th.v-num { text-align: right; }
-    .ind-table tbody tr { cursor: pointer; }
-    .ind-table tbody tr:hover, .ind-table tbody tr:focus { background: #FBFAF8; outline: none; }
-    .ind-client { font-weight: 600; color: var(--dark); }
     /* Móvil: estado apilado (dos pastillas en línea dejaban sin sitio al nombre del cliente) */
     @media (max-width: 760px) {
       .p-status { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
       .p-act { text-align: right; }
-      .ind-filters input[type="date"] { width: 140px; }
-      .ind-card + .ind-card { margin-top: 12px; }
-      /* Comparación a 390 px: sin ancho mínimo, para que los números no queden fuera de la pantalla */
-      .ind-compare { min-width: 0; font-size: 12px; }
-      .ind-compare small { display: none; }
-      .ind-compare th, .ind-compare td { padding-right: 6px; }
-      .ind-compare .p-pill { height: 20px; padding: 0 6px; font-size: 10.5px; }
-      .ind-compare .p-pill::before { display: none; }
-      .ind-value { font-size: 20px; }
+      .vx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .vx-hbar { grid-template-columns: minmax(0, 120px) minmax(0, 1fr) 56px; gap: 8px; font-size: 12.5px; }
     }
 
   </style>
@@ -1132,7 +1109,6 @@
       <button class="tab" data-tab="artistas">Artistas</button>
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
-      <button class="tab" data-tab="indicadores">Indicadores</button>
       <button class="tab" data-tab="banco">Banco de imágenes</button>
     </div>
   </div>
@@ -1234,31 +1210,16 @@
         <input id="propuestas-q" type="search" placeholder="Buscar por cliente, empresa, evento…">
         <select id="propuestas-status">
           <option value="">Todos los estados</option>
-          <option value="revision">En revisión</option>
-          <option value="approved">Aprobadas</option>
+          <option value="borrador">Borrador</option>
+          <option value="enviada">Enviada</option>
+          <option value="aprobada">Aprobada</option>
+          <option value="cancelada">Cancelada</option>
         </select>
         <span id="propuestas-summary" style="color: var(--gray); font-size: 13px;"></span>
       </div>
       <div id="propuestas-loading" class="loading">Cargando…</div>
       <div id="propuestas-empty" class="empty hidden">No hay propuestas.</div>
       <div id="propuestas-table-wrap"></div>
-    </section>
-
-    <!-- TAB: INDICADORES (cómo leen los clientes las propuestas) -->
-    <section id="tab-indicadores" class="tab-panel hidden">
-      <div class="toolbar ind-filters">
-        <div class="subtabs" id="ind-range" role="group" aria-label="Periodo">
-          <button type="button" class="subtab" data-range="7">7 días</button>
-          <button type="button" class="subtab active" data-range="30">30 días</button>
-          <button type="button" class="subtab" data-range="90">90 días</button>
-          <button type="button" class="subtab" data-range="all">Desde el 12 oct</button>
-        </div>
-        <label>Desde <input type="date" id="ind-from" min="2026-10-12"></label>
-        <label>Hasta <input type="date" id="ind-to" min="2026-10-12"></label>
-        <select id="ind-company" aria-label="Empresa"><option value="">Todas las empresas</option></select>
-      </div>
-      <div id="ind-loading" class="loading hidden">Cargando…</div>
-      <div id="ind-body"></div>
     </section>
 
     <!-- TAB: BANCO DE IMÁGENES -->
@@ -1526,7 +1487,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'indicadores', 'banco'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -3523,10 +3484,10 @@
     });
 
     // ---------- APERTURAS DE PROPUESTAS ----------
-    // Lo que hace el cliente en la propuesta (api/track-proposal.js), resumido por
-    // api/admin.js. En la lista solo se ve si la ha abierto y cuándo; el detalle (tiempo
-    // por show, clics) está detrás de "Ver actividad", y los datos de todas juntas en la
-    // pestaña Indicadores (Xavi 2026-10-19: poca información en la lista).
+    // Lo que hace el cliente en la propuesta (api/track-proposal.js). En la lista solo se
+    // ve si la ha abierto y cuándo; "Ver más" abre un resumen visual: cuántas veces, cuánto
+    // tiempo, cuándo, dónde se para más y dónde pincha (Ramiro 2026-10-19: "algo visual,
+    // que se entienda, con gráficos, no mucho texto").
     const TRACK_SINCE = '2026-10-12';
     const DEVICE_ES = { mobile: 'móvil', tablet: 'tablet', desktop: 'escritorio' };
     const SECTION_ES = { hero: 'Portada', concept: 'Concepto', summary: 'Resumen y precios', conditions: 'Condiciones' };
@@ -3549,58 +3510,61 @@
       return `${d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}, ${hora}`;
     };
     const daysSince = (v) => Math.floor((Date.now() - new Date(v)) / 864e5);
-    const barHtml = (value, max) => `<span class="v-bar" aria-hidden="true"><i style="width:${Math.max(2, Math.round(100 * value / Math.max(1, max)))}%"></i></span>`;
+    const dayKey = (v) => { const d = new Date(v); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+    const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
+    const fmtDay = (key) => new Date(key + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
 
-    // Clics del resumen en frases: "Descargó el PDF 3×", "Abrió el vídeo de Fiesta Casino"...
-    // Los clics de antes del 19-oct no dicen el show: quedan como "Abrió 3 vídeos".
-    const clickPhrases = (sm) => {
-      const c = sm.clicks || {};
-      const out = [];
-      if (c.pdf) out.push(`Descargó el PDF${c.pdf > 1 ? ` ${c.pdf}×` : ''}`);
-      const perShow = (kind, one, rest) => {
-        const tagged = (sm.sections || []).filter(x => x.clicks && x.clicks[kind]);
-        tagged.forEach(x => out.push(one(escapeHtml(sectionLabel(x)), x.clicks[kind])));
-        const left = (c[kind] || 0) - tagged.reduce((t, x) => t + x.clicks[kind], 0);
-        if (left > 0) out.push(rest(left));
-      };
-      perShow('video', (name) => `Abrió el vídeo de ${name}`, (n) => `Abrió ${plural(n, 'vídeo', 'vídeos')}`);
-      perShow('fotos', (name, n) => `Pasó las fotos de ${name}${n > 1 ? ` (${n})` : ''}`, (n) => `Pasó fotos (${plural(n, 'clic', 'clics')})`);
-      const other = { idioma: 'Cambió el idioma', email: 'Pulsó el email', tel: 'Pulsó el teléfono', whatsapp: 'Pulsó WhatsApp', link: 'Abrió un enlace', boton: 'Otros botones' };
-      Object.entries(other).forEach(([k, label]) => { if (c[k]) out.push(`${label}${c[k] > 1 ? ` ${c[k]}×` : ''}`); });
-      return out;
-    };
+    // Estados de la propuesta (Ramiro 2026-10-19). Borrador: Xavi la está haciendo
+    // (status revision). Enviada: validada y enviada al cliente (status approved).
+    // Aprobada / Cancelada: las marca Xavi desde Más (columna outcome).
+    const proposalEstado = (p) => p.outcome === 'won' ? 'aprobada' : p.outcome === 'cancelled' ? 'cancelada' : p.status === 'approved' ? 'enviada' : 'borrador';
+    const ESTADO_ES = { borrador: 'Borrador', enviada: 'Enviada', aprobada: 'Aprobada', cancelada: 'Cancelada' };
+    const ESTADO_PILL = { borrador: 'p-pill--neutral', enviada: 'p-pill--info', aprobada: 'p-pill--ok', cancelada: 'p-pill--crit' };
 
-    // ---- Diálogo "Actividad del cliente" (botón "Ver actividad" de la lista) ----
-    // Primero el resumen de todas las visitas de personas: cuánto la ha mirado y qué
-    // shows le interesan, que es lo que Xavi quiere saber antes de llamar.
-    function renderViewsSummary(sm) {
-      if (!sm || !sm.visits) return '';
-      const secs = sm.sections.filter(x => x.visits);
-      const max = Math.max(1, ...secs.map(x => x.seconds));
-      const rows = secs.map(x => {
-        const cl = Object.entries(x.clicks || {}).map(([k, n]) => `${escapeHtml(CLICK_ES[k] || k)}${n > 1 ? ` ×${n}` : ''}`).join(', ');
-        return `<tr><td>${escapeHtml(sectionLabel(x))}</td>
-          <td class="v-timecell">${sm.timed ? `${barHtml(x.seconds, max)}<span class="v-num">${fmtSecs(x.seconds)}</span>` : '—'}</td>
-          <td class="v-num">${x.visits}/${sm.visits}</td><td class="v-muted">${cl}</td></tr>`;
-      }).join('');
-      const more = clickPhrases(sm);
-      return `<div class="v-summary">
-        <div class="v-when">${plural(sm.visits, 'visita', 'visitas')} · ${fmtSecs(sm.seconds)} en total · llegó al ${sm.scroll} % de la página</div>
-        <div class="v-what">Primera visita ${escapeHtml(fmtWhen(sm.first_at))} · última ${escapeHtml(fmtWhen(sm.last_at))}${sm.last_device ? ` · ${escapeHtml([DEVICE_ES[sm.last_device] || sm.last_device, sm.last_place].filter(Boolean).join(', '))}` : ''}</div>
-        ${rows ? `<table class="v-table"><thead><tr><th>Sección</th><th>Tiempo a la vista</th><th class="v-num">Visitas</th><th>Clics</th></tr></thead><tbody>${rows}</tbody></table>` : ''}
-        ${sm.timed ? '' : '<div class="v-what v-muted">Sin tiempo por sección: visitas de antes del 16 oct.</div>'}
-        ${sm.unseen && sm.unseen.length ? `<div class="v-what v-warn">No llegó a ver: ${sm.unseen.map(x => escapeHtml(x.name)).join(', ')}</div>` : ''}
-        ${more.length ? `<div class="v-what">${more.join(' · ')}</div>` : ''}
-      </div>`;
+    // ---- "Ver más": actividad del cliente en gráficos ----
+    // Barras horizontales de una sola serie; el nombre y el valor van en texto.
+    function hBars(items) {
+      const max = Math.max(1, ...items.map(i => i.value));
+      return `<div class="vx-hbars">${items.map(i => `
+        <div class="vx-hbar${i.top ? ' is-top' : ''}${i.muted ? ' is-muted' : ''}" title="${escapeHtml(i.label)}: ${escapeHtml(i.text)}">
+          <span class="vx-hname">${escapeHtml(i.label)}</span>
+          <span class="vx-htrack"><i style="width:${i.value > 0 ? Math.max(3, Math.round(100 * i.value / max)) : 0}%"></i></span>
+          <span class="vx-hval">${escapeHtml(i.text)}</span>
+        </div>`).join('')}</div>`;
     }
+    // Visitas por día desde que se envió (por semana si pasan de 45 días). Una sola serie.
+    function dayColumns(visits, sentAt) {
+      const today = dayKey(new Date());
+      let from = sentAt ? dayKey(sentAt) : today;
+      visits.forEach(v => { const k = dayKey(v.started_at); if (k < from) from = k; });
+      if (from > addDays(today, -6)) from = addDays(today, -6);
+      const nDays = Math.round((new Date(today + 'T12:00:00') - new Date(from + 'T12:00:00')) / 864e5) + 1;
+      const step = nDays > 45 ? 7 : 1;
+      const cols = [];
+      for (let k = from; k <= today; k = addDays(k, step)) cols.push({ key: k, n: 0 });
+      visits.forEach(v => {
+        const i = Math.floor((new Date(dayKey(v.started_at) + 'T12:00:00') - new Date(from + 'T12:00:00')) / (step * 864e5));
+        if (cols[i]) cols[i].n += 1;
+      });
+      const max = Math.max(1, ...cols.map(c => c.n));
+      const every = Math.max(1, Math.ceil(cols.length / 7));
+      return `<div class="vx-cols">${cols.map((c, i) => `
+        <div class="vx-col" title="${step === 7 ? 'Semana del ' : ''}${fmtDay(c.key)}: ${plural(c.n, 'visita', 'visitas')}">
+          <span class="vx-cval">${c.n || ''}</span>
+          <span class="vx-cbar" style="height:${c.n ? Math.max(6, Math.round(96 * c.n / max)) : 0}px"></span>
+          <span class="vx-clabel">${i % every === 0 || i === cols.length - 1 ? fmtDay(c.key) : ''}</span>
+        </div>`).join('')}</div>`;
+    }
+    // Clics agrupados por lo que pulsa: "Fotos · Fiesta Casino", "Descargar PDF"...
+    const CLICK_LABEL = { pdf: 'Descargar PDF', video: 'Vídeo', fotos: 'Fotos', idioma: 'Cambiar idioma', email: 'Email', tel: 'Teléfono', whatsapp: 'WhatsApp', link: 'Enlace', boton: 'Otros botones' };
     const clickLabel = (c) => {
       const k = CLICK_ES[c.kind] || c.kind || 'botón';
       if (c.name) return `${k} · ${c.name}`;
       return (c.kind === 'boton' || c.kind === 'link') && c.text ? `${k} «${c.text}»` : k;
     };
     function renderVisits(visits) {
-      if (!visits.length) return '<div class="v-empty">Todavía nadie ha abierto esta propuesta.</div>';
-      return `<h4 class="v-h">Visitas, una a una</h4>` + visits.map(v => {
+      if (!visits.length) return '<div class="v-empty">Ninguna visita.</div>';
+      return visits.map(v => {
         const who = [v.country, v.city].filter(Boolean).join(' · ') || 'origen desconocido';
         const what = v.engaged
           ? `${fmtSecs(v.seconds)} en la página · scroll ${v.scroll} %`
@@ -3621,254 +3585,65 @@
         </div>`;
       }).join('');
     }
+    function renderViewsDialog(data) {
+      const sm = data.summary || {};
+      const meta = data.proposal || {};
+      const all = data.visits || [];
+      const human = all.filter(v => v.engaged && !v.is_bot);
+      const eachVisit = all.length ? `<details class="vx-details"><summary>Ver cada visita</summary>${renderVisits(all)}</details>` : '';
+      if (!sm.visits) {
+        return `<div class="vx-empty"><div class="vx-empty-title">Todavía no la ha abierto</div>
+            ${meta.sent_at ? `<div class="v-muted">Enviada ${escapeHtml(fmtWhen(meta.sent_at))} · hace ${plural(daysSince(meta.sent_at), 'día', 'días')}</div>` : ''}</div>
+          ${eachVisit}${INTERNO_NOTE}`;
+      }
+      const tile = (label, value) => `<div class="vx-tile"><div class="vx-value">${escapeHtml(value)}</div><div class="vx-label">${label}</div></div>`;
+      const tiles = [
+        tile(sm.visits === 1 ? 'vez abierta' : 'veces abierta', String(sm.visits)),
+        tile('tiempo en total', fmtSecs(sm.seconds)),
+        tile('la última vez', fmtWhen(sm.last_at)),
+        tile('de la página leída', `${sm.scroll} %`)
+      ].join('');
+
+      // Dónde se para más: zonas en el orden de la página, la más mirada resaltada.
+      const layout = data.layout || [];
+      const maxSecs = Math.max(0, ...layout.map(z => z.seconds));
+      const zones = layout.map(z => sm.timed
+        ? { label: sectionLabel(z), value: z.seconds, text: z.visits || z.seconds ? fmtSecs(z.seconds) : 'no lo vio', muted: !z.visits && !z.seconds, top: z.seconds > 0 && z.seconds === maxSecs }
+        : { label: sectionLabel(z), value: z.visits ? 1 : 0, text: z.visits ? 'visto' : 'no lo vio', muted: !z.visits });
+      const zonesNote = sm.timed ? '' : '<div class="vx-note">Sin tiempo por zona: son visitas de antes del 16 oct.</div>';
+
+      // Dónde pincha
+      const counts = new Map();
+      human.forEach(v => v.clicks.forEach(c => {
+        const base = CLICK_LABEL[c.kind] || 'Otros botones';
+        const label = c.name && (c.kind === 'fotos' || c.kind === 'video') ? `${base} · ${c.name}` : base;
+        counts.set(label, (counts.get(label) || 0) + 1);
+      }));
+      const clicks = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([label, n]) => ({ label, value: n, text: `${n}` }));
+      const clicksHtml = clicks.length ? hBars(clicks) : '<div class="vx-note">No ha pulsado nada.</div>';
+
+      return `<div class="vx-tiles">${tiles}</div>
+        <section class="vx-block"><h4>Cuándo la ha abierto</h4>${dayColumns(human, meta.sent_at)}</section>
+        <section class="vx-block"><h4>Dónde se para más</h4>${hBars(zones)}${zonesNote}</section>
+        <section class="vx-block"><h4>Dónde pincha</h4>${clicksHtml}</section>
+        ${eachVisit}${INTERNO_NOTE}`;
+    }
     async function openViewsDialog(id) {
       const dlg = $('views-dialog');
+      $('views-dialog-title').textContent = 'Actividad del cliente';
       $('views-dialog-body').innerHTML = '<div class="v-empty">Cargando…</div>';
       if (!dlg.open) dlg.showModal();
       try {
         const r = await fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(id)}`);
         const data = await r.json();
         if (!r.ok || !data.success) throw new Error(data.error || `views ${r.status}`);
-        $('views-dialog-body').innerHTML = renderViewsSummary(data.summary) + renderVisits(data.visits || []) + INTERNO_NOTE;
+        const m = data.proposal || {};
+        if (m.client) $('views-dialog-title').textContent = m.event ? `${m.client} · ${m.event}` : m.client;
+        $('views-dialog-body').innerHTML = renderViewsDialog(data);
       } catch (err) {
         $('views-dialog-body').innerHTML = `<div class="v-empty">Error: ${escapeHtml(err.message)}</div>`;
       }
     }
-
-    // ---------- INDICADORES ----------
-    // Qué hacen distinto los clientes que compran (Ramiro 2026-10-19: "prefiero aprender
-    // a cómo mejorar"). Solo propuestas ENVIADAS (validadas): las de revisión no las
-    // recibe el cliente. api/admin.js proposal-dashboard manda cada una con sus visitas
-    // y el resultado de su oportunidad en GHL; aquí se filtra por fecha de envío y
-    // empresa y se compara ganadas, perdidas y en curso, sin volver a pedir nada.
-    state.ind = { data: null, from: '', to: '', company: '', filter: 'all', range: '30' };
-    const dayKey = (v) => { const d = new Date(v); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
-    const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
-    const fmtDay = (key) => new Date(key + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-    const median = (xs) => { if (!xs.length) return null; const s = [...xs].sort((a, b) => a - b), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
-    const pctOf = (n, d) => (d ? Math.round((100 * n) / d) : null);
-    const pctTxt = (n) => (n == null ? '—' : `${n} %`);
-    const fmtEuros = (n) => (n == null ? '—' : `${Math.round(n).toLocaleString('es-ES')} €`);
-    const RESULT_ES = { won: 'Ganada', lost: 'Perdida', open: 'En curso', none: 'Sin GHL' };
-    const RESULT_PILL = { won: 'p-pill--ok', lost: 'p-pill--crit', open: 'p-pill--neutral', none: 'p-pill--neutral' };
-
-    function setIndRange(range) {
-      const today = dayKey(new Date());
-      state.ind.range = range;
-      if (range !== 'custom') {
-        state.ind.to = today;
-        // Antes del 12-oct no hay datos: el periodo no empieza antes.
-        const from = range === 'all' ? TRACK_SINCE : addDays(today, -(Number(range) - 1));
-        state.ind.from = from < TRACK_SINCE ? TRACK_SINCE : from;
-      }
-      $('ind-from').value = state.ind.from;
-      $('ind-to').value = state.ind.to;
-      document.querySelectorAll('#ind-range [data-range]').forEach(b => b.classList.toggle('active', b.dataset.range === range));
-    }
-
-    async function loadIndicadores() {
-      if (!state.ind.from) setIndRange(state.ind.range);
-      $('ind-loading').classList.remove('hidden');
-      try {
-        const r = await fetch('/api/admin?action=proposal-dashboard');
-        const d = await r.json();
-        if (!r.ok || !d.success) throw new Error(d.error || `dashboard ${r.status}`);
-        state.ind.data = d;
-        const companies = [...new Set(d.proposals.map(p => p.company))].sort((a, b) => a.localeCompare(b, 'es'));
-        $('ind-company').innerHTML = '<option value="">Todas las empresas</option>' +
-          companies.map(c => `<option value="${escapeHtml(c)}"${c === state.ind.company ? ' selected' : ''}>${escapeHtml(c)}</option>`).join('');
-        renderIndicadores();
-      } catch (err) {
-        $('ind-body').innerHTML = `<div class="empty">Error cargando los indicadores: ${escapeHtml(err.message)}</div>`;
-      } finally {
-        $('ind-loading').classList.add('hidden');
-      }
-    }
-
-    // Una fila por propuesta enviada con lo que se compara: si la abrió, cuánto la leyó,
-    // hasta dónde llegó, clics y el resultado en GHL.
-    function indRow(p, openedClients) {
-      const v = p.visits;
-      const ownOpen = p.open_count > 0 || v.length > 0;
-      const seen = new Set(v.flatMap(x => x.sections.map(s => s.section)));
-      const bySection = {};
-      v.forEach(x => x.sections.forEach(s => { bySection[s.section] = (bySection[s.section] || 0) + s.seconds; }));
-      const showsSeen = p.shows.filter(s => seen.has(s.section)).length;
-      const topShow = p.shows.map(s => ({ ...s, seconds: bySection[s.section] || 0 })).sort((a, b) => b.seconds - a.seconds)[0];
-      const end = v.some(x => x.scroll >= 90) || seen.has('conditions');
-      const reach = !ownOpen ? null
-        : end ? 'Hasta el final'
-        : p.shows.length && showsSeen === p.shows.length ? 'Todos los shows'
-        : showsSeen ? `${showsSeen} de ${p.shows.length} shows`
-        : seen.has('concept') ? 'Concepto' : 'Portada';
-      return {
-        p, v, bySection, reach, showsSeen,
-        result: p.outcome ? p.outcome.result : 'none',
-        opened: ownOpen || openedClients.has(p.client_key),
-        otherVersion: !ownOpen && openedClients.has(p.client_key),
-        timed: v.some(x => x.sections.some(s => s.seconds > 0)),
-        seconds: v.reduce((t, x) => t + x.seconds, 0),
-        concept: seen.has('concept'),
-        allShows: p.shows.length > 0 && showsSeen === p.shows.length,
-        conditions: seen.has('conditions'),
-        end,
-        pdf: v.some(x => x.clicks.some(c => c.kind === 'pdf')),
-        video: v.some(x => x.clicks.some(c => c.kind === 'video')),
-        mobile: v.filter(x => x.device === 'mobile' || x.device === 'tablet').length,
-        topShow: topShow && topShow.seconds > 0 ? topShow : null
-      };
-    }
-
-    function renderIndicadores() {
-      const { data, from, to, company } = state.ind;
-      if (!data) return;
-      const inRange = (iso) => { if (!iso) return false; const k = dayKey(iso); return k >= from && k <= to; };
-      const openedClients = new Set(data.proposals.filter(p => p.open_count > 0 || p.visits.length).map(p => p.client_key));
-      const rows = data.proposals
-        .filter(p => (!company || p.company === company) && inRange(p.sent_at))
-        .map(p => indRow(p, openedClients));
-
-      const ghl = data.ghl || {};
-      const ghlNote = !ghl.ok
-        ? `<div class="ind-banner">No se ha podido leer el resultado en GHL${ghl.error ? ` (${escapeHtml(ghl.error)})` : ''}. Los indicadores salen sin ganadas ni perdidas.</div>` : '';
-      if (!rows.length) {
-        $('ind-body').innerHTML = ghlNote + '<div class="empty">No hay propuestas enviadas en este periodo.</div>';
-        return;
-      }
-
-      const groups = { won: [], lost: [], open: [], none: [] };
-      rows.forEach(x => groups[x.result].push(x));
-      const opened = rows.filter(x => x.opened);
-      const tile = (label, value, sub, cls = '') => `<div class="ind-tile ${cls}"><div class="ind-label">${label}</div><div class="ind-value">${value}</div>${sub ? `<div class="ind-sub">${sub}</div>` : ''}</div>`;
-      const decided = groups.won.length + groups.lost.length;
-      const kpis = [
-        tile('Enviadas', String(rows.length), 'validadas en el periodo'),
-        tile('Abiertas', String(opened.length), pctTxt(pctOf(opened.length, rows.length)) + ' de las enviadas'),
-        tile('Sin abrir', String(rows.length - opened.length), 'el cliente no la ha abierto', rows.length - opened.length ? 'is-warn' : ''),
-        tile('Ganadas', String(groups.won.length), decided ? `${pctTxt(pctOf(groups.won.length, decided))} de las decididas` : 'ninguna decidida aún', 'is-ok'),
-        tile('Perdidas', String(groups.lost.length), 'perdidas o abandonadas en GHL'),
-        tile('En curso', String(groups.open.length), 'sin ganar ni perder todavía'),
-        tile('Tiempo de lectura', opened.length ? fmtSecs(median(opened.filter(x => x.v.length).map(x => x.seconds)) || 0) : '—', 'mediana de las abiertas')
-      ].join('');
-
-      // Comparación: qué hacen los clientes de cada resultado. Las tasas de lectura van
-      // sobre las propuestas abiertas de cada grupo (sin abrir no hay lectura).
-      const cols = ['won', 'lost', 'open'].concat(groups.none.length ? ['none'] : []);
-      const stat = (key, list) => {
-        const o = list.filter(x => x.opened && x.v.length);
-        const visits = o.flatMap(x => x.v);
-        switch (key) {
-          case 'n': return String(list.length);
-          case 'opened': return pctTxt(pctOf(list.filter(x => x.opened).length, list.length));
-          case 'visits': return o.length ? String(median(o.map(x => x.v.length))) : '—';
-          case 'seconds': return o.length ? fmtSecs(median(o.map(x => x.seconds))) : '—';
-          case 'concept': return pctTxt(pctOf(o.filter(x => x.concept).length, o.length));
-          case 'allShows': return pctTxt(pctOf(o.filter(x => x.allShows).length, o.length));
-          case 'end': return pctTxt(pctOf(o.filter(x => x.end).length, o.length));
-          case 'pdf': return pctTxt(pctOf(o.filter(x => x.pdf).length, o.length));
-          case 'video': return pctTxt(pctOf(o.filter(x => x.video).length, o.length));
-          case 'mobile': return pctTxt(pctOf(o.reduce((t, x) => t + x.mobile, 0), visits.length));
-          case 'shows': return list.length ? String(median(list.map(x => x.p.shows.length))) : '—';
-          case 'value': { const vals = list.map(x => x.p.outcome && x.p.outcome.value).filter(n => n > 0); return vals.length ? fmtEuros(median(vals)) : '—'; }
-        }
-        return '—';
-      };
-      const METRICS = [
-        ['n', 'Propuestas'],
-        ['opened', 'La abren'],
-        ['visits', 'Visitas por propuesta', 'mediana, de las abiertas'],
-        ['seconds', 'Tiempo de lectura', 'mediana, de las abiertas'],
-        ['concept', 'Ven el concepto'],
-        ['allShows', 'Ven todos los shows'],
-        ['end', 'Llegan al final (condiciones)'],
-        ['pdf', 'Descargan el PDF'],
-        ['video', 'Abren un vídeo'],
-        ['mobile', 'Visitas desde el móvil'],
-        ['shows', 'Shows en la propuesta', 'mediana'],
-        ['value', 'Importe en GHL', 'mediana']
-      ];
-      const small = cols.some(c => groups[c].length > 0 && groups[c].length < 5);
-      const compare = `<div class="ind-table-wrap"><table class="ind-table ind-compare">
-          <thead><tr><th></th>${cols.map(c => `<th class="v-num"><span class="p-pill ${RESULT_PILL[c]}">${RESULT_ES[c]}</span></th>`).join('')}</tr></thead>
-          <tbody>${METRICS.map(([k, label, hint]) => `<tr><td>${label}${hint ? ` <small class="v-muted">${hint}</small>` : ''}</td>${cols.map(c => `<td class="v-num">${stat(k, groups[c])}</td>`).join('')}</tr>`).join('')}</tbody>
-        </table></div>
-        ${!decided ? '<div class="ind-sub">Aún no hay propuestas ganadas ni perdidas en este periodo. Para que la comparación sirva, marca en GHL cada oportunidad como ganada o perdida (estado o etapa Won / Lost).</div>'
-          : small ? '<div class="ind-sub">Con menos de 5 propuestas en una columna, léelo como pista, no como conclusión.</div>' : ''}
-        ${groups.none.length ? `<div class="ind-sub">"Sin GHL": enviadas sin oportunidad encontrada en GHL (${groups.none.length}).</div>` : ''}`;
-
-      // Tiempo por show según el resultado: en cuántas propuestas de cada grupo está y
-      // cuántos segundos se miró de media (solo propuestas abiertas con tiempo medido).
-      const showAgg = new Map();
-      rows.forEach(x => x.p.shows.forEach(s => {
-        const a = showAgg.get(s.section) || { name: s.name, total: 0, by: {} };
-        const g = a.by[x.result] || (a.by[x.result] = { n: 0, timed: 0, seconds: 0 });
-        a.total += 1; g.n += 1;
-        if (x.timed) { g.timed += 1; g.seconds += x.bySection[s.section] || 0; }
-        showAgg.set(s.section, a);
-      }));
-      const shows = [...showAgg.values()].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, 'es')).slice(0, 15);
-      const showCell = (g) => !g ? '<span class="v-muted">—</span>'
-        : `${g.n}${g.timed ? ` · <b>${fmtSecs(Math.round(g.seconds / g.timed))}</b>` : ''}`;
-      const showsHtml = shows.length ? `<div class="ind-table-wrap"><table class="ind-table ind-compare">
-          <thead><tr><th>Show</th>${cols.map(c => `<th class="v-num">${RESULT_ES[c]}</th>`).join('')}</tr></thead>
-          <tbody>${shows.map(s => `<tr><td>${escapeHtml(s.name)}</td>${cols.map(c => `<td class="v-num">${showCell(s.by[c])}</td>`).join('')}</tr>`).join('')}</tbody>
-        </table></div>
-        <div class="ind-sub">En cuántas propuestas de cada grupo está el show y, en negrita, los segundos que se miró de media (en las abiertas con tiempo medido, desde el 16 oct).</div>` : '';
-
-      // Tabla de propuestas enviadas
-      const f = state.ind.filter;
-      const pass = (x) => f === 'all' || (f === 'closed' ? !x.opened : x.result === f);
-      const list = rows.filter(pass).sort((a, b) => (b.p.sent_at > a.p.sent_at ? 1 : -1));
-      const chip = (key, label, n) => `<button type="button" class="ind-chip${f === key ? ' active' : ''}" data-filter="${key}">${label} <b>${n}</b></button>`;
-      const tableRows = list.map(x => {
-        const p = x.p;
-        const openTxt = x.otherVersion ? '<span class="p-pill p-pill--ok">Otra versión</span>'
-          : x.opened ? `<span class="p-pill p-pill--ok">Sí · ${p.open_count || p.visits.length}×</span>`
-          : `<span class="p-pill p-pill--warn">No</span> <small class="v-muted">${plural(daysSince(p.sent_at), 'día', 'días')}</small>`;
-        const res = `<span class="p-pill ${RESULT_PILL[x.result]}">${RESULT_ES[x.result]}</span>${p.outcome && p.outcome.stage && x.result === 'open' ? `<div class="v-muted">${escapeHtml(p.outcome.stage)}</div>` : ''}`;
-        return `<tr data-views="${escapeHtml(p.id)}" tabindex="0" title="Ver la actividad del cliente">
-          <td><div class="ind-client">${escapeHtml(p.client)}</div><div class="v-muted">${escapeHtml(p.company)}</div></td>
-          <td>${escapeHtml(p.event || '—')}</td>
-          <td class="v-num">${escapeHtml(fmtDay(dayKey(p.sent_at)))}</td>
-          <td>${res}</td>
-          <td>${openTxt}</td>
-          <td class="v-num">${x.v.length ? fmtSecs(x.seconds) : '—'}</td>
-          <td>${x.reach || '—'}</td>
-          <td>${x.topShow ? escapeHtml(x.topShow.name) : '—'}</td>
-          <td>${x.pdf ? 'Sí' : '—'}</td>
-        </tr>`;
-      }).join('');
-
-      $('ind-body').innerHTML = `${ghlNote}
-        <div class="ind-kpis">${kpis}</div>
-        <div class="ind-card"><h4>Qué hacen distinto los que compran</h4>${compare}</div>
-        ${showsHtml ? `<div class="ind-card"><h4>Tiempo por show según el resultado</h4>${showsHtml}</div>` : ''}
-        <div class="ind-card">
-          <div class="ind-table-head"><h4>Propuestas enviadas</h4>
-            <div class="ind-chips">${chip('all', 'Todas', rows.length)}${chip('won', 'Ganadas', groups.won.length)}${chip('lost', 'Perdidas', groups.lost.length)}${chip('open', 'En curso', groups.open.length)}${chip('closed', 'Sin abrir', rows.length - opened.length)}</div></div>
-          <div class="ind-table-wrap"><table class="ind-table">
-            <thead><tr><th>Cliente</th><th>Evento</th><th class="v-num">Enviada</th><th>Resultado</th><th>Abierta</th><th class="v-num">Tiempo</th><th>Hasta dónde llegó</th><th>Show más mirado</th><th>PDF</th></tr></thead>
-            <tbody>${tableRows || '<tr><td colspan="9" class="v-muted">Ninguna con este filtro.</td></tr>'}</tbody>
-          </table></div>
-        </div>
-        <div class="ind-sub">Propuestas enviadas (validadas) desde el 12 oct; las que siguen en revisión no salen porque el cliente no las recibe. El resultado viene de la oportunidad en GHL: estado ganada / perdida o etapa Won / Lost. El tiempo por show se mide desde el 16 oct. Solo cuentan personas: los filtros del correo y las visitas del equipo quedan fuera.</div>`;
-
-      $('ind-body').querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => { state.ind.filter = b.dataset.filter; renderIndicadores(); }));
-      $('ind-body').querySelectorAll('tr[data-views]').forEach(tr => {
-        tr.addEventListener('click', () => openViewsDialog(tr.dataset.views));
-        tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') openViewsDialog(tr.dataset.views); });
-      });
-    }
-
-    document.querySelectorAll('#ind-range [data-range]').forEach(b => b.addEventListener('click', () => { setIndRange(b.dataset.range); renderIndicadores(); }));
-    ['ind-from', 'ind-to'].forEach(id => $(id).addEventListener('change', () => {
-      state.ind.from = $('ind-from').value || TRACK_SINCE;
-      state.ind.to = $('ind-to').value || dayKey(new Date());
-      if (state.ind.from > state.ind.to) [state.ind.from, state.ind.to] = [state.ind.to, state.ind.from];
-      setIndRange('custom');
-      renderIndicadores();
-    }));
-    $('ind-company').addEventListener('change', (e) => { state.ind.company = e.target.value; renderIndicadores(); });
 
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {
@@ -3878,7 +3653,7 @@
 
       const params = new URLSearchParams();
       if (state.propuestas.q) params.set('q', state.propuestas.q);
-      if (state.propuestas.status) params.set('status', state.propuestas.status);
+      if (state.propuestas.status) params.set('estado', state.propuestas.status);
       params.set('limit', '200');
 
       try {
@@ -3976,39 +3751,56 @@
           const meta = [fmtEventDate(p.event_date), (p.event_location || '').trim() || null, guests].filter(Boolean).join(' · ');
           return { title, meta, generic };
         };
-        const statusPill = (p) => p.status === 'approved'
-          ? '<span class="p-pill p-pill--ok">Aprobada</span>'
-          : '<span class="p-pill p-pill--info">En revisión</span>';
+        const ESTADO_TIP = {
+          borrador: 'Xavi la está preparando: el cliente aún no la tiene',
+          enviada: 'Validada y enviada al cliente',
+          aprobada: 'El cliente la ha aprobado',
+          cancelada: 'Cancelada'
+        };
+        const statusPill = (p) => {
+          const e = proposalEstado(p);
+          return `<span class="p-pill ${ESTADO_PILL[e]}" title="${ESTADO_TIP[e]}">${ESTADO_ES[e]}</span>`;
+        };
         // Aperturas del cliente (api/track-proposal.js, desde el 12-oct-2026). Las
         // propuestas anteriores sin aperturas no muestran nada: no hay datos de ellas.
         const fmtOpened = (v) => v ? new Date(v).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
         const openPill = (p) => {
+          if (proposalEstado(p) === 'borrador') return '';   // un borrador no tiene indicadores
           const n = Number(p.open_count) || 0;
           if (n > 0) return `<span class="p-pill p-pill--ok" title="Primera apertura: ${escapeHtml(fmtOpened(p.first_opened_at))}">Abierta ${n}× · ${escapeHtml(fmtOpened(p.last_opened_at))}</span>`;
           if ((p.created_at || '') >= TRACK_SINCE || (p.approved_at || '') >= TRACK_SINCE) {
-            const tip = p.status === 'approved' && p.approved_at
-              ? `Aprobada hace ${plural(daysSince(p.approved_at), 'día', 'días')} y el cliente aún no la ha abierto`
-              : 'En revisión: el enlace va a GHL al aprobarla';
+            const tip = p.approved_at
+              ? `Enviada hace ${plural(daysSince(p.approved_at), 'día', 'días')} y el cliente aún no la ha abierto`
+              : 'El cliente aún no la ha abierto';
             return `<span class="p-pill p-pill--warn" title="${escapeHtml(tip)}">Sin abrir</span>`;
           }
           return '';
         };
-        // El detalle (tiempo por show, clics, visitas) va detrás de este botón, no en la lista.
-        const actBtn = (p) => `<button type="button" class="p-act" data-views="${escapeHtml(p.id)}">Ver actividad</button>`;
+        // El detalle (cuándo, dónde se para, dónde pincha) va detrás de este botón, no en la lista.
+        const actBtn = (p) => `<button type="button" class="p-act" data-views="${escapeHtml(p.id)}">Ver más</button>`;
         const showsPill = (n) => n > 0
           ? `<span class="p-pill p-pill--neutral">${n} show${n === 1 ? '' : 's'}</span>`
           : '<span class="p-pill p-pill--warn">Por preparar</span>';
 
-        const totalConShows = state.propuestas.items.filter(p => countShows(p) > 0).length;
-        const totalAprobadas = state.propuestas.items.filter(p => p.status === 'approved').length;
+        const porEstado = { borrador: 0, enviada: 0, aprobada: 0, cancelada: 0 };
+        state.propuestas.items.forEach(p => { porEstado[proposalEstado(p)] += 1; });
         $('propuestas-summary').innerHTML =
           `<span class="p-stat"><b>${groups.length}</b> cliente${groups.length === 1 ? '' : 's'}</span>` +
           `<span class="p-stat"><b>${data.total}</b> propuesta${data.total === 1 ? '' : 's'}</span>` +
-          `<span class="p-stat"><b>${totalConShows}</b> con shows</span>` +
-          `<span class="p-stat"><b>${totalAprobadas}</b> aprobada${totalAprobadas === 1 ? '' : 's'}</span>`;
+          Object.entries(porEstado).filter(([, n]) => n > 0)
+            .map(([e, n]) => `<span class="p-stat"><b>${n}</b> ${ESTADO_ES[e].toLowerCase()}${n === 1 ? '' : (e === 'enviada' || e === 'aprobada' || e === 'cancelada' ? 's' : 'es')}</span>`).join('');
 
         // Acciones: las frecuentes a la vista; el resto en un menú nativo <details>.
         // Mismos data-attributes que antes, así los manejadores de abajo no cambian.
+        // Aprobada / Cancelada las marca Xavi (columna outcome); se pueden deshacer.
+        const outcomeItems = (p) => {
+          const id = escapeHtml(p.id);
+          const e = proposalEstado(p);
+          if (e === 'enviada') return `<button class="p-menu-item" data-outcome="won" data-outcome-id="${id}">Marcar aprobada</button>
+                  <button class="p-menu-item" data-outcome="cancelled" data-outcome-id="${id}">Marcar cancelada</button>`;
+          if (e === 'borrador') return `<button class="p-menu-item" data-outcome="cancelled" data-outcome-id="${id}">Marcar cancelada</button>`;
+          return `<button class="p-menu-item" data-outcome="" data-outcome-id="${id}">${p.status === 'approved' ? 'Volver a enviada' : 'Volver a borrador'}</button>`;
+        };
         const rowActions = (p) => {
           const id = escapeHtml(p.id);
           const approved = p.status === 'approved';
@@ -4024,7 +3816,8 @@
                   ${approved
                     ? `<button class="p-menu-item" data-gen-pdf="${id}">${p.pdf_url ? 'Regenerar PDF' : 'Generar PDF'}</button>`
                     : `<button class="p-menu-item" data-validate="${id}">Validar</button>`}
-                  <button class="p-menu-item" data-views="${id}" title="Si el cliente la ha abierto, cuánto tiempo y qué ha mirado">Ver actividad</button>
+                  ${outcomeItems(p)}
+                  ${proposalEstado(p) !== 'borrador' ? `<button class="p-menu-item" data-views="${id}" title="Si el cliente la ha abierto, cuándo, dónde se para y dónde pincha">Ver más</button>` : ''}
                   <button class="p-menu-item p-menu-item--danger" data-del-proposal="${id}" title="Eliminar esta versión">Eliminar</button>
                 </div>
               </details>
@@ -4052,12 +3845,12 @@
           const opens = (p) => (Number(p.open_count) || 0) > 0;
           const openedOther = !opens(latest) ? older.find(opens) : null;
           const mainPill = openedOther
-            ? `<span class="p-pill p-pill--ok" title="Ha abierto la versión del ${escapeHtml(fmtWhen(openedOther.created_at))}, no la última">Abrió otra versión</span>${actBtn(openedOther)}`
-            : openPill(latest) + (opens(latest) ? actBtn(latest) : '');
+            ? `<span class="p-pill p-pill--ok" title="Ha abierto la versión del ${escapeHtml(fmtWhen(openedOther.created_at))}, no la última">Abrió la versión anterior</span>${actBtn(openedOther)}`
+            : openPill(latest) + (opens(latest) && proposalEstado(latest) !== 'borrador' ? actBtn(latest) : '');
 
           // Fila principal (última versión)
           html += `
-            <div data-group="${gi}" class="p-row propuesta-main${n === 0 ? ' is-empty' : ''}${latest.status === 'approved' ? ' is-approved' : ''}">
+            <div data-group="${gi}" class="p-row propuesta-main${n === 0 ? ' is-empty' : ''}${proposalEstado(latest) === 'aprobada' ? ' is-approved' : ''}">
               <div class="p-client">
                 <span class="p-avatar" aria-hidden="true">${escapeHtml(initialsOf(c.title))}${latest.cover_url ? `<img src="${escapeHtml(latest.cover_url)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span>
                 <div class="p-text">
@@ -4080,7 +3873,7 @@
                 <div class="p-client"><span class="p-avatar p-avatar--version" aria-hidden="true">↳</span><div class="p-text"><div class="p-sub">Versión anterior</div></div></div>
                 <div class="p-event"><div class="p-sub">Creada ${escapeHtml(fmtCreated(p.created_at))}</div></div>
                 <div class="p-shows">${showsPill(countShows(p))}</div>
-                <div class="p-status">${statusPill(p)}${openPill(p)}${opens(p) ? actBtn(p) : ''}</div>
+                <div class="p-status">${statusPill(p)}${openPill(p)}${opens(p) && proposalEstado(p) !== 'borrador' ? actBtn(p) : ''}</div>
                 ${rowActions(p)}
               </div>`;
           });
@@ -4105,6 +3898,24 @@
             const isHidden = vers.length && vers[0].classList.contains('hidden');
             vers.forEach(v => v.classList.toggle('hidden', !isHidden));
             b.innerHTML = (isHidden ? '▾ ' : '▸ ') + b.innerHTML.replace(/^[▸▾]\s*/, '');
+          });
+        });
+
+        // Marcar aprobada / cancelada / volver (api/admin.js set-proposal-outcome)
+        $('propuestas-table-wrap').querySelectorAll('[data-outcome-id]').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            b.disabled = true;
+            try {
+              const r = await fetch('/api/admin?action=set-proposal-outcome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: b.dataset.outcomeId, outcome: b.dataset.outcome || null })
+              });
+              const d = await r.json();
+              if (!r.ok) { showError(d.error || 'No se ha podido cambiar el estado'); b.disabled = false; return; }
+              loadPropuestas();
+            } catch (err) { showError(err.message); b.disabled = false; }
           });
         });
 
@@ -4315,8 +4126,6 @@
         }
       } else if (tab === 'propuestas') {
         loadPropuestas();
-      } else if (tab === 'indicadores') {
-        loadIndicadores();
       } else if (tab === 'banco') {
         loadBanco();
       }
@@ -4461,7 +4270,7 @@
     refreshPendingReviewBadge();
   </script>
 <dialog id="views-dialog" class="views-dialog">
-  <form method="dialog" class="views-dialog-head"><h3>Actividad del cliente</h3><button class="btn p-ghost">Cerrar</button></form>
+  <form method="dialog" class="views-dialog-head"><h3 id="views-dialog-title">Actividad del cliente</h3><button class="btn p-ghost">Cerrar</button></form>
   <div id="views-dialog-body"></div>
 </dialog>
 </body>
