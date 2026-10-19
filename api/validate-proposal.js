@@ -12,6 +12,13 @@
 //   3. Setea opportunity.validar_propuesta = "validada por Xavi" (idempotente)
 //   4. Añade tag `proposal` al contacto en GHL
 //   5. Actualiza opportunity.monetaryValue con la suma de shows aprobados
+//
+// Auth: con proposalId pide sesión del equipo. El id va en la URL que recibe
+// el lead, y validar dispara el email de GHL al cliente. El camino de GHL
+// (opportunityId / contactId) sigue abierto: esos ids ya no salen en la vista
+// cliente (api/get-proposal.js).
+
+import { esEquipo, noAutorizado } from '../lib/sesion-admin.js';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 // IDs de custom fields del modelo opportunity (creados en GHL Eventos Barcelona)
@@ -58,6 +65,7 @@ export default async function handler(req, res) {
     if (!contactId && !opportunityId && !proposalId) {
       return res.status(400).json({ error: 'opportunityId, contactId or proposalId required' });
     }
+    if (proposalId && !(await esEquipo(req))) return noAutorizado(res);
 
     // Modo "cliente aprueba": solo añadir tag `Won` al contacto de la propuesta.
     if (clientConfirm) {

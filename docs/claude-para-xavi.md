@@ -105,6 +105,9 @@ acciones `gpt-*` siguen con su token propio para no romper el GPT de Xavi.
 
 ### 3.3 Tokens
 
+- [ ] **`EB_ADMIN_TOKEN`.** El valor de `ADMIN_API_TOKEN` en Vercel. Desde octubre de 2026,
+      `/api/admin` y `save-proposal` piden sesión, y sin él las skills de datos y de propuesta
+      reciben `401`.
 - [ ] **`EB_CATALOG_TOKEN`.** Se puede reutilizar el `GPT_ACTION_TOKEN` que Xavi ya tiene en su GPT.
       Mejor higiene: uno propio, para poder rotarlo sin romperle el GPT. Cambio de cinco líneas en
       `gptAuthOk` para aceptar una lista de tokens.
@@ -174,11 +177,11 @@ Queda así:
 └── imagenes/            banco de imágenes
 ```
 
-### 4.4 Las dos claves (esto lo hace Philippe)
+### 4.4 Las claves (esto lo hace Philippe)
 
 A mano, no por terminal, para que no queden en el historial:
 
-- `~/EB-Claude/.claude/settings.json` → `env.EB_CATALOG_TOKEN`
+- `~/EB-Claude/.claude/settings.json` → `env.EB_CATALOG_TOKEN` y `env.EB_ADMIN_TOKEN`
 - `~/EB-Claude/.mcp.json` → el PIT de solo lectura en `ghl-lectura`
 
 ---

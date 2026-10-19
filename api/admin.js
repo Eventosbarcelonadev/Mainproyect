@@ -25,6 +25,16 @@
 // GET  /api/gpt/catalogo   (rewrite -> action=gpt-catalogo)  auth: Bearer GPT_ACTION_TOKEN
 // GET  /api/gpt/show        (rewrite -> action=gpt-show)      auth: Bearer GPT_ACTION_TOKEN
 // POST /api/init-opp-proposal (rewrite -> action=init-opp-proposal)  webhook GHL, customData: {opportunityId}
+//
+// Auth: todo pide sesión del equipo (cookie de /login o Bearer ADMIN_API_TOKEN,
+// ver lib/sesion-admin.js) salvo ACCIONES_SIN_SESION. Una acción nueva queda
+// protegida por defecto.
+
+import { esEquipo, noAutorizado } from '../lib/sesion-admin.js';
+
+// Las llaman otros sistemas, no el panel: el GPT (trae su propio token,
+// gptAuthOk), el webhook de GHL y n8n.
+const ACCIONES_SIN_SESION = new Set(['gpt-catalogo', 'gpt-show', 'init-opp-proposal', 'ensure-proposal-for-lead']);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -3136,6 +3146,7 @@ export default async function handler(req, res) {
   }
 
   const action = (req.query.action || '').trim();
+  if (!ACCIONES_SIN_SESION.has(action) && !(await esEquipo(req))) return noAutorizado(res);
 
   try {
     if (req.method === 'GET') {

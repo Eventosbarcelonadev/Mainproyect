@@ -68,7 +68,7 @@ avisá a Xavi en el resumen final de que ese hay que completarlo a mano.
 ## Paso 4 · Guardar
 
 ```bash
-curl -s -X POST https://propuestas.eventosbarcelona.com/api/save-proposal \
+curl -s -X POST -H "Authorization: Bearer $EB_ADMIN_TOKEN" https://propuestas.eventosbarcelona.com/api/save-proposal \
   -H "Content-Type: application/json" \
   -d @propuesta.json
 ```

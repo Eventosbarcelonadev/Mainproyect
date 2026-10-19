@@ -22,9 +22,9 @@
       "Bash(mkdir:*)",
       "Bash(open:*)",
       "Bash(curl -s https://propuestas.eventosbarcelona.com/api/gpt/:*)",
-      "Bash(curl -s https://propuestas.eventosbarcelona.com/api/admin?action=list-:*)",
-      "Bash(curl -s https://propuestas.eventosbarcelona.com/api/admin?action=get-:*)",
-      "Bash(curl -s -X POST https://propuestas.eventosbarcelona.com/api/save-proposal:*)",
+      "Bash(curl -s -H \"Authorization: Bearer $EB_ADMIN_TOKEN\" \"https://propuestas.eventosbarcelona.com/api/admin?action=list-:*)",
+      "Bash(curl -s -H \"Authorization: Bearer $EB_ADMIN_TOKEN\" \"https://propuestas.eventosbarcelona.com/api/admin?action=get-:*)",
+      "Bash(curl -s -X POST -H \"Authorization: Bearer $EB_ADMIN_TOKEN\" https://propuestas.eventosbarcelona.com/api/save-proposal:*)",
       "WebFetch(domain:api.github.com)",
       "WebSearch",
       "WebFetch(domain:eventosbarcelona.com)",
@@ -100,6 +100,7 @@
   },
   "enableAllProjectMcpServers": true,
   "env": {
-    "EB_CATALOG_TOKEN": "PEGAR_TOKEN_DE_CATALOGO_AQUI"
+    "EB_CATALOG_TOKEN": "PEGAR_TOKEN_DE_CATALOGO_AQUI",
+    "EB_ADMIN_TOKEN": "PEGAR_ADMIN_API_TOKEN_AQUI"
   }
 }

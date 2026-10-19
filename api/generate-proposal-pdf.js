@@ -15,6 +15,7 @@
 //   5. Patchea pdf_url / pdf_path en la fila de proposals.
 
 import puppeteer from 'puppeteer-core';
+import { esEquipo } from '../lib/sesion-admin.js';
 
 const SUPABASE_BUCKET = 'propuestas-pdf';
 // IDs custom fields (ver memoria project_ghl_spec)
@@ -95,12 +96,19 @@ export default async function handler(req, res) {
   try {
     // 1. Resolver contacto/oportunidad de la propuesta
     const pr = await fetch(
-      `${SB_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=ghl_contact_id,ghl_opportunity_id&limit=1`,
+      `${SB_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(proposalId)}&select=ghl_contact_id,ghl_opportunity_id,status,pdf_url&limit=1`,
       { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
     );
     const prRows = await pr.json();
     if (!Array.isArray(prRows) || !prRows.length) {
       return res.status(404).json({ error: 'Proposal not found', proposalId });
+    }
+    // Sin sesión solo llega el botón "Descargar PDF" de la vista cliente, que
+    // solo sale en propuestas validadas. Si el PDF ya existe se devuelve tal
+    // cual: regenerarlo deja una nota nueva en el timeline de GHL cada vez.
+    if (!(await esEquipo(req))) {
+      if (prRows[0].status !== 'approved') return res.status(403).json({ error: 'La propuesta no está validada' });
+      if (prRows[0].pdf_url) return res.status(200).json({ success: true, url: prRows[0].pdf_url });
     }
     const contactId = prRows[0].ghl_contact_id || null;
     const opportunityId = prRows[0].ghl_opportunity_id || null;

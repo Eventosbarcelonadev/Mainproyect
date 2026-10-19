@@ -24,6 +24,31 @@
   <link rel="icon" type="image/webp" href="/EB-eventos-barcelona-logo-3d.webp">
   <link rel="apple-touch-icon" href="/EB-eventos-barcelona-logo-3d.webp">
   <meta name="robots" content="noindex, nofollow">
+  <script>
+    // Sesión del equipo (middleware.ts). Si caduca con el panel abierto, la API
+    // responde 401: se vuelve al login y después a esta misma pestaña.
+    (function () {
+      var fetchOriginal = window.fetch;
+      window.fetch = function (recurso) {
+        return fetchOriginal.apply(this, arguments).then(function (r) {
+          var url = String((recurso && recurso.url) || recurso);
+          if (r.status === 401 && url.indexOf('/api/') === 0) {
+            location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search + location.hash);
+          }
+          return r;
+        });
+      };
+      document.addEventListener('DOMContentLoaded', function () {
+        var barra = document.querySelector('.topbar');
+        if (!barra) return;
+        var salir = document.createElement('a');
+        salir.href = '/logout';
+        salir.textContent = 'Salir';
+        salir.style.cssText = 'color:rgba(255,255,255,.55);font-size:13px;text-decoration:none;';
+        barra.appendChild(salir);
+      });
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">

@@ -40,10 +40,15 @@ Todo cuelga de `https://propuestas.eventosbarcelona.com/api/admin?action=...`
 es mayor que lo devuelto, hay que ir pidiendo con `offset`. Si Xavi pregunta "cuántos artistas
 tenemos", la respuesta correcta sale del campo `total`, no de contar las filas de la primera página.
 
+Todas las llamadas llevan la cabecera con `EB_ADMIN_TOKEN`. Sin ella la API responde `401`: los
+datos son de clientes y artistas, y desde octubre de 2026 no se sirven sin identificarse.
+
 ```bash
-curl -s "https://propuestas.eventosbarcelona.com/api/admin?action=list-artistas&limit=200&offset=0"
-curl -s "https://propuestas.eventosbarcelona.com/api/admin?action=list-proposals&status=approved&limit=200"
+curl -s -H "Authorization: Bearer $EB_ADMIN_TOKEN" "https://propuestas.eventosbarcelona.com/api/admin?action=list-artistas&limit=200&offset=0"
+curl -s -H "Authorization: Bearer $EB_ADMIN_TOKEN" "https://propuestas.eventosbarcelona.com/api/admin?action=list-proposals&status=approved&limit=200"
 ```
+
+Un `401` con la cabecera puesta significa que el token está mal pegado o se cambió en Vercel.
 
 Para el catálogo activo, mejor `/api/gpt/catalogo` (más limpio y trae solo lo publicable).
 

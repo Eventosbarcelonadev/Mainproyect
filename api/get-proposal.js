@@ -1,3 +1,35 @@
+import { esEquipo } from '../lib/sesion-admin.js';
+
+// La vista cliente no necesita el margen ni los ids de GHL. Se le manda el
+// precio final de cada show y de cada extra, con el margen ya aplicado, y
+// margen 0: propuesta.html pinta exactamente las mismas cifras (getAdjustedPrice
+// con 0 deja el número como está) y el lead no ve cuánto se sube sobre tarifa.
+// Los shows sin currentPrice salen en la página con el base_price del catálogo
+// activo, igual que hace applyShowOverrides; aquí se resuelven de la misma forma.
+async function precioFinalCliente(p, shows, sbGet) {
+  const margen = Number(p.global_margin) || 0;
+  const conMargen = (v) => Math.round((Number(v) || 0) * (1 + margen / 100));
+  const lista = (Array.isArray(shows) ? shows : []).map(s => (s && typeof s === 'object') ? { ...s } : { id: s });
+
+  const sinPrecio = lista.filter(s => !s.currentPrice && s.id).map(s => s.id);
+  const tarifa = {};
+  if (sinPrecio.length) {
+    const ids = sinPrecio.map(id => `"${String(id).replace(/"/g, '')}"`).join(',');
+    const filas = await sbGet(`shows?id=in.(${encodeURIComponent(ids)})&status=eq.active&select=id,base_price`);
+    for (const f of Array.isArray(filas) ? filas : []) tarifa[f.id] = f.base_price || 0;
+  }
+
+  return lista.map(s => {
+    const base = s.currentPrice || tarifa[s.id];
+    const fuera = { ...s };
+    delete fuera.base_price;
+    delete fuera.basePrice;
+    if (base != null) fuera.currentPrice = conMargen(base);
+    if (Array.isArray(s.extras)) fuera.extras = s.extras.map(ex => ({ ...ex, amount: conMargen(ex && ex.amount) }));
+    return fuera;
+  });
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -75,6 +107,16 @@ export default async function handler(req, res) {
       ghl_contact_id: p.ghl_contact_id,
       ghl_opportunity_id: p.ghl_opportunity_id
     };
+
+    if (!(await esEquipo(req))) {
+      const sbGet = (path) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      }).then(r => r.json());
+      proposal.shows = await precioFinalCliente(p, proposal.shows, sbGet);
+      proposal.globalMargin = 0;
+      delete proposal.ghl_contact_id;
+      delete proposal.ghl_opportunity_id;
+    }
 
     return res.status(200).json({ success: true, proposal });
 
