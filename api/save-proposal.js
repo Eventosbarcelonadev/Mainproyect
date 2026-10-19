@@ -1,3 +1,5 @@
+import { esEquipo, noAutorizado } from '../lib/sesion-admin.js';
+
 const GHL_API = 'https://services.leadconnectorhq.com';
 // Custom field id en el modelo OPPORTUNITY (no contact). Spec 2026-05-12.
 const OPP_URL_PROPUESTA_VALIDADA = '40FFHGx5fYeV3VOK0yC4';
@@ -49,6 +51,9 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  // Lo llaman el editor de propuesta.html y el Claude de Xavi. Sin esto, un
+  // lead podía reescribir cualquier propuesta (precios, estado) con su id.
+  if (!(await esEquipo(req))) return noAutorizado(res);
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;

@@ -22,8 +22,12 @@ Hacé WebFetch a cada URL y anotá si responde y si el contenido tiene sentido:
 | Formulario de cliente | https://propuestas.eventosbarcelona.com/formulario-cliente |
 | Formulario de artista | https://propuestas.eventosbarcelona.com/formulario-artista |
 | Catálogo público | https://propuestas.eventosbarcelona.com/catalogo |
-| Panel de métricas | https://propuestas.eventosbarcelona.com/metricas |
-| Panel de Xavi | https://propuestas.eventosbarcelona.com/xavi |
+| Panel de métricas | https://propuestas.eventosbarcelona.com/metricas (pide login) |
+| Panel de Xavi | https://propuestas.eventosbarcelona.com/xavi (pide login) |
+
+Los dos paneles son internos y piden login, así que con WebFetch lo correcto es ver la página
+«Área del equipo». Si se ve el panel sin entrar, avisá a Xavi: algo dejó de estar protegido.
+El formulario y el catálogo sí tienen que verse sin login.
 
 Y el catálogo por API, que es el que alimenta las presentaciones:
 

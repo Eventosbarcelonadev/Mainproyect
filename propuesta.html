@@ -4,6 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
+  <script>
+    // Modo editor (?admin=1, ?mode=builder|auto): middleware.ts ya exige sesión
+    // para abrirlo. Si caduca mientras Xavi edita, guardar devuelve 401. No se
+    // sale de la página para no perder lo editado: se abre el login en otra
+    // pestaña y basta con volver a guardar.
+    (function () {
+      var q = new URLSearchParams(location.search);
+      if (q.get('admin') !== '1' && q.get('mode') !== 'builder' && q.get('mode') !== 'auto') return;
+      var avisado = false;
+      var fetchOriginal = window.fetch;
+      window.fetch = function (recurso) {
+        return fetchOriginal.apply(this, arguments).then(function (r) {
+          var url = String((recurso && recurso.url) || recurso);
+          if (r.status === 401 && url.indexOf('/api/') === 0 && !avisado) {
+            avisado = true;
+            alert('Tu sesión ha caducado y no se ha guardado. Se abre el acceso en otra pestaña: entra y vuelve aquí a guardar. No cierres esta pestaña.');
+            window.open('/login?next=' + encodeURIComponent('/admin.html'), '_blank');
+            setTimeout(function () { avisado = false; }, 30000);
+          }
+          return r;
+        });
+      };
+    })();
+  </script>
   <title id="pageTitle">Propuesta — Eventos Barcelona</title>
   <link rel="icon" type="image/webp" href="/EB-eventos-barcelona-logo-3d.webp">
   <link rel="apple-touch-icon" href="/EB-eventos-barcelona-logo-3d.webp">
