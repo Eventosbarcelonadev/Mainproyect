@@ -4,7 +4,7 @@
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
 // GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
 // GET  /api/admin?action=proposal-views&id=<proposalId>   -> visitas del cliente a una propuesta
-// GET  /api/admin?action=proposal-dashboard               -> pestaña Indicadores (enviadas, visitas y resultado en GHL)
+// POST /api/admin?action=set-proposal-outcome  body: {id, outcome: won|cancelled|null}  -> Aprobada / Cancelada (lo marca Xavi)
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
 // POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
@@ -319,27 +319,41 @@ async function listArtistas(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, artistas: rows });
 }
 
+// Estados que enseña /admin: Borrador (status revision), Enviada (status approved:
+// validada y enviada), Aprobada y Cancelada (outcome, lo marca Xavi). ?estado= filtra
+// por ellos; ?status= sigue filtrando por la columna status (lo usa la skill eb-datos).
+const PROPOSAL_ESTADOS = {
+  borrador: ['status=eq.revision', 'outcome=is.null'],
+  enviada: ['status=eq.approved', 'outcome=is.null'],
+  aprobada: ['outcome=eq.won'],
+  cancelada: ['outcome=eq.cancelled']
+};
+const OUTCOME_MISSING_RE = /outcome/i;
+
 async function listProposals(req, res, env) {
   const status = (req.query.status || '').trim();
+  const estado = (req.query.estado || '').trim();
   const q = (req.query.q || '').trim();
   const limit = clampInt(req.query.limit, 50, 1, 200);
   const offset = clampInt(req.query.offset, 0, 0, 1e6);
 
-  const params = [
-    'select=id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path,hero_image_url,first_opened_at,last_opened_at,open_count',
-    'order=created_at.desc'
-  ];
-
+  const cols = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,event_date,event_guests,event_location,category,concept_title,shows,global_margin,ghl_contact_id,ghl_opportunity_id,created_at,updated_at,approved_at,pdf_url,pdf_path,hero_image_url,first_opened_at,last_opened_at,open_count';
+  const filters = [];
   if (status && ['revision', 'approved'].includes(status)) {
-    params.push(`status=eq.${encodeURIComponent(status)}`);
+    filters.push(`status=eq.${encodeURIComponent(status)}`);
   }
   if (q) {
     const safe = q.replace(/[(),]/g, ' ').trim();
     const enc = encodeURIComponent(`*${safe}*`);
-    params.push(`or=(client_name.ilike.${enc},client_company.ilike.${enc},client_email.ilike.${enc},event_name.ilike.${enc})`);
+    filters.push(`or=(client_name.ilike.${enc},client_company.ilike.${enc},client_email.ilike.${enc},event_name.ilike.${enc})`);
   }
-
-  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals?${params.join('&')}`, {
+  const query = (withOutcome) => {
+    const est = (PROPOSAL_ESTADOS[estado] || []).filter(f => withOutcome || !f.startsWith('outcome'));
+    // Sin la columna outcome, aprobada y cancelada no pueden tener ninguna.
+    if (!withOutcome && (estado === 'aprobada' || estado === 'cancelada')) est.push('id=is.null');
+    return [`select=${cols}${withOutcome ? ',outcome,outcome_at' : ''}`, 'order=created_at.desc', ...filters, ...est].join('&');
+  };
+  const get = (withOutcome) => fetch(`${env.SUPABASE_URL}/rest/v1/proposals?${query(withOutcome)}`, {
     headers: {
       apikey: env.SUPABASE_KEY,
       Authorization: `Bearer ${env.SUPABASE_KEY}`,
@@ -348,7 +362,16 @@ async function listProposals(req, res, env) {
       Prefer: 'count=exact'
     }
   });
-  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+
+  // Si aún no se ha aplicado la migración 20261019_proposals_outcome.sql, la lista
+  // sale igual, sin Aprobada ni Cancelada.
+  let r = await get(true);
+  if (!r.ok) {
+    const text = await r.text();
+    if (r.status !== 400 || !OUTCOME_MISSING_RE.test(text)) return res.status(r.status).json({ error: text });
+    r = await get(false);
+    if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  }
 
   const rows = await r.json();
   const total = parseTotal(r.headers.get('content-range'), rows.length);
@@ -356,10 +379,44 @@ async function listProposals(req, res, env) {
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
+// POST /api/admin?action=set-proposal-outcome  body: { id, outcome: 'won' | 'cancelled' | null }
+// Xavi marca desde /admin que el cliente ha aprobado la propuesta o que se ha
+// cancelado; null la devuelve a Enviada (o a Borrador si no se había enviado).
+// Solo se aprueba una propuesta enviada. No toca status ni GHL.
+async function setProposalOutcome(req, res, env) {
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  const id = String(body.id || '').trim();
+  const outcome = body.outcome == null || body.outcome === '' ? null : String(body.outcome);
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  if (outcome !== null && !['won', 'cancelled'].includes(outcome)) return res.status(400).json({ error: 'outcome debe ser won, cancelled o null' });
+  const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}`, 'Content-Type': 'application/json' };
+
+  const g = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&select=id,status`, { headers });
+  if (!g.ok) return res.status(g.status).json({ error: await g.text() });
+  const p = (await g.json())[0];
+  if (!p) return res.status(404).json({ error: 'Propuesta no encontrada' });
+  if (outcome === 'won' && p.status !== 'approved') {
+    return res.status(409).json({ error: 'Solo se puede marcar como aprobada una propuesta enviada (validada).' });
+  }
+
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { ...headers, Prefer: 'return=representation' },
+    body: JSON.stringify({ outcome, outcome_at: outcome ? new Date().toISOString() : null })
+  });
+  if (!r.ok) {
+    const text = await r.text();
+    if (OUTCOME_MISSING_RE.test(text)) {
+      return res.status(409).json({ error: 'Falta aplicar en Supabase la migración supabase/migrations/20261019_proposals_outcome.sql.' });
+    }
+    return res.status(r.status).json({ error: text });
+  }
+  const row = (await r.json())[0] || null;
+  return res.status(200).json({ success: true, id, outcome: row ? row.outcome : outcome });
+}
+
 // ---- Aperturas de propuestas (api/track-proposal.js → proposal_views) ----
 
-// Primer día con registro de aperturas: de antes no hay datos.
-const PROPOSAL_TRACK_SINCE = '2026-10-12';
 const PROPOSAL_VIEW_COLS = 'id,proposal_id,session_id,event,detail,lang,country,city,device,is_bot,created_at';
 
 // Eventos de varias propuestas, en tandas de 50 ids y páginas de 1000 filas
@@ -499,7 +556,7 @@ async function proposalViews(req, res, env) {
       `&select=${PROPOSAL_VIEW_COLS}&order=created_at.desc&limit=${limit}`,
       { headers }
     ),
-    fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&select=shows`, { headers })
+    fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&select=shows,status,client_name,client_company,client_email,event_name,event_type,created_at,approved_at`, { headers })
   ]);
   if (!r.ok) return res.status(r.status).json({ error: await r.text() });
   const rows = await r.json();
@@ -507,135 +564,25 @@ async function proposalViews(req, res, env) {
 
   const visits = groupProposalVisits(rows);
   const summary = summarizeProposalVisits(visits, proposal && proposal.shows);
-  return res.status(200).json({ success: true, count: rows.length, summary, visits, events: rows });
-}
-
-// GET /api/admin?action=proposal-dashboard
-// Datos de la pestaña Indicadores de /admin: cada propuesta ENVIADA desde que hay
-// registro de lectura (aprobada desde el 12-oct-2026) con las visitas de personas una a
-// una y el resultado de su oportunidad en GHL (ganada, perdida, en curso), para
-// comparar qué hacen los clientes que compran y los que no (Ramiro 2026-10-19:
-// "prefiero aprender a cómo mejorar"). La página filtra por fechas y empresa sin
-// volver a pedir nada. Las propuestas en revisión no salen: el cliente no las recibe
-// hasta que se validan.
-const GENERIC_MAIL = /^(gmail|googlemail|hotmail|outlook|live|msn|yahoo|ymail|icloud|me|mac|aol|proton|protonmail|gmx|telefonica|movistar)\./i;
-function proposalCompany(p) {
-  const company = (p.client_company || '').trim();
-  if (company) return company;
-  const domain = ((p.client_email || '').split('@')[1] || '').toLowerCase().trim();
-  if (domain && !GENERIC_MAIL.test(domain)) return domain.replace(/\.(com|es|net|org|eu|io|co|cat|fr|de|it|uk|co\.uk)$/i, '');
-  return (p.client_name || '').trim() || 'Sin empresa';
-}
-
-// Oportunidades del pipeline Clientes y nombres de sus etapas. Se leen todas de una
-// vez (páginas de 100) en vez de una por propuesta. Si GHL falla, los indicadores
-// salen igual, sin resultado.
-async function fetchClientOpportunities(env) {
-  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
-  const stages = new Map();
-  const pl = await ghlFetch('GET', `/opportunities/pipelines?locationId=${encodeURIComponent(env.GHL_LOC)}`, env);
-  if (pl.skipped) return { ok: false, error: 'GHL sin configurar', opportunities: [], stages };
-  if (pl.ok) {
-    (parse(pl).pipelines || []).forEach(p => (p.stages || []).forEach(s => stages.set(s.id, s.name)));
-  }
-  const opportunities = [];
-  for (let page = 1; page <= 20; page++) {
-    const q = `location_id=${encodeURIComponent(env.GHL_LOC)}` +
-      (env.GHL_PIPELINE_CLIENTES ? `&pipeline_id=${encodeURIComponent(env.GHL_PIPELINE_CLIENTES)}` : '') +
-      `&limit=100&page=${page}`;
-    const g = await ghlFetch('GET', `/opportunities/search?${q}`, env);
-    if (!g.ok) return { ok: false, error: `GHL ${g.status}: ${String(g.body).slice(0, 160)}`, opportunities, stages };
-    const list = parse(g).opportunities || [];
-    opportunities.push(...list);
-    if (list.length < 100) break;
-  }
-  return { ok: true, opportunities, stages };
-}
-
-// Resultado de una oportunidad: el estado de GHL y, si sigue "open", la etapa
-// (el pipeline acordado tiene etapas Won y Lost además del estado).
-function opportunityOutcome(opp, stages) {
-  const stage = stages.get(opp.pipelineStageId) || null;
-  let result = opp.status === 'won' ? 'won' : (opp.status === 'lost' || opp.status === 'abandoned') ? 'lost' : 'open';
-  if (result === 'open' && stage && /\bwon\b|ganad|cerrad[ao] ganad|contratad/i.test(stage)) result = 'won';
-  if (result === 'open' && stage && /\blost\b|perdid|descartad/i.test(stage)) result = 'lost';
-  return {
-    result,
-    stage,
-    value: Number(opp.monetaryValue) || null,
-    changed_at: opp.lastStatusChangeAt || opp.lastStageChangeAt || opp.updatedAt || null
+  // Zonas en el orden de la página (portada, concepto, shows, precios, condiciones),
+  // con las que no llegó a ver a 0: es lo que dibuja "Dónde se para más" en /admin.
+  const bySection = new Map(summary.sections.map(x => [x.section, x]));
+  const zone = (section, name) => {
+    const x = bySection.get(section);
+    return { section, name: name || (x && x.name) || null, seconds: x ? x.seconds : 0, visits: x ? x.visits : 0, clicks: x ? x.clicks : {} };
   };
-}
-
-async function proposalDashboard(req, res, env) {
-  const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
-  const sel = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,shows,created_at,approved_at,first_opened_at,last_opened_at,open_count,ghl_contact_id,ghl_opportunity_id';
-  const [r, ghl] = await Promise.all([
-    fetch(
-      `${env.SUPABASE_URL}/rest/v1/proposals?select=${sel}&status=eq.approved` +
-      `&approved_at=gte.${PROPOSAL_TRACK_SINCE}&order=approved_at.desc&limit=2000`,
-      { headers }
-    ),
-    fetchClientOpportunities(env).catch(err => ({ ok: false, error: err.message, opportunities: [], stages: new Map() }))
-  ]);
-  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
-  const props = (await r.json()).filter(p => proposalShowList(p.shows).length > 0);
-
-  const byProposal = new Map();
-  (await fetchProposalViewRows(env, props.map(p => p.id))).forEach(ev => {
-    if (!byProposal.has(ev.proposal_id)) byProposal.set(ev.proposal_id, []);
-    byProposal.get(ev.proposal_id).push(ev);
-  });
-
-  // Propuesta → oportunidad: por id; si no lo tiene (las creadas a mano), por el
-  // contacto o el email, quedándose con la más reciente de ese cliente.
-  const oppById = new Map(), oppsByContact = new Map(), oppsByEmail = new Map();
-  ghl.opportunities.forEach(o => {
-    oppById.set(o.id, o);
-    const cid = o.contactId || (o.contact && o.contact.id);
-    const email = ((o.contact && o.contact.email) || '').toLowerCase().trim();
-    if (cid) (oppsByContact.get(cid) || oppsByContact.set(cid, []).get(cid)).push(o);
-    if (email) (oppsByEmail.get(email) || oppsByEmail.set(email, []).get(email)).push(o);
-  });
-  const latest = (list) => (list || []).slice().sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0] || null;
-  const oppFor = (p) => (p.ghl_opportunity_id && oppById.get(p.ghl_opportunity_id))
-    || latest(oppsByContact.get(p.ghl_contact_id))
-    || latest(oppsByEmail.get((p.client_email || '').toLowerCase().trim()));
-
-  // Misma clave que agrupa la lista de /admin: si el cliente abre otra versión, la ha abierto.
-  const clientKey = (p) => (p.client_email || '').toLowerCase().trim()
-    || `${(p.client_name || '').toLowerCase().trim()}|${(p.client_phone || '').trim()}` || p.id;
-
-  let matched = 0;
-  const proposals = props.map(p => {
-    const visits = groupProposalVisits(byProposal.get(p.id) || [])
-      .filter(v => v.engaged && !v.is_bot)
-      .map(v => ({
-        at: v.started_at, seconds: v.seconds, scroll: v.scroll, device: v.device,
-        sections: v.sections.map(x => ({ section: x.section, seconds: x.seconds })),
-        clicks: v.clicks.map(c => ({ kind: c.kind, section: c.section }))
-      }));
-    const opp = oppFor(p);
-    if (opp) matched += 1;
-    return {
-      id: p.id,
-      client: (p.client_name || '').trim() || (p.client_email || '').trim() || 'Sin nombre',
-      company: proposalCompany(p),
-      client_key: clientKey(p),
-      event: (p.event_name || '').trim() || (p.event_type || '').trim() || null,
-      sent_at: p.approved_at || p.created_at,
-      open_count: Number(p.open_count) || 0,
-      shows: proposalShowList(p.shows).map(s => ({ section: s.section, name: s.name })),
-      outcome: opp ? opportunityOutcome(opp, ghl.stages) : null,
-      visits
-    };
-  });
-  return res.status(200).json({
-    success: true,
-    since: PROPOSAL_TRACK_SINCE,
-    ghl: { ok: ghl.ok, error: ghl.error || null, opportunities: ghl.opportunities.length, matched, proposals: proposals.length },
-    proposals
-  });
+  const layout = [zone('hero'), zone('concept')]
+    .concat(proposalShowList(proposal && proposal.shows).map(s => zone(s.section, s.name)))
+    .concat(bySection.has('summary') ? [zone('summary')] : [])
+    .concat([zone('conditions')]);
+  const meta = proposal ? {
+    client: (proposal.client_name || '').trim() || (proposal.client_company || '').trim() || (proposal.client_email || '').trim() || null,
+    event: (proposal.event_name || '').trim() || (proposal.event_type || '').trim() || null,
+    status: proposal.status,
+    sent_at: proposal.status === 'approved' ? proposal.approved_at : null,
+    created_at: proposal.created_at
+  } : null;
+  return res.status(200).json({ success: true, count: rows.length, proposal: meta, summary, layout, visits, events: rows });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
@@ -770,6 +717,12 @@ async function duplicateProposal(req, res, env) {
   delete copy.approved_by;
   delete copy.pdf_url;
   delete copy.pdf_path;
+  // Ni aperturas ni Aprobada / Cancelada: la versión nueva no la ha visto nadie.
+  delete copy.first_opened_at;
+  delete copy.last_opened_at;
+  delete copy.outcome;
+  delete copy.outcome_at;
+  copy.open_count = 0;
   copy.status = 'revision';
 
   // 3. Insertar
@@ -3220,7 +3173,6 @@ export default async function handler(req, res) {
       if (action === 'list-artistas') return listArtistas(req, res, env);
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'proposal-views') return proposalViews(req, res, env);
-      if (action === 'proposal-dashboard') return proposalDashboard(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
@@ -3232,6 +3184,7 @@ export default async function handler(req, res) {
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
+      if (action === 'set-proposal-outcome') return setProposalOutcome(req, res, env);
       if (action === 'set-show-artistas') return setShowArtistas(req, res, env);
       if (action === 'review-show') return reviewShow(req, res, env);
       if (action === 'edit-show') return editShow(req, res, env);
@@ -3259,7 +3212,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|proposal-views|proposal-dashboard|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
+      hint: 'GET list-artistas|list-proposals|proposal-views|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|set-proposal-outcome|ensure-proposal-for-lead|init-opp-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
