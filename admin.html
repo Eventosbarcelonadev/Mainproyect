@@ -1031,6 +1031,68 @@
     .v-note { color: #888; font-size: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
     .p-pill--link { border: 0; cursor: pointer; font-family: inherit; }
     .p-pill--link:hover { text-decoration: underline; }
+    .v-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12.5px; }
+    .v-table th { text-align: left; font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 4px 6px 4px 0; }
+    .v-table td { padding: 4px 6px 4px 0; border-top: 1px solid #E9E3DC; vertical-align: top; }
+    .v-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* Línea de actividad del cliente bajo cada propuesta de la lista */
+    .p-activity { grid-column: 1 / -1; padding-left: 56px; margin-top: -4px; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+    .p-activity b { color: var(--dark); font-weight: 600; }
+    .pa-line + .pa-line, .pa-shows + .pa-line, .pa-line + .pa-shows { margin-top: 4px; }
+    .pa-quiet { color: var(--gray); }
+    .pa-late { color: var(--warn-fg); }
+    .pa-muted { color: var(--gray); }
+    .pa-warn { color: var(--warn-fg); }
+    .pa-via { color: var(--warn-fg); font-weight: 600; margin-bottom: 2px; }
+    .pa-link { border: 0; background: none; padding: 0; margin-left: 6px; font: inherit; font-weight: 600; color: var(--ui-edit); cursor: pointer; }
+    .pa-link:hover { text-decoration: underline; }
+    .pa-shows { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 14px; }
+    .pa-label { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); align-self: center; }
+    /* Barra: una sola serie (segundos a la vista); el valor va siempre en texto */
+    .pa-show, .pi-bar { position: relative; display: inline-flex; align-items: baseline; gap: 6px; padding-bottom: 6px; min-width: 120px; max-width: 260px; }
+    .pa-show .pa-name, .pi-bar .pa-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .pa-show b, .pi-bar b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pa-show::after, .pi-bar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; background: #EFEAE4; }
+    .pa-show i, .pi-bar i { position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 2px; background: #8C7B6B; z-index: 1; }
+
+    /* Panel "Cómo leen los clientes las propuestas" */
+    .pi { background: #fff; border: 1px solid var(--border); border-radius: 14px; margin: 0 0 16px; }
+    .pi > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding: 14px 18px; }
+    .pi > summary::-webkit-details-marker { display: none; }
+    .pi > summary::before { content: "▸"; font-size: 11px; color: var(--gray); }
+    .pi[open] > summary::before { content: "▾"; }
+    .pi-title { font-weight: 600; font-size: 14px; color: var(--dark); }
+    .pi-sub { font-size: 12.5px; color: var(--gray); }
+    #pi-body { padding: 0 18px 16px; }
+    .pi-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .pi-tile { background: #FAF8F5; border-radius: 10px; padding: 10px 12px; }
+    .pi-label { font-size: 12px; color: var(--gray); }
+    .pi-value { font-size: 22px; font-weight: 600; color: var(--dark); font-variant-numeric: tabular-nums; line-height: 1.3; }
+    .pi-note { font-size: 11.5px; color: var(--gray); line-height: 1.4; margin-top: 4px; }
+    .pi-cols { display: grid; grid-template-columns: 1.1fr 1.2fr .8fr; gap: 24px; margin: 16px 0 8px; }
+    .pi-col h4 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); }
+    .pi-col .pi-bar { display: flex; max-width: none; margin-bottom: 6px; font-size: 12.5px; }
+    .pi-col .pi-bar .pa-name { flex: 1; }
+    .pi-bar small { color: var(--gray); font-size: 11.5px; }
+    .pi-item { display: block; width: calc(100% + 16px); text-align: left; border: 0; background: none; font: inherit; padding: 6px 8px; margin: 0 -8px; border-radius: 8px; cursor: pointer; }
+    .pi-item:hover { background: #F4F1ED; }
+    .pi-who { display: block; font-size: 13px; font-weight: 600; color: var(--dark); }
+    .pi-meta { display: block; font-size: 12px; color: var(--gray); }
+    .pi-hot { color: var(--ok-fg); }
+    .pi-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 4px 0; border-top: 1px solid #F0ECE7; }
+    .pi-row:first-of-type { border-top: 0; }
+    @media (max-width: 1280px) { .p-activity { margin-top: 0; } }
+    @media (max-width: 960px) { .pi-cols { grid-template-columns: 1fr; gap: 16px; } }
+    /* Móvil: estado apilado (dos pastillas en línea dejaban sin sitio al nombre del cliente)
+       y el tiempo por show en lista */
+    @media (max-width: 760px) {
+      .p-status { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+      .p-activity { padding-left: 0; }
+      .pa-shows { display: grid; grid-template-columns: 1fr; gap: 4px; }
+      .pa-show { display: flex; max-width: none; min-width: 0; }
+      .pa-show .pa-name { flex: 1; }
+    }
 
   </style>
 </head>
@@ -1148,6 +1210,10 @@
         </select>
         <span id="propuestas-summary" style="color: var(--gray); font-size: 13px;"></span>
       </div>
+      <details id="propuestas-insights" class="pi" open hidden>
+        <summary><span class="pi-title">Cómo leen los clientes las propuestas</span><span class="pi-sub" id="pi-sub"></span></summary>
+        <div id="pi-body"></div>
+      </details>
       <div id="propuestas-loading" class="loading">Cargando…</div>
       <div id="propuestas-empty" class="empty hidden">No hay propuestas.</div>
       <div id="propuestas-table-wrap"></div>
@@ -3414,6 +3480,224 @@
       });
     });
 
+    // ---------- APERTURAS DE PROPUESTAS ----------
+    // Lo que hace el cliente en la propuesta (api/track-proposal.js), resumido por
+    // api/admin.js para la línea de actividad de la lista, el diálogo "Aperturas" y el
+    // panel "Cómo leen las propuestas". Xavi 2026-10-19: ver en revisión y aprobadas
+    // si se han abierto, el tiempo por show y lo que ayude a mejorar las propuestas.
+    const TRACK_SINCE = '2026-10-12';
+    const DEVICE_ES = { mobile: 'móvil', tablet: 'tablet', desktop: 'escritorio' };
+    const SECTION_ES = { hero: 'Portada', concept: 'Concepto', summary: 'Resumen y precios', conditions: 'Condiciones' };
+    const CLICK_ES = { pdf: 'PDF', video: 'vídeo', fotos: 'fotos', idioma: 'idioma', email: 'email', tel: 'teléfono', whatsapp: 'WhatsApp', link: 'enlace', boton: 'botón' };
+    const INTERNO_NOTE = `<div class="v-note">Tus visitas desde este navegador no cuentan como aperturas del cliente.
+      Para excluir otro navegador o tu móvil, abre allí una vez
+      <a href="https://propuestas.eventosbarcelona.com/propuesta.html?interno=1" target="_blank" rel="noopener">este enlace</a>.</div>`;
+    const sectionLabel = (x) => SECTION_ES[x.section] || x.name || String(x.section || '').replace(/^show:/, '');
+    const isShowSection = (x) => String(x.section || '').startsWith('show:');
+    const fmtSecs = (n) => { n = Math.round(Number(n) || 0); return n >= 60 ? `${Math.floor(n / 60)} min${n % 60 ? ` ${n % 60} s` : ''}` : `${n} s`; };
+    const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    // "hoy, 15:19" · "ayer, 10:02" · "16 oct, 14:58"
+    const fmtWhen = (v) => {
+      if (!v) return '';
+      const d = new Date(v), now = new Date();
+      const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+      const n = Math.round((day(now) - day(d)) / 864e5);
+      const hora = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      if (n === 0) return `hoy, ${hora}`;
+      if (n === 1) return `ayer, ${hora}`;
+      return `${d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}, ${hora}`;
+    };
+    const daysSince = (v) => Math.floor((Date.now() - new Date(v)) / 864e5);
+
+    // Clics del resumen en frases: "Descargó el PDF 3×", "Abrió el vídeo de Fiesta Casino"...
+    // Los clics de antes del 19-oct no dicen el show: quedan como "Abrió 3 vídeos".
+    const clickPhrases = (sm) => {
+      const c = sm.clicks || {};
+      const out = [];
+      if (c.pdf) out.push(`Descargó el PDF${c.pdf > 1 ? ` ${c.pdf}×` : ''}`);
+      const perShow = (kind, one, rest) => {
+        const tagged = (sm.sections || []).filter(x => x.clicks && x.clicks[kind]);
+        tagged.forEach(x => out.push(one(escapeHtml(sectionLabel(x)), x.clicks[kind])));
+        const left = (c[kind] || 0) - tagged.reduce((t, x) => t + x.clicks[kind], 0);
+        if (left > 0) out.push(rest(left));
+      };
+      perShow('video', (name) => `Abrió el vídeo de ${name}`, (n) => `Abrió ${plural(n, 'vídeo', 'vídeos')}`);
+      perShow('fotos', (name, n) => `Pasó las fotos de ${name}${n > 1 ? ` (${n})` : ''}`, (n) => `Pasó fotos (${plural(n, 'clic', 'clics')})`);
+      const other = { idioma: 'Cambió el idioma', email: 'Pulsó el email', tel: 'Pulsó el teléfono', whatsapp: 'Pulsó WhatsApp', link: 'Abrió un enlace', boton: 'Otros botones' };
+      Object.entries(other).forEach(([k, label]) => { if (c[k]) out.push(`${label}${c[k] > 1 ? ` ${c[k]}×` : ''}`); });
+      return out;
+    };
+
+    // Barras de tiempo por show (una sola serie: el nombre y los segundos van en texto).
+    const showBars = (sections, cls) => {
+      const max = Math.max(1, ...sections.map(x => x.seconds));
+      return sections.map(x => `<span class="${cls}" title="${escapeHtml(sectionLabel(x))}: ${fmtSecs(x.seconds)} a la vista">
+          <span class="pa-name">${escapeHtml(sectionLabel(x))}${x.note ? ` <small>${escapeHtml(x.note)}</small>` : ''}</span><b>${fmtSecs(x.seconds)}</b>
+          <i style="width:${Math.max(2, Math.round(100 * x.seconds / max))}%"></i></span>`).join('');
+    };
+
+    // Línea de actividad bajo cada propuesta de la lista (p.activity viene de
+    // list-proposals). via: la versión que ha abierto el cliente cuando no es la de la fila.
+    function renderActivity(p, via) {
+      const a = p.activity;
+      if (a && a.visits) {
+        const shows = a.sections.filter(x => isShowSection(x) && x.visits);
+        const showsHtml = !shows.length ? ''
+          : a.timed ? `<div class="pa-shows"><span class="pa-label">Tiempo por show</span>${showBars(shows, 'pa-show')}</div>`
+          : `<div class="pa-line pa-muted">Vio ${shows.map(x => escapeHtml(sectionLabel(x))).join(', ')}. Sin tiempo por show: visitas de antes del 16 oct.</div>`;
+        const facts = [
+          `<b>${plural(a.visits, 'visita', 'visitas')} · ${fmtSecs(a.seconds)}</b>`,
+          a.scroll >= 90 ? 'la leyó hasta el final' : `llegó al ${a.scroll} % de la página`,
+          `última ${escapeHtml(fmtWhen(a.last_at))}`,
+          escapeHtml([DEVICE_ES[a.last_device] || a.last_device, a.last_place].filter(Boolean).join(', '))
+        ].filter(Boolean).join(' · ');
+        const more = clickPhrases(a);
+        if (a.unseen && a.unseen.length) more.push(`<span class="pa-warn">No llegó a ver: ${a.unseen.map(x => escapeHtml(x.name)).join(', ')}</span>`);
+        return `<div class="p-activity">
+          ${via ? `<div class="pa-via">Ha abierto la versión del ${escapeHtml(fmtWhen(via.created_at))}${via.event_name ? ` («${escapeHtml(via.event_name)}»)` : ''}, no la última.</div>` : ''}
+          <div class="pa-line">${facts} <button type="button" class="pa-link" data-views="${escapeHtml(p.id)}">Ver detalle</button></div>
+          ${showsHtml}
+          ${more.length ? `<div class="pa-line">${more.join(' · ')}</div>` : ''}
+        </div>`;
+      }
+      // Abierta pero sin resumen (si list-proposals no ha podido leer las visitas).
+      if ((Number(p.open_count) || 0) > 0) {
+        return `<div class="p-activity"><div class="pa-line"><b>Abierta ${p.open_count}×</b> · última ${escapeHtml(fmtWhen(p.last_opened_at))}
+          <button type="button" class="pa-link" data-views="${escapeHtml(p.id)}">Ver detalle</button></div></div>`;
+      }
+      // Sin abrir. Antes del 12-oct no hay registro: no se dice nada.
+      if ((p.created_at || '') < TRACK_SINCE && (p.approved_at || '') < TRACK_SINCE) return '';
+      const glimpse = a && a.glimpses ? ` Se ha cargado ${plural(a.glimpses, 'vez', 'veces')} sin interacción: suelen ser filtros del correo, no una persona.` : '';
+      if (p.status === 'approved') {
+        const d = p.approved_at ? daysSince(p.approved_at) : 0;
+        return `<div class="p-activity pa-quiet${d >= 2 ? ' pa-late' : ''}">Aprobada ${escapeHtml(fmtWhen(p.approved_at))} y sin abrir${d >= 1 ? ` desde hace ${plural(d, 'día', 'días')}` : ''}.${glimpse}</div>`;
+      }
+      return `<div class="p-activity pa-quiet">Sin abrir. Está en revisión: el enlace va a GHL al aprobarla.${glimpse}</div>`;
+    }
+
+    // ---- Diálogo "Aperturas" ----
+    // Resumen de todas las visitas de personas: lo primero que Xavi quiere saber
+    // antes de llamar (cuánto la ha mirado y qué shows le interesan).
+    function renderViewsSummary(sm) {
+      if (!sm || !sm.visits) return '';
+      const secs = sm.sections.filter(x => x.visits);
+      const rows = secs.map(x => {
+        const cl = Object.entries(x.clicks || {}).map(([k, n]) => `${escapeHtml(CLICK_ES[k] || k)}${n > 1 ? ` ×${n}` : ''}`).join(', ');
+        return `<tr><td>${escapeHtml(sectionLabel(x))}</td><td class="v-num">${sm.timed ? fmtSecs(x.seconds) : '—'}</td>
+          <td class="v-num">${x.visits}/${sm.visits}</td><td class="v-muted">${cl}</td></tr>`;
+      }).join('');
+      const more = clickPhrases(sm);
+      return `<div class="v-summary">
+        <div class="v-when">${plural(sm.visits, 'visita', 'visitas')} · ${fmtSecs(sm.seconds)} en total · llegó al ${sm.scroll} % de la página</div>
+        <div class="v-what">Primera visita ${escapeHtml(fmtWhen(sm.first_at))} · última ${escapeHtml(fmtWhen(sm.last_at))}</div>
+        ${rows ? `<table class="v-table"><thead><tr><th>Sección</th><th class="v-num">Tiempo</th><th class="v-num">Visitas</th><th>Clics</th></tr></thead><tbody>${rows}</tbody></table>` : ''}
+        ${sm.timed ? '' : '<div class="v-what v-muted">Sin tiempo por sección: visitas de antes del 16 oct.</div>'}
+        ${sm.unseen && sm.unseen.length ? `<div class="v-what pa-warn">No llegó a ver: ${sm.unseen.map(x => escapeHtml(x.name)).join(', ')}</div>` : ''}
+        ${more.length ? `<div class="v-what">${more.join(' · ')}</div>` : ''}
+      </div>`;
+    }
+    const clickLabel = (c) => {
+      const k = CLICK_ES[c.kind] || c.kind || 'botón';
+      if (c.name) return `${k} · ${c.name}`;
+      return (c.kind === 'boton' || c.kind === 'link') && c.text ? `${k} «${c.text}»` : k;
+    };
+    function renderVisits(visits) {
+      if (!visits.length) return '<div class="v-empty">Todavía nadie ha abierto esta propuesta.</div>';
+      return visits.map(v => {
+        const who = [v.country, v.city].filter(Boolean).join(' · ') || 'origen desconocido';
+        const what = v.engaged
+          ? `${fmtSecs(v.seconds)} en la página · scroll ${v.scroll} %`
+          : (v.is_bot ? 'escáner de correo, no una persona' : 'sin interacción');
+        const secs = v.sections.length ? `Vio: ${v.sections.map(x => escapeHtml(sectionLabel(x)) + (x.seconds ? ` (${fmtSecs(x.seconds)})` : '')).join(', ')}.` : '';
+        // Clics seguidos iguales en uno: "fotos · Fiesta Casino ×4".
+        const grouped = [];
+        v.clicks.forEach(c => {
+          const label = clickLabel(c);
+          const last = grouped[grouped.length - 1];
+          if (last && last.label === label) last.n += 1; else grouped.push({ label, n: 1 });
+        });
+        const clicks = grouped.length ? ` Clics: ${grouped.map(g => escapeHtml(g.label) + (g.n > 1 ? ` ×${g.n}` : '')).join(', ')}.` : '';
+        return `<div class="v-row${v.is_bot ? ' v-bot' : ''}">
+          <div class="v-when">${escapeHtml(fmtWhen(v.started_at))}</div>
+          <div class="v-who">${escapeHtml(who)} · ${DEVICE_ES[v.device] || v.device || ''} · ${v.lang || ''}</div>
+          <div class="v-what">${escapeHtml(what)} ${secs}${clicks}</div>
+        </div>`;
+      }).join('');
+    }
+    async function openViewsDialog(id) {
+      const dlg = $('views-dialog');
+      $('views-dialog-body').innerHTML = '<div class="v-empty">Cargando…</div>';
+      if (!dlg.open) dlg.showModal();
+      try {
+        const r = await fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(id)}`);
+        const data = await r.json();
+        if (!r.ok || !data.success) throw new Error(data.error || `views ${r.status}`);
+        $('views-dialog-body').innerHTML = renderViewsSummary(data.summary) + renderVisits(data.visits || []) + INTERNO_NOTE;
+      } catch (err) {
+        $('views-dialog-body').innerHTML = `<div class="v-empty">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    // ---- Panel "Cómo leen las propuestas" (api/admin.js proposal-insights) ----
+    function renderInsights(d) {
+      const r = d.reading || {};
+      const pctTxt = (n) => (n == null ? '—' : `${n} %`);
+      const tile = (label, value, sub) => `<div class="pi-tile"><div class="pi-label">${label}</div><div class="pi-value">${value}</div>${sub ? `<div class="pi-note">${sub}</div>` : ''}</div>`;
+      const tiles = [
+        tile('Aprobadas que se abren', d.sent.total ? `${d.sent.opened} de ${d.sent.total}` : '—', `clientes con propuesta aprobada desde el 12 oct${d.sent.open_pct != null ? ` (${d.sent.open_pct} %)` : ''}`),
+        tile('Tiempo de lectura', r.median_seconds != null ? fmtSecs(r.median_seconds) : '—', 'mediana por propuesta, sumando visitas'),
+        tile('Vuelven a abrirla', pctTxt(r.revisit_pct), 'de las propuestas abiertas'),
+        tile('Llegan al final', pctTxt(r.end_pct), `ven las condiciones: ${pctTxt(r.conditions_pct)}`),
+        tile('Descargan el PDF', pctTxt(r.pdf_pct), `abren un vídeo: ${pctTxt(r.video_pct)} · pasan fotos: ${pctTxt(r.fotos_pct)}`),
+        tile('Leen en el móvil', pctTxt(r.mobile_pct), 'de las visitas')
+      ].join('');
+
+      const call = [];
+      (d.hot || []).forEach(h => call.push(`<button type="button" class="pi-item" data-views="${escapeHtml(h.id)}">
+          <span class="pi-who">${escapeHtml(h.client)}${h.event ? ` <span class="pa-muted">· ${escapeHtml(h.event)}</span>` : ''}</span>
+          <span class="pi-meta pi-hot">Abierta ${escapeHtml(fmtWhen(h.last_at))} · ${plural(h.visits, 'visita', 'visitas')} · ${fmtSecs(h.seconds)}${h.pdf ? ' · PDF' : ''}</span></button>`));
+      (d.unopened || []).forEach(u => call.push(`<button type="button" class="pi-item" data-views="${escapeHtml(u.id)}">
+          <span class="pi-who">${escapeHtml(u.client)}${u.event ? ` <span class="pa-muted">· ${escapeHtml(u.event)}</span>` : ''}</span>
+          <span class="pi-meta pa-warn">Aprobada hace ${plural(u.days, 'día', 'días')} y sin abrir</span></button>`));
+
+      const shows = (d.shows || []).filter(s => s.avg_seconds != null).slice(0, 8);
+      const showsHtml = shows.length
+        ? showBars(shows.map(s => ({ section: `show:${s.id}`, name: s.name, seconds: s.avg_seconds, note: `en ${plural(s.timed, 'propuesta', 'propuestas')}` })), 'pi-bar')
+        : '<div class="pa-muted">Aún no hay datos de tiempo por show.</div>';
+      const showsFoot = shows.length ? '<div class="pi-note">Segundos a la vista, de media, en las propuestas abiertas que llevan ese show. Los primeros shows de cada propuesta salen con ventaja.</div>' : '';
+
+      const secs = (d.sections || []).map(s => `<div class="pi-row"><span>${escapeHtml(SECTION_ES[s.section] || s.section)}</span>
+          <span class="pa-muted">${s.avg_seconds != null ? fmtSecs(s.avg_seconds) + ' de media · ' : ''}la ven ${s.seen} de ${r.proposals || 0}</span></div>`).join('');
+
+      return `<div class="pi-tiles">${tiles}</div>
+        <div class="pi-cols">
+          <div class="pi-col"><h4>Para llamar</h4>${call.length ? call.join('') : '<div class="pa-muted">Nadie la ha abierto en las últimas 48 h y no hay aprobadas sin abrir.</div>'}
+            <div class="pi-note">Abiertas en las últimas 48 h y aprobadas que nadie ha abierto todavía.</div></div>
+          <div class="pi-col"><h4>Shows que más miran</h4>${showsHtml}${showsFoot}</div>
+          <div class="pi-col"><h4>Secciones</h4>${secs}</div>
+        </div>
+        <div class="pi-note">Desde el 12 oct: ${plural(r.proposals || 0, 'propuesta abierta', 'propuestas abiertas')} y ${plural(r.visits || 0, 'visita', 'visitas')} de clientes; ${d.timed_proposals || 0} con tiempo por show (se mide desde el 16 oct). Con tan pocas propuestas, los porcentajes cambian mucho con cada una.</div>`;
+    }
+    async function loadProposalInsights() {
+      const box = $('propuestas-insights');
+      try {
+        const r = await fetch('/api/admin?action=proposal-insights');
+        const d = await r.json();
+        if (!r.ok || !d.success) throw new Error(d.error || `insights ${r.status}`);
+        $('pi-body').innerHTML = renderInsights(d);
+        $('pi-sub').textContent = d.sent.total ? `${d.sent.opened} de ${d.sent.total} aprobadas abiertas · ${(d.hot || []).length + (d.unopened || []).length} para llamar` : '';
+        $('pi-body').querySelectorAll('[data-views]').forEach(b => b.addEventListener('click', () => openViewsDialog(b.dataset.views)));
+        box.hidden = false;
+      } catch (err) {
+        console.error('proposal-insights', err);
+        box.hidden = true;
+      }
+    }
+    try { if (localStorage.getItem('eb_pi_closed') === '1') $('propuestas-insights').open = false; } catch (e) {}
+    $('propuestas-insights').addEventListener('toggle', (e) => {
+      try { localStorage.setItem('eb_pi_closed', e.target.open ? '0' : '1'); } catch (err) {}
+    });
+
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {
       $('propuestas-loading').classList.remove('hidden');
@@ -3525,7 +3809,6 @@
           : '<span class="p-pill p-pill--info">En revisión</span>';
         // Aperturas del cliente (api/track-proposal.js, desde el 12-oct-2026). Las
         // propuestas anteriores sin aperturas no muestran nada: no hay datos de ellas.
-        const TRACK_SINCE = '2026-10-12';
         const fmtOpened = (v) => v ? new Date(v).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
         const openPill = (p) => {
           const n = Number(p.open_count) || 0;
@@ -3585,6 +3868,15 @@
           const verLabel = versions.length > 1
             ? `<button class="p-versions" data-toggle-versions="${gi}">▸ ${versions.length} versiones</button>`
             : '';
+          // Si el cliente no ha abierto la última versión pero sí otra, la fila lo dice
+          // (16-oct: un cliente abrió 3 veces la versión anterior y la fila decía "Sin abrir").
+          const opens = (p) => (Number(p.open_count) || 0) > 0;
+          const openedOther = !opens(latest) ? older.find(opens) : null;
+          const mainPill = openedOther
+            ? `<button type="button" class="p-pill p-pill--ok p-pill--link" data-views="${escapeHtml(openedOther.id)}" title="El cliente ha abierto otra versión">Abrió otra versión</button>`
+            : openPill(latest);
+          const mainActivity = openedOther ? renderActivity(openedOther, openedOther)
+            : (n === 0 && !opens(latest) ? '' : renderActivity(latest));
 
           // Fila principal (última versión)
           html += `
@@ -3601,8 +3893,9 @@
                 ${ev.meta || verLabel ? `<div class="p-sub">${ev.meta ? escapeHtml(ev.meta) : ''}${verLabel}</div>` : ''}
               </div>
               <div class="p-shows">${showsPill(n)}</div>
-              <div class="p-status">${statusPill(latest)}${openPill(latest)}<div class="p-date">${escapeHtml(fmtCreated(latest.created_at))}</div></div>
+              <div class="p-status">${statusPill(latest)}${mainPill}<div class="p-date">${escapeHtml(fmtCreated(latest.created_at))}</div></div>
               ${rowActions(latest)}
+              ${mainActivity}
             </div>`;
           // Versiones anteriores (ocultas por defecto)
           older.forEach(p => {
@@ -3613,6 +3906,7 @@
                 <div class="p-shows">${showsPill(countShows(p))}</div>
                 <div class="p-status">${statusPill(p)}${openPill(p)}</div>
                 ${rowActions(p)}
+                ${opens(p) ? renderActivity(p) : ''}
               </div>`;
           });
           return html;
@@ -3692,59 +3986,12 @@
           });
         });
 
-        // Aperturas: visitas del cliente registradas por api/track-proposal.js.
-        const DEVICE_ES = { mobile: 'móvil', tablet: 'tablet', desktop: 'escritorio' };
-        const INTERNO_NOTE = `<div class="v-note">Tus visitas desde este navegador no cuentan como aperturas del cliente.
-          Para excluir otro navegador o tu móvil, abre allí una vez
-          <a href="https://propuestas.eventosbarcelona.com/propuesta.html?interno=1" target="_blank" rel="noopener">este enlace</a>.</div>`;
-        const SECTION_ES = { hero: 'Portada', concept: 'Concepto', summary: 'Resumen y precios', conditions: 'Condiciones' };
-        const sectionLabel = (x) => SECTION_ES[x.section] || (x.name ? `Show: ${x.name}` : x.section);
-        const fmtSecs = (n) => n >= 60 ? `${Math.floor(n / 60)} min${n % 60 ? ` ${n % 60} s` : ''}` : `${n} s`;
-        const CLICK_ES = { pdf: 'PDF', email: 'email', tel: 'teléfono', whatsapp: 'WhatsApp', link: 'enlace', boton: 'botón' };
-        // Resumen de todas las visitas de personas: lo primero que Xavi quiere saber
-        // antes de llamar (cuánto la ha mirado y qué shows le interesan).
-        const renderSummary = (sm) => {
-          if (!sm || !sm.visits) return '';
-          const top = sm.sections.filter(x => x.seconds > 0).slice(0, 5)
-            .map(x => `${escapeHtml(sectionLabel(x))} <span class="v-muted">${fmtSecs(x.seconds)}</span>`).join(' · ');
-          const clicks = Object.entries(sm.clicks || {})
-            .map(([k, n]) => `${escapeHtml(CLICK_ES[k] || k)}${n > 1 ? ` ×${n}` : ''}`).join(', ');
-          return `<div class="v-summary">
-            <div class="v-when">${sm.visits} visita${sm.visits === 1 ? '' : 's'} · ${fmtSecs(sm.seconds)} en total · llegó al ${sm.scroll}% de la página</div>
-            ${top ? `<div class="v-what">Lo que más ha mirado: ${top}</div>` : ''}
-            ${clicks ? `<div class="v-what">Clics: ${clicks}</div>` : ''}
-          </div>`;
-        };
-        const renderVisits = (visits) => {
-          if (!visits.length) return '<div class="v-empty">Todavía nadie ha abierto esta propuesta.</div>';
-          return visits.map(v => {
-            const who = [v.country, v.city].filter(Boolean).join(' · ') || 'origen desconocido';
-            const what = v.engaged
-              ? `${v.seconds} s en la página · scroll ${v.scroll}%`
-              : (v.is_bot ? 'escáner de correo, no una persona' : 'sin interacción');
-            const secs = v.sections.length ? `Vio: ${v.sections.map(x => escapeHtml(sectionLabel(x)) + (x.seconds ? ` (${fmtSecs(x.seconds)})` : '')).join(', ')}.` : '';
-            const clicks = v.clicks.length ? ` Clics: ${v.clicks.map(c => escapeHtml([c.kind, c.text].filter(Boolean).join(' '))).join(', ')}.` : '';
-            return `<div class="v-row${v.is_bot ? ' v-bot' : ''}">
-              <div class="v-when">${escapeHtml(fmtOpened(v.started_at))}</div>
-              <div class="v-who">${escapeHtml(who)} · ${DEVICE_ES[v.device] || v.device || ''} · ${v.lang || ''}</div>
-              <div class="v-what">${escapeHtml(what)} ${secs}${clicks}</div>
-            </div>`;
-          }).join('');
-        };
+        // Aperturas: diálogo con las visitas del cliente (openViewsDialog, más arriba).
         $('propuestas-table-wrap').querySelectorAll('[data-views]').forEach(b => {
-          b.addEventListener('click', async (e) => {
+          b.addEventListener('click', (e) => {
             e.stopPropagation();
-            const dlg = $('views-dialog');
-            $('views-dialog-body').innerHTML = '<div class="v-empty">Cargando…</div>';
-            dlg.showModal();
-            try {
-              const r = await fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(b.dataset.views)}`);
-              const data = await r.json();
-              if (!r.ok || !data.success) throw new Error(data.error || `views ${r.status}`);
-              $('views-dialog-body').innerHTML = renderSummary(data.summary) + renderVisits(data.visits || []) + INTERNO_NOTE;
-            } catch (err) {
-              $('views-dialog-body').innerHTML = `<div class="v-empty">Error: ${escapeHtml(err.message)}</div>`;
-            }
+            b.closest('details')?.removeAttribute('open');
+            openViewsDialog(b.dataset.views);
           });
         });
 
@@ -3893,6 +4140,7 @@
         }
       } else if (tab === 'propuestas') {
         loadPropuestas();
+        loadProposalInsights();
       } else if (tab === 'banco') {
         loadBanco();
       }

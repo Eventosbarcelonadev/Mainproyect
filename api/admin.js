@@ -2,7 +2,9 @@
 // endpoints separados. Este handler los unifica via ?action=...
 //
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
-// GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
+// GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=  (con "activity": resumen de aperturas)
+// GET  /api/admin?action=proposal-views&id=<proposalId>   -> visitas del cliente a una propuesta
+// GET  /api/admin?action=proposal-insights                -> panel "Cómo leen las propuestas"
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
 // POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
@@ -340,29 +342,55 @@ async function listProposals(req, res, env) {
 
   const rows = await r.json();
   const total = parseTotal(r.headers.get('content-range'), rows.length);
-  await attachProposalCovers(env, rows);
+  await Promise.all([attachProposalCovers(env, rows), attachProposalActivity(env, rows)]);
   return res.status(200).json({ success: true, count: rows.length, total, limit, offset, proposals: rows });
 }
 
-// GET /api/admin?action=proposal-views&id=<proposalId>[&limit=1000]
-// Eventos que registra api/track-proposal.js en la vista cliente, agrupados por
-// visita (session_id) para el diálogo "Aperturas" de /admin, más un resumen de
-// las visitas de personas: tiempo total y secciones que más han mirado.
-async function proposalViews(req, res, env) {
-  const id = (req.query.id || '').trim();
-  if (!id) return res.status(400).json({ error: 'Missing id' });
-  const limit = clampInt(req.query.limit, 1000, 1, 5000);
+// ---- Aperturas de propuestas (api/track-proposal.js → proposal_views) ----
 
-  const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/proposal_views?proposal_id=eq.${encodeURIComponent(id)}` +
-    `&select=id,session_id,event,detail,lang,country,city,device,is_bot,created_at&order=created_at.desc&limit=${limit}`,
-    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
-  );
-  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
-  const rows = await r.json();
+// Primer día con registro de aperturas: de antes no hay datos.
+const PROPOSAL_TRACK_SINCE = '2026-10-12';
+const PROPOSAL_VIEW_COLS = 'id,proposal_id,session_id,event,detail,lang,country,city,device,is_bot,created_at';
 
+// Eventos de varias propuestas, en tandas de 50 ids y páginas de 1000 filas
+// (Supabase no devuelve más de 1000 por petición).
+async function fetchProposalViewRows(env, ids, { humansOnly = true } = {}) {
+  const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+  const chunks = [];
+  for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+  const pages = await Promise.all(chunks.map(async chunk => {
+    const out = [];
+    const inList = chunk.map(encodeURIComponent).join(',');
+    for (let offset = 0; ; offset += 1000) {
+      const r = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/proposal_views?proposal_id=in.(${inList})${humansOnly ? '&is_bot=is.false' : ''}` +
+        `&select=${PROPOSAL_VIEW_COLS}&order=id.asc&limit=1000&offset=${offset}`,
+        { headers }
+      );
+      if (!r.ok) throw new Error(`proposal_views ${r.status}: ${await r.text()}`);
+      const rows = await r.json();
+      out.push(...rows);
+      if (rows.length < 1000) break;
+    }
+    return out;
+  }));
+  return pages.flat();
+}
+
+// Clics registrados antes del 19-oct-2026: el vídeo salía como "link" y las
+// flechas de las fotos como "boton ›", sin decir de qué show.
+function normalizeProposalClick(d) {
+  const text = String(d.text || '').trim();
+  let kind = d.kind || 'boton';
+  if (kind === 'link' && /youtube\.com|youtu\.be|vimeo\.com/.test(String(d.href || ''))) kind = 'video';
+  if (kind === 'boton' && /^[‹›]$/.test(text)) kind = 'fotos';
+  return { kind, text: text || null, section: d.section || null, name: d.name || null };
+}
+
+// Agrupa los eventos de una propuesta por visita (session_id), la más reciente primero.
+function groupProposalVisits(rows) {
   const sessions = {};
-  [...rows].reverse().forEach(ev => {
+  [...rows].sort((a, b) => new Date(a.created_at) - new Date(b.created_at) || a.id - b.id).forEach(ev => {
     const key = ev.session_id || `ev-${ev.id}`;
     const s = sessions[key] || (sessions[key] = {
       session_id: key, started_at: ev.created_at, country: ev.country, city: ev.city,
@@ -381,9 +409,9 @@ async function proposalViews(req, res, env) {
     if (ev.event === 'section' && d.section && !s.sections.some(x => x.section === d.section)) {
       s.sections.push({ section: d.section, name: d.name || null });
     }
-    if (ev.event === 'click') s.clicks.push({ kind: d.kind || null, text: d.text || null });
+    if (ev.event === 'click') s.clicks.push(normalizeProposalClick(d));
   });
-  const visits = Object.values(sessions).sort((a, b) => (a.started_at < b.started_at ? 1 : -1));
+  const visits = Object.values(sessions).sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
   visits.forEach(v => {
     Object.keys(v.dwell).forEach(k => {
       if (!v.sections.some(x => x.section === k)) v.sections.push({ section: k, name: null });
@@ -391,27 +419,229 @@ async function proposalViews(req, res, env) {
     v.sections.forEach(x => { x.seconds = Math.round(v.dwell[x.section] || 0); });
     delete v.dwell;
   });
+  return visits;
+}
 
-  // Resumen de las visitas de personas (sin escáneres ni cargas sin interacción).
+// Shows de la propuesta tal como los guarda save-proposal (array o string JSON).
+function proposalShowList(shows) {
+  let v = shows;
+  if (typeof v === 'string') { try { v = JSON.parse(v); } catch { v = []; } }
+  return Array.isArray(v) ? v.filter(s => s && s.id).map(s => ({ section: `show:${s.id}`, id: s.id, name: s.name || s.id })) : [];
+}
+
+// Resumen de las visitas de personas (sin escáneres ni cargas sin interacción):
+// tiempo total, segundos y clics por sección, shows que no llegó a ver y la última visita.
+function summarizeProposalVisits(visits, shows) {
   const human = visits.filter(v => v.engaged && !v.is_bot);
+  const showList = proposalShowList(shows);
+  const showName = new Map(showList.map(s => [s.section, s.name]));
   const bySection = new Map();
   human.forEach(v => v.sections.forEach(x => {
-    const a = bySection.get(x.section) || { section: x.section, name: x.name, seconds: 0, visits: 0 };
+    const a = bySection.get(x.section) || { section: x.section, name: x.name || showName.get(x.section) || null, seconds: 0, visits: 0, clicks: {} };
     a.seconds += x.seconds;
     a.visits += 1;
-    if (!a.name && x.name) a.name = x.name;
     bySection.set(x.section, a);
   }));
   const clicks = {};
-  human.forEach(v => v.clicks.forEach(c => { const k = c.kind || 'boton'; clicks[k] = (clicks[k] || 0) + 1; }));
-  const summary = {
+  human.forEach(v => v.clicks.forEach(c => {
+    clicks[c.kind] = (clicks[c.kind] || 0) + 1;
+    if (!c.section) return;
+    const a = bySection.get(c.section) || { section: c.section, name: c.name || showName.get(c.section) || null, seconds: 0, visits: 0, clicks: {} };
+    a.clicks[c.kind] = (a.clicks[c.kind] || 0) + 1;
+    bySection.set(c.section, a);
+  }));
+  const last = human[0] || null;
+  return {
     visits: human.length,
+    // Los segundos por sección empezaron el 16-oct-2026: las visitas de antes dicen qué vio, no cuánto.
+    timed: human.some(v => v.sections.some(x => x.seconds > 0)),
+    // Cargas sin interacción: puede ser la persona echando un vistazo o un escáner sin firma de bot.
+    glimpses: visits.filter(v => !v.engaged && !v.is_bot).length,
     seconds: human.reduce((t, v) => t + v.seconds, 0),
     scroll: human.reduce((m, v) => Math.max(m, v.scroll), 0),
+    first_at: human.length ? human[human.length - 1].started_at : null,
+    last_at: last ? last.started_at : null,
+    last_device: last ? last.device : null,
+    last_place: last ? ([last.city, last.country].filter(Boolean).join(', ') || null) : null,
     sections: [...bySection.values()].sort((a, b) => b.seconds - a.seconds || b.visits - a.visits),
+    // Shows que no llegaron a quedar a la vista (un clic en su vídeo o sus fotos cuenta como visto).
+    unseen: human.length ? showList.filter(s => {
+      const x = bySection.get(s.section);
+      return !x || (!x.visits && !Object.keys(x.clicks).length);
+    }).map(s => ({ section: s.section, name: s.name })) : [],
     clicks
   };
+}
+
+// list-proposals: resumen de aperturas de cada propuesta con datos, para la línea
+// de actividad de la lista de /admin sin abrir el diálogo. Si falla, la lista sale igual.
+async function attachProposalActivity(env, rows) {
+  const ids = rows
+    .filter(p => (Number(p.open_count) || 0) > 0 || (p.created_at || '') >= PROPOSAL_TRACK_SINCE || (p.approved_at || '') >= PROPOSAL_TRACK_SINCE)
+    .map(p => p.id);
+  if (!ids.length) return;
+  try {
+    const byProposal = new Map();
+    (await fetchProposalViewRows(env, ids)).forEach(ev => {
+      if (!byProposal.has(ev.proposal_id)) byProposal.set(ev.proposal_id, []);
+      byProposal.get(ev.proposal_id).push(ev);
+    });
+    rows.forEach(p => {
+      const evs = byProposal.get(p.id);
+      if (!evs) return;
+      const s = summarizeProposalVisits(groupProposalVisits(evs), p.shows);
+      if (s.visits || s.glimpses) p.activity = s;
+    });
+  } catch (err) {
+    console.error('list-proposals activity', err.message);
+  }
+}
+
+// GET /api/admin?action=proposal-views&id=<proposalId>[&limit=1000]
+// Eventos que registra api/track-proposal.js en la vista cliente, agrupados por
+// visita (session_id) para el diálogo "Aperturas" de /admin, más un resumen de
+// las visitas de personas: tiempo total y secciones que más han mirado.
+async function proposalViews(req, res, env) {
+  const id = (req.query.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  const limit = clampInt(req.query.limit, 1000, 1, 5000);
+  const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+
+  const [r, pr] = await Promise.all([
+    fetch(
+      `${env.SUPABASE_URL}/rest/v1/proposal_views?proposal_id=eq.${encodeURIComponent(id)}` +
+      `&select=${PROPOSAL_VIEW_COLS}&order=created_at.desc&limit=${limit}`,
+      { headers }
+    ),
+    fetch(`${env.SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(id)}&select=shows`, { headers })
+  ]);
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const rows = await r.json();
+  const proposal = pr.ok ? (await pr.json())[0] : null;
+
+  const visits = groupProposalVisits(rows);
+  const summary = summarizeProposalVisits(visits, proposal && proposal.shows);
   return res.status(200).json({ success: true, count: rows.length, summary, visits, events: rows });
+}
+
+// GET /api/admin?action=proposal-insights
+// Cómo leen los clientes las propuestas desde que hay registro (12-oct-2026), para
+// el panel de la pestaña Propuestas: cuántas aprobadas se abren, cuánto las leen,
+// qué shows miran más y a quién toca llamar.
+async function proposalInsights(req, res, env) {
+  const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+  const sel = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,shows,created_at,approved_at,first_opened_at,last_opened_at,open_count';
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/proposals?select=${sel}` +
+    `&or=(approved_at.gte.${PROPOSAL_TRACK_SINCE},open_count.gt.0)&order=created_at.desc&limit=1000`,
+    { headers }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const props = await r.json();
+
+  const byProposal = new Map();
+  (await fetchProposalViewRows(env, props.filter(p => (Number(p.open_count) || 0) > 0).map(p => p.id))).forEach(ev => {
+    if (!byProposal.has(ev.proposal_id)) byProposal.set(ev.proposal_id, []);
+    byProposal.get(ev.proposal_id).push(ev);
+  });
+
+  const now = Date.now();
+  const who = (p) => (p.client_name || '').trim() || (p.client_company || '').trim() || (p.client_email || '').trim() || 'Sin nombre';
+  const median = (xs) => {
+    if (!xs.length) return null;
+    const s = [...xs].sort((a, b) => a - b), m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+  };
+  const pct = (n, d) => (d ? Math.round((100 * n) / d) : null);
+
+  // Al aprobar, save-proposal escribe la URL en la oportunidad de GHL, que es lo que
+  // la envía al cliente. approved_at se reescribe en cada guardado de una aprobada:
+  // es la última aprobación, no la primera.
+  // Se cuenta por cliente (misma clave que agrupa la lista de /admin): si abre una
+  // versión y no la otra, la ha abierto.
+  const clientKey = (p) => (p.client_email || '').toLowerCase().trim()
+    || `${(p.client_name || '').toLowerCase().trim()}|${(p.client_phone || '').trim()}` || p.id;
+  const openedClients = new Set(props.filter(p => (Number(p.open_count) || 0) > 0).map(clientKey));
+  const sent = props.filter(p => p.status === 'approved' && (p.approved_at || '') >= PROPOSAL_TRACK_SINCE);
+  const sentClients = new Set(sent.map(clientKey));
+  const sentOpenedClients = [...sentClients].filter(k => openedClients.has(k));
+
+  const read = [];
+  props.forEach(p => {
+    const evs = byProposal.get(p.id);
+    if (!evs) return;
+    const visits = groupProposalVisits(evs);
+    const s = summarizeProposalVisits(visits, p.shows);
+    if (s.visits) read.push({ p, s, human: visits.filter(v => v.engaged && !v.is_bot) });
+  });
+
+  // Medias de segundos solo con las propuestas que tienen tiempo por sección (desde el 16-oct).
+  const timed = read.filter(x => x.s.timed);
+  const SECTION_KEYS = ['hero', 'concept', 'summary', 'conditions'];
+  const sections = SECTION_KEYS.map(key => {
+    const withIt = read.filter(x => x.s.sections.some(y => y.section === key && y.visits));
+    const secs = timed.map(x => x.s.sections.find(y => y.section === key)).filter(Boolean).map(y => y.seconds);
+    return { section: key, seen: withIt.length, avg_seconds: secs.length ? Math.round(secs.reduce((t, n) => t + n, 0) / secs.length) : null };
+  });
+
+  // Por show: en cuántas propuestas leídas estaba, en cuántas lo vieron, segundos medios y clics.
+  const showsAgg = new Map();
+  read.forEach(({ p, s }) => {
+    proposalShowList(p.shows).forEach(sh => {
+      const a = showsAgg.get(sh.id) || { id: sh.id, name: sh.name, proposals: 0, seen: 0, timed: 0, seconds: 0, video: 0, fotos: 0 };
+      const x = s.sections.find(y => y.section === sh.section);
+      a.proposals += 1;
+      if (x && x.visits) a.seen += 1;
+      if (s.timed) { a.timed += 1; a.seconds += x ? x.seconds : 0; }
+      a.video += x ? (x.clicks.video || 0) : 0;
+      a.fotos += x ? (x.clicks.fotos || 0) : 0;
+      showsAgg.set(sh.id, a);
+    });
+  });
+  const shows = [...showsAgg.values()]
+    .map(a => ({ ...a, avg_seconds: a.timed ? Math.round(a.seconds / a.timed) : null }))
+    .sort((a, b) => (b.avg_seconds ?? -1) - (a.avg_seconds ?? -1) || b.proposals - a.proposals);
+
+  const allVisits = read.flatMap(x => x.human);
+  const reading = {
+    proposals: read.length,
+    visits: allVisits.length,
+    median_seconds: median(read.map(x => x.s.seconds)),
+    revisit_pct: pct(read.filter(x => x.s.visits > 1).length, read.length),
+    end_pct: pct(read.filter(x => x.s.scroll >= 90).length, read.length),
+    conditions_pct: pct(read.filter(x => x.s.sections.some(y => y.section === 'conditions' && y.visits)).length, read.length),
+    pdf_pct: pct(read.filter(x => x.s.clicks.pdf).length, read.length),
+    video_pct: pct(read.filter(x => x.s.clicks.video).length, read.length),
+    fotos_pct: pct(read.filter(x => x.s.clicks.fotos).length, read.length),
+    mobile_pct: pct(allVisits.filter(v => v.device === 'mobile' || v.device === 'tablet').length, allVisits.length)
+  };
+
+  // Seguimiento: abiertas en las últimas 48 h y aprobadas que siguen sin abrir.
+  const hot = read
+    .filter(x => x.s.last_at && now - new Date(x.s.last_at) < 48 * 36e5)
+    .sort((a, b) => new Date(b.s.last_at) - new Date(a.s.last_at))
+    .map(({ p, s }) => ({ id: p.id, client: who(p), event: p.event_name || p.event_type || null, last_at: s.last_at, visits: s.visits, seconds: s.seconds, pdf: s.clicks.pdf || 0 }));
+  // La aprobada más reciente de cada cliente que no ha abierto ninguna versión.
+  const seenUnopened = new Set();
+  const unopened = sent
+    .filter(p => !openedClients.has(clientKey(p)))
+    .sort((a, b) => new Date(b.approved_at) - new Date(a.approved_at))
+    .filter(p => !seenUnopened.has(clientKey(p)) && seenUnopened.add(clientKey(p)))
+    .map(p => ({ id: p.id, client: who(p), event: p.event_name || p.event_type || null, approved_at: p.approved_at, days: Math.floor((now - new Date(p.approved_at)) / 864e5) }))
+    .sort((a, b) => b.days - a.days);
+
+  return res.status(200).json({
+    success: true,
+    since: PROPOSAL_TRACK_SINCE,
+    // Clientes con alguna propuesta aprobada desde el 12-oct y cuántos han abierto alguna.
+    sent: { total: sentClients.size, opened: sentOpenedClients.length, open_pct: pct(sentOpenedClients.length, sentClients.size) },
+    timed_proposals: timed.length,
+    reading,
+    sections,
+    shows,
+    hot,
+    unopened
+  });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
@@ -2995,6 +3225,7 @@ export default async function handler(req, res) {
       if (action === 'list-artistas') return listArtistas(req, res, env);
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'proposal-views') return proposalViews(req, res, env);
+      if (action === 'proposal-insights') return proposalInsights(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
@@ -3033,7 +3264,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
+      hint: 'GET list-artistas|list-proposals|proposal-views|proposal-insights|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|ensure-proposal-for-lead|init-opp-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

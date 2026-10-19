@@ -5200,16 +5200,24 @@
   let tries = 0;
   const obsTimer = setInterval(() => { if (observe() || ++tries > 40) clearInterval(obsTimer); }, 500);
 
+  // Cada clic lleva el show en el que se ha hecho (vídeo, flechas de fotos): sin
+  // él las flechas salían como "botón ›" y no decían qué show estaba mirando.
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a, button');
     if (!a) return;
     const href = a.getAttribute('href') || '';
     const kind = a.classList.contains('btn-pdf-client') ? 'pdf'
+      : a.closest('.block-carousel') ? 'fotos'
+      : a.closest('#langToggle') ? 'idioma'
       : href.startsWith('mailto:') ? 'email'
       : href.startsWith('tel:') ? 'tel'
       : /wa\.me|whatsapp/.test(href) ? 'whatsapp'
+      : /youtube\.com|youtu\.be|vimeo\.com/.test(href) ? 'video'
       : href.startsWith('http') ? 'link' : 'boton';
-    send('click', { kind, text: (a.textContent || '').trim().slice(0, 60), href: href.slice(0, 120) });
+    const d = { kind, text: (a.textContent || '').trim().slice(0, 60), href: href.slice(0, 120) };
+    const block = a.closest('[data-show]');
+    if (block) { const l = labelOf(block); d.section = l.section; d.name = l.name || null; }
+    send('click', d);
   }, true);
 
   // "leave" sale al ocultar la pestaña, no solo al cerrarla: en el móvil se cambia
