@@ -3,7 +3,8 @@
 //   open     → ha cargado la página
 //   engaged  → persona real: 4 s visible + un gesto (descarta escáneres de correo)
 //   section  → un bloque (portada, concepto, show, resumen, condiciones) ha quedado a la vista
-//   click    → clic en un botón o enlace (PDF, email, teléfono...)
+//   click    → clic en un botón o enlace (PDF, vídeo, fotos, idioma, email...), con el
+//              show en el que se ha hecho (section/name) desde el 19-oct-2026
 //   leave    → oculta o cierra la pestaña: segundos visibles, scroll máximo, secciones
 //              vistas y dwell (segundos por sección desde el envío anterior)
 // Body JSON (o text/plain vía sendBeacon): { proposalId, sessionId, event, detail, lang }
