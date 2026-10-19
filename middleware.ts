@@ -16,8 +16,8 @@ import { next } from '@vercel/functions';
 import {
   cookieBorrada,
   cookieDeSesion,
+  credencialesValidas,
   loginConfigurado,
-  passwordValida,
   sesionValida,
 } from './lib/sesion-admin.js';
 
@@ -94,13 +94,14 @@ async function login(request: Request, url: URL): Promise<Response> {
   if (request.method === 'POST') {
     const form = await request.formData().catch(() => null);
     const destino = destinoSeguro(form?.get('next'));
-    if (!loginConfigurado()) return paginaLogin(destino, ERROR_SIN_CONFIGURAR, 503);
-    if (passwordValida(form?.get('password'))) {
+    const email = String(form?.get('email') || '');
+    if (!loginConfigurado()) return paginaLogin(destino, ERROR_SIN_CONFIGURAR, 503, email);
+    if (credencialesValidas(email, form?.get('password'))) {
       return redirigir(destino, url, { 'Set-Cookie': await cookieDeSesion() });
     }
     // Frena los intentos a ciegas.
     await new Promise((r) => setTimeout(r, 1000));
-    return paginaLogin(destino, 'Contraseña incorrecta.', 401);
+    return paginaLogin(destino, 'Correo o contraseña incorrectos.', 401, email);
   }
 
   const destino = destinoSeguro(url.searchParams.get('next'));
@@ -109,12 +110,12 @@ async function login(request: Request, url: URL): Promise<Response> {
 }
 
 const ERROR_SIN_CONFIGURAR =
-  'El acceso todavía no está configurado (faltan ADMIN_PASSWORD y ADMIN_SESSION_SECRET en Vercel).';
+  'El acceso todavía no está configurado (faltan ADMIN_EMAIL, ADMIN_PASSWORD y ADMIN_SESSION_SECRET en Vercel).';
 
 const escapar = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function paginaLogin(destino: string, error: string, status: number): Response {
+function paginaLogin(destino: string, error: string, status: number, email = ''): Response {
   const html = `<!doctype html>
 <html lang="es">
 <head>
@@ -138,13 +139,14 @@ function paginaLogin(destino: string, error: string, status: number): Response {
     h1 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 28px; text-align: center; margin: 0 0 6px; }
     p.sub { text-align: center; color: rgba(247,247,245,.6); font-size: 14px; margin: 0 0 28px; }
     label { display: block; font-size: 13px; color: rgba(247,247,245,.75); margin-bottom: 8px; }
-    input[type=password] {
+    label + input { margin-bottom: 16px; }
+    input[type=email], input[type=password] {
       width: 100%; padding: 13px 14px; font: inherit; font-size: 16px; color: #111;
       background: #f7f7f5; border: 2px solid transparent; border-radius: 10px; outline: none;
     }
-    input[type=password]:focus { border-color: #e87461; }
+    input[type=email]:focus, input[type=password]:focus { border-color: #e87461; }
     button {
-      width: 100%; margin-top: 16px; padding: 13px; font: inherit; font-weight: 600; font-size: 15px;
+      width: 100%; margin-top: 4px; padding: 13px; font: inherit; font-weight: 600; font-size: 15px;
       color: #fff; background: #e87461; border: 0; border-radius: 10px; cursor: pointer;
     }
     button:hover { filter: brightness(1.05); }
@@ -158,13 +160,14 @@ function paginaLogin(destino: string, error: string, status: number): Response {
   <main>
     <img src="/EB-eventos-barcelona-logo-3d.webp" alt="Eventos Barcelona">
     <h1>Área del equipo</h1>
-    <p class="sub">Entra con la contraseña de Eventos Barcelona.</p>
+    <p class="sub">Entra con tu cuenta de Eventos Barcelona.</p>
     ${error ? `<div class="error" role="alert">${escapar(error)}</div>` : ''}
     <form method="post" action="/login">
       <input type="hidden" name="next" value="${escapar(destino)}">
-      <input type="text" name="usuario" value="equipo" autocomplete="username" hidden>
+      <label for="email">Correo</label>
+      <input type="email" id="email" name="email" value="${escapar(email)}" autocomplete="username" required${email ? '' : ' autofocus'}>
       <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" autocomplete="current-password" required autofocus>
+      <input type="password" id="password" name="password" autocomplete="current-password" required${email ? ' autofocus' : ''}>
       <button type="submit">Entrar</button>
     </form>
   </main>
