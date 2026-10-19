@@ -1045,46 +1045,31 @@
     .views-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #eee; margin: 0; }
     .views-dialog-head h3 { margin: 0; font-size: 16px; }
     #views-dialog-body { padding: 10px 18px 18px; overflow: auto; max-height: calc(82vh - 62px); font-size: 13px; line-height: 1.45; }
-    .v-row { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-    .v-row:last-child { border-bottom: 0; }
-    .v-when { font-weight: 600; }
-    .v-who, .v-what { color: #555; margin-top: 2px; }
-    .v-bot { opacity: .55; }
     .v-empty { color: #777; padding: 12px 0; }
     .v-muted { color: #888; }
-    .v-note { color: #888; font-size: 12px; padding-top: 12px; margin-top: 12px; border-top: 1px solid #f0f0f0; }
 
-    /* "Ver más": actividad del cliente en gráficos (una sola serie por gráfico, el
-       valor siempre en texto al lado) */
-    .views-dialog { width: min(720px, 94vw); }
+    /* "Ver más": shows que le interesan (una sola serie: el tiempo; el valor en texto) */
+    .views-dialog { width: min(560px, 94vw); }
     .views-dialog-head h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .vx-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 6px 0 4px; }
-    .vx-tile { background: #F7F4F0; border-radius: 10px; padding: 10px 12px; }
-    .vx-value { font-size: 22px; font-weight: 700; color: var(--dark); line-height: 1.2; font-variant-numeric: tabular-nums; }
-    .vx-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
-    .vx-block { margin-top: 18px; }
-    .vx-block h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--dark); }
-    .vx-cols { display: flex; align-items: flex-end; gap: 3px; height: 128px; padding-bottom: 2px; border-bottom: 1px solid #E3DED8; }
-    .vx-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
-    .vx-cbar { display: block; width: min(100%, 26px); background: #8C7B6B; border-radius: 3px 3px 0 0; }
-    .vx-col:hover .vx-cbar { background: #6E6053; }
-    .vx-cval { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; margin-bottom: 2px; }
-    .vx-clabel { position: absolute; top: calc(100% + 5px); font-size: 10.5px; color: var(--gray); white-space: nowrap; }
-    .vx-cols { margin-bottom: 20px; }   /* sitio para las fechas, que van debajo en absoluto */
-    .vx-hbars { display: grid; gap: 6px; }
-    .vx-hbar { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 64px; align-items: center; gap: 10px; font-size: 13px; }
-    .vx-hname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
-    .vx-htrack { height: 10px; border-radius: 5px; background: #EFEAE4; position: relative; overflow: hidden; }
-    .vx-htrack i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: #8C7B6B; }
-    .vx-hval { text-align: right; font-variant-numeric: tabular-nums; color: var(--dark); white-space: nowrap; }
-    .vx-hbar.is-top .vx-hname, .vx-hbar.is-top .vx-hval { font-weight: 700; color: var(--dark); }
-    .vx-hbar.is-top .vx-htrack i { background: #5E5248; }
-    .vx-hbar.is-muted .vx-hname, .vx-hbar.is-muted .vx-hval { color: #A39A92; }
-    .vx-note { font-size: 12px; color: var(--gray); margin-top: 6px; }
-    .vx-empty { text-align: center; padding: 28px 0 16px; }
+    .vx-ico { width: 15px; height: 15px; flex: 0 0 auto; }
+    .vx-top { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 16px; }
+    .vx-chip { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: 999px; background: #F4F1ED; color: var(--dark); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .vx-chip--plain { font-weight: 500; color: var(--ink-2); }
+    .vx-shows { display: grid; gap: 10px; }
+    .vx-show { padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+    .vx-show.is-top { border-color: #8C7B6B; background: #FBF9F6; }
+    .vx-show.is-muted { color: #A39A92; border-style: dashed; }
+    .vx-show-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; }
+    .vx-show-name { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vx-show.is-muted .vx-show-name { font-weight: 500; }
+    .vx-show-head b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .vx-track { height: 8px; border-radius: 4px; background: #EFEAE4; margin-top: 7px; overflow: hidden; }
+    .vx-track i { display: block; height: 100%; border-radius: 4px; background: #8C7B6B; }
+    .vx-show.is-top .vx-track i { background: #5E5248; }
+    .vx-acts { display: flex; gap: 6px; margin-top: 8px; }
+    .vx-acts .vx-chip { height: 24px; font-size: 12.5px; background: #fff; border: 1px solid var(--border); }
+    .vx-empty { text-align: center; padding: 28px 0 20px; }
     .vx-empty-title { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
-    .vx-details { margin-top: 18px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
-    .vx-details > summary { cursor: pointer; font-weight: 600; color: var(--ui-edit); font-size: 13px; }
 
     /* Lista: botón "Ver más" bajo la apertura */
     .p-act { display: block; border: 0; background: none; padding: 0; margin-top: 4px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ui-edit); cursor: pointer; text-align: left; }
@@ -1095,8 +1080,6 @@
     @media (max-width: 760px) {
       .p-status { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
       .p-act { text-align: right; }
-      .vx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .vx-hbar { grid-template-columns: minmax(0, 120px) minmax(0, 1fr) 56px; gap: 8px; font-size: 12.5px; }
     }
 
   </style>
@@ -3489,12 +3472,7 @@
     // tiempo, cuándo, dónde se para más y dónde pincha (Ramiro 2026-10-19: "algo visual,
     // que se entienda, con gráficos, no mucho texto").
     const TRACK_SINCE = '2026-10-12';
-    const DEVICE_ES = { mobile: 'móvil', tablet: 'tablet', desktop: 'escritorio' };
     const SECTION_ES = { hero: 'Portada', concept: 'Concepto', summary: 'Resumen y precios', conditions: 'Condiciones' };
-    const CLICK_ES = { pdf: 'PDF', video: 'vídeo', fotos: 'fotos', idioma: 'idioma', email: 'email', tel: 'teléfono', whatsapp: 'WhatsApp', link: 'enlace', boton: 'botón' };
-    const INTERNO_NOTE = `<div class="v-note">Tus visitas desde este navegador no cuentan como aperturas del cliente.
-      Para excluir otro navegador o tu móvil, abre allí una vez
-      <a href="https://propuestas.eventosbarcelona.com/propuesta.html?interno=1" target="_blank" rel="noopener">este enlace</a>.</div>`;
     const sectionLabel = (x) => SECTION_ES[x.section] || x.name || String(x.section || '').replace(/^show:/, '');
     const fmtSecs = (n) => { n = Math.round(Number(n) || 0); return n >= 60 ? `${Math.floor(n / 60)} min${n % 60 ? ` ${n % 60} s` : ''}` : `${n} s`; };
     const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
@@ -3510,9 +3488,6 @@
       return `${d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}, ${hora}`;
     };
     const daysSince = (v) => Math.floor((Date.now() - new Date(v)) / 864e5);
-    const dayKey = (v) => { const d = new Date(v); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
-    const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
-    const fmtDay = (key) => new Date(key + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
 
     // Estados de la propuesta (Ramiro 2026-10-19). Borrador: Xavi la está haciendo
     // (status revision). Enviada: validada y enviada al cliente (status approved).
@@ -3521,112 +3496,61 @@
     const ESTADO_ES = { borrador: 'Borrador', enviada: 'Enviada', aprobada: 'Aprobada', cancelada: 'Cancelada' };
     const ESTADO_PILL = { borrador: 'p-pill--neutral', enviada: 'p-pill--info', aprobada: 'p-pill--ok', cancelada: 'p-pill--crit' };
 
-    // ---- "Ver más": actividad del cliente en gráficos ----
-    // Barras horizontales de una sola serie; el nombre y el valor van en texto.
-    function hBars(items) {
-      const max = Math.max(1, ...items.map(i => i.value));
-      return `<div class="vx-hbars">${items.map(i => `
-        <div class="vx-hbar${i.top ? ' is-top' : ''}${i.muted ? ' is-muted' : ''}" title="${escapeHtml(i.label)}: ${escapeHtml(i.text)}">
-          <span class="vx-hname">${escapeHtml(i.label)}</span>
-          <span class="vx-htrack"><i style="width:${i.value > 0 ? Math.max(3, Math.round(100 * i.value / max)) : 0}%"></i></span>
-          <span class="vx-hval">${escapeHtml(i.text)}</span>
-        </div>`).join('')}</div>`;
-    }
-    // Visitas por día desde que se envió (por semana si pasan de 45 días). Una sola serie.
-    function dayColumns(visits, sentAt) {
-      const today = dayKey(new Date());
-      let from = sentAt ? dayKey(sentAt) : today;
-      visits.forEach(v => { const k = dayKey(v.started_at); if (k < from) from = k; });
-      if (from > addDays(today, -6)) from = addDays(today, -6);
-      const nDays = Math.round((new Date(today + 'T12:00:00') - new Date(from + 'T12:00:00')) / 864e5) + 1;
-      const step = nDays > 45 ? 7 : 1;
-      const cols = [];
-      for (let k = from; k <= today; k = addDays(k, step)) cols.push({ key: k, n: 0 });
-      visits.forEach(v => {
-        const i = Math.floor((new Date(dayKey(v.started_at) + 'T12:00:00') - new Date(from + 'T12:00:00')) / (step * 864e5));
-        if (cols[i]) cols[i].n += 1;
-      });
-      const max = Math.max(1, ...cols.map(c => c.n));
-      const every = Math.max(1, Math.ceil(cols.length / 7));
-      return `<div class="vx-cols">${cols.map((c, i) => `
-        <div class="vx-col" title="${step === 7 ? 'Semana del ' : ''}${fmtDay(c.key)}: ${plural(c.n, 'visita', 'visitas')}">
-          <span class="vx-cval">${c.n || ''}</span>
-          <span class="vx-cbar" style="height:${c.n ? Math.max(6, Math.round(96 * c.n / max)) : 0}px"></span>
-          <span class="vx-clabel">${i % every === 0 || i === cols.length - 1 ? fmtDay(c.key) : ''}</span>
-        </div>`).join('')}</div>`;
-    }
-    // Clics agrupados por lo que pulsa: "Fotos · Fiesta Casino", "Descargar PDF"...
-    const CLICK_LABEL = { pdf: 'Descargar PDF', video: 'Vídeo', fotos: 'Fotos', idioma: 'Cambiar idioma', email: 'Email', tel: 'Teléfono', whatsapp: 'WhatsApp', link: 'Enlace', boton: 'Otros botones' };
-    const clickLabel = (c) => {
-      const k = CLICK_ES[c.kind] || c.kind || 'botón';
-      if (c.name) return `${k} · ${c.name}`;
-      return (c.kind === 'boton' || c.kind === 'link') && c.text ? `${k} «${c.text}»` : k;
+    // ---- "Ver más": qué shows le interesan ----
+    // Xavi 2026-10-19: verlo de un vistazo, sin estudiar la pantalla. Arriba cuántas
+    // veces la ha abierto, cuánto rato y cuándo; debajo los shows de la propuesta, del
+    // que más tiempo ha mirado al que menos, con las fotos que ha pasado y los vídeos
+    // que ha abierto de cada uno.
+    const ICON = {
+      eye: '<path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/>',
+      clock: '<circle cx="8" cy="8" r="6.2"/><path d="M8 4.6V8l2.3 1.6"/>',
+      fotos: '<rect x="1.8" y="4" width="12.4" height="9" rx="1.6"/><path d="M5.5 4l1-1.8h3l1 1.8"/><circle cx="8" cy="8.5" r="2.2"/>',
+      video: '<circle cx="8" cy="8" r="6.2"/><path d="M6.6 5.6v4.8L10.6 8z" fill="currentColor"/>',
+      pdf: '<path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13.2h10"/>'
     };
-    function renderVisits(visits) {
-      if (!visits.length) return '<div class="v-empty">Ninguna visita.</div>';
-      return visits.map(v => {
-        const who = [v.country, v.city].filter(Boolean).join(' · ') || 'origen desconocido';
-        const what = v.engaged
-          ? `${fmtSecs(v.seconds)} en la página · scroll ${v.scroll} %`
-          : (v.is_bot ? 'escáner de correo, no una persona' : 'sin interacción (suelen ser filtros del correo)');
-        const secs = v.sections.length ? `Vio: ${v.sections.map(x => escapeHtml(sectionLabel(x)) + (x.seconds ? ` (${fmtSecs(x.seconds)})` : '')).join(', ')}.` : '';
-        // Clics seguidos iguales en uno: "fotos · Fiesta Casino ×4".
-        const grouped = [];
-        v.clicks.forEach(c => {
-          const label = clickLabel(c);
-          const last = grouped[grouped.length - 1];
-          if (last && last.label === label) last.n += 1; else grouped.push({ label, n: 1 });
-        });
-        const clicks = grouped.length ? ` Clics: ${grouped.map(g => escapeHtml(g.label) + (g.n > 1 ? ` ×${g.n}` : '')).join(', ')}.` : '';
-        return `<div class="v-row${v.engaged ? '' : ' v-bot'}">
-          <div class="v-when">${escapeHtml(fmtWhen(v.started_at))}</div>
-          <div class="v-who">${escapeHtml(who)} · ${DEVICE_ES[v.device] || v.device || ''} · ${v.lang || ''}</div>
-          <div class="v-what">${escapeHtml(what)} ${secs}${clicks}</div>
-        </div>`;
-      }).join('');
-    }
+    const icon = (name) => `<svg class="vx-ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
+    const chip = (name, text, title) => `<span class="vx-chip" title="${escapeHtml(title)}">${icon(name)}${escapeHtml(text)}</span>`;
+
     function renderViewsDialog(data) {
       const sm = data.summary || {};
       const meta = data.proposal || {};
-      const all = data.visits || [];
-      const human = all.filter(v => v.engaged && !v.is_bot);
-      const eachVisit = all.length ? `<details class="vx-details"><summary>Ver cada visita</summary>${renderVisits(all)}</details>` : '';
       if (!sm.visits) {
         return `<div class="vx-empty"><div class="vx-empty-title">Todavía no la ha abierto</div>
-            ${meta.sent_at ? `<div class="v-muted">Enviada ${escapeHtml(fmtWhen(meta.sent_at))} · hace ${plural(daysSince(meta.sent_at), 'día', 'días')}</div>` : ''}</div>
-          ${eachVisit}${INTERNO_NOTE}`;
+          ${meta.sent_at ? `<div class="v-muted">Enviada hace ${plural(daysSince(meta.sent_at), 'día', 'días')}</div>` : ''}</div>`;
       }
-      const tile = (label, value) => `<div class="vx-tile"><div class="vx-value">${escapeHtml(value)}</div><div class="vx-label">${label}</div></div>`;
-      const tiles = [
-        tile(sm.visits === 1 ? 'vez abierta' : 'veces abierta', String(sm.visits)),
-        tile('tiempo en total', fmtSecs(sm.seconds)),
-        tile('la última vez', fmtWhen(sm.last_at)),
-        tile('de la página leída', `${sm.scroll} %`)
+      const c = sm.clicks || {};
+      const shows = (data.layout || []).filter(z => String(z.section).startsWith('show:'));
+      // Clics de antes del 19-oct: no dicen de qué show eran, van arriba con el resto.
+      const loose = (kind) => (c[kind] || 0) - shows.reduce((t, z) => t + ((z.clicks || {})[kind] || 0), 0);
+      const top = [
+        chip('eye', plural(sm.visits, 'vez', 'veces'), 'Veces que la ha abierto'),
+        chip('clock', fmtSecs(sm.seconds), 'Tiempo en total'),
+        `<span class="vx-chip vx-chip--plain" title="Última vez">${escapeHtml(fmtWhen(sm.last_at))}</span>`,
+        c.pdf ? chip('pdf', `PDF${c.pdf > 1 ? ` ×${c.pdf}` : ''}`, 'Ha descargado el PDF') : '',
+        loose('fotos') > 0 ? chip('fotos', String(loose('fotos')), 'Fotos que ha pasado (sin saber de qué show)') : '',
+        loose('video') > 0 ? chip('video', String(loose('video')), 'Vídeos que ha abierto (sin saber de qué show)') : ''
       ].join('');
 
-      // Dónde se para más: zonas en el orden de la página, la más mirada resaltada.
-      const layout = data.layout || [];
-      const maxSecs = Math.max(0, ...layout.map(z => z.seconds));
-      const zones = layout.map(z => sm.timed
-        ? { label: sectionLabel(z), value: z.seconds, text: z.visits || z.seconds ? fmtSecs(z.seconds) : 'no lo vio', muted: !z.visits && !z.seconds, top: z.seconds > 0 && z.seconds === maxSecs }
-        : { label: sectionLabel(z), value: z.visits ? 1 : 0, text: z.visits ? 'visto' : 'no lo vio', muted: !z.visits });
-      const zonesNote = sm.timed ? '' : '<div class="vx-note">Sin tiempo por zona: son visitas de antes del 16 oct.</div>';
-
-      // Dónde pincha
-      const counts = new Map();
-      human.forEach(v => v.clicks.forEach(c => {
-        const base = CLICK_LABEL[c.kind] || 'Otros botones';
-        const label = c.name && (c.kind === 'fotos' || c.kind === 'video') ? `${base} · ${c.name}` : base;
-        counts.set(label, (counts.get(label) || 0) + 1);
-      }));
-      const clicks = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([label, n]) => ({ label, value: n, text: `${n}` }));
-      const clicksHtml = clicks.length ? hBars(clicks) : '<div class="vx-note">No ha pulsado nada.</div>';
-
-      return `<div class="vx-tiles">${tiles}</div>
-        <section class="vx-block"><h4>Cuándo la ha abierto</h4>${dayColumns(human, meta.sent_at)}</section>
-        <section class="vx-block"><h4>Dónde se para más</h4>${hBars(zones)}${zonesNote}</section>
-        <section class="vx-block"><h4>Dónde pincha</h4>${clicksHtml}</section>
-        ${eachVisit}${INTERNO_NOTE}`;
+      const seen = shows.filter(z => z.visits || z.seconds || Object.keys(z.clicks || {}).length)
+        .sort((a, b) => b.seconds - a.seconds || (b.clicks.fotos || 0) - (a.clicks.fotos || 0));
+      const unseen = shows.filter(z => !seen.includes(z));
+      const max = Math.max(1, ...seen.map(z => z.seconds));
+      const row = (z, i) => {
+        const k = z.clicks || {};
+        const acts = [
+          k.fotos ? chip('fotos', String(k.fotos), `Fotos que ha pasado de ${sectionLabel(z)}`) : '',
+          k.video ? chip('video', String(k.video), `Veces que ha abierto el vídeo de ${sectionLabel(z)}`) : ''
+        ].join('');
+        return `<div class="vx-show${i === 0 && z.seconds > 0 ? ' is-top' : ''}">
+          <div class="vx-show-head"><span class="vx-show-name">${escapeHtml(sectionLabel(z))}</span>${sm.timed ? `<b>${fmtSecs(z.seconds)}</b>` : '<span class="v-muted">visto</span>'}</div>
+          ${sm.timed ? `<div class="vx-track"><i style="width:${z.seconds ? Math.max(3, Math.round(100 * z.seconds / max)) : 0}%"></i></div>` : ''}
+          ${acts ? `<div class="vx-acts">${acts}</div>` : ''}
+        </div>`;
+      };
+      return `<div class="vx-top">${top}</div>
+        <div class="vx-shows">${seen.map(row).join('')}
+          ${unseen.map(z => `<div class="vx-show is-muted"><div class="vx-show-head"><span class="vx-show-name">${escapeHtml(sectionLabel(z))}</span><span>no lo vio</span></div></div>`).join('')}
+        </div>`;
     }
     async function openViewsDialog(id) {
       const dlg = $('views-dialog');
