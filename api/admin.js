@@ -461,7 +461,7 @@ function groupProposalVisits(rows) {
     const key = ev.session_id || `ev-${ev.id}`;
     const s = sessions[key] || (sessions[key] = {
       session_id: key, started_at: ev.created_at, country: ev.country, city: ev.city,
-      device: ev.device, lang: ev.lang, is_bot: !!ev.is_bot, engaged: false, seconds: 0, scroll: 0, sections: [], clicks: [], dwell: {}
+      device: ev.device, lang: ev.lang, is_bot: !!ev.is_bot, engaged: false, seconds: 0, scroll: 0, sections: [], clicks: [], dwell: {}, photos: {}
     });
     const d = ev.detail || {};
     if (ev.event === 'engaged') s.engaged = true;
@@ -471,6 +471,16 @@ function groupProposalVisits(rows) {
       // dwell: segundos por sección desde el envío anterior (propuesta.html, desde el 16-oct-2026).
       if (d.dwell && typeof d.dwell === 'object') {
         Object.entries(d.dwell).forEach(([k, v]) => { s.dwell[k] = (s.dwell[k] || 0) + (Number(v) || 0); });
+      }
+      // photos: segundos en pantalla y llegadas con las flechas por foto (desde el 19-oct-2026).
+      if (Array.isArray(d.photos)) {
+        d.photos.forEach(ph => {
+          if (!ph || !ph.u) return;
+          const k = `${ph.s}\n${ph.u}`;
+          const a = s.photos[k] || (s.photos[k] = { section: ph.s || null, url: String(ph.u), seconds: 0, views: 0 });
+          a.seconds += Number(ph.t) || 0;
+          a.views += Number(ph.n) || 0;
+        });
       }
     }
     if (ev.event === 'section' && d.section && !s.sections.some(x => x.section === d.section)) {
@@ -485,6 +495,7 @@ function groupProposalVisits(rows) {
     });
     v.sections.forEach(x => { x.seconds = Math.round(v.dwell[x.section] || 0); });
     delete v.dwell;
+    v.photos = Object.values(v.photos);
   });
   return visits;
 }
@@ -517,6 +528,15 @@ function summarizeProposalVisits(visits, shows) {
     a.clicks[c.kind] = (a.clicks[c.kind] || 0) + 1;
     bySection.set(c.section, a);
   }));
+  // Fotos que más ha mirado, sumando las visitas de personas.
+  const byPhoto = new Map();
+  human.forEach(v => v.photos.forEach(ph => {
+    const k = `${ph.section}\n${ph.url}`;
+    const a = byPhoto.get(k) || { section: ph.section, name: showName.get(ph.section) || null, url: ph.url, seconds: 0, views: 0 };
+    a.seconds += ph.seconds;
+    a.views += ph.views;
+    byPhoto.set(k, a);
+  }));
   const last = human[0] || null;
   return {
     visits: human.length,
@@ -531,6 +551,7 @@ function summarizeProposalVisits(visits, shows) {
     last_device: last ? last.device : null,
     last_place: last ? ([last.city, last.country].filter(Boolean).join(', ') || null) : null,
     sections: [...bySection.values()].sort((a, b) => b.seconds - a.seconds || b.visits - a.visits),
+    photos: [...byPhoto.values()].sort((a, b) => b.seconds - a.seconds || b.views - a.views),
     // Shows que no llegaron a quedar a la vista (un clic en su vídeo o sus fotos cuenta como visto).
     unseen: human.length ? showList.filter(s => {
       const x = bySection.get(s.section);

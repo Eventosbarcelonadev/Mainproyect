@@ -1040,36 +1040,45 @@
       .topbar h1 img { height: 40px; }
     }
     /* Aperturas de propuesta (diálogo "Aperturas" de la lista de propuestas) */
-    .views-dialog { border: 0; border-radius: 12px; padding: 0; width: min(680px, 92vw); max-height: 82vh; }
-    .views-dialog::backdrop { background: rgba(0,0,0,.45); }
-    .views-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #eee; margin: 0; }
-    .views-dialog-head h3 { margin: 0; font-size: 16px; }
-    #views-dialog-body { padding: 10px 18px 18px; overflow: auto; max-height: calc(82vh - 62px); font-size: 13px; line-height: 1.45; }
     .v-empty { color: #777; padding: 12px 0; }
     .v-muted { color: #888; }
 
-    /* "Ver más": shows que le interesan (una sola serie: el tiempo; el valor en texto) */
-    .views-dialog { width: min(560px, 94vw); }
-    .views-dialog-head h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .vx-ico { width: 15px; height: 15px; flex: 0 0 auto; }
-    .vx-top { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 16px; }
-    .vx-chip { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: 999px; background: #F4F1ED; color: var(--dark); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    /* "Ver más": ficha que se abre al pasar el ratón (en el móvil, hoja abajo). Las
+       barras son de una sola serie (tiempo) y el valor va siempre en texto al lado. */
+    .vx-pop { position: fixed; z-index: 1000; width: min(500px, calc(100vw - 16px)); max-height: min(80vh, 640px); overflow: auto;
+      background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 44px rgba(22, 20, 19, .2);
+      padding: 14px 16px 16px; font-size: 13px; color: var(--ink-2); }
+    .vx-pop[hidden] { display: none; }
+    .vx-pop.is-sheet { left: 8px !important; right: 8px; bottom: 8px; top: auto !important; width: auto; max-height: 75vh; }
+    .vx-head { display: flex; flex-direction: column; gap: 1px; margin-bottom: 10px; }
+    .vx-head b { font-size: 15px; color: var(--dark); }
+    .vx-head span { color: var(--gray); font-size: 12.5px; }
+    .vx-ico { width: 14px; height: 14px; flex: 0 0 auto; }
+    .vx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .vx-chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 999px; background: #F4F1ED; color: var(--dark); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .vx-chip--plain { font-weight: 500; color: var(--ink-2); }
-    .vx-shows { display: grid; gap: 10px; }
-    .vx-show { padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
-    .vx-show.is-top { border-color: #8C7B6B; background: #FBF9F6; }
-    .vx-show.is-muted { color: #A39A92; border-style: dashed; }
-    .vx-show-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; }
-    .vx-show-name { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .vx-show.is-muted .vx-show-name { font-weight: 500; }
-    .vx-show-head b { font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .vx-track { height: 8px; border-radius: 4px; background: #EFEAE4; margin-top: 7px; overflow: hidden; }
-    .vx-track i { display: block; height: 100%; border-radius: 4px; background: #8C7B6B; }
-    .vx-show.is-top .vx-track i { background: #5E5248; }
-    .vx-acts { display: flex; gap: 6px; margin-top: 8px; }
-    .vx-acts .vx-chip { height: 24px; font-size: 12.5px; background: #fff; border: 1px solid var(--border); }
-    .vx-empty { text-align: center; padding: 28px 0 20px; }
-    .vx-empty-title { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .vx-chip--mini { height: 22px; padding: 0 7px; font-size: 12px; background: #fff; border: 1px solid var(--border); }
+    .vx-sec { margin-top: 14px; }
+    .vx-sec h5 { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gray); }
+    /* Anchos fijos para el tiempo y los iconos: así las barras de todos los shows quedan alineadas */
+    .vx-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(60px, 120px) 72px 80px; align-items: center; gap: 8px; padding: 4px 0; }
+    .vx-row b { text-align: right; }
+    .vx-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dark); }
+    .vx-row b { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--dark); font-weight: 600; }
+    .vx-row.is-top .vx-name, .vx-row.is-top b { font-weight: 700; }
+    .vx-row.is-top .vx-track i { background: #5E5248; }
+    .vx-row.is-muted .vx-name, .vx-row.is-muted b { color: #A39A92; font-weight: 500; }
+    .vx-acts { display: flex; gap: 4px; justify-content: flex-end; }
+    .vx-track { position: relative; display: block; height: 8px; border-radius: 4px; background: #EFEAE4; overflow: hidden; }
+    .vx-track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: #8C7B6B; }
+    .vx-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; }
+    .vx-photos figure { margin: 0; }
+    .vx-photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; background: #EFEAE4; }
+    .vx-photos figcaption { margin-top: 3px; text-align: center; font-size: 12px; font-weight: 600; color: var(--dark); font-variant-numeric: tabular-nums; }
+    .vx-scroll { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+    .vx-scroll b { color: var(--dark); font-variant-numeric: tabular-nums; }
+    .vx-note { font-size: 12px; color: var(--gray); margin-top: 4px; }
+    .vx-empty { padding: 6px 0 2px; color: var(--gray); }
 
     /* Lista: botón "Ver más" bajo la apertura */
     .p-act { display: block; border: 0; background: none; padding: 0; margin-top: 4px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ui-edit); cursor: pointer; text-align: left; }
@@ -1415,6 +1424,7 @@
     </div>
   </div>
 
+  <div id="vx-pop" class="vx-pop" role="dialog" aria-label="Actividad del cliente" hidden></div>
   <script>
     // ---------- utils ----------
     const $ = (id) => document.getElementById(id);
@@ -3496,11 +3506,11 @@
     const ESTADO_ES = { borrador: 'Borrador', enviada: 'Enviada', aprobada: 'Aprobada', cancelada: 'Cancelada' };
     const ESTADO_PILL = { borrador: 'p-pill--neutral', enviada: 'p-pill--info', aprobada: 'p-pill--ok', cancelada: 'p-pill--crit' };
 
-    // ---- "Ver más": qué shows le interesan ----
-    // Xavi 2026-10-19: verlo de un vistazo, sin estudiar la pantalla. Arriba cuántas
-    // veces la ha abierto, cuánto rato y cuándo; debajo los shows de la propuesta, del
-    // que más tiempo ha mirado al que menos, con las fotos que ha pasado y los vídeos
-    // que ha abierto de cada uno.
+    // ---- "Ver más": ficha al pasar el ratón ----
+    // Se abre al pasar el ratón por "Ver más" y se cierra al salir (Ramiro 2026-10-19:
+    // "si lo pulso se queda abierto y no me gusta"). En el móvil, sin ratón, se abre al
+    // tocarla y se cierra al tocar fuera. Enseña los shows que más ha leído, las fotos
+    // que más le han gustado, hasta dónde ha bajado y dónde ha pulsado.
     const ICON = {
       eye: '<path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/>',
       clock: '<circle cx="8" cy="8" r="6.2"/><path d="M8 4.6V8l2.3 1.6"/>',
@@ -3508,66 +3518,136 @@
       video: '<circle cx="8" cy="8" r="6.2"/><path d="M6.6 5.6v4.8L10.6 8z" fill="currentColor"/>',
       pdf: '<path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13.2h10"/>'
     };
-    const icon = (name) => `<svg class="vx-ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
-    const chip = (name, text, title) => `<span class="vx-chip" title="${escapeHtml(title)}">${icon(name)}${escapeHtml(text)}</span>`;
+    const icon = (name) => ICON[name] ? `<svg class="vx-ico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>` : '';
+    const chip = (name, text, title, cls = '') => `<span class="vx-chip ${cls}" title="${escapeHtml(title)}">${icon(name)}${escapeHtml(text)}</span>`;
+    const CLICK_LABEL = { pdf: 'PDF', fotos: 'Fotos', video: 'Vídeo', idioma: 'Idioma', email: 'Email', tel: 'Teléfono', whatsapp: 'WhatsApp', link: 'Enlaces', boton: 'Otros' };
+    const isShow = (z) => String(z.section || '').startsWith('show:');
 
-    function renderViewsDialog(data) {
+    function renderActivityCard(data) {
       const sm = data.summary || {};
       const meta = data.proposal || {};
+      const head = `<div class="vx-head"><b>${escapeHtml(meta.client || 'Cliente')}</b>${meta.event ? `<span>${escapeHtml(meta.event)}</span>` : ''}</div>`;
       if (!sm.visits) {
-        return `<div class="vx-empty"><div class="vx-empty-title">Todavía no la ha abierto</div>
-          ${meta.sent_at ? `<div class="v-muted">Enviada hace ${plural(daysSince(meta.sent_at), 'día', 'días')}</div>` : ''}</div>`;
+        return head + `<div class="vx-empty">Todavía no la ha abierto${meta.sent_at ? ` · enviada hace ${plural(daysSince(meta.sent_at), 'día', 'días')}` : ''}</div>`;
       }
-      const c = sm.clicks || {};
-      const shows = (data.layout || []).filter(z => String(z.section).startsWith('show:'));
-      // Clics de antes del 19-oct: no dicen de qué show eran, van arriba con el resto.
-      const loose = (kind) => (c[kind] || 0) - shows.reduce((t, z) => t + ((z.clicks || {})[kind] || 0), 0);
-      const top = [
-        chip('eye', plural(sm.visits, 'vez', 'veces'), 'Veces que la ha abierto'),
-        chip('clock', fmtSecs(sm.seconds), 'Tiempo en total'),
-        `<span class="vx-chip vx-chip--plain" title="Última vez">${escapeHtml(fmtWhen(sm.last_at))}</span>`,
-        c.pdf ? chip('pdf', `PDF${c.pdf > 1 ? ` ×${c.pdf}` : ''}`, 'Ha descargado el PDF') : '',
-        loose('fotos') > 0 ? chip('fotos', String(loose('fotos')), 'Fotos que ha pasado (sin saber de qué show)') : '',
-        loose('video') > 0 ? chip('video', String(loose('video')), 'Vídeos que ha abierto (sin saber de qué show)') : ''
-      ].join('');
+      const layout = data.layout || [];
+      const top = `<div class="vx-chips">
+        ${chip('eye', plural(sm.visits, 'vez', 'veces'), 'Veces que la ha abierto')}
+        ${chip('clock', fmtSecs(sm.seconds), 'Tiempo en total')}
+        ${chip('', fmtWhen(sm.last_at), 'Última vez', 'vx-chip--plain')}
+      </div>`;
 
+      // Shows que más ha leído: del que más tiempo al que menos, con fotos y vídeo de cada uno.
+      const shows = layout.filter(isShow);
       const seen = shows.filter(z => z.visits || z.seconds || Object.keys(z.clicks || {}).length)
-        .sort((a, b) => b.seconds - a.seconds || (b.clicks.fotos || 0) - (a.clicks.fotos || 0));
+        .sort((a, b) => b.seconds - a.seconds || ((b.clicks || {}).fotos || 0) - ((a.clicks || {}).fotos || 0));
       const unseen = shows.filter(z => !seen.includes(z));
       const max = Math.max(1, ...seen.map(z => z.seconds));
-      const row = (z, i) => {
+      const showRow = (z, i) => {
         const k = z.clicks || {};
-        const acts = [
-          k.fotos ? chip('fotos', String(k.fotos), `Fotos que ha pasado de ${sectionLabel(z)}`) : '',
-          k.video ? chip('video', String(k.video), `Veces que ha abierto el vídeo de ${sectionLabel(z)}`) : ''
-        ].join('');
-        return `<div class="vx-show${i === 0 && z.seconds > 0 ? ' is-top' : ''}">
-          <div class="vx-show-head"><span class="vx-show-name">${escapeHtml(sectionLabel(z))}</span>${sm.timed ? `<b>${fmtSecs(z.seconds)}</b>` : '<span class="v-muted">visto</span>'}</div>
-          ${sm.timed ? `<div class="vx-track"><i style="width:${z.seconds ? Math.max(3, Math.round(100 * z.seconds / max)) : 0}%"></i></div>` : ''}
-          ${acts ? `<div class="vx-acts">${acts}</div>` : ''}
+        const acts = (k.fotos ? chip('fotos', String(k.fotos), `Fotos que ha pasado de ${sectionLabel(z)}`, 'vx-chip--mini') : '')
+          + (k.video ? chip('video', String(k.video), `Veces que ha abierto el vídeo de ${sectionLabel(z)}`, 'vx-chip--mini') : '');
+        return `<div class="vx-row${i === 0 && z.seconds > 0 ? ' is-top' : ''}">
+          <span class="vx-name" title="${escapeHtml(sectionLabel(z))}">${escapeHtml(sectionLabel(z))}</span>
+          <span class="vx-track">${sm.timed ? `<i style="width:${z.seconds ? Math.max(3, Math.round(100 * z.seconds / max)) : 0}%"></i>` : ''}</span>
+          <b>${sm.timed ? fmtSecs(z.seconds) : 'visto'}</b><span class="vx-acts">${acts}</span>
         </div>`;
       };
-      return `<div class="vx-top">${top}</div>
-        <div class="vx-shows">${seen.map(row).join('')}
-          ${unseen.map(z => `<div class="vx-show is-muted"><div class="vx-show-head"><span class="vx-show-name">${escapeHtml(sectionLabel(z))}</span><span>no lo vio</span></div></div>`).join('')}
-        </div>`;
+      const showsHtml = shows.length ? `<section class="vx-sec"><h5>Shows que más ha leído</h5>
+        ${seen.map(showRow).join('')}
+        ${unseen.map(z => `<div class="vx-row is-muted"><span class="vx-name">${escapeHtml(sectionLabel(z))}</span><span class="vx-track"></span><b>no lo vio</b><span class="vx-acts"></span></div>`).join('')}
+      </section>` : '';
+
+      // Fotos que más le han gustado (las que más tiempo ha tenido delante).
+      const photos = (sm.photos || []).filter(p => p.seconds > 0 || p.views > 0).slice(0, 6);
+      const photosHtml = photos.length ? `<section class="vx-sec"><h5>Fotos que más le han gustado</h5><div class="vx-photos">
+        ${photos.map(p => `<figure title="${escapeHtml([p.name, fmtSecs(p.seconds), p.views ? `ha vuelto a ella ${p.views}×` : ''].filter(Boolean).join(' · '))}">
+          <img src="${escapeHtml(p.url)}" alt="" loading="lazy" decoding="async"><figcaption>${fmtSecs(p.seconds)}</figcaption></figure>`).join('')}
+      </div></section>` : '';
+
+      // Hasta dónde ha bajado
+      const missed = layout.filter(z => !isShow(z) && !z.visits && !z.seconds).map(sectionLabel);
+      const scrollHtml = `<section class="vx-sec"><h5>Hasta dónde ha bajado</h5>
+        <div class="vx-scroll"><span class="vx-track"><i style="width:${Math.max(2, sm.scroll || 0)}%"></i></span><b>${sm.scroll || 0} %</b></div>
+        ${missed.length ? `<div class="vx-note">No llegó a: ${missed.map(escapeHtml).join(', ')}</div>` : ''}</section>`;
+
+      // Dónde ha pulsado
+      const clicks = Object.entries(sm.clicks || {}).sort((a, b) => b[1] - a[1]);
+      const clicksHtml = `<section class="vx-sec"><h5>Dónde ha pulsado</h5>${clicks.length
+        ? `<div class="vx-chips">${clicks.map(([k, n]) => chip(k, `${CLICK_LABEL[k] || k} ${n}`, `${CLICK_LABEL[k] || k}: ${plural(n, 'clic', 'clics')}`)).join('')}</div>`
+        : '<div class="vx-note">No ha pulsado nada.</div>'}</section>`;
+
+      return head + top + showsHtml + photosHtml + scrollHtml + clicksHtml;
     }
-    async function openViewsDialog(id) {
-      const dlg = $('views-dialog');
-      $('views-dialog-title').textContent = 'Actividad del cliente';
-      $('views-dialog-body').innerHTML = '<div class="v-empty">Cargando…</div>';
-      if (!dlg.open) dlg.showModal();
-      try {
-        const r = await fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(id)}`);
-        const data = await r.json();
-        if (!r.ok || !data.success) throw new Error(data.error || `views ${r.status}`);
-        const m = data.proposal || {};
-        if (m.client) $('views-dialog-title').textContent = m.event ? `${m.client} · ${m.event}` : m.client;
-        $('views-dialog-body').innerHTML = renderViewsDialog(data);
-      } catch (err) {
-        $('views-dialog-body').innerHTML = `<div class="v-empty">Error: ${escapeHtml(err.message)}</div>`;
-      }
+
+    const vxCache = new Map();
+    let vxBtn = null, vxHideT = null, vxShowT = null;
+    const canHover = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
+    function placeActivityCard(btn) {
+      const pop = $('vx-pop');
+      if (!canHover()) { pop.classList.add('is-sheet'); pop.style.left = ''; pop.style.top = ''; return; }
+      pop.classList.remove('is-sheet');
+      const r = btn.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+      let top = r.bottom + 6;
+      if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 6);
+      pop.style.top = `${Math.round(top)}px`;
+      pop.style.left = `${Math.round(Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8))}px`;
     }
+    function openActivityCard(btn) {
+      clearTimeout(vxHideT);
+      const pop = $('vx-pop');
+      if (vxBtn === btn && !pop.hidden) return;
+      vxBtn = btn;
+      const id = btn.dataset.views;
+      pop.innerHTML = vxCache.has(id) ? renderActivityCard(vxCache.get(id)) : '<div class="vx-empty">Cargando…</div>';
+      pop.hidden = false;
+      placeActivityCard(btn);
+      if (vxCache.has(id)) return;
+      fetch(`/api/admin?action=proposal-views&id=${encodeURIComponent(id)}`)
+        .then(r => r.json().then(d => { if (!r.ok || !d.success) throw new Error(d.error || `views ${r.status}`); return d; }))
+        .then(d => {
+          vxCache.set(id, d);
+          if (vxBtn === btn && !pop.hidden) { pop.innerHTML = renderActivityCard(d); placeActivityCard(btn); }
+        })
+        .catch(err => { if (vxBtn === btn) pop.innerHTML = `<div class="vx-empty">Error: ${escapeHtml(err.message)}</div>`; });
+    }
+    function closeActivityCard() {
+      clearTimeout(vxHideT); clearTimeout(vxShowT);
+      vxBtn = null;
+      $('vx-pop').hidden = true;
+    }
+    // Se cierra un momento después de salir, para poder pasar del botón a la ficha;
+    // si el ratón está encima de alguno de los dos, sigue abierta.
+    function closeActivityCardSoon() {
+      clearTimeout(vxShowT); clearTimeout(vxHideT);
+      vxHideT = setTimeout(() => {
+        if (canHover() && ($('vx-pop').matches(':hover') || (vxBtn && vxBtn.matches(':hover')))) return;
+        closeActivityCard();
+      }, 220);
+    }
+    function bindActivityButtons(root) {
+      root.querySelectorAll('.p-act[data-views]').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          if (!canHover()) return;
+          clearTimeout(vxHideT); clearTimeout(vxShowT);
+          vxShowT = setTimeout(() => openActivityCard(btn), 120);
+        });
+        btn.addEventListener('mouseleave', () => { if (canHover()) closeActivityCardSoon(); });
+        // Con el teclado (Tab) también se abre; con el ratón o el dedo ya lo hacen hover y clic.
+        btn.addEventListener('focus', () => { if (btn.matches(':focus-visible')) openActivityCard(btn); });
+        btn.addEventListener('blur', closeActivityCardSoon);
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!canHover() && vxBtn === btn && !$('vx-pop').hidden) closeActivityCard();
+          else openActivityCard(btn);
+        });
+      });
+    }
+    $('vx-pop').addEventListener('mouseenter', () => clearTimeout(vxHideT));
+    $('vx-pop').addEventListener('mouseleave', () => { if (canHover()) closeActivityCardSoon(); });
+    document.addEventListener('click', (e) => { if (!$('vx-pop').hidden && !e.target.closest('#vx-pop, .p-act')) closeActivityCard(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeActivityCard(); });
+    addEventListener('scroll', () => { if (canHover() && !$('vx-pop').hidden) closeActivityCard(); }, { passive: true });
 
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {
@@ -3741,7 +3821,6 @@
                     ? `<button class="p-menu-item" data-gen-pdf="${id}">${p.pdf_url ? 'Regenerar PDF' : 'Generar PDF'}</button>`
                     : `<button class="p-menu-item" data-validate="${id}">Validar</button>`}
                   ${outcomeItems(p)}
-                  ${proposalEstado(p) !== 'borrador' ? `<button class="p-menu-item" data-views="${id}" title="Si el cliente la ha abierto, cuándo, dónde se para y dónde pincha">Ver más</button>` : ''}
                   <button class="p-menu-item p-menu-item--danger" data-del-proposal="${id}" title="Eliminar esta versión">Eliminar</button>
                 </div>
               </details>
@@ -3896,14 +3975,10 @@
           });
         });
 
-        // Aperturas: diálogo con las visitas del cliente (openViewsDialog, más arriba).
-        $('propuestas-table-wrap').querySelectorAll('[data-views]').forEach(b => {
-          b.addEventListener('click', (e) => {
-            e.stopPropagation();
-            b.closest('details')?.removeAttribute('open');
-            openViewsDialog(b.dataset.views);
-          });
-        });
+        // "Ver más": ficha al pasar el ratón (bindActivityButtons, más arriba).
+        closeActivityCard();
+        vxCache.clear();
+        bindActivityButtons($('propuestas-table-wrap'));
 
         // Generar/Regenerar PDF (server-side): Chromium headless renderiza
         // la propuesta, sube el PDF a Supabase + GHL y devuelve la URL.
@@ -4206,9 +4281,5 @@
     // así Xavi ve cuántos shows tiene que revisar apenas entra a /admin.
     refreshPendingReviewBadge();
   </script>
-<dialog id="views-dialog" class="views-dialog">
-  <form method="dialog" class="views-dialog-head"><h3 id="views-dialog-title">Actividad del cliente</h3><button class="btn p-ghost">Cerrar</button></form>
-  <div id="views-dialog-body"></div>
-</dialog>
 </body>
 </html>
