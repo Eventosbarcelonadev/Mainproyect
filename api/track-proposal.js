@@ -13,6 +13,12 @@
 // escribe el custom field GHL "Propuesta abierta" y, la primera vez, deja una nota
 // en el contacto y dispara GHL_WORKFLOW_PROPOSAL_OPENED (opcional) para avisar a Xavi.
 // Nunca devuelve error al cliente: el seguimiento no puede romper la propuesta.
+//
+// Las visitas del equipo no se guardan: si el navegador tiene abierta la sesión del
+// admin (lib/sesion-admin.js), es Xavi o alguien de EB mirando la propuesta, no el
+// cliente. Va además del aviso de propuesta.html (localStorage eb_interno).
+
+import { esEquipo } from '../lib/sesion-admin.js';
 
 const EVENTS = new Set(['open', 'engaged', 'section', 'click', 'leave']);
 const GHL_API = 'https://services.leadconnectorhq.com';
@@ -66,6 +72,7 @@ export default async function handler(req, res) {
   if (!SB_URL || !SB_KEY || !proposalId || proposalId.length > 100 || !EVENTS.has(event)) {
     return res.status(204).end();
   }
+  if (await esEquipo(req)) return res.status(204).end();
 
   const ua = String(req.headers['user-agent'] || '').slice(0, 400);
   const isBot = BOT_RE.test(ua);
