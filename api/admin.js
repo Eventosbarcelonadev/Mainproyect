@@ -4,7 +4,7 @@
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
 // GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
 // GET  /api/admin?action=proposal-views&id=<proposalId>   -> visitas del cliente a una propuesta
-// GET  /api/admin?action=proposal-dashboard               -> pestaña Indicadores (propuestas y visitas)
+// GET  /api/admin?action=proposal-dashboard               -> pestaña Indicadores (enviadas, visitas y resultado en GHL)
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
 // POST /api/admin?action=set-show-artistas     body: {showId, artistas: [{artistaId, posicion?}, ...]}  (N:M; máx 3; sincroniza a GHL)
@@ -501,10 +501,13 @@ async function proposalViews(req, res, env) {
 }
 
 // GET /api/admin?action=proposal-dashboard
-// Datos de la pestaña Indicadores de /admin: cada propuesta con registro (desde el
-// 12-oct-2026) y las visitas de personas, una a una, para que la página filtre por
-// fechas y empresa sin volver a pedir nada. Las propuestas sin shows (las que crea
-// GHL "Por preparar") no se envían al cliente y no cuentan.
+// Datos de la pestaña Indicadores de /admin: cada propuesta ENVIADA desde que hay
+// registro de lectura (aprobada desde el 12-oct-2026) con las visitas de personas una a
+// una y el resultado de su oportunidad en GHL (ganada, perdida, en curso), para
+// comparar qué hacen los clientes que compran y los que no (Ramiro 2026-10-19:
+// "prefiero aprender a cómo mejorar"). La página filtra por fechas y empresa sin
+// volver a pedir nada. Las propuestas en revisión no salen: el cliente no las recibe
+// hasta que se validan.
 const GENERIC_MAIL = /^(gmail|googlemail|hotmail|outlook|live|msn|yahoo|ymail|icloud|me|mac|aol|proton|protonmail|gmx|telefonica|movistar)\./i;
 function proposalCompany(p) {
   const company = (p.client_company || '').trim();
@@ -514,14 +517,57 @@ function proposalCompany(p) {
   return (p.client_name || '').trim() || 'Sin empresa';
 }
 
+// Oportunidades del pipeline Clientes y nombres de sus etapas. Se leen todas de una
+// vez (páginas de 100) en vez de una por propuesta. Si GHL falla, los indicadores
+// salen igual, sin resultado.
+async function fetchClientOpportunities(env) {
+  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
+  const stages = new Map();
+  const pl = await ghlFetch('GET', `/opportunities/pipelines?locationId=${encodeURIComponent(env.GHL_LOC)}`, env);
+  if (pl.skipped) return { ok: false, error: 'GHL sin configurar', opportunities: [], stages };
+  if (pl.ok) {
+    (parse(pl).pipelines || []).forEach(p => (p.stages || []).forEach(s => stages.set(s.id, s.name)));
+  }
+  const opportunities = [];
+  for (let page = 1; page <= 20; page++) {
+    const q = `location_id=${encodeURIComponent(env.GHL_LOC)}` +
+      (env.GHL_PIPELINE_CLIENTES ? `&pipeline_id=${encodeURIComponent(env.GHL_PIPELINE_CLIENTES)}` : '') +
+      `&limit=100&page=${page}`;
+    const g = await ghlFetch('GET', `/opportunities/search?${q}`, env);
+    if (!g.ok) return { ok: false, error: `GHL ${g.status}: ${String(g.body).slice(0, 160)}`, opportunities, stages };
+    const list = parse(g).opportunities || [];
+    opportunities.push(...list);
+    if (list.length < 100) break;
+  }
+  return { ok: true, opportunities, stages };
+}
+
+// Resultado de una oportunidad: el estado de GHL y, si sigue "open", la etapa
+// (el pipeline acordado tiene etapas Won y Lost además del estado).
+function opportunityOutcome(opp, stages) {
+  const stage = stages.get(opp.pipelineStageId) || null;
+  let result = opp.status === 'won' ? 'won' : (opp.status === 'lost' || opp.status === 'abandoned') ? 'lost' : 'open';
+  if (result === 'open' && stage && /\bwon\b|ganad|cerrad[ao] ganad|contratad/i.test(stage)) result = 'won';
+  if (result === 'open' && stage && /\blost\b|perdid|descartad/i.test(stage)) result = 'lost';
+  return {
+    result,
+    stage,
+    value: Number(opp.monetaryValue) || null,
+    changed_at: opp.lastStatusChangeAt || opp.lastStageChangeAt || opp.updatedAt || null
+  };
+}
+
 async function proposalDashboard(req, res, env) {
   const headers = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
-  const sel = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,shows,created_at,approved_at,first_opened_at,last_opened_at,open_count';
-  const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/proposals?select=${sel}` +
-    `&or=(created_at.gte.${PROPOSAL_TRACK_SINCE},approved_at.gte.${PROPOSAL_TRACK_SINCE},open_count.gt.0)&order=created_at.desc&limit=2000`,
-    { headers }
-  );
+  const sel = 'id,status,client_name,client_company,client_email,client_phone,event_name,event_type,shows,created_at,approved_at,first_opened_at,last_opened_at,open_count,ghl_contact_id,ghl_opportunity_id';
+  const [r, ghl] = await Promise.all([
+    fetch(
+      `${env.SUPABASE_URL}/rest/v1/proposals?select=${sel}&status=eq.approved` +
+      `&approved_at=gte.${PROPOSAL_TRACK_SINCE}&order=approved_at.desc&limit=2000`,
+      { headers }
+    ),
+    fetchClientOpportunities(env).catch(err => ({ ok: false, error: err.message, opportunities: [], stages: new Map() }))
+  ]);
   if (!r.ok) return res.status(r.status).json({ error: await r.text() });
   const props = (await r.json()).filter(p => proposalShowList(p.shows).length > 0);
 
@@ -531,10 +577,26 @@ async function proposalDashboard(req, res, env) {
     byProposal.get(ev.proposal_id).push(ev);
   });
 
+  // Propuesta → oportunidad: por id; si no lo tiene (las creadas a mano), por el
+  // contacto o el email, quedándose con la más reciente de ese cliente.
+  const oppById = new Map(), oppsByContact = new Map(), oppsByEmail = new Map();
+  ghl.opportunities.forEach(o => {
+    oppById.set(o.id, o);
+    const cid = o.contactId || (o.contact && o.contact.id);
+    const email = ((o.contact && o.contact.email) || '').toLowerCase().trim();
+    if (cid) (oppsByContact.get(cid) || oppsByContact.set(cid, []).get(cid)).push(o);
+    if (email) (oppsByEmail.get(email) || oppsByEmail.set(email, []).get(email)).push(o);
+  });
+  const latest = (list) => (list || []).slice().sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0] || null;
+  const oppFor = (p) => (p.ghl_opportunity_id && oppById.get(p.ghl_opportunity_id))
+    || latest(oppsByContact.get(p.ghl_contact_id))
+    || latest(oppsByEmail.get((p.client_email || '').toLowerCase().trim()));
+
   // Misma clave que agrupa la lista de /admin: si el cliente abre otra versión, la ha abierto.
   const clientKey = (p) => (p.client_email || '').toLowerCase().trim()
     || `${(p.client_name || '').toLowerCase().trim()}|${(p.client_phone || '').trim()}` || p.id;
 
+  let matched = 0;
   const proposals = props.map(p => {
     const visits = groupProposalVisits(byProposal.get(p.id) || [])
       .filter(v => v.engaged && !v.is_bot)
@@ -543,22 +605,27 @@ async function proposalDashboard(req, res, env) {
         sections: v.sections.map(x => ({ section: x.section, seconds: x.seconds })),
         clicks: v.clicks.map(c => ({ kind: c.kind, section: c.section }))
       }));
+    const opp = oppFor(p);
+    if (opp) matched += 1;
     return {
       id: p.id,
       client: (p.client_name || '').trim() || (p.client_email || '').trim() || 'Sin nombre',
       company: proposalCompany(p),
       client_key: clientKey(p),
       event: (p.event_name || '').trim() || (p.event_type || '').trim() || null,
-      status: p.status,
-      created_at: p.created_at,
-      approved_at: p.approved_at,
+      sent_at: p.approved_at || p.created_at,
       open_count: Number(p.open_count) || 0,
-      last_opened_at: p.last_opened_at,
       shows: proposalShowList(p.shows).map(s => ({ section: s.section, name: s.name })),
+      outcome: opp ? opportunityOutcome(opp, ghl.stages) : null,
       visits
     };
   });
-  return res.status(200).json({ success: true, since: PROPOSAL_TRACK_SINCE, proposals });
+  return res.status(200).json({
+    success: true,
+    since: PROPOSAL_TRACK_SINCE,
+    ghl: { ok: ghl.ok, error: ghl.error || null, opportunities: ghl.opportunities.length, matched, proposals: proposals.length },
+    proposals
+  });
 }
 
 // Portada por defecto de cada categoría: la misma defaultImage de
