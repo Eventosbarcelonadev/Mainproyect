@@ -1081,21 +1081,18 @@
     .ind-value { font-size: 24px; font-weight: 600; color: var(--dark); font-variant-numeric: tabular-nums; line-height: 1.3; }
     .ind-tile.is-warn .ind-value { color: var(--warn-fg); }
     .ind-sub { font-size: 11.5px; color: var(--gray); line-height: 1.45; margin-top: 4px; }
-    .ind-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; margin-bottom: 16px; }
     .ind-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; min-width: 0; }
-    .ind-wide { grid-column: 1 / -1; }
+    .ind-card + .ind-card { margin-top: 16px; }
+    .ind-kpis + .ind-card { margin-top: 0; }
+    .ind-banner { background: var(--warn-bg); color: var(--warn-fg); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+    .ind-tile.is-ok .ind-value { color: var(--ok-fg); }
+    .ind-compare { min-width: 520px; }
+    .ind-compare td:first-child { color: var(--dark); }
+    .ind-compare tbody tr { cursor: default; }
+    .ind-compare tbody tr:hover { background: transparent; }
+    .ind-compare small { font-size: 11.5px; }
+    .p-pill--crit { background: var(--crit-bg); color: var(--crit-fg); }
     .ind-card h4 { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); }
-    .ind-chart { display: block; width: 100%; height: auto; max-height: 220px; }
-    .ind-axis { stroke: #E3DED8; stroke-width: 1; }
-    .ind-mark { fill: #8C7B6B; }
-    .ind-col:hover .ind-mark { fill: #6E6053; }
-    .ind-tick { font-size: 10px; fill: var(--gray); text-anchor: middle; }
-    .ind-val { font-size: 10px; fill: var(--ink-2); text-anchor: middle; font-variant-numeric: tabular-nums; }
-    .ind-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 3px; padding: 5px 0; font-size: 13px; }
-    .ind-bar .v-bar { grid-column: 1 / -1; }
-    .ind-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .ind-name small { color: var(--gray); font-size: 11.5px; }
-    .ind-bar b { font-variant-numeric: tabular-nums; font-weight: 600; }
     .ind-table-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
     .ind-table-head h4 { margin: 0; }
     .ind-chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -1106,15 +1103,22 @@
     .ind-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; }
     .ind-table th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--border); white-space: nowrap; }
     .ind-table td { padding: 8px 10px 8px 0; border-bottom: 1px solid #F0ECE7; vertical-align: top; }
+    .ind-table th.v-num, .v-table th.v-num { text-align: right; }
     .ind-table tbody tr { cursor: pointer; }
     .ind-table tbody tr:hover, .ind-table tbody tr:focus { background: #FBFAF8; outline: none; }
     .ind-client { font-weight: 600; color: var(--dark); }
-    @media (max-width: 960px) { .ind-grid { grid-template-columns: 1fr; } }
     /* Móvil: estado apilado (dos pastillas en línea dejaban sin sitio al nombre del cliente) */
     @media (max-width: 760px) {
       .p-status { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
       .p-act { text-align: right; }
       .ind-filters input[type="date"] { width: 140px; }
+      .ind-card + .ind-card { margin-top: 12px; }
+      /* Comparación a 390 px: sin ancho mínimo, para que los números no queden fuera de la pantalla */
+      .ind-compare { min-width: 0; font-size: 12px; }
+      .ind-compare small { display: none; }
+      .ind-compare th, .ind-compare td { padding-right: 6px; }
+      .ind-compare .p-pill { height: 20px; padding: 0 6px; font-size: 10.5px; }
+      .ind-compare .p-pill::before { display: none; }
       .ind-value { font-size: 20px; }
     }
 
@@ -3632,19 +3636,21 @@
     }
 
     // ---------- INDICADORES ----------
-    // Cómo leen los clientes las propuestas, filtrable por fechas y empresa (Xavi
-    // 2026-10-19). api/admin.js proposal-dashboard manda cada propuesta con sus visitas
-    // y todo se calcula aquí, así que cambiar un filtro no vuelve a pedir nada.
-    // Una propuesta entra en el periodo si se aprobó (o se creó, si está en revisión)
-    // en esas fechas o si el cliente la visitó en ellas. Visitas, tiempos y clics
-    // cuentan solo lo que pasó dentro del periodo.
-    state.ind = { data: null, from: '', to: '', company: '', open: 'all', range: '30' };
+    // Qué hacen distinto los clientes que compran (Ramiro 2026-10-19: "prefiero aprender
+    // a cómo mejorar"). Solo propuestas ENVIADAS (validadas): las de revisión no las
+    // recibe el cliente. api/admin.js proposal-dashboard manda cada una con sus visitas
+    // y el resultado de su oportunidad en GHL; aquí se filtra por fecha de envío y
+    // empresa y se compara ganadas, perdidas y en curso, sin volver a pedir nada.
+    state.ind = { data: null, from: '', to: '', company: '', filter: 'all', range: '30' };
     const dayKey = (v) => { const d = new Date(v); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
     const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
     const fmtDay = (key) => new Date(key + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     const median = (xs) => { if (!xs.length) return null; const s = [...xs].sort((a, b) => a - b), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
     const pctOf = (n, d) => (d ? Math.round((100 * n) / d) : null);
-    const pctTxt = (n) => (n == null ? '—' : `${n}\u00a0%`);
+    const pctTxt = (n) => (n == null ? '—' : `${n} %`);
+    const fmtEuros = (n) => (n == null ? '—' : `${Math.round(n).toLocaleString('es-ES')} €`);
+    const RESULT_ES = { won: 'Ganada', lost: 'Perdida', open: 'En curso', none: 'Sin GHL' };
+    const RESULT_PILL = { won: 'p-pill--ok', lost: 'p-pill--crit', open: 'p-pill--neutral', none: 'p-pill--neutral' };
 
     function setIndRange(range) {
       const today = dayKey(new Date());
@@ -3679,156 +3685,175 @@
       }
     }
 
+    // Una fila por propuesta enviada con lo que se compara: si la abrió, cuánto la leyó,
+    // hasta dónde llegó, clics y el resultado en GHL.
+    function indRow(p, openedClients) {
+      const v = p.visits;
+      const ownOpen = p.open_count > 0 || v.length > 0;
+      const seen = new Set(v.flatMap(x => x.sections.map(s => s.section)));
+      const bySection = {};
+      v.forEach(x => x.sections.forEach(s => { bySection[s.section] = (bySection[s.section] || 0) + s.seconds; }));
+      const showsSeen = p.shows.filter(s => seen.has(s.section)).length;
+      const topShow = p.shows.map(s => ({ ...s, seconds: bySection[s.section] || 0 })).sort((a, b) => b.seconds - a.seconds)[0];
+      const end = v.some(x => x.scroll >= 90) || seen.has('conditions');
+      const reach = !ownOpen ? null
+        : end ? 'Hasta el final'
+        : p.shows.length && showsSeen === p.shows.length ? 'Todos los shows'
+        : showsSeen ? `${showsSeen} de ${p.shows.length} shows`
+        : seen.has('concept') ? 'Concepto' : 'Portada';
+      return {
+        p, v, bySection, reach, showsSeen,
+        result: p.outcome ? p.outcome.result : 'none',
+        opened: ownOpen || openedClients.has(p.client_key),
+        otherVersion: !ownOpen && openedClients.has(p.client_key),
+        timed: v.some(x => x.sections.some(s => s.seconds > 0)),
+        seconds: v.reduce((t, x) => t + x.seconds, 0),
+        concept: seen.has('concept'),
+        allShows: p.shows.length > 0 && showsSeen === p.shows.length,
+        conditions: seen.has('conditions'),
+        end,
+        pdf: v.some(x => x.clicks.some(c => c.kind === 'pdf')),
+        video: v.some(x => x.clicks.some(c => c.kind === 'video')),
+        mobile: v.filter(x => x.device === 'mobile' || x.device === 'tablet').length,
+        topShow: topShow && topShow.seconds > 0 ? topShow : null
+      };
+    }
+
     function renderIndicadores() {
       const { data, from, to, company } = state.ind;
       if (!data) return;
       const inRange = (iso) => { if (!iso) return false; const k = dayKey(iso); return k >= from && k <= to; };
       const openedClients = new Set(data.proposals.filter(p => p.open_count > 0 || p.visits.length).map(p => p.client_key));
-
       const rows = data.proposals
-        .filter(p => !company || p.company === company)
-        .map(p => {
-          const date = p.status === 'approved' ? (p.approved_at || p.created_at) : p.created_at;
-          const visits = p.visits.filter(v => inRange(v.at));
-          const ownOpen = p.open_count > 0 || p.visits.length > 0;
-          const bySection = {};
-          visits.forEach(v => v.sections.forEach(x => { bySection[x.section] = (bySection[x.section] || 0) + x.seconds; }));
-          const topShow = p.shows.map(s => ({ ...s, seconds: bySection[s.section] || 0 })).sort((a, b) => b.seconds - a.seconds)[0];
-          const lastVisit = p.visits.reduce((m, v) => (!m || v.at > m ? v.at : m), null);
-          return {
-            p, date, visits, bySection, lastVisit,
-            opened: ownOpen || openedClients.has(p.client_key),
-            otherVersion: !ownOpen && openedClients.has(p.client_key),
-            timed: visits.some(v => v.sections.some(x => x.seconds > 0)),
-            seconds: visits.reduce((t, v) => t + v.seconds, 0),
-            end: visits.some(v => v.scroll >= 90),
-            pdf: visits.some(v => v.clicks.some(c => c.kind === 'pdf')),
-            video: visits.some(v => v.clicks.some(c => c.kind === 'video')),
-            topShow: topShow && topShow.seconds > 0 ? topShow : null
-          };
-        })
-        .filter(x => inRange(x.date) || x.visits.length);
+        .filter(p => (!company || p.company === company) && inRange(p.sent_at))
+        .map(p => indRow(p, openedClients));
 
+      const ghl = data.ghl || {};
+      const ghlNote = !ghl.ok
+        ? `<div class="ind-banner">No se ha podido leer el resultado en GHL${ghl.error ? ` (${escapeHtml(ghl.error)})` : ''}. Los indicadores salen sin ganadas ni perdidas.</div>` : '';
       if (!rows.length) {
-        $('ind-body').innerHTML = '<div class="empty">No hay propuestas en este periodo.</div>';
+        $('ind-body').innerHTML = ghlNote + '<div class="empty">No hay propuestas enviadas en este periodo.</div>';
         return;
       }
 
-      // KPIs. La tasa de apertura solo mira las aprobadas DENTRO del periodo (y desde el
-      // 12-oct): las de antes que entran por una visita reciente están abiertas por fuerza.
-      const approved = rows.filter(x => x.p.status === 'approved' && inRange(x.date) && dayKey(x.date) >= TRACK_SINCE);
-      const openedApproved = approved.filter(x => x.opened);
-      const read = rows.filter(x => x.visits.length);
-      const allVisits = read.flatMap(x => x.visits);
+      const groups = { won: [], lost: [], open: [], none: [] };
+      rows.forEach(x => groups[x.result].push(x));
+      const opened = rows.filter(x => x.opened);
       const tile = (label, value, sub, cls = '') => `<div class="ind-tile ${cls}"><div class="ind-label">${label}</div><div class="ind-value">${value}</div>${sub ? `<div class="ind-sub">${sub}</div>` : ''}</div>`;
+      const decided = groups.won.length + groups.lost.length;
       const kpis = [
-        tile('Abiertas', approved.length ? `${openedApproved.length} de ${approved.length}` : '—', `aprobadas en el periodo · ${pctTxt(pctOf(openedApproved.length, approved.length))}`),
-        tile('Sin abrir', String(approved.length - openedApproved.length), 'aprobadas en el periodo que el cliente no ha abierto', approved.length - openedApproved.length ? 'is-warn' : ''),
-        tile('Visitas', String(allVisits.length), `a ${plural(read.length, 'propuesta', 'propuestas')}`),
-        tile('Tiempo de lectura', read.length ? fmtSecs(median(read.map(x => x.seconds))) : '—', 'mediana por propuesta'),
-        tile('Llegan al final', pctTxt(pctOf(read.filter(x => x.end).length, read.length)), 'de las que se abren'),
-        tile('Descargan el PDF', pctTxt(pctOf(read.filter(x => x.pdf).length, read.length)), `abren un vídeo: ${pctTxt(pctOf(read.filter(x => x.video).length, read.length))}`),
-        tile('Leen en el móvil', pctTxt(pctOf(allVisits.filter(v => v.device === 'mobile' || v.device === 'tablet').length, allVisits.length)), 'de las visitas')
+        tile('Enviadas', String(rows.length), 'validadas en el periodo'),
+        tile('Abiertas', String(opened.length), pctTxt(pctOf(opened.length, rows.length)) + ' de las enviadas'),
+        tile('Sin abrir', String(rows.length - opened.length), 'el cliente no la ha abierto', rows.length - opened.length ? 'is-warn' : ''),
+        tile('Ganadas', String(groups.won.length), decided ? `${pctTxt(pctOf(groups.won.length, decided))} de las decididas` : 'ninguna decidida aún', 'is-ok'),
+        tile('Perdidas', String(groups.lost.length), 'perdidas o abandonadas en GHL'),
+        tile('En curso', String(groups.open.length), 'sin ganar ni perder todavía'),
+        tile('Tiempo de lectura', opened.length ? fmtSecs(median(opened.filter(x => x.v.length).map(x => x.seconds)) || 0) : '—', 'mediana de las abiertas')
       ].join('');
 
-      // Visitas por día (por semana si el periodo pasa de 92 días). Una sola serie.
-      const nDays = Math.round((new Date(to + 'T12:00:00') - new Date(from + 'T12:00:00')) / 864e5) + 1;
-      const weekly = nDays > 92;
-      const buckets = [];
-      for (let k = from; k <= to; k = addDays(k, weekly ? 7 : 1)) buckets.push({ key: k, n: 0 });
-      allVisits.forEach(v => {
-        const k = dayKey(v.at);
-        const i = weekly ? Math.floor((new Date(k + 'T12:00:00') - new Date(from + 'T12:00:00')) / (7 * 864e5)) : buckets.findIndex(b => b.key === k);
-        if (buckets[i]) buckets[i].n += 1;
-      });
-      const maxN = Math.max(1, ...buckets.map(b => b.n));
-      // Ancho real del contenedor: el texto del eje sale a su tamaño en móvil y en escritorio.
-      const W = Math.max(280, ($('ind-body').clientWidth || 900) - 34), H = 170, padB = 22, padT = 16;
-      const bw = W / buckets.length;
-      const barW = Math.min(40, Math.max(1, bw - Math.min(4, bw * 0.3)));   // barras finas aunque haya pocos días
-      const ticks = Math.max(1, Math.ceil(buckets.length / Math.max(2, Math.floor(W / 70))));
-      const chart = `<svg class="ind-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Visitas por ${weekly ? 'semana' : 'día'}">
-        <line x1="0" x2="${W}" y1="${H - padB}" y2="${H - padB}" class="ind-axis"/>
-        ${buckets.map((b, i) => {
-          const h = Math.round((H - padB - padT) * b.n / maxN);
-          const label = weekly ? `semana del ${fmtDay(b.key)}` : fmtDay(b.key);
-          return `<g class="ind-col"><rect x="${i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent"><title>${label}: ${plural(b.n, 'visita', 'visitas')}</title></rect>
-            ${b.n ? `<rect x="${i * bw + (bw - barW) / 2}" y="${H - padB - h}" width="${barW}" height="${h}" rx="${barW > 8 ? 3 : 0}" class="ind-mark"><title>${label}: ${plural(b.n, 'visita', 'visitas')}</title></rect>` : ''}
-            ${b.n && bw >= 18 ? `<text x="${i * bw + bw / 2}" y="${H - padB - h - 4}" class="ind-val">${b.n}</text>` : ''}
-            ${i % ticks === 0 ? `<text x="${i * bw + bw / 2}" y="${H - 5}" class="ind-tick">${fmtDay(b.key)}</text>` : ''}</g>`;
-        }).join('')}
-      </svg>`;
+      // Comparación: qué hacen los clientes de cada resultado. Las tasas de lectura van
+      // sobre las propuestas abiertas de cada grupo (sin abrir no hay lectura).
+      const cols = ['won', 'lost', 'open'].concat(groups.none.length ? ['none'] : []);
+      const stat = (key, list) => {
+        const o = list.filter(x => x.opened && x.v.length);
+        const visits = o.flatMap(x => x.v);
+        switch (key) {
+          case 'n': return String(list.length);
+          case 'opened': return pctTxt(pctOf(list.filter(x => x.opened).length, list.length));
+          case 'visits': return o.length ? String(median(o.map(x => x.v.length))) : '—';
+          case 'seconds': return o.length ? fmtSecs(median(o.map(x => x.seconds))) : '—';
+          case 'concept': return pctTxt(pctOf(o.filter(x => x.concept).length, o.length));
+          case 'allShows': return pctTxt(pctOf(o.filter(x => x.allShows).length, o.length));
+          case 'end': return pctTxt(pctOf(o.filter(x => x.end).length, o.length));
+          case 'pdf': return pctTxt(pctOf(o.filter(x => x.pdf).length, o.length));
+          case 'video': return pctTxt(pctOf(o.filter(x => x.video).length, o.length));
+          case 'mobile': return pctTxt(pctOf(o.reduce((t, x) => t + x.mobile, 0), visits.length));
+          case 'shows': return list.length ? String(median(list.map(x => x.p.shows.length))) : '—';
+          case 'value': { const vals = list.map(x => x.p.outcome && x.p.outcome.value).filter(n => n > 0); return vals.length ? fmtEuros(median(vals)) : '—'; }
+        }
+        return '—';
+      };
+      const METRICS = [
+        ['n', 'Propuestas'],
+        ['opened', 'La abren'],
+        ['visits', 'Visitas por propuesta', 'mediana, de las abiertas'],
+        ['seconds', 'Tiempo de lectura', 'mediana, de las abiertas'],
+        ['concept', 'Ven el concepto'],
+        ['allShows', 'Ven todos los shows'],
+        ['end', 'Llegan al final (condiciones)'],
+        ['pdf', 'Descargan el PDF'],
+        ['video', 'Abren un vídeo'],
+        ['mobile', 'Visitas desde el móvil'],
+        ['shows', 'Shows en la propuesta', 'mediana'],
+        ['value', 'Importe en GHL', 'mediana']
+      ];
+      const small = cols.some(c => groups[c].length > 0 && groups[c].length < 5);
+      const compare = `<div class="ind-table-wrap"><table class="ind-table ind-compare">
+          <thead><tr><th></th>${cols.map(c => `<th class="v-num"><span class="p-pill ${RESULT_PILL[c]}">${RESULT_ES[c]}</span></th>`).join('')}</tr></thead>
+          <tbody>${METRICS.map(([k, label, hint]) => `<tr><td>${label}${hint ? ` <small class="v-muted">${hint}</small>` : ''}</td>${cols.map(c => `<td class="v-num">${stat(k, groups[c])}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div>
+        ${!decided ? '<div class="ind-sub">Aún no hay propuestas ganadas ni perdidas en este periodo. Para que la comparación sirva, marca en GHL cada oportunidad como ganada o perdida (estado o etapa Won / Lost).</div>'
+          : small ? '<div class="ind-sub">Con menos de 5 propuestas en una columna, léelo como pista, no como conclusión.</div>' : ''}
+        ${groups.none.length ? `<div class="ind-sub">"Sin GHL": enviadas sin oportunidad encontrada en GHL (${groups.none.length}).</div>` : ''}`;
 
-      // Tiempo por show: segundos medios en las propuestas abiertas (con tiempo) que lo llevan.
+      // Tiempo por show según el resultado: en cuántas propuestas de cada grupo está y
+      // cuántos segundos se miró de media (solo propuestas abiertas con tiempo medido).
       const showAgg = new Map();
-      rows.filter(x => x.timed).forEach(x => x.p.shows.forEach(s => {
-        const a = showAgg.get(s.section) || { name: s.name, proposals: 0, seen: 0, seconds: 0 };
-        a.proposals += 1;
-        a.seconds += x.bySection[s.section] || 0;
-        if (x.bySection[s.section] > 0) a.seen += 1;
+      rows.forEach(x => x.p.shows.forEach(s => {
+        const a = showAgg.get(s.section) || { name: s.name, total: 0, by: {} };
+        const g = a.by[x.result] || (a.by[x.result] = { n: 0, timed: 0, seconds: 0 });
+        a.total += 1; g.n += 1;
+        if (x.timed) { g.timed += 1; g.seconds += x.bySection[s.section] || 0; }
         showAgg.set(s.section, a);
       }));
-      const shows = [...showAgg.values()].map(a => ({ ...a, avg: Math.round(a.seconds / a.proposals) })).sort((a, b) => b.avg - a.avg).slice(0, 10);
-      const maxShow = Math.max(1, ...shows.map(s => s.avg));
-      const showsHtml = shows.length ? shows.map(s => `<div class="ind-bar" title="${escapeHtml(s.name)}: ${fmtSecs(s.avg)} de media; visto en ${s.seen} de ${s.proposals}">
-          <span class="ind-name">${escapeHtml(s.name)} <small>visto en ${s.seen} de ${s.proposals}</small></span><b>${fmtSecs(s.avg)}</b>${barHtml(s.avg, maxShow)}</div>`).join('')
-        : '<div class="v-muted">Sin visitas con tiempo por show en este periodo (se mide desde el 16 oct).</div>';
+      const shows = [...showAgg.values()].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, 'es')).slice(0, 15);
+      const showCell = (g) => !g ? '<span class="v-muted">—</span>'
+        : `${g.n}${g.timed ? ` · <b>${fmtSecs(Math.round(g.seconds / g.timed))}</b>` : ''}`;
+      const showsHtml = shows.length ? `<div class="ind-table-wrap"><table class="ind-table ind-compare">
+          <thead><tr><th>Show</th>${cols.map(c => `<th class="v-num">${RESULT_ES[c]}</th>`).join('')}</tr></thead>
+          <tbody>${shows.map(s => `<tr><td>${escapeHtml(s.name)}</td>${cols.map(c => `<td class="v-num">${showCell(s.by[c])}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div>
+        <div class="ind-sub">En cuántas propuestas de cada grupo está el show y, en negrita, los segundos que se miró de media (en las abiertas con tiempo medido, desde el 16 oct).</div>` : '';
 
-      // Tiempo por sección
-      const timedRows = rows.filter(x => x.timed);
-      const secRows = ['hero', 'concept', 'summary', 'conditions'].map(key => {
-        const seen = read.filter(x => x.visits.some(v => v.sections.some(y => y.section === key))).length;
-        const secs = timedRows.filter(x => key in x.bySection).map(x => x.bySection[key]);
-        return { key, seen, avg: secs.length ? Math.round(secs.reduce((t, n) => t + n, 0) / secs.length) : null };
-      });
-      const maxSec = Math.max(1, ...secRows.map(s => s.avg || 0));
-      const secsHtml = secRows.map(s => `<div class="ind-bar" title="${SECTION_ES[s.key]}: la ven ${s.seen} de ${read.length}">
-          <span class="ind-name">${SECTION_ES[s.key]} <small>la ven ${s.seen} de ${read.length}</small></span><b>${s.avg != null ? fmtSecs(s.avg) : '—'}</b>${barHtml(s.avg || 0, maxSec)}</div>`).join('');
-
-      // Tabla de propuestas
-      const filterOpen = state.ind.open;
-      const list = rows
-        .filter(x => filterOpen === 'all' || (filterOpen === 'open' ? x.opened : !x.opened))
-        .sort((a, b) => ((b.lastVisit || b.date) > (a.lastVisit || a.date) ? 1 : -1));
-      const nOpen = rows.filter(x => x.opened).length;
-      const chip = (key, label, n) => `<button type="button" class="ind-chip${filterOpen === key ? ' active' : ''}" data-open="${key}">${label} <b>${n}</b></button>`;
+      // Tabla de propuestas enviadas
+      const f = state.ind.filter;
+      const pass = (x) => f === 'all' || (f === 'closed' ? !x.opened : x.result === f);
+      const list = rows.filter(pass).sort((a, b) => (b.p.sent_at > a.p.sent_at ? 1 : -1));
+      const chip = (key, label, n) => `<button type="button" class="ind-chip${f === key ? ' active' : ''}" data-filter="${key}">${label} <b>${n}</b></button>`;
       const tableRows = list.map(x => {
         const p = x.p;
         const openTxt = x.otherVersion ? '<span class="p-pill p-pill--ok">Otra versión</span>'
           : x.opened ? `<span class="p-pill p-pill--ok">Sí · ${p.open_count || p.visits.length}×</span>`
-          : `<span class="p-pill p-pill--warn">No</span>${p.status === 'approved' && p.approved_at ? ` <small class="v-muted">${plural(daysSince(p.approved_at), 'día', 'días')}</small>` : ''}`;
+          : `<span class="p-pill p-pill--warn">No</span> <small class="v-muted">${plural(daysSince(p.sent_at), 'día', 'días')}</small>`;
+        const res = `<span class="p-pill ${RESULT_PILL[x.result]}">${RESULT_ES[x.result]}</span>${p.outcome && p.outcome.stage && x.result === 'open' ? `<div class="v-muted">${escapeHtml(p.outcome.stage)}</div>` : ''}`;
         return `<tr data-views="${escapeHtml(p.id)}" tabindex="0" title="Ver la actividad del cliente">
           <td><div class="ind-client">${escapeHtml(p.client)}</div><div class="v-muted">${escapeHtml(p.company)}</div></td>
           <td>${escapeHtml(p.event || '—')}</td>
-          <td>${p.status === 'approved' ? 'Aprobada' : 'En revisión'}</td>
-          <td class="v-num">${escapeHtml(fmtDay(dayKey(x.date)))}</td>
+          <td class="v-num">${escapeHtml(fmtDay(dayKey(p.sent_at)))}</td>
+          <td>${res}</td>
           <td>${openTxt}</td>
-          <td>${x.lastVisit ? escapeHtml(fmtWhen(x.lastVisit)) : '—'}</td>
-          <td class="v-num">${x.visits.length ? fmtSecs(x.seconds) : '—'}</td>
+          <td class="v-num">${x.v.length ? fmtSecs(x.seconds) : '—'}</td>
+          <td>${x.reach || '—'}</td>
           <td>${x.topShow ? escapeHtml(x.topShow.name) : '—'}</td>
           <td>${x.pdf ? 'Sí' : '—'}</td>
         </tr>`;
       }).join('');
 
-      $('ind-body').innerHTML = `
+      $('ind-body').innerHTML = `${ghlNote}
         <div class="ind-kpis">${kpis}</div>
-        <div class="ind-grid">
-          <div class="ind-card ind-wide"><h4>Visitas por ${weekly ? 'semana' : 'día'}</h4>${chart}</div>
-          <div class="ind-card"><h4>Tiempo por show</h4>${showsHtml}
-            <div class="ind-sub">Segundos a la vista, de media, en las propuestas abiertas que llevan el show. Los primeros de cada propuesta salen con ventaja.</div></div>
-          <div class="ind-card"><h4>Tiempo por sección</h4>${secsHtml}</div>
-        </div>
+        <div class="ind-card"><h4>Qué hacen distinto los que compran</h4>${compare}</div>
+        ${showsHtml ? `<div class="ind-card"><h4>Tiempo por show según el resultado</h4>${showsHtml}</div>` : ''}
         <div class="ind-card">
-          <div class="ind-table-head"><h4>Propuestas</h4>
-            <div class="ind-chips">${chip('all', 'Todas', rows.length)}${chip('open', 'Abiertas', nOpen)}${chip('closed', 'Sin abrir', rows.length - nOpen)}</div></div>
+          <div class="ind-table-head"><h4>Propuestas enviadas</h4>
+            <div class="ind-chips">${chip('all', 'Todas', rows.length)}${chip('won', 'Ganadas', groups.won.length)}${chip('lost', 'Perdidas', groups.lost.length)}${chip('open', 'En curso', groups.open.length)}${chip('closed', 'Sin abrir', rows.length - opened.length)}</div></div>
           <div class="ind-table-wrap"><table class="ind-table">
-            <thead><tr><th>Cliente</th><th>Evento</th><th>Estado</th><th class="v-num">Fecha</th><th>Abierta</th><th>Última visita</th><th class="v-num">Tiempo</th><th>Show más mirado</th><th>PDF</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Evento</th><th class="v-num">Enviada</th><th>Resultado</th><th>Abierta</th><th class="v-num">Tiempo</th><th>Hasta dónde llegó</th><th>Show más mirado</th><th>PDF</th></tr></thead>
             <tbody>${tableRows || '<tr><td colspan="9" class="v-muted">Ninguna con este filtro.</td></tr>'}</tbody>
           </table></div>
         </div>
-        <div class="ind-sub">Datos desde el 12 oct; el tiempo por show, desde el 16 oct. Una propuesta entra en el periodo si se aprobó (o se creó, si está en revisión) en esas fechas o si el cliente la visitó en ellas; visitas, tiempos y clics cuentan solo lo que pasó dentro del periodo. Solo cuentan personas: los filtros del correo y las visitas del equipo quedan fuera.</div>`;
+        <div class="ind-sub">Propuestas enviadas (validadas) desde el 12 oct; las que siguen en revisión no salen porque el cliente no las recibe. El resultado viene de la oportunidad en GHL: estado ganada / perdida o etapa Won / Lost. El tiempo por show se mide desde el 16 oct. Solo cuentan personas: los filtros del correo y las visitas del equipo quedan fuera.</div>`;
 
-      $('ind-body').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { state.ind.open = b.dataset.open; renderIndicadores(); }));
+      $('ind-body').querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => { state.ind.filter = b.dataset.filter; renderIndicadores(); }));
       $('ind-body').querySelectorAll('tr[data-views]').forEach(tr => {
         tr.addEventListener('click', () => openViewsDialog(tr.dataset.views));
         tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') openViewsDialog(tr.dataset.views); });
@@ -3844,7 +3869,6 @@
       renderIndicadores();
     }));
     $('ind-company').addEventListener('change', (e) => { state.ind.company = e.target.value; renderIndicadores(); });
-    addEventListener('resize', debounce(() => { if (state.currentTab === 'indicadores') renderIndicadores(); }, 250));
 
     // ---------- PROPUESTAS ----------
     async function loadPropuestas() {
