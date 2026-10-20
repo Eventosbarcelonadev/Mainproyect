@@ -9,7 +9,9 @@
  * nada de nombres, emails ni URLs con parámetros de los leads, porque la página es pública.
  *
  * Fuentes:
- *   - Search Console, propiedad https://www.eventosbarcelona.com/, dataState "final".
+ *   - Search Console, propiedad https://www.eventosbarcelona.com/, dataState "final". Además de los meses,
+ *     saca las últimas semanas (gscRecent): semana a semana del sitio y las keywords en dos ventanas de
+ *     14 días (antes de los artículos en otros medios y las dos últimas semanas con datos finales).
  *   - GA4, propiedad 324831331, sesiones por canal (sessionDefaultChannelGroup).
  *   - GHL, oportunidades del pipeline Clientes por fecha de creación (createdAt).
  *     El evento generate_lead de GA4 NO se usa: está inflado (oct 2026).
@@ -92,6 +94,61 @@ async function gscMonth(wm, m) {
     top10Impressions: top10, queriesWithImpressions: queries.length, pagesWithImpressions: Object.keys(pageAgg).length,
     groups, keywords: kw, topPages,
   };
+}
+
+// Últimas semanas, con datos finales hasta el último día disponible:
+//   - semana a semana del sitio (lunes a domingo) desde RECENT_FROM
+//   - keywords en dos ventanas de 14 días: antes de los artículos en otros medios y las dos últimas semanas
+const RECENT_FROM = '2026-08-31';
+const BEFORE = ['2026-09-14', '2026-09-27']; // las dos semanas antes de publicar los artículos (28 y 29 de septiembre)
+const addDays = (d, n) => new Date(Date.parse(d) + n * 864e5).toISOString().slice(0, 10);
+
+async function gscKeywordWindow(wm, s, e) {
+  const queries = await gscQuery(wm, s, e, ['query']);
+  const qp = await gscQuery(wm, s, e, ['query', 'page']);
+  const kw = {};
+  for (const k of KEYWORDS) kw[k] = { clicks: 0, impressions: 0, posW: 0, pages: {} };
+  for (const r of queries) {
+    const x = kw[norm(r.keys[0])];
+    if (x) { x.clicks += r.clicks; x.impressions += r.impressions; x.posW += r.position * r.impressions; }
+  }
+  for (const r of qp) {
+    const x = kw[norm(r.keys[0])];
+    if (!x) continue;
+    const p = (r.keys[1].replace(SITE.slice(0, -1), '').split(/[?#]/)[0]) || '/';
+    const a = x.pages[p] ||= { impressions: 0, posW: 0 }; a.impressions += r.impressions; a.posW += r.position * r.impressions;
+  }
+  for (const k of KEYWORDS) {
+    const x = kw[k];
+    x.position = x.impressions ? +(x.posW / x.impressions).toFixed(1) : null; delete x.posW;
+    // Página que más impresiones se lleva para esa búsqueda en la ventana
+    const [page, v] = Object.entries(x.pages).sort((a, b) => b[1].impressions - a[1].impressions)[0] || [];
+    x.page = page ? { url: page, position: +(v.posW / v.impressions).toFixed(1), share: x.impressions ? +(v.impressions / x.impressions).toFixed(2) : 0 } : null;
+    delete x.pages;
+  }
+  return { range: [s, e], keywords: kw };
+}
+
+async function gscRecent(wm) {
+  const days = await gscQuery(wm, addDays(new Date().toISOString().slice(0, 10), -14), new Date().toISOString().slice(0, 10), ['date']);
+  const end = days.map(r => r.keys[0]).sort().pop();
+  const byDate = await gscQuery(wm, RECENT_FROM, end, ['date']);
+  const byDateQuery = await gscQuery(wm, RECENT_FROM, end, ['date', 'query']);
+  const weeks = [];
+  for (let s = RECENT_FROM; addDays(s, 6) <= end; s = addDays(s, 7)) {
+    const e = addDays(s, 6), inW = r => r.keys[0] >= s && r.keys[0] <= e;
+    const d = byDate.filter(inW);
+    const imp = d.reduce((a, r) => a + r.impressions, 0);
+    weeks.push({
+      range: [s, e],
+      clicks: d.reduce((a, r) => a + r.clicks, 0), impressions: imp,
+      position: imp ? +(d.reduce((a, r) => a + r.position * r.impressions, 0) / imp).toFixed(1) : null,
+      // impresiones en las que EB salió en primera página (posición diaria de la búsqueda ≤ 10)
+      top10Impressions: byDateQuery.filter(r => inW(r) && r.position <= 10).reduce((a, r) => a + r.impressions, 0),
+    });
+  }
+  const now = [addDays(end, -13), end];
+  return { end, weeks, before: await gscKeywordWindow(wm, ...BEFORE), now: await gscKeywordWindow(wm, ...now) };
 }
 
 async function ga4Month(ga, m) {
@@ -211,6 +268,9 @@ async function ghlLeads(months) {
     data.ga4PrevYear[m] = await ga4Month(ga, prevYear(m));
     console.log('ok');
   }
+  process.stdout.write('GSC últimas semanas… ');
+  data.gscRecent = await gscRecent(wm);
+  console.log(`ok (hasta ${data.gscRecent.end})`);
   process.stdout.write('GHL… ');
   data.ghl = await ghlLeads(MONTHS);
   console.log('ok');

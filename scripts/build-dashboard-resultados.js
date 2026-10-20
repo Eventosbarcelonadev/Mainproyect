@@ -35,12 +35,12 @@ const delta = (a, b) => (b ? Math.round((a - b) / b * 100) : null);
 
 // Enlaces a las fuentes, con el periodo exacto
 const SITE_ENC = encodeURIComponent(D.site);
-const gscUrl = (m, query) => {
-  const s = `${m}-01`, e = lastDay(m);
+const gscRange = (s, e, query) => {
   let u = `https://search.google.com/search-console/performance/search-analytics?resource_id=${SITE_ENC}&start_date=${ymd(s)}&end_date=${ymd(e)}&metrics=CLICKS%2CIMPRESSIONS%2CCTR%2CPOSITION`;
   if (query) u += `&query=!${encodeURIComponent(query)}&breakdown=query`;
   return u;
 };
+const gscUrl = (m, query) => gscRange(`${m}-01`, lastDay(m), query);
 const ga4Url = m => {
   const s = `${m}-01`, e = lastDay(m);
   const params = encodeURIComponent(`_u..nav=maui&_u.date00=${ymd(s)}&_u.date01=${ymd(e)}`);
@@ -154,6 +154,48 @@ const tablaKw = `<div class="t-scroll"><table class="tbl kw">
 <thead><tr><th>Keyword</th>${M.map(m => `<th class="num">${mesNombre(m)}</th>`).join('')}<th class="num">${mesCorto(M[M.length - 2])} → ${mesCorto(M[M.length - 1])}</th></tr></thead>
 <tbody>${kwRows}</tbody></table></div>`;
 
+// ---------- 3b. Keywords en las últimas semanas ----------
+const R = D.gscRecent;
+const dia = s => Number(s.slice(8, 10));
+const mesC = s => mesCorto(s.slice(0, 7));
+const rangoCorto = ([s, e]) => s.slice(0, 7) === e.slice(0, 7) ? `${dia(s)}–${dia(e)} ${mesC(e)}` : `${dia(s)} ${mesC(s)}–${dia(e)} ${mesC(e)}`;
+const rangoLargo = ([s, e]) => s.slice(0, 7) === e.slice(0, 7) ? `del ${dia(s)} al ${dia(e)} de ${MES[e.slice(5, 7)]}` : `del ${dia(s)} de ${MES[s.slice(5, 7)]} al ${dia(e)} de ${MES[e.slice(5, 7)]}`;
+const kwB = k => R.before.keywords[k], kwN = k => R.now.keywords[k];
+const kwCambio = k => (kwB(k).position !== null && kwN(k).position !== null) ? +(kwB(k).position - kwN(k).position).toFixed(1) : null;
+const mejoran = D.keywords.filter(k => kwCambio(k) > 0).length;
+const empeoran = D.keywords.filter(k => kwCambio(k) < 0).length;
+const top10 = w => D.keywords.filter(k => R[w].keywords[k].position !== null && R[w].keywords[k].position <= 10).length;
+const flecha = d => d === null ? '<span class="nd">–</span>' : `<b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '▲ ' : d < 0 ? '▼ ' : ''}${d === 0 ? 'igual' : n1(Math.abs(d))}</b>`;
+const posCell = (w, k, label) => {
+  const x = R[w].keywords[k];
+  return `<td class="num">${x.position === null ? '<span class="nd">sin datos</span>' : link(gscRange(...R[w].range, label), `<span class="${posClass(x.position)}">${n1(x.position)}</span>`, `Abrir Search Console: "${label}", ${rangoLargo(R[w].range)}`)}<small class="yoy">${n0(x.impressions)} imp · ${n0(x.clicks)} clics</small></td>`;
+};
+const pagCell = k => {
+  const p = kwN(k).page, b = kwB(k).page;
+  if (!p) return '<td class="pag"><span class="nd">sin datos</span></td>';
+  const antes = b && b.url !== p.url ? `<small class="yoy">antes: ${urlLab(b.url)}, posición ${n1(b.position)}</small>` : '';
+  return `<td class="pag">${link(D.site.replace(/\/$/, '') + p.url, urlLab(p.url), 'Abrir la página')}<small class="yoy">posición ${n1(p.position)} · ${Math.round(p.share * 100)} % de las impresiones</small>${antes}</td>`;
+};
+const kwRecientes = [...D.keywords].sort((a, b) => kwN(b).impressions - kwN(a).impressions).map(k => {
+  const label = KWLAB[k] || k;
+  return `<tr><td>${esc(label)}</td>${posCell('before', k, label)}${posCell('now', k, label)}<td class="num">${flecha(kwCambio(k))}</td>${pagCell(k)}</tr>`;
+}).join('\n');
+const tablaKwRecientes = `<div class="t-scroll"><table class="tbl kw">
+<thead><tr><th>Keyword</th><th class="num">${rangoCorto(R.before.range)}</th><th class="num">${rangoCorto(R.now.range)}</th><th class="num">Cambio</th><th>Página que sale ahora</th></tr></thead>
+<tbody>${kwRecientes}</tbody></table></div>`;
+
+const ARTICULOS = '2026-09-28'; // semana en la que se publicaron los artículos en otros medios
+const semRows = R.weeks.map(w => `<tr${w.range[0] === ARTICULOS ? ' class="strong"' : ''}><td>${rangoCorto(w.range)}${w.range[0] === ARTICULOS ? '<small class="hint">se publican los artículos en otros medios</small>' : ''}</td>
+<td class="num">${link(gscRange(...w.range), n0(w.clicks), `Abrir Search Console: ${rangoLargo(w.range)}`)}</td>
+<td class="num">${link(gscRange(...w.range), n0(w.impressions / 7), `Abrir Search Console: ${rangoLargo(w.range)}`)}</td>
+<td class="num">${link(gscRange(...w.range), n1(w.position), `Abrir Search Console: ${rangoLargo(w.range)}`)}</td>
+<td class="num">${link(gscRange(...w.range), n0(w.top10Impressions), `Abrir Search Console: ${rangoLargo(w.range)}`)}</td></tr>`).join('\n');
+const tablaSemanas = `<div class="t-scroll"><table class="tbl sem">
+<thead><tr><th>Semana</th><th class="num">Clics</th><th class="num">Impresiones al día</th><th class="num">Posición media</th><th class="num">Impresiones en primera página</th></tr></thead>
+<tbody>${semRows}</tbody></table></div>`;
+const W0 = R.weeks[0], WL = R.weeks[R.weeks.length - 1];
+const wMin = R.weeks.reduce((a, w) => (w.position < a.position ? w : a), R.weeks[0]);
+
 // ---------- 4. Leads ----------
 const L = m => D.ghl.months[m];
 const LROWS = [
@@ -237,6 +279,8 @@ a.src:hover,a.src:focus-visible{text-decoration:underline solid;text-decoration-
 .tbl small.yoy{display:block;font-size:11px;color:var(--muted);margin-top:2px}
 .tbl small.yoy a.src{color:var(--muted)}
 .tbl td.srcname{font-size:12px;white-space:nowrap}
+.tbl td.pag{font-size:13px;min-width:200px;overflow-wrap:anywhere}
+h3{font-size:17px;margin:30px 0 6px}
 b.up{color:var(--green)}b.down{color:var(--red)}
 .p-top{color:var(--green)}.p-mid{color:var(--amber)}.p-low{color:var(--muted)}
 .nd{color:#6b7280;font-style:italic;font-size:11px}
@@ -282,7 +326,7 @@ footer code{background:#f2efe7;padding:1px 5px;border-radius:2px;font-size:11.5p
 <header>
 <div class="kicker">Eventos Barcelona · Resultados</div>
 <h1>Resultados de ${rango}</h1>
-<p class="sub-h">Impresiones y clics en Google y Bing, citas en Copilot, visitas por canal, posiciones de las keywords principales y leads, mes a mes. Cada cifra es un enlace que abre ese mismo dato en su fuente.</p>
+<p class="sub-h">Impresiones y clics en Google y Bing, citas en Copilot, visitas por canal, posiciones de las keywords principales y leads, mes a mes. Las keywords llegan además semana a semana hasta el ${dia(R.end)} de ${MES[R.end.slice(5, 7)]}. Cada cifra es un enlace que abre ese mismo dato en su fuente.</p>
 <div class="badges"><span>Datos del ${genTxt}</span><span>Search Console</span><span>Bing Webmaster Tools</span><span>Google Analytics 4</span><span>GoHighLevel</span></div>
 </header>
 
@@ -307,8 +351,17 @@ ${chartsIa}
 <p class="h2-sub">Páginas que más cita Copilot entre el ${fechaLarga(pIni)} y el ${fechaLarga(pFin)} de ${pFin.slice(0, 4)}:</p>
 ${tablaCitadas}
 
+<h2>Keywords en las últimas semanas</h2>
+<p class="h2-sub">Posición media en Google de cada búsqueda en dos periodos de 14 días: ${rangoLargo(R.before.range)}, las dos semanas antes de publicar los artículos en otros medios, y ${rangoLargo(R.now.range)}, las dos últimas semanas con datos definitivos. Mejoran ${mejoran} de ${D.keywords.length} y empeoran ${empeoran}. En primera página hay ${top10('now')}; antes había ${top10('before')}. Ordenadas por impresiones del último periodo.</p>
+${tablaKwRecientes}
+<p class="h2-sub">La última columna es la página de EB que Google enseña para esa búsqueda (la que se lleva más impresiones) y su posición. Cuando Google cambia de página, debajo sale la de antes.</p>
+
+<h3>Semana a semana</h3>
+<p class="h2-sub">Toda la web, de lunes a domingo. La posición media empeora de ${n1(wMin.position)} a ${n1(WL.position)} en las últimas semanas, pero no porque EB baje: vuelven a contar búsquedas en las que la web sale en la página 3 o más abajo, y esas arrastran la media. La mejor señal es la última columna, las impresiones en primera página, que pasan de ${n0(W0.top10Impressions)} a ${n0(WL.top10Impressions)} por semana.</p>
+${tablaSemanas}
+
 <h2>Posiciones de las keywords principales</h2>
-<p class="h2-sub">Ordenadas de más a menos impresiones entre ${mesNombre(M[0])} y ${mesNombre(M[M.length - 1])}. Posición media en Google de cada búsqueda en el mes (1 es el primer resultado). Verde: primera página. Ámbar: segunda página. Gris: más abajo. Debajo, impresiones y clics de esa búsqueda.</p>
+<p class="h2-sub">Mes a mes. Ordenadas de más a menos impresiones entre ${mesNombre(M[0])} y ${mesNombre(M[M.length - 1])}. Posición media en Google de cada búsqueda en el mes (1 es el primer resultado). Verde: primera página. Ámbar: segunda página. Gris: más abajo. Debajo, impresiones y clics de esa búsqueda.</p>
 ${tablaKw}
 
 <h2>Leads</h2>
@@ -323,7 +376,7 @@ ${tablaLeads}
 <li><b>Visitas</b>: sesiones de Google Analytics 4 por canal. En ${mesNombre(l)} las visitas directas se disparan (${n0(ch(l, 'Direct', false))}); pueden incluir visitas del propio equipo.</li>
 <li><b>Leads</b>: GoHighLevel tiene datos desde el ${new Date(D.ghl.firstOpportunity).getUTCDate()} de ${MES[D.ghl.firstOpportunity.slice(5, 7)]} de ${D.ghl.firstOpportunity.slice(0, 4)}; antes no hay comparación posible. No se usa el evento de leads de Google Analytics porque cuenta de más.</li>
 <li><b>Origen de cada lead</b>: los UTM llegan vacíos en ${n0(M.reduce((a, m) => a + L(m).total - L(m).utmInformado, 0))} de ${n0(sumLeads)} leads, así que todavía no se puede decir cuántos vienen de Google y cuántos de ChatGPT. "¿Cómo nos conoció?" solo está contestado en ${n0(M.reduce((a, m) => a + L(m).total - L(m).comoNosConocio.sinRespuesta, 0))}.</li>
-<li><b>Artículos en otros medios</b>: se publicaron el 28 y 29 de septiembre. Su efecto no entra en estos meses.</li>
+<li><b>Artículos en otros medios</b>: se publicaron el 28 y 29 de septiembre. Su efecto no entra en estos meses: se ve en "Keywords en las últimas semanas".</li>
 </ul></div>
 
 <footer>
