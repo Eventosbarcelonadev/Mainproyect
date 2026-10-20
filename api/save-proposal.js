@@ -116,8 +116,22 @@ export default async function handler(req, res) {
 
     // If updating existing proposal
     if (data.id) {
+      // El enlace validado va a GHL solo al validar (al pasar a approved), no en cada
+      // guardado de una propuesta que ya estaba enviada: escribirlo es lo que puede
+      // disparar en GHL el correo al cliente (20-oct-2026). Por lo mismo, approved_at
+      // es la fecha en que se envió y ya no cambia al volver a guardar. Si no se puede
+      // leer el estado anterior, se hace como antes.
+      let prevStatus = null;
+      try {
+        const prev = await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${encodeURIComponent(data.id)}&select=status`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        if (prev.ok) prevStatus = ((await prev.json())[0] || {}).status || null;
+      } catch (e) { prevStatus = null; }
+      const validating = data.status === 'approved' && prevStatus !== 'approved';
+
       row.updated_at = new Date().toISOString();
-      if (data.status === 'approved') {
+      if (validating) {
         row.approved_at = new Date().toISOString();
         row.approved_by = 'admin';
       }
@@ -136,7 +150,7 @@ export default async function handler(req, res) {
       const updated = await updateRes.json();
 
       let ghlSync;
-      if (data.status === 'approved' && baseUrl) {
+      if (validating && baseUrl) {
         const validatedUrl = `${baseUrl}/propuesta.html?id=${data.id}`;
         ghlSync = await writeValidatedUrlToGHL(data.ghlOpportunityId, data.client?.email, validatedUrl);
       }
