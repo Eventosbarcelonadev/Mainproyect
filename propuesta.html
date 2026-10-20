@@ -3139,7 +3139,7 @@
                 <button class="carousel-arrow prev" onclick="carouselStep(${i}, -1)" aria-label="Anterior">‹</button>
                 <button class="carousel-arrow next" onclick="carouselStep(${i}, 1)" aria-label="Siguiente">›</button>
                 <div class="carousel-dots">
-                  ${imgs.map((_, k) => `<button class="carousel-dot ${k === 0 ? 'active' : ''}" onclick="carouselGoto(${i}, ${k})" aria-label="Imagen ${k + 1}"></button>`).join('')}
+                  ${imgs.map((_, k) => `<button class="carousel-dot ${k === 0 ? 'active' : ''}" onclick="carouselPick(${i}, ${k})" aria-label="Imagen ${k + 1}"></button>`).join('')}
                 </div>
                </div>`
             : `<div class="block-image" style="background-image: url('${imgs[0]}')"${dropAttr}>${changeBtn}</div>`;
@@ -3871,8 +3871,20 @@
     function carouselStep(blockIndex, dir) {
       const st = _carouselState.get(blockIndex) || { current: 0 };
       carouselGoto(blockIndex, st.current + dir);
-      // Reinicia el timer cuando el usuario interactúa — evita salto inmediato.
-      startCarouselAutoplay(blockIndex);
+      // Si el cliente pasa las fotos, el carrusel deja de pasar solo: la foto que
+      // mira la elige él (y el seguimiento sabe en cuál se para). 19-oct-2026.
+      stopCarouselAutoplay(blockIndex);
+    }
+
+    function carouselPick(blockIndex, slideIndex) {
+      carouselGoto(blockIndex, slideIndex);
+      stopCarouselAutoplay(blockIndex);
+    }
+
+    function stopCarouselAutoplay(blockIndex) {
+      const prev = _carouselTimers.get(blockIndex);
+      if (prev) clearInterval(prev);
+      _carouselTimers.delete(blockIndex);
     }
 
     function startCarouselAutoplay(blockIndex) {
@@ -5190,9 +5202,35 @@
   const seen = new Set();
   const viewing = new Set();
   let dwell = {};
+  // Fotos: segundos que cada foto del carrusel pasa en pantalla (el carrusel a la vista
+  // al 50 % y la pestaña visible) y veces que el cliente llega a ella con las flechas o
+  // los puntos. Dice qué fotos le han gustado: al tocar las flechas el carrusel deja de
+  // pasar solo, así que el tiempo en una foto lo decide él. 19-oct-2026.
+  const visibleCarousels = new Set();
+  let photos = {};   // "sección\nurl" -> { t: segundos, n: veces que llega a ella }
+  const slideUrl = (slide) => {
+    const m = /url\(["']?([^"')]+)["']?\)/.exec((slide && slide.style.backgroundImage) || '');
+    return m ? m[1] : null;
+  };
+  const photoKey = (carousel) => {
+    const block = carousel && carousel.closest('[data-show]');
+    const url = carousel && slideUrl(carousel.querySelector('.carousel-slide.active'));
+    return block && url ? labelOf(block).section + '\n' + url : null;
+  };
+  const photo = (k) => photos[k] || (photos[k] = { t: 0, n: 0 });
+  const observeCarousels = () => {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (en.isIntersecting && en.intersectionRatio >= 0.5) visibleCarousels.add(en.target);
+      else visibleCarousels.delete(en.target);
+    }), { threshold: [0, 0.5, 1] });
+    document.querySelectorAll('#proposalContent .block-carousel').forEach(el => io.observe(el));
+  };
+
   setInterval(() => {
     if (document.hidden) return;
     viewing.forEach(s => { dwell[s] = (dwell[s] || 0) + 1; });
+    visibleCarousels.forEach(c => { const k = photoKey(c); if (k) photo(k).t += 1; });
   }, 1000);
   const labelOf = (el) => {
     if (el.dataset.show) {
@@ -5218,6 +5256,7 @@
       send('section', { section: l.section, name: l.name || null, t: Math.round(visibleMs / 1000) });
     }), { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] });
     els.forEach(el => io.observe(el));
+    observeCarousels();
     return true;
   };
   // El contenido llega por fetch y se renderiza después: reintentar hasta que exista.
@@ -5242,6 +5281,11 @@
     const block = a.closest('[data-show]');
     if (block) { const l = labelOf(block); d.section = l.section; d.name = l.name || null; }
     send('click', d);
+    // La foto a la que llega se sabe cuando el carrusel ya ha cambiado.
+    if (kind === 'fotos') {
+      const carousel = a.closest('.block-carousel');
+      setTimeout(() => { const k = photoKey(carousel); if (k) photo(k).n += 1; }, 0);
+    }
   }, true);
 
   // "leave" sale al ocultar la pestaña, no solo al cerrarla: en el móvil se cambia
@@ -5256,7 +5300,11 @@
     const d = {};
     Object.keys(dwell).forEach(s => { if (dwell[s] > 0) d[s] = dwell[s]; });
     dwell = {};
-    send('leave', { seconds: Math.round(visibleMs / 1000), scroll: maxScroll, sections: Array.from(seen), dwell: d }, true);
+    const ph = Object.entries(photos)
+      .filter(([, v]) => v.t > 0 || v.n > 0)
+      .map(([k, v]) => { const [sec, url] = k.split('\n'); return { s: sec, u: url.slice(0, 400), t: v.t, n: v.n }; });
+    photos = {};
+    send('leave', { seconds: Math.round(visibleMs / 1000), scroll: maxScroll, sections: Array.from(seen), dwell: d, photos: ph }, true);
   };
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else flushed = false; });
   addEventListener('pagehide', flush);
