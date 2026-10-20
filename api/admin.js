@@ -4,6 +4,7 @@
 // GET  /api/admin?action=list-artistas&q=&disciplina=&limit=&offset=
 // GET  /api/admin?action=list-proposals&status=&q=&limit=&offset=
 // GET  /api/admin?action=proposal-views&id=<proposalId>   -> visitas del cliente a una propuesta
+// GET  /api/admin?action=ghl-lost-proposals[&formato=sql] -> solo lectura: propuestas con la oportunidad perdida en GHL y el SQL para pasarlas a Cancelada
 // POST /api/admin?action=set-proposal-outcome  body: {id, outcome: won|cancelled|null}  -> Aprobada / Cancelada (lo marca Xavi)
 // GET  /api/admin?action=get-artista-detail&id=<uuid>
 // POST /api/admin?action=link-show-to-artista  body: {showId, artistaId|null}  (legacy 1:1, delega en set-show-artistas)
@@ -559,6 +560,143 @@ function summarizeProposalVisits(visits, shows) {
     }).map(s => ({ section: s.section, name: s.name })) : [],
     clicks
   };
+}
+
+// GET /api/admin?action=ghl-lost-proposals[&formato=sql]
+// Solo lectura. Propuestas cuya oportunidad de GHL (pipeline Clientes) está en la
+// etapa Lost o con estado lost, cruzadas por la URL de propuesta validada de la
+// oportunidad, para pasarlas a Cancelada (Ramiro 2026-10-20). No
+// escribe nada: devuelve la lista y el SQL para lanzarlo en Supabase, con copia de
+// seguridad y vuelta atrás. Con formato=sql devuelve solo el SQL, en texto.
+async function fetchClientOpportunities(env) {
+  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
+  const stages = new Map();
+  const pl = await ghlFetch('GET', `/opportunities/pipelines?locationId=${encodeURIComponent(env.GHL_LOC)}`, env);
+  if (pl.skipped) throw new Error('GHL sin configurar (GHL_API_KEY / GHL_LOCATION_ID)');
+  if (!pl.ok) throw new Error(`GHL pipelines ${pl.status}: ${String(pl.body).slice(0, 160)}`);
+  (parse(pl).pipelines || []).forEach(p => (p.stages || []).forEach(s => stages.set(s.id, s.name)));
+
+  // Todas las oportunidades del pipeline Clientes, de 100 en 100. GHL pagina con
+  // startAfter / startAfterId (meta); si no los da, por page.
+  const seen = new Set();
+  const opportunities = [];
+  let cursor = '', page = 1;
+  for (let i = 0; i < 50; i++) {
+    const q = `location_id=${encodeURIComponent(env.GHL_LOC)}` +
+      (env.GHL_PIPELINE_CLIENTES ? `&pipeline_id=${encodeURIComponent(env.GHL_PIPELINE_CLIENTES)}` : '') +
+      `&limit=100${cursor || `&page=${page}`}`;
+    const g = await ghlFetch('GET', `/opportunities/search?${q}`, env);
+    if (!g.ok) throw new Error(`GHL opportunities ${g.status}: ${String(g.body).slice(0, 160)}`);
+    const d = parse(g);
+    const fresh = (d.opportunities || []).filter(o => o && o.id && !seen.has(o.id));
+    fresh.forEach(o => { seen.add(o.id); opportunities.push(o); });
+    if ((d.opportunities || []).length < 100 || !fresh.length) break;
+    const m = d.meta || {};
+    cursor = m.startAfterId && m.startAfter ? `&startAfter=${encodeURIComponent(m.startAfter)}&startAfterId=${encodeURIComponent(m.startAfterId)}` : '';
+    page += 1;
+  }
+  return { opportunities, stages };
+}
+
+// Campo url_propuesta_validada de la OPPORTUNITY (el mismo que escriben
+// save-proposal y validate-proposal): lleva propuesta.html?id=<id de la propuesta>.
+const OPP_URL_PROPUESTA_VALIDADA = '40FFHGx5fYeV3VOK0yC4';
+const oppFieldValue = (opp, id) => {
+  const f = (opp && opp.customFields || []).find(x => x.id === id);
+  return String((f && (f.fieldValueString ?? f.fieldValue ?? f.field_value ?? f.value)) || '').trim();
+};
+const proposalIdFromUrl = (url) => {
+  if (!url) return null;
+  try { return new URL(url).searchParams.get('id'); } catch { const m = /[?&]id=([^&#\s]+)/.exec(url); return m ? decodeURIComponent(m[1]) : null; }
+};
+
+async function ghlLostProposals(req, res, env) {
+  let ghl;
+  try { ghl = await fetchClientOpportunities(env); } catch (err) { return res.status(502).json({ error: err.message }); }
+  const lost = ghl.opportunities.filter(o => {
+    const stage = ghl.stages.get(o.pipelineStageId) || '';
+    return o.status === 'lost' || /\blost\b|perdid/i.test(stage);
+  });
+
+  // La propuesta de cada oportunidad perdida es la de su URL de propuesta validada
+  // (Ramiro 2026-10-20). Si la búsqueda no trae los custom fields, se pide la
+  // oportunidad entera, de 5 en 5.
+  const parse = (g) => { try { return JSON.parse(g.body); } catch { return {}; } };
+  const needFull = lost.filter(o => !Array.isArray(o.customFields));
+  for (let i = 0; i < needFull.length; i += 5) {
+    await Promise.all(needFull.slice(i, i + 5).map(async o => {
+      const g = await ghlFetch('GET', `/opportunities/${encodeURIComponent(o.id)}`, env);
+      if (g.ok) o.customFields = (parse(g).opportunity || {}).customFields || [];
+    }));
+  }
+
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/proposals?select=id,status,outcome,client_name,client_email,event_name,event_type&limit=5000`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+  const props = new Map((await r.json()).map(p => [p.id, p]));
+
+  const estado = (p) => p.outcome === 'won' ? 'aprobada' : p.outcome === 'cancelled' ? 'cancelada' : p.status === 'approved' ? 'enviada' : 'borrador';
+  const matches = [], sinUrl = [], sinPropuesta = [];
+  lost.forEach(o => {
+    const url = oppFieldValue(o, OPP_URL_PROPUESTA_VALIDADA);
+    const pid = proposalIdFromUrl(url);
+    const opp = { oportunidad: o.name || o.id, etapa_ghl: ghl.stages.get(o.pipelineStageId) || null, estado_ghl: o.status || null };
+    if (!pid) { sinUrl.push(opp.oportunidad); return; }
+    const p = props.get(pid);
+    if (!p) { sinPropuesta.push({ ...opp, url }); return; }
+    matches.push({
+      id: p.id,
+      cliente: (p.client_name || '').trim() || (p.client_email || '').trim() || null,
+      evento: (p.event_name || '').trim() || (p.event_type || '').trim() || null,
+      estado_actual: estado(p),
+      ...opp
+    });
+  });
+  const toCancel = matches.filter(m => m.estado_actual !== 'cancelada');
+  const porEstado = toCancel.reduce((acc, m) => { acc[m.estado_actual] = (acc[m.estado_actual] || 0) + 1; return acc; }, {});
+
+  const ids = toCancel.map(m => `'${String(m.id).replace(/'/g, "''")}'`).join(', ');
+  const sql = toCancel.length ? [
+    `-- Propuestas cuya oportunidad está perdida (Lost) en GHL → Cancelada. ${toCancel.length} propuestas.`,
+    '-- Cruzadas por la URL de propuesta validada de cada oportunidad.',
+    `-- Generado ${new Date().toISOString()} por /api/admin?action=ghl-lost-proposals`,
+    '',
+    '-- 1) Copia de seguridad',
+    'CREATE TABLE IF NOT EXISTS proposals_estado_backup_ghl_lost AS',
+    '  SELECT id, status, outcome, outcome_at, now() AS copiado_en FROM proposals;',
+    '',
+    '-- 2) Cambio',
+    'BEGIN;',
+    `UPDATE proposals SET outcome = 'cancelled', outcome_at = now()`,
+    `WHERE id IN (${ids})`,
+    `  AND outcome IS DISTINCT FROM 'cancelled';`,
+    'COMMIT;',
+    '',
+    '-- 3) Solo para deshacer',
+    '-- UPDATE proposals p SET outcome = b.outcome, outcome_at = b.outcome_at',
+    '-- FROM proposals_estado_backup_ghl_lost b WHERE b.id = p.id;'
+  ].join('\n') : '-- No hay propuestas que pasar a Cancelada.';
+
+  if ((req.query.formato || '') === 'sql') {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.status(200).end(sql);
+  }
+  return res.status(200).json({
+    success: true,
+    ghl: { oportunidades: ghl.opportunities.length, perdidas: lost.length },
+    a_cancelar: toCancel.length,
+    ya_canceladas: matches.length - toCancel.length,
+    estado_actual: porEstado,
+    // Perdidas que no se tocan: sin URL validada (nunca se validó su propuesta) o con
+    // una URL cuyo id no está en la tabla de propuestas.
+    perdidas_sin_url_validada: sinUrl.length,
+    perdidas_sin_url_validada_nombres: sinUrl.slice(0, 50),
+    perdidas_con_url_sin_propuesta: sinPropuesta,
+    propuestas: toCancel,
+    sql
+  });
 }
 
 // GET /api/admin?action=proposal-views&id=<proposalId>[&limit=1000]
@@ -3194,6 +3332,7 @@ export default async function handler(req, res) {
       if (action === 'list-artistas') return listArtistas(req, res, env);
       if (action === 'list-proposals') return listProposals(req, res, env);
       if (action === 'proposal-views') return proposalViews(req, res, env);
+      if (action === 'ghl-lost-proposals') return ghlLostProposals(req, res, env);
       if (action === 'get-artista-detail') return getArtistaDetail(req, res, env);
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
@@ -3233,7 +3372,7 @@ export default async function handler(req, res) {
     }
     return res.status(400).json({
       error: 'Unknown action',
-      hint: 'GET list-artistas|list-proposals|proposal-views|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|set-proposal-outcome|ensure-proposal-for-lead|init-opp-proposal'
+      hint: 'GET list-artistas|list-proposals|proposal-views|ghl-lost-proposals|get-artista-detail|shows-pending|list-banco | POST link-show-to-artista|set-show-artistas|review-show|edit-show|add-show|delete-show|upload-show-image|upload-banco-image|delete-banco-image|upload-artista-photo|set-show-images|toggle-favorite|add-artista|edit-artista|delete-artista|create-show-from-artista|delete-proposal|duplicate-proposal|set-proposal-outcome|ensure-proposal-for-lead|init-opp-proposal'
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
