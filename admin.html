@@ -815,6 +815,10 @@
     .review-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #F3F6FE; border: 1px solid #D5DEF8; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; }
     .review-banner .btn-approve { margin-left: auto; }
     .art-faltan { font-size: 12px; color: var(--warn-fg); }
+    .art-visib strong { font-weight: 600; }
+    .art-visib.is-si strong { color: var(--ok-fg); }
+    .art-visib.is-no strong { color: #A3261B; }
+    .art-visib.is-nd strong { color: var(--gray); font-weight: 500; }
     .chip-muted { color: var(--gray); background: #F4F1ED; }
 
     /* =====================================================================
@@ -1456,6 +1460,14 @@
       }
       return a.nombre_artistico || a.compania || a.nombre || 'sin nombre';
     }
+    // Casilla "Acepto visibilidad web RRSS" del formulario de artistas. La columna
+    // nace a false, así que solo es un "No" real si el artista pasó por el formulario.
+    function visibilidadWebRrss(a) {
+      if (!a || a.tipo === 'proveedor') return null;
+      if (a.acepto_visibilidad) return { cls: 'is-si', label: 'Sí', title: 'Aceptó en el formulario que subamos su material a la web y redes sociales' };
+      if (['web-formulario', 'actualizacion-formulario'].includes(a.origen)) return { cls: 'is-no', label: 'No', title: 'No marcó en el formulario la casilla para subir su material a la web y redes sociales' };
+      return { cls: 'is-nd', label: 'Sin dato', title: 'No ha rellenado el formulario de artistas: no consta si acepta' };
+    }
     function isArtistComplete(a) {
       const realEmail = a && a.email && !isPlaceholderEmail(a.email);
       const hasPhone = !!(a && a.telefono && String(a.telefono).trim());
@@ -1658,6 +1670,7 @@
       const ph = isPlaceholderEmail(a.email);
       const complete = isArtistComplete(a);
       const isNew = a.review_status === 'pending_review';
+      const visib = visibilidadWebRrss(a);
       // Contact person line: prefer nombre if it's different from the display
       // (typical case: a proveedor is "Sonority" but the human contact is
       // "Juan Pérez"; we want both visible on the card).
@@ -1708,6 +1721,7 @@
           <div class="meta" title="${escapeHtml(a.email || '')}">
             ${ph ? '<span class="chip chip-warning">Email provisional</span>' : `<span>${escapeHtml(shortEmail(a.email))}</span>`}
           </div>
+          ${visib ? `<div class="meta art-visib ${visib.cls}" title="${escapeHtml(visib.title)}">Material en web/RRSS: <strong>${visib.label}</strong></div>` : ''}
         </div>
         <div class="card-footer">
           <button class="btn btn-primary" data-detail="${escapeHtml(a.id)}">Ver ficha</button>
@@ -1772,6 +1786,7 @@
       const fotos = Array.isArray(a.fotos_urls) ? a.fotos_urls : [];
       const shows = Array.isArray(a.shows) ? a.shows : [];
       const photoEntries = artistaPhotoEntries(a);
+      const visib = visibilidadWebRrss(a);
 
       const showsHtml = shows.length
         ? shows.map(s => `
@@ -1831,6 +1846,7 @@
         <div class="field-row"><label>Bio / show</label><div class="value">${escapeHtml(a.bio_show || '—')}</div></div>
         <div class="field-row"><label>Rango caché</label><div class="value">${escapeHtml(a.rango_cache || '—')}</div></div>
         <div class="field-row"><label>Origen</label><div class="value">${escapeHtml(a.origen || '—')}</div></div>
+        ${visib ? `<div class="field-row"><label>Material en web/RRSS</label><div class="value art-visib ${visib.cls}" title="${escapeHtml(visib.title)}"><strong>${visib.label}</strong></div></div>` : ''}
         <div class="field-row"><label>Videos</label><div class="value">
           ${a.video1 ? `<a href="${escapeHtml(videoHref(a.video1))}" target="_blank" rel="noopener">video 1</a>` : ''}
           ${a.video2 ? ` · <a href="${escapeHtml(videoHref(a.video2))}" target="_blank" rel="noopener">video 2</a>` : ''}
