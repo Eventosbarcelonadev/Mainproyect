@@ -32,6 +32,7 @@
 // protegida por defecto.
 
 import { esEquipo, noAutorizado } from '../lib/sesion-admin.js';
+import { paginaDashboard, generarDashboard } from '../lib/dashboard/handlers.js';
 
 // Las llaman otros sistemas, no el panel: el GPT (trae su propio token,
 // gptAuthOk), el webhook de GHL y n8n.
@@ -3325,6 +3326,10 @@ export default async function handler(req, res) {
   }
 
   const action = (req.query.action || '').trim();
+  // Dashboard de resultados (/dashboard y su cron): van aquí porque el plan Hobby de Vercel no
+  // admite más de 12 funciones. Cada una comprueba su acceso (ver lib/dashboard/handlers.js).
+  if (req.method === 'GET' && action === 'dashboard') return paginaDashboard(req, res);
+  if (req.method === 'GET' && action === 'dashboard-cron') return generarDashboard(req, res);
   if (!ACCIONES_SIN_SESION.has(action) && !(await esEquipo(req))) return noAutorizado(res);
 
   try {

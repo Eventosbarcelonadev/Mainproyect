@@ -4,10 +4,7 @@
       "maxDuration": 60
     },
     "api/admin.js": {
-      "maxDuration": 60
-    },
-    "api/dashboard-cron.js": {
-      "maxDuration": 300,
+      "maxDuration": 60,
       "includeFiles": "data/bing-ai-citas.json"
     }
   },
@@ -78,19 +75,23 @@
     },
     {
       "source": "/dashboard",
-      "destination": "/api/dashboard"
+      "destination": "/api/admin?action=dashboard"
     },
     {
       "source": "/dashboard/",
-      "destination": "/api/dashboard"
+      "destination": "/api/admin?action=dashboard"
     },
     {
       "source": "/dashboard/historico",
-      "destination": "/api/dashboard?lista=1"
+      "destination": "/api/admin?action=dashboard&lista=1"
     },
     {
       "source": "/dashboard/:fecha(\\d{4}-\\d{2}-\\d{2})",
-      "destination": "/api/dashboard?informe=:fecha"
+      "destination": "/api/admin?action=dashboard&informe=:fecha"
+    },
+    {
+      "source": "/api/dashboard-cron",
+      "destination": "/api/admin?action=dashboard-cron"
     },
     {
       "source": "/xavi",
