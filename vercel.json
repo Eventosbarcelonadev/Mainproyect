@@ -75,10 +75,14 @@
     },
     {
       "source": "/dashboard",
-      "destination": "/api/admin?action=dashboard"
+      "destination": "/dashboard-gsc.html"
     },
     {
       "source": "/dashboard/",
+      "destination": "/dashboard-gsc.html"
+    },
+    {
+      "source": "/dashboard/informe",
       "destination": "/api/admin?action=dashboard"
     },
     {

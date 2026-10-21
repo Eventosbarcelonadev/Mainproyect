@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rendimiento en búsqueda · Eventos Barcelona</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Eventos Barcelona">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Rendimiento en búsqueda · Eventos Barcelona">
+<meta property="og:description" content="Clics, impresiones, CTR y posición en Google de eventosbarcelona.com, con filtros, comparaciones y keywords, como en Search Console.">
+<meta property="og:image" content="https://propuestas.eventosbarcelona.com/og-eventos-barcelona.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://propuestas.eventosbarcelona.com/dashboard">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* Panel de rendimiento con el aspecto del informe "Rendimiento" de Search Console (sin marcas de Google). */
+*{box-sizing:border-box}
+:root{
+  color-scheme:light;
+  --bg:#f8f9fa;--card:#fff;--line:#dadce0;--line-soft:#e8eaed;--ink:#202124;--muted:#5f6368;--blue:#1a73e8;--blue-bg:#e8f0fe;--blue-ink:#1967d2;
+  --c-clicks:#1a73e8;--c-impressions:#5e35b1;--c-ctr:#00796b;--c-position:#b45309;
+  --up:#137333;--down:#c5221f;
+}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+a{color:var(--blue)}
+/* barra superior */
+.top{position:sticky;top:0;z-index:30;height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 16px}
+.top .menu{display:none;border:0;background:none;width:40px;height:40px;border-radius:50%;cursor:pointer}
+.top .menu:hover{background:#f1f3f4}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;color:var(--muted);white-space:nowrap;min-width:0}
+.brand b{color:var(--ink);font-weight:500}
+.brand .dot{width:28px;height:28px;border-radius:6px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.top .prop{margin-left:auto;border:1px solid var(--line);border-radius:8px;padding:6px 12px;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.load{position:fixed;top:0;left:0;right:0;height:3px;z-index:40;overflow:hidden;opacity:0;transition:opacity .2s}
+.load.on{opacity:1}
+.load::after{content:"";position:absolute;inset:0;width:40%;background:var(--blue);animation:carga 1.1s infinite ease-in-out}
+@keyframes carga{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+/* estructura */
+.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:calc(100vh - 64px)}
+nav.side{background:#fff;border-right:1px solid var(--line);padding:8px 0}
+nav.side .grupo{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:16px 24px 6px;font-weight:500}
+nav.side a{display:flex;align-items:center;gap:16px;height:40px;padding:0 24px;margin-right:12px;border-radius:0 20px 20px 0;color:var(--ink);text-decoration:none;font-size:14px}
+nav.side a:hover{background:#f1f3f4}
+nav.side a.on{background:var(--blue-bg);color:var(--blue-ink);font-weight:500}
+nav.side svg{width:20px;height:20px;flex:none;fill:currentColor;opacity:.85}
+main{padding:24px 32px 48px;min-width:0}
+h1{font-size:22px;font-weight:400;margin:0 0 16px}
+/* chips de filtros */
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:var(--ink);max-width:100%}
+.chip:hover{background:#f1f3f4}
+.chip.filtro{background:var(--blue-bg);border-color:var(--blue-bg);color:var(--blue-ink)}
+.chip.filtro span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .x{border:0;background:none;cursor:pointer;width:18px;height:18px;border-radius:50%;line-height:18px;padding:0;color:inherit;font-size:15px}
+.chip .x:hover{background:rgba(0,0,0,.08)}
+.chip.add{border-style:dashed;color:var(--blue)}
+.chips .der{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.txtbtn{border:0;background:none;color:var(--blue);cursor:pointer;font-weight:500;padding:6px 8px;border-radius:4px;font-size:13px;text-decoration:none}
+.txtbtn:hover{background:var(--blue-bg)}
+/* tarjeta principal */
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--line)}
+.metric{border:0;text-align:left;padding:16px 20px;cursor:pointer;background:#fff;border-right:1px solid var(--line);min-width:0;position:relative}
+.metric:last-child{border-right:0}
+.metric:first-child{border-top-left-radius:8px}.metric:last-child{border-top-right-radius:8px}
+.metric .lab{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.metric .box{width:16px;height:16px;border:2px solid var(--muted);border-radius:2px;display:grid;place-items:center;flex:none}
+.metric .val{font-size:30px;line-height:1.25;margin-top:6px;font-weight:400;white-space:nowrap}
+.metric .cmp{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric.on{color:#fff}
+.metric.on .lab,.metric.on .cmp{color:#fff}
+.metric.on .box{border-color:#fff;background:#fff}
+.metric.on .box::after{content:"";width:8px;height:4px;border:2px solid currentColor;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.metric.on[data-m="clicks"]{background:var(--c-clicks)}.metric.on[data-m="clicks"] .box{color:var(--c-clicks)}
+.metric.on[data-m="impressions"]{background:var(--c-impressions)}.metric.on[data-m="impressions"] .box{color:var(--c-impressions)}
+.metric.on[data-m="ctr"]{background:var(--c-ctr)}.metric.on[data-m="ctr"] .box{color:var(--c-ctr)}
+.metric.on[data-m="position"]{background:var(--c-position)}.metric.on[data-m="position"] .box{color:var(--c-position)}
+.metric:focus-visible,.chip:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.chartbox{position:relative;height:300px;padding:16px 16px 8px}
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:0 20px 12px}
+.leyenda i{display:inline-block;width:18px;border-top:2px solid var(--muted);vertical-align:middle;margin-right:6px}
+.leyenda i.d{border-top-style:dashed}
+/* pestañas y tabla */
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;height:48px;padding:0 20px;cursor:pointer;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{background:#f8f9fa}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.tbar{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.tbar input{border:1px solid var(--line);border-radius:4px;height:32px;padding:0 10px;min-width:0;width:240px;max-width:100%}
+.tbar .sp{flex:1}
+.t-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:right;font-weight:500;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none;font-size:12px}
+th:first-child,td:first-child{text-align:left}
+th.on{color:var(--ink)}
+th .ar{font-size:11px;margin-left:4px}
+td{padding:10px 16px;border-bottom:1px solid var(--line-soft);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child{white-space:normal;overflow-wrap:anywhere;min-width:220px;max-width:520px}
+tr.fila{cursor:pointer}
+tr.fila:hover td{background:#f8f9fa}
+td .ext{margin-left:6px;color:var(--muted);text-decoration:none;font-size:12px}
+td.up,b.up{color:var(--up)}td.down,b.down{color:var(--down)}
+.pie{display:flex;align-items:center;justify-content:flex-end;gap:16px;padding:8px 16px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+.pie select{border:0;background:none;color:var(--ink);cursor:pointer}
+.pie button{border:0;background:none;cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:18px;color:var(--muted)}
+.pie button:hover:not(:disabled){background:#f1f3f4}
+.pie button:disabled{opacity:.35;cursor:default}
+.vacio{padding:32px 16px;text-align:center;color:var(--muted)}
+.aviso{background:#fef7e0;border:1px solid #f9e2a1;color:#5c3c00;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px}
+.aviso.err{background:#fce8e6;border-color:#f6c7c1;color:#8c1d18}
+.nota{color:var(--muted);font-size:12px;margin:20px 0 0}
+.kwgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.kwgrid > div{padding:16px 20px;border-right:1px solid var(--line)}
+.kwgrid > div:last-child{border-right:0}
+.kwgrid .lab{font-size:13px;color:var(--muted)}
+.kwgrid .val{font-size:26px;margin-top:4px}
+.ctitle{padding:16px 20px 4px;font-size:16px;font-weight:500}
+.csub{padding:0 20px 12px;color:var(--muted);font-size:13px;max-width:90ch}
+.pos-top{color:var(--up)}.pos-mid{color:#b45309}.pos-low{color:var(--muted)}
+/* diálogos */
+dialog{border:0;border-radius:8px;padding:0;box-shadow:0 4px 24px rgba(0,0,0,.25);width:min(440px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(32,33,36,.45)}
+.dlg{padding:20px 24px}
+.dlg h2{font-size:18px;font-weight:400;margin:0 0 16px}
+.dlg .row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.dlg label{font-size:12px;color:var(--muted)}
+.dlg select,.dlg input{border:1px solid var(--line);border-radius:4px;height:36px;padding:0 10px;width:100%}
+.dlg .opts{display:grid;gap:4px;margin-bottom:12px}
+.dlg .opts label{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);padding:6px 0;cursor:pointer}
+.dlg .opts input{width:auto;height:auto}
+.dlg .fechas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlg .acc{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.btn{border:0;border-radius:4px;height:36px;padding:0 16px;cursor:pointer;font-weight:500}
+.btn.pri{background:var(--blue);color:#fff}
+.btn.sec{background:none;color:var(--blue)}
+.dtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-4px 0 14px}
+.dtabs button{border:0;background:none;padding:10px 12px;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent}
+.dtabs button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.drawer-bg{display:none}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  nav.side{position:fixed;top:64px;bottom:0;left:0;width:256px;z-index:25;transform:translateX(-100%);visibility:hidden;transition:transform .2s,visibility .2s;box-shadow:0 0 16px rgba(0,0,0,.2)}
+  nav.side.open{transform:none;visibility:visible}
+  .drawer-bg.open{display:block;position:fixed;inset:64px 0 0;background:rgba(32,33,36,.4);z-index:24}
+  .top .menu{display:grid;place-items:center}
+  .top .prop{display:none}
+  main{padding:16px 16px 40px}
+  .metrics,.kwgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .metric:nth-child(2){border-right:0}
+  .metric:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .metric{border-radius:0!important}
+  .kwgrid > div:nth-child(2){border-right:0}
+  .kwgrid > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .metric .val{font-size:24px}
+  .chartbox{height:240px;padding:12px 8px 4px}
+  .chips .der{margin-left:0}
+  .tbar input{width:100%}
+  .brand{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="load" id="load"></div>
+<header class="top">
+  <button class="menu" id="menu" aria-label="Abrir menú"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" fill="#5f6368"/></svg></button>
+  <div class="brand"><span class="dot">EB</span><span><b>Resultados de búsqueda</b></span></div>
+  <div class="prop" title="Propiedad de Search Console">https://www.eventosbarcelona.com/</div>
+</header>
+<div class="drawer-bg" id="drawerbg"></div>
+<div class="app">
+  <nav class="side" id="side">
+    <a href="#v=rendimiento" data-nav="rendimiento"><svg viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.9 20.6 5.5l-7.1 8-4-4L2 17z"/></svg>Rendimiento</a>
+    <a href="#v=keywords" data-nav="keywords"><svg viewBox="0 0 24 24"><path d="M12 17.3l6.2 3.7-1.6-7 5.4-4.7-7.1-.6L12 2 9.1 8.7 2 9.3l5.4 4.7-1.6 7z"/></svg>Keywords seguidas</a>
+    <a href="#v=rendimiento&amp;f=page~includingRegex~%5Ehttps%3A%2F%2Fwww%5C.eventosbarcelona%5C.com%2Fen%2F" data-nav="ingles"><svg viewBox="0 0 24 24"><path d="M12.9 15.1l-2.5-2.5h.1A17.6 17.6 0 0 0 14.1 6H17V4h-7V2H8v2H1v2h11.2A15.8 15.8 0 0 1 9 11.3 15.6 15.6 0 0 1 6.7 8h-2a17.5 17.5 0 0 0 3 4.6l-5.1 5 1.4 1.4L9 14l3.1 3.1zM18.5 10h-2L12 22h2l1.1-3h4.8l1.1 3h2zm-2.6 7l1.6-4.3 1.6 4.3z"/></svg>Inglés</a>
+    <div class="grupo">Informes</div>
+    <a href="/dashboard/informe"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM9 17H7v-7h2zm4 0h-2V7h2zm4 0h-2v-4h2z"/></svg>Informe quincenal</a>
+    <a href="/dashboard/historico"><svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L9 12H6a7 7 0 1 1 2.1 5l-1.4 1.4A9 9 0 1 0 13 3zm-1 5v5l4.3 2.5.7-1.2-3.5-2.1V8z"/></svg>Informes anteriores</a>
+  </nav>
+  <main>
+    <h1 id="titulo">Rendimiento en los resultados de búsqueda</h1>
+    <div id="avisos"></div>
+    <div class="chips" id="chips"></div>
+    <section id="vista"></section>
+    <p class="nota">Datos de la API de Search Console de la propiedad https://www.eventosbarcelona.com/, incluidos los de los últimos días, que Google aún puede ajustar. La posición media y el CTR se calculan igual que en Search Console.</p>
+  </main>
+</div>
+
+<dialog id="dlgFecha"><form method="dialog" class="dlg" id="fFecha">
+  <div class="dtabs"><button type="button" data-t="filtrar" class="on">Filtrar</button><button type="button" data-t="comparar">Comparar</button></div>
+  <div data-p="filtrar"><div class="opts" id="optsRango"></div>
+    <div class="fechas"><div class="row"><label for="fDesde">Fecha de inicio</label><input type="date" id="fDesde"></div><div class="row"><label for="fHasta">Fecha de finalización</label><input type="date" id="fHasta"></div></div></div>
+  <div data-p="comparar" hidden><div class="opts" id="optsComp"></div></div>
+  <div class="acc"><button class="btn sec" value="cancel">Cancelar</button><button class="btn pri" value="ok">Aplicar</button></div>
+</form></dialog>
+
+<dialog id="dlgFiltro"><form method="dialog" class="dlg" id="fFiltro">
+  <h2 id="dlgFiltroT">Filtrar</h2>
+  <div class="row"><label for="fDim">Por</label><select id="fDim"><option value="query">Consulta</option><option value="page">Página</option><option value="country">País</option><option value="device">Dispositivo</option></select></div>
+  <div class="row"><label for="fOp">Condición</label><select id="fOp"></select></div>
+  <div class="row" id="rowExpr"><label for="fExpr">Texto</label><input id="fExpr" autocomplete="off"></div>
+  <div class="row" id="rowSel" hidden><label for="fSel">Valor</label><select id="fSel"></select></div>
+  <div class="acc"><button class="btn sec" value="cancel">Cancelar</button><button class="btn pri" value="ok">Aplicar</button></div>
+</form></dialog>
+
+<dialog id="dlgTipo"><form method="dialog" class="dlg">
+  <h2>Tipo de búsqueda</h2>
+  <div class="opts" id="optsTipo"></div>
+  <div class="acc"><button class="btn sec" value="cancel">Cancelar</button><button class="btn pri" value="ok">Aplicar</button></div>
+</form></dialog>
+
+<script>
+(function () {
+  'use strict';
+  const SITE = 'https://www.eventosbarcelona.com/';
+  const M = {
+    clicks: { lab: 'Clics totales', col: 'Clics', color: '#4285f4', txt: '#1a73e8' },
+    impressions: { lab: 'Impresiones totales', col: 'Impresiones', color: '#5e35b1', txt: '#5e35b1' },
+    ctr: { lab: 'CTR medio', col: 'CTR', color: '#00897b', txt: '#00796b' },
+    position: { lab: 'Posición media', col: 'Posición', color: '#e8710a', txt: '#b45309' },
+  };
+  const RANGOS = [['7d', 'Últimos 7 días'], ['28d', 'Últimos 28 días'], ['3m', 'Últimos 3 meses'], ['6m', 'Últimos 6 meses'], ['12m', 'Últimos 12 meses'], ['16m', 'Últimos 16 meses'], ['custom', 'Personalizado']];
+  const COMPS = [['', 'Sin comparar'], ['prev', 'Comparar con el periodo anterior'], ['yoy', 'Comparar con el mismo periodo del año anterior']];
+  const TIPOS = [['web', 'Web'], ['image', 'Imagen'], ['video', 'Vídeo'], ['news', 'Noticias']];
+  const TABS = [['query', 'Consultas', 'Consultas principales'], ['page', 'Páginas', 'Páginas principales'], ['country', 'Países', 'País'], ['device', 'Dispositivos', 'Dispositivo'], ['date', 'Días', 'Fecha']];
+  const DIMLAB = { query: 'Consulta', page: 'Página', country: 'País', device: 'Dispositivo' };
+  const OPLAB = { contains: 'contiene', notContains: 'no contiene', equals: 'es exactamente', notEquals: 'no es', includingRegex: 'coincide con la expresión', excludingRegex: 'no coincide con la expresión' };
+  const DEV = { DESKTOP: 'Ordenador', MOBILE: 'Móvil', TABLET: 'Tablet' };
+  const PAIS = { esp: 'España', gbr: 'Reino Unido', usa: 'Estados Unidos', fra: 'Francia', deu: 'Alemania', ita: 'Italia', prt: 'Portugal', nld: 'Países Bajos', bel: 'Bélgica', che: 'Suiza', aut: 'Austria', irl: 'Irlanda', swe: 'Suecia', nor: 'Noruega', dnk: 'Dinamarca', fin: 'Finlandia', pol: 'Polonia', cze: 'Chequia', hun: 'Hungría', rou: 'Rumanía', bgr: 'Bulgaria', grc: 'Grecia', tur: 'Turquía', rus: 'Rusia', ukr: 'Ucrania', hrv: 'Croacia', svn: 'Eslovenia', svk: 'Eslovaquia', srb: 'Serbia', ltu: 'Lituania', lva: 'Letonia', est: 'Estonia', lux: 'Luxemburgo', mlt: 'Malta', cyp: 'Chipre', isl: 'Islandia', and: 'Andorra', mco: 'Mónaco', mar: 'Marruecos', dza: 'Argelia', tun: 'Túnez', egy: 'Egipto', zaf: 'Sudáfrica', nga: 'Nigeria', ken: 'Kenia', are: 'Emiratos Árabes Unidos', sau: 'Arabia Saudí', qat: 'Catar', kwt: 'Kuwait', bhr: 'Baréin', omn: 'Omán', isr: 'Israel', jor: 'Jordania', lbn: 'Líbano', ind: 'India', pak: 'Pakistán', bgd: 'Bangladés', chn: 'China', hkg: 'Hong Kong', twn: 'Taiwán', jpn: 'Japón', kor: 'Corea del Sur', sgp: 'Singapur', mys: 'Malasia', idn: 'Indonesia', tha: 'Tailandia', vnm: 'Vietnam', phl: 'Filipinas', aus: 'Australia', nzl: 'Nueva Zelanda', can: 'Canadá', mex: 'México', gtm: 'Guatemala', cri: 'Costa Rica', pan: 'Panamá', cub: 'Cuba', dom: 'República Dominicana', pri: 'Puerto Rico', col: 'Colombia', ven: 'Venezuela', ecu: 'Ecuador', per: 'Perú', bol: 'Bolivia', chl: 'Chile', arg: 'Argentina', ury: 'Uruguay', pry: 'Paraguay', bra: 'Brasil', zzz: 'Desconocido' };
+
+  const S = { v: 'rendimiento', r: '3m', desde: '', hasta: '', c: '', tipo: 'web', f: [], m: ['clicks', 'impressions'], t: 'query', orden: null, pag: 0, porPag: 10, q: '' };
+  let ULTIMO = null, chart = null, filasTabla = [], cache = new Map(), pedidos = 0;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // ---------- formato (a la española: punto de millar también en 4 cifras) ----------
+  const n0 = v => v == null || isNaN(v) ? '–' : Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const n1 = v => v == null || isNaN(v) ? '–' : v.toFixed(1).replace('.', ',');
+  const pc = v => v == null || isNaN(v) ? '–' : (v * 100).toFixed(1).replace('.', ',') + ' %';
+  const corto = v => v == null ? '–' : v >= 1e6 ? (v / 1e6).toFixed(2).replace('.', ',') + ' M' : v >= 1e4 ? (v / 1e3).toFixed(1).replace('.', ',') + ' mil' : n0(v);
+  const fmt = (m, v) => m === 'ctr' ? pc(v) : m === 'position' ? n1(v) : n0(v);
+  const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'];
+  const fCorta = s => `${+s.slice(8, 10)} ${MES[+s.slice(5, 7) - 1]}`;
+  const fLarga = s => `${fCorta(s)} ${s.slice(0, 4)}`;
+  const iso = d => d.toISOString().slice(0, 10);
+  const add = (s, n) => iso(new Date(Date.parse(s + 'T00:00:00Z') + n * 864e5));
+  const dias = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5) + 1;
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+  // ---------- rangos ----------
+  function rango() {
+    if (S.r === 'custom' && S.desde && S.hasta) return [S.desde, S.hasta];
+    const end = ULTIMO;
+    if (S.r === '7d') return [add(end, -6), end];
+    if (S.r === '28d') return [add(end, -27), end];
+    const meses = { '3m': 3, '6m': 6, '12m': 12, '16m': 16 }[S.r] || 3;
+    const d = new Date(end + 'T00:00:00Z');
+    return [iso(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - meses, d.getUTCDate() + 1))), end];
+  }
+  function rangoComp([s, e]) {
+    if (S.c === 'prev') { const n = dias(s, e); return [add(s, -n), add(s, -1)]; }
+    if (S.c === 'yoy') { const y = x => `${+x.slice(0, 4) - 1}${x.slice(4)}`; return [y(s), y(e)]; }
+    return null;
+  }
+  const etiquetaRango = ([s, e]) => `${fLarga(s)} - ${fLarga(e)}`;
+  const etiquetaPreset = () => S.r === 'custom' ? etiquetaRango(rango()) : RANGOS.find(x => x[0] === S.r)[1];
+
+  // ---------- estado en la URL (enlaces que se pueden compartir) ----------
+  function leerHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    S.v = p.get('v') === 'keywords' ? 'keywords' : 'rendimiento';
+    S.r = RANGOS.some(x => x[0] === p.get('r')) ? p.get('r') : '3m';
+    S.desde = p.get('d') || ''; S.hasta = p.get('h') || '';
+    S.c = ['prev', 'yoy'].includes(p.get('c')) ? p.get('c') : '';
+    S.tipo = TIPOS.some(x => x[0] === p.get('tipo')) ? p.get('tipo') : 'web';
+    S.f = (p.get('f') || '').split('|').filter(Boolean).map(x => { const [dimension, operator, ...r] = x.split('~'); return { dimension, operator, expression: r.join('~') }; }).filter(f => DIMLAB[f.dimension] && OPLAB[f.operator]);
+    const m = (p.get('m') || 'clicks,impressions').split(',').filter(x => M[x]);
+    S.m = m.length ? m : ['clicks', 'impressions'];
+    S.t = TABS.some(x => x[0] === p.get('t')) ? p.get('t') : 'query';
+  }
+  function escribirHash() {
+    const p = new URLSearchParams();
+    p.set('v', S.v); p.set('r', S.r);
+    if (S.r === 'custom') { p.set('d', S.desde); p.set('h', S.hasta); }
+    if (S.c) p.set('c', S.c);
+    if (S.tipo !== 'web') p.set('tipo', S.tipo);
+    if (S.f.length) p.set('f', S.f.map(f => [f.dimension, f.operator, f.expression].join('~')).join('|'));
+    p.set('m', S.m.join(',')); p.set('t', S.t);
+    const h = '#' + p.toString();
+    if (location.hash !== h) history.replaceState(null, '', h);
+  }
+
+  // ---------- datos ----------
+  async function api(params) {
+    const u = '/api/admin?' + new URLSearchParams({ action: 'dashboard-gsc', ...params });
+    if (cache.has(u)) return cache.get(u);
+    const pr = (async () => {
+      const r = await fetch(u, { credentials: 'same-origin' });
+      if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent('/dashboard' + location.hash); throw new Error('sesión'); }
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { const e = new Error(j.error || 'Error ' + r.status); e.falta = j.falta; throw e; }
+      return j;
+    })();
+    cache.set(u, pr);
+    pr.catch(() => cache.delete(u));
+    return pr;
+  }
+  const consulta = (rg, dim, extra = {}) => api({ start: rg[0], end: rg[1], dim: dim || '', type: S.tipo, filters: JSON.stringify(S.f), ...extra });
+  function cargando(on) { pedidos += on ? 1 : -1; $('#load').classList.toggle('on', pedidos > 0); }
+  async function conCarga(p) { cargando(true); try { return await p; } finally { cargando(false); } }
+  function aviso(html, err) { $('#avisos').innerHTML = html ? `<div class="aviso${err ? ' err' : ''}">${html}</div>` : ''; }
+
+  // ---------- chips ----------
+  function pintarChips() {
+    const ch = [];
+    ch.push(`<button class="chip" id="cTipo">Tipo de búsqueda: ${TIPOS.find(x => x[0] === S.tipo)[1]}</button>`);
+    ch.push(`<button class="chip" id="cFecha">Fecha: ${esc(etiquetaPreset())}${S.c ? ' · ' + (S.c === 'prev' ? 'comparado con el periodo anterior' : 'comparado con el año anterior') : ''}</button>`);
+    S.f.forEach((f, i) => ch.push(`<span class="chip filtro" title="${esc(DIMLAB[f.dimension] + ' ' + OPLAB[f.operator] + ' ' + f.expression)}"><span>${esc(etiquetaFiltro(f))}</span><button class="x" data-quitar="${i}" aria-label="Quitar filtro">×</button></span>`));
+    ch.push('<button class="chip add" id="cAdd">+ Añadir filtro</button>');
+    const der = [];
+    if (S.f.length || S.c || S.r !== '3m' || S.tipo !== 'web') der.push('<button class="txtbtn" id="cReset">Restablecer filtros</button>');
+    der.push(`<a class="txtbtn" id="cGsc" target="_blank" rel="noopener" href="${esc(urlGsc())}">Abrir en Search Console</a>`);
+    if (S.v === 'rendimiento') der.push('<button class="txtbtn" id="cCsv">Exportar</button>');
+    ch.push(`<div class="der">${der.join('')}</div>`);
+    $('#chips').innerHTML = ch.join('');
+  }
+  function etiquetaFiltro(f) {
+    let v = f.expression;
+    if (f.dimension === 'device') v = DEV[v] || v;
+    if (f.dimension === 'country') v = PAIS[v] || v.toUpperCase();
+    if (f.dimension === 'page' && f.operator === 'includingRegex' && /\/en\/$/.test(v.replace(/\\/g, ''))) return 'Página: en inglés (/en/)';
+    if (f.dimension === 'page') v = v.replace('https://www.eventosbarcelona.com', '') || '/';
+    return `${DIMLAB[f.dimension]}${f.operator === 'equals' ? '' : ' ' + OPLAB[f.operator]}: ${v}`;
+  }
+  function urlGsc() {
+    const [s, e] = rango();
+    const u = new URL('https://search.google.com/search-console/performance/search-analytics');
+    u.searchParams.set('resource_id', SITE);
+    u.searchParams.set('start_date', s.replace(/-/g, '')); u.searchParams.set('end_date', e.replace(/-/g, ''));
+    u.searchParams.set('metrics', 'CLICKS,IMPRESSIONS,CTR,POSITION');
+    for (const f of S.f) {
+      if (f.dimension === 'query' || f.dimension === 'page') u.searchParams.set(f.dimension, (f.operator === 'equals' ? '!' : '*') + f.expression.replace(/^\^|\\/g, ''));
+    }
+    return u.toString();
+  }
+
+  // ---------- vista Rendimiento ----------
+  const sum = (rows, k) => rows.reduce((a, r) => a + r[k], 0);
+  function totalesDe(rows) { const r = rows[0]; return r ? { clicks: r.clicks, impressions: r.impressions, ctr: r.ctr, position: r.position } : { clicks: 0, impressions: 0, ctr: 0, position: null }; }
+  async function vistaRendimiento() {
+    const rg = rango(), rc = rangoComp(rg);
+    $('#vista').innerHTML = `<div class="card"><div class="metrics" id="metrics"></div><div class="chartbox"><canvas id="chart" aria-label="Gráfico diario de las métricas elegidas" role="img"></canvas></div><div class="leyenda" id="leyenda"></div></div>
+      <div class="card"><div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab${S.t === k ? ' on' : ''}" role="tab" aria-selected="${S.t === k}" data-tab="${k}">${l}</button>`).join('')}</div>
+      <div class="tbar"><input id="tq" type="search" placeholder="Filtrar filas de la tabla" value="${esc(S.q)}"><span class="sp"></span><span id="tinfo" class="nota" style="margin:0"></span></div>
+      <div class="t-scroll" id="tabla"><div class="vacio">Cargando…</div></div><div class="pie" id="pie"></div></div>`;
+    const [tot, totC, serie, serieC] = await conCarga(Promise.all([consulta(rg, ''), rc ? consulta(rc, '') : null, consulta(rg, 'date'), rc ? consulta(rc, 'date') : null]));
+    pintarMetricas(totalesDe(tot.rows), totC && totalesDe(totC.rows), rg, rc);
+    pintarGrafico(serie.rows, serieC && serieC.rows, rg, rc);
+    await cargarTabla();
+  }
+  function pintarMetricas(t, tc, rg, rc) {
+    $('#metrics').innerHTML = Object.entries(M).map(([k, x]) => {
+      const on = S.m.includes(k);
+      let cmp = '';
+      if (tc) {
+        const d = k === 'position' ? t[k] - tc[k] : (tc[k] ? (t[k] - tc[k]) / tc[k] : null);
+        cmp = `<div class="cmp">antes ${k === 'ctr' ? pc(tc[k]) : k === 'position' ? n1(tc[k]) : corto(tc[k])}${d == null || isNaN(d) ? '' : ` · ${k === 'position' ? (d >= 0 ? '+' : '') + n1(d) : (d >= 0 ? '+' : '') + Math.round(d * 100) + ' %'}`}</div>`;
+      }
+      return `<button class="metric${on ? ' on' : ''}" data-m="${k}" aria-pressed="${on}"><div class="lab"><span class="box"></span>${x.lab}</div><div class="val">${k === 'ctr' ? pc(t[k]) : k === 'position' ? n1(t[k]) : corto(t[k])}</div>${cmp}</button>`;
+    }).join('');
+  }
+  function pintarGrafico(rows, rowsC, rg, rc) {
+    const fechas = []; for (let d = rg[0]; d <= rg[1]; d = add(d, 1)) fechas.push(d);
+    const porFecha = new Map(rows.map(r => [r.keys[0], r]));
+    const porFechaC = rowsC ? new Map(rowsC.map(r => [r.keys[0], r])) : null;
+    const nC = rc ? dias(rc[0], rc[1]) : 0;
+    const ds = [], scales = { x: { grid: { display: false }, ticks: { maxTicksLimit: innerWidth < 600 ? 4 : 8, color: '#5f6368', font: { size: 11 }, autoSkip: true, maxRotation: 0 } } };
+    S.m.forEach((k, i) => {
+      const val = r => r ? (k === 'ctr' ? r.ctr * 100 : r[k]) : (k === 'position' ? null : 0);
+      ds.push({ label: M[k].col, data: fechas.map(f => val(porFecha.get(f))), borderColor: M[k].color, backgroundColor: M[k].color, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0, yAxisID: 'y_' + k, spanGaps: true });
+      if (porFechaC) ds.push({ label: M[k].col + ' (antes)', data: fechas.map((f, j) => j < nC ? val(porFechaC.get(add(rc[0], j))) : null), borderColor: M[k].color, borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 3, tension: 0, yAxisID: 'y_' + k, spanGaps: true });
+      scales['y_' + k] = { display: i < 2, position: i === 0 ? 'left' : 'right', reverse: k === 'position', beginAtZero: k !== 'position', grid: { display: i === 0, color: '#e8eaed' }, border: { display: false },
+        title: { display: i < 2, text: M[k].col, color: M[k].txt, font: { size: 11 } }, ticks: { color: '#5f6368', font: { size: 11 }, maxTicksLimit: 5, callback: v => k === 'ctr' ? n1(v) + ' %' : k === 'position' ? n1(v) : corto(v) } };
+    });
+    if (chart) chart.destroy();
+    if (!window.Chart) { $('.chartbox').innerHTML = '<div class="vacio">No se pudo cargar la librería del gráfico.</div>'; return; }
+    chart = new Chart($('#chart'), { type: 'line', data: { labels: fechas.map(fCorta), datasets: ds },
+      options: { maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false }, scales,
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#202124', bodyColor: '#202124', borderColor: '#dadce0', borderWidth: 1, padding: 10,
+          callbacks: { title: it => fLarga(fechas[it[0].dataIndex]) + (rc ? ` (antes: ${fLarga(add(rc[0], it[0].dataIndex))})` : ''),
+            label: c => { const k = S.m[Math.floor(c.datasetIndex / (rc ? 2 : 1))]; const v = c.raw; return ` ${c.dataset.label}: ${v == null ? '–' : k === 'ctr' ? n1(v) + ' %' : k === 'position' ? n1(v) : n0(v)}`; } } } } } });
+    $('#leyenda').innerHTML = rc ? `<span><i></i>${esc(etiquetaRango(rg))}</span><span><i class="d"></i>${esc(etiquetaRango(rc))}</span>` : '';
+  }
+  async function cargarTabla() {
+    const rg = rango(), rc = rangoComp(rg);
+    const lim = S.t === 'date' ? 25000 : 1000;
+    const [a, b] = await conCarga(Promise.all([consulta(rg, S.t, { limit: lim }), rc ? consulta(rc, S.t, { limit: lim }) : null]));
+    const prev = b ? new Map(b.rows.map(r => [r.keys[0], r])) : null;
+    let rows = a.rows.map(r => ({ key: r.keys[0], cur: r, prev: prev ? prev.get(r.keys[0]) || null : undefined }));
+    if (S.t === 'date' && rc) { const off = dias(rc[0], rg[0]) - 1; rows.forEach(r => { r.prev = prev.get(add(r.key, -off)) || null; }); }
+    filasTabla = rows; S.pag = 0;
+    pintarTabla();
+  }
+  function etiquetaClave(k) {
+    if (S.t === 'device') return DEV[k] || k;
+    if (S.t === 'country') return PAIS[k] || k.toUpperCase();
+    if (S.t === 'date') return fLarga(k);
+    if (S.t === 'page') return k.replace('https://www.eventosbarcelona.com', '') || '/';
+    return k;
+  }
+  function filasVisibles() {
+    const q = norm(S.q);
+    let rows = q ? filasTabla.filter(r => norm(etiquetaClave(r.key)).includes(q)) : filasTabla.slice();
+    const o = S.orden || (S.t === 'date' ? { k: 'key', dir: -1 } : { k: S.m.includes('clicks') ? 'clicks' : S.m[0], dir: -1 });
+    rows.sort((x, y) => {
+      if (o.k === 'key') return (x.key < y.key ? -1 : x.key > y.key ? 1 : 0) * o.dir;
+      const vx = x.cur[o.k], vy = y.cur[o.k];
+      return ((vx ?? -1) - (vy ?? -1)) * o.dir || (y.cur.impressions - x.cur.impressions);
+    });
+    return rows;
+  }
+  function pintarTabla() {
+    const rows = filasVisibles(), comp = !!rangoComp(rango());
+    const o = S.orden || (S.t === 'date' ? { k: 'key', dir: -1 } : { k: S.m.includes('clicks') ? 'clicks' : S.m[0], dir: -1 });
+    const ar = k => o.k === k ? `<span class="ar">${o.dir < 0 ? '↓' : '↑'}</span>` : '';
+    const cab = [`<th data-o="key" class="${o.k === 'key' ? 'on' : ''}">${TABS.find(x => x[0] === S.t)[2]}${ar('key')}</th>`];
+    S.m.forEach(k => {
+      cab.push(`<th data-o="${k}" class="${o.k === k ? 'on' : ''}">${M[k].col}${ar(k)}</th>`);
+      if (comp) cab.push(`<th>${M[k].col} antes</th><th>Diferencia</th>`);
+    });
+    const ini = S.pag * S.porPag, pagina = rows.slice(ini, ini + S.porPag);
+    const cuerpo = pagina.map(r => {
+      const tds = [`<td>${esc(etiquetaClave(r.key))}${S.t === 'page' ? `<a class="ext" href="${esc(r.key)}" target="_blank" rel="noopener" title="Abrir la página" onclick="event.stopPropagation()">↗</a>` : ''}</td>`];
+      S.m.forEach(k => {
+        tds.push(`<td>${fmt(k, r.cur[k])}</td>`);
+        if (comp) {
+          const p = r.prev ? r.prev[k] : null;
+          let d = null, cls = '';
+          if (p != null && r.cur[k] != null) {
+            d = r.cur[k] - p;
+            const mejor = k === 'position' ? d < 0 : d > 0;
+            cls = d === 0 ? '' : mejor ? 'up' : 'down';
+          }
+          tds.push(`<td>${fmt(k, p)}</td><td class="${cls}">${d == null ? '–' : (d > 0 ? '+' : '') + fmt(k, d)}</td>`);
+        }
+      });
+      return `<tr class="${S.t === 'date' ? '' : 'fila'}" data-k="${esc(r.key)}">${tds.join('')}</tr>`;
+    }).join('');
+    $('#tabla').innerHTML = rows.length ? `<table><thead><tr>${cab.join('')}</tr></thead><tbody>${cuerpo}</tbody></table>` : '<div class="vacio">No hay datos para estos filtros.</div>';
+    const total = rows.length;
+    $('#pie').innerHTML = total ? `<label>Filas por página <select id="porPag">${[10, 25, 50, 100, 500].map(n => `<option${n === S.porPag ? ' selected' : ''}>${n}</option>`).join('')}</select></label><span>${n0(ini + 1)}-${n0(Math.min(ini + S.porPag, total))} de ${n0(total)}</span><button id="pAnt" aria-label="Página anterior"${S.pag ? '' : ' disabled'}>‹</button><button id="pSig" aria-label="Página siguiente"${ini + S.porPag < total ? '' : ' disabled'}>›</button>` : '';
+    $('#tinfo').textContent = S.t !== 'date' && filasTabla.length >= 1000 ? 'Se muestran las 1.000 filas principales, como en Search Console' : '';
+  }
+  function exportar() {
+    const comp = !!rangoComp(rango());
+    const cab = [TABS.find(x => x[0] === S.t)[2]];
+    S.m.forEach(k => { cab.push(M[k].col); if (comp) cab.push(M[k].col + ' antes'); });
+    const lin = filasVisibles().map(r => { const v = [etiquetaClave(r.key)]; S.m.forEach(k => { v.push(csvNum(k, r.cur[k])); if (comp) v.push(csvNum(k, r.prev ? r.prev[k] : null)); }); return v; });
+    const csv = [cab, ...lin].map(l => l.map(x => `"${String(x ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+    a.download = `rendimiento-${S.t}-${rango().join('_')}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  }
+  const csvNum = (k, v) => v == null ? '' : k === 'ctr' ? (v * 100).toFixed(2).replace('.', ',') : k === 'position' ? v.toFixed(1).replace('.', ',') : Math.round(v);
+
+  // ---------- vista Keywords seguidas ----------
+  async function vistaKeywords() {
+    const rg = rango(), rc = rangoComp(rg);
+    $('#vista').innerHTML = '<div class="card"><div class="vacio">Cargando…</div></div>';
+    const [a, b] = await conCarga(Promise.all([consulta(rg, '', { seguidas: '1' }), rc ? consulta(rc, '', { seguidas: '1' }) : null]));
+    const dato = (r, k) => { const x = r && r.kw[k]; return x && x.impressions ? x : null; };
+    const LAB = { 'organizacion de eventos barcelona': 'organización de eventos barcelona', 'espectaculos para eventos corporativos': 'espectáculos para eventos corporativos' };
+    const tabla = (lista, titulo, sub) => {
+      const filas = lista.map(k => ({ k, a: dato(a, k), b: dato(b, k) })).sort((x, y) => ((y.a && y.a.impressions) || 0) - ((x.a && x.a.impressions) || 0));
+      const top = filas.filter(f => f.a && f.a.position <= 10).length;
+      const cab = `<th>Keyword</th><th>Posición</th>${rc ? '<th>Antes</th><th>Cambio</th>' : ''}<th>Impresiones</th>${rc ? '<th>Antes</th>' : ''}<th>Clics</th><th>CTR</th>`;
+      const cuerpo = filas.map(f => {
+        const p = f.a && f.a.position, pb = f.b && f.b.position;
+        const d = p != null && pb != null ? pb - p : null;
+        const cls = p == null ? '' : p <= 10 ? 'pos-top' : p <= 20 ? 'pos-mid' : 'pos-low';
+        return `<tr class="fila" data-kw="${esc(LAB[f.k] || f.k)}"><td>${esc(LAB[f.k] || f.k)}</td><td class="${cls}">${p == null ? '<span class="pos-low">sin datos</span>' : n1(p)}</td>${rc ? `<td>${n1(pb)}</td><td class="${d == null || d === 0 ? '' : d > 0 ? 'up' : 'down'}">${d == null ? '–' : (d > 0 ? '▲ ' : d < 0 ? '▼ ' : '') + n1(Math.abs(d))}</td>` : ''}<td>${n0(f.a && f.a.impressions)}</td>${rc ? `<td>${n0(f.b && f.b.impressions)}</td>` : ''}<td>${n0(f.a && f.a.clicks)}</td><td>${pc(f.a && f.a.ctr)}</td></tr>`;
+      }).join('');
+      return `<div class="card"><div class="ctitle">${titulo}</div><div class="csub">${sub} En primera página: ${top} de ${lista.length}. Pulsa una keyword para ver su evolución en Rendimiento.</div><div class="t-scroll"><table><thead><tr>${cab}</tr></thead><tbody>${cuerpo}</tbody></table></div></div>`;
+    };
+    const fa = a.hireBook, fb = b ? b.hireBook : null;
+    fa.n = fa.queries; fa.top = fa.top10; if (fb) { fb.n = fb.queries; fb.top = fb.top10; }
+    const celda = (lab, v, vb, f) => `<div><div class="lab">${lab}</div><div class="val">${f(v)}</div>${fb ? `<div class="lab">antes ${f(vb)}</div>` : ''}</div>`;
+    $('#vista').innerHTML = `<div class="card"><div class="ctitle">Búsquedas en inglés con "hire" o "book"</div><div class="csub">La fórmula de títulos "Hire / Book … in Barcelona" (desde el 21 de octubre de 2026). Las más raras, como "corporate entertainment agency barcelona", Google no las enseña una a una, así que se miden juntas.</div>
+      <div class="kwgrid">${celda('Búsquedas distintas', fa.n, fb && fb.n, n0)}${celda('En primera página', fa.top, fb && fb.top, n0)}${celda('Impresiones', fa.impressions, fb && fb.impressions, n0)}${celda('Posición media', fa.position, fb && fb.position, n1)}</div></div>
+      ${tabla(a.keywords, 'Keywords principales en castellano', 'Cluster de agencia y eventos corporativos, más la marca.')}
+      ${tabla(a.keywordsEn, 'Keywords en inglés', 'Búsquedas en inglés con impresiones reales, en cualquier página de la web.')}`;
+  }
+
+  // ---------- pintar todo ----------
+  async function actualizar() {
+    escribirHash(); pintarChips(); aviso('');
+    document.querySelectorAll('nav.side a[data-nav]').forEach(a => {
+      const ingles = S.v === 'rendimiento' && S.f.some(f => f.dimension === 'page' && /\/en\//.test(f.expression.replace(/\\/g, '')));
+      a.classList.toggle('on', a.dataset.nav === (S.v === 'keywords' ? 'keywords' : ingles ? 'ingles' : 'rendimiento'));
+    });
+    $('#titulo').textContent = S.v === 'keywords' ? 'Keywords seguidas' : 'Rendimiento en los resultados de búsqueda';
+    try { await (S.v === 'keywords' ? vistaKeywords() : vistaRendimiento()); }
+    catch (e) {
+      if (e.message === 'sesión') return;
+      if (e.falta) aviso('Falta configurar el acceso a Search Console en Vercel: la variable <b>GOOGLE_SA_JSON_B64</b> (la cuenta de servicio en base64). Mientras tanto, los informes quincenales siguen disponibles en el menú.', true);
+      else aviso('No se pudieron cargar los datos: ' + esc(e.message), true);
+      $('#vista').innerHTML = '';
+    }
+  }
+
+  // ---------- eventos ----------
+  document.addEventListener('click', ev => {
+    const t = ev.target.closest('button, a, tr, th');
+    if (!t) return;
+    if (t.matches('.metric')) { const k = t.dataset.m; S.m = S.m.includes(k) ? (S.m.length > 1 ? S.m.filter(x => x !== k) : S.m) : Object.keys(M).filter(x => S.m.includes(x) || x === k); actualizar(); return; }
+    if (t.matches('.tab')) { S.t = t.dataset.tab; S.orden = null; S.q = ''; escribirHash(); document.querySelectorAll('.tab').forEach(b => { b.classList.toggle('on', b === t); b.setAttribute('aria-selected', b === t); }); $('#tq').value = ''; $('#tabla').innerHTML = '<div class="vacio">Cargando…</div>'; cargarTabla().catch(e => aviso(esc(e.message), true)); return; }
+    if (t.matches('th[data-o]')) { const k = t.dataset.o; const o = S.orden; S.orden = { k, dir: o && o.k === k ? -o.dir : (k === 'key' || k === 'position' ? 1 : -1) }; pintarTabla(); return; }
+    if (t.matches('tr.fila') && t.dataset.k != null) { S.f = S.f.filter(f => f.dimension !== S.t).concat({ dimension: S.t, operator: 'equals', expression: t.dataset.k }); actualizar(); return; }
+    if (t.matches('tr.fila') && t.dataset.kw) { S.v = 'rendimiento'; S.t = 'page'; S.f = [{ dimension: 'query', operator: 'equals', expression: t.dataset.kw }]; actualizar(); return; }
+    if (t.matches('.x[data-quitar]')) { S.f.splice(+t.dataset.quitar, 1); actualizar(); return; }
+    if (t.id === 'cReset') { S.f = []; S.c = ''; S.r = '3m'; S.tipo = 'web'; actualizar(); return; }
+    if (t.id === 'cCsv') { exportar(); return; }
+    if (t.id === 'cFecha') { abrirFecha(); return; }
+    if (t.id === 'cAdd') { abrirFiltro(); return; }
+    if (t.id === 'cTipo') { abrirTipo(); return; }
+    if (t.id === 'pAnt') { S.pag--; pintarTabla(); return; }
+    if (t.id === 'pSig') { S.pag++; pintarTabla(); return; }
+    if (t.id === 'menu') { $('#side').classList.toggle('open'); $('#drawerbg').classList.toggle('open'); return; }
+    if (t.matches('nav.side a') && innerWidth <= 900) { $('#side').classList.remove('open'); $('#drawerbg').classList.remove('open'); }
+  });
+  $('#drawerbg').addEventListener('click', () => { $('#side').classList.remove('open'); $('#drawerbg').classList.remove('open'); });
+  document.addEventListener('input', ev => { if (ev.target.id === 'tq') { S.q = ev.target.value; S.pag = 0; pintarTabla(); } });
+  document.addEventListener('change', ev => { if (ev.target.id === 'porPag') { S.porPag = +ev.target.value; S.pag = 0; pintarTabla(); } });
+  addEventListener('hashchange', () => { leerHash(); actualizar(); });
+
+  // diálogo de fechas
+  function abrirFecha() {
+    const d = $('#dlgFecha');
+    $('#optsRango').innerHTML = RANGOS.map(([k, l]) => `<label><input type="radio" name="rg" value="${k}"${S.r === k ? ' checked' : ''}>${l}</label>`).join('');
+    $('#optsComp').innerHTML = COMPS.map(([k, l]) => `<label><input type="radio" name="cp" value="${k}"${S.c === k ? ' checked' : ''}>${l}</label>`).join('');
+    const [s, e] = rango();
+    $('#fDesde').value = s; $('#fHasta').value = e; $('#fHasta').max = ULTIMO; $('#fDesde').max = ULTIMO;
+    $('#fDesde').min = $('#fHasta').min = add(ULTIMO, -485);
+    d.querySelectorAll('.dtabs button').forEach(b => b.onclick = () => { d.querySelectorAll('.dtabs button').forEach(x => x.classList.toggle('on', x === b)); d.querySelectorAll('[data-p]').forEach(p => p.hidden = p.dataset.p !== b.dataset.t); });
+    d.onclose = () => {
+      if (d.returnValue !== 'ok') return;
+      const r = d.querySelector('input[name=rg]:checked').value;
+      if (r === 'custom') { if (!$('#fDesde').value || !$('#fHasta').value || $('#fDesde').value > $('#fHasta').value) return; S.desde = $('#fDesde').value; S.hasta = $('#fHasta').value; }
+      S.r = r; S.c = d.querySelector('input[name=cp]:checked').value; actualizar();
+    };
+    ['fDesde', 'fHasta'].forEach(id => $('#' + id).onchange = () => { d.querySelector('input[value=custom]').checked = true; });
+    d.returnValue = ''; d.showModal();
+  }
+  // diálogo de filtro
+  const OPS_TXT = [['contains', 'Contiene'], ['notContains', 'No contiene'], ['equals', 'Es exactamente'], ['includingRegex', 'Expresión regular']];
+  function abrirFiltro() {
+    const d = $('#dlgFiltro');
+    const pintarOps = () => {
+      const dim = $('#fDim').value, sel = dim === 'country' || dim === 'device';
+      $('#fOp').innerHTML = (sel ? [['equals', 'Es'], ['notEquals', 'No es']] : OPS_TXT).map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+      $('#rowExpr').hidden = sel; $('#rowSel').hidden = !sel;
+      if (dim === 'device') $('#fSel').innerHTML = Object.entries(DEV).map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+      if (dim === 'country') $('#fSel').innerHTML = Object.entries(PAIS).filter(([k]) => k !== 'zzz').sort((a, b) => a[1].localeCompare(b[1], 'es')).map(([k, l]) => `<option value="${k}"${k === 'esp' ? ' selected' : ''}>${l}</option>`).join('');
+      $('#fExpr').placeholder = dim === 'page' ? 'p. ej. /en/ o flamenco' : 'p. ej. flamenco';
+    };
+    $('#fDim').value = S.t === 'date' ? 'query' : S.t; $('#fExpr').value = '';
+    $('#fDim').onchange = pintarOps; pintarOps();
+    d.onclose = () => {
+      if (d.returnValue !== 'ok') return;
+      const dim = $('#fDim').value, op = $('#fOp').value;
+      const expr = dim === 'country' || dim === 'device' ? $('#fSel').value : $('#fExpr').value.trim();
+      if (!expr) return;
+      S.f = S.f.filter(f => f.dimension !== dim).concat({ dimension: dim, operator: op, expression: expr });
+      actualizar();
+    };
+    d.returnValue = ''; d.showModal(); setTimeout(() => $('#fExpr').focus(), 50);
+  }
+  function abrirTipo() {
+    const d = $('#dlgTipo');
+    $('#optsTipo').innerHTML = TIPOS.map(([k, l]) => `<label><input type="radio" name="tp" value="${k}"${S.tipo === k ? ' checked' : ''}>${l}</label>`).join('');
+    d.onclose = () => { if (d.returnValue === 'ok') { S.tipo = d.querySelector('input[name=tp]:checked').value; actualizar(); } };
+    d.returnValue = ''; d.showModal();
+  }
+
+  // ---------- arranque: último día con datos ----------
+  (async () => {
+    leerHash();
+    const hoy = iso(new Date());
+    try {
+      const j = await conCarga(api({ start: add(hoy, -10), end: hoy, dim: 'date', type: 'web', filters: '[]' }));
+      // hasta ayer como mucho: el día de hoy va a medias y hunde el final del gráfico
+      ULTIMO = j.rows.map(r => r.keys[0]).filter(d => d < hoy).sort().pop() || add(hoy, -2);
+    } catch (e) {
+      if (e.message === 'sesión') return;
+      ULTIMO = add(hoy, -2);
+    }
+    actualizar();
+  })();
+})();
+</script>
+</body>
+</html>

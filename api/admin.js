@@ -33,6 +33,7 @@
 
 import { esEquipo, noAutorizado } from '../lib/sesion-admin.js';
 import { paginaDashboard, generarDashboard } from '../lib/dashboard/handlers.js';
+import { consultaGsc } from '../lib/dashboard/gsc-live.js';
 
 // Las llaman otros sistemas, no el panel: el GPT (trae su propio token,
 // gptAuthOk), el webhook de GHL y n8n.
@@ -3346,6 +3347,7 @@ export default async function handler(req, res) {
       if (action === 'gpt-catalogo') return gptCatalogo(req, res, env);
       if (action === 'gpt-show') return gptShow(req, res, env);
       if (action === 'list-banco') return listBanco(req, res, env);
+      if (action === 'dashboard-gsc') return consultaGsc(req, res);
     }
     if (req.method === 'POST') {
       if (action === 'link-show-to-artista') return linkShowToArtista(req, res, env);
