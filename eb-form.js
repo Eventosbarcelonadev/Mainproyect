@@ -67,6 +67,16 @@ function ebSubmit(form){
     '&telefono='+encodeURIComponent(d.telefono)+
     (isEn?'&lang=en':'')+
     '&skip=1';
+  // UTMs: el formulario completo vive en otro subdominio y no ve el
+  // sessionStorage.eb_utm de la web, así que se los pasamos en la URL.
+  // Vienen de los hidden que inyecta el snippet WP EB-UTM-TRACKING, o de
+  // sessionStorage si el form se pintó antes de que el snippet corriera.
+  var utm={};
+  try{ utm=JSON.parse(sessionStorage.getItem('eb_utm')||'{}'); }catch(e){}
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){
+    var v=d[k]||utm[k];
+    if(v) params+='&'+k+'='+encodeURIComponent(v);
+  });
   if(tipo==='artista'||tipo==='proveedor'){
     // No pasamos &type= para que la primera pantalla del form completo sea
     // siempre el selector artista/proveedor (decisión Phil 2026-05-08).
