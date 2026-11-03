@@ -8,10 +8,12 @@
  * Usage:
  *   SUPABASE_URL=... SUPABASE_SERVICE_KEY=... node scripts/subir-docs.mjs manifiesto.json
  *
- * manifiesto.json: [{origen, id, titulo, tipo, fecha, resumen, entrada?}]
+ * manifiesto.json: [{origen | enlace, id, titulo, tipo, fecha, resumen, entrada?}]
  *   origen   archivo o carpeta local. Una carpeta se sube entera (imágenes incluidas).
+ *   enlace   en lugar de origen: ruta de una página de la web (p. ej. /dashboard).
+ *            No se sube nada, solo se apunta en el índice.
  *   id       slug: a-z, 0-9 y guiones. Si ya existe, se reemplaza.
- *   tipo     informe | presentacion | datos | guia | nota
+ *   tipo     informe | presentacion | datos | guia | nota | panel
  *   fecha    YYYY-MM-DD
  *   entrada  archivo que abre la tarjeta. Por defecto index.html en una carpeta,
  *            o el nombre del archivo.
@@ -23,7 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const BUCKET = 'docs-internos';
-const TIPOS = new Set(['informe', 'presentacion', 'datos', 'guia', 'nota']);
+const TIPOS = new Set(['informe', 'presentacion', 'datos', 'guia', 'nota', 'panel']);
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8',
   '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json',
@@ -96,12 +98,21 @@ async function main() {
     if (!TIPOS.has(d.tipo)) throw new Error(`${d.id}: tipo no válido: ${d.tipo}`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d.fecha || '')) throw new Error(`${d.id}: fecha no válida: ${d.fecha}`);
     if (!d.titulo) throw new Error(`${d.id}: falta el título`);
+    if (d.enlace !== undefined && !/^\/(?![/\\])/.test(d.enlace)) throw new Error(`${d.id}: el enlace tiene que ser una ruta de la web: ${d.enlace}`);
+    if (!d.enlace && !d.origen) throw new Error(`${d.id}: falta origen o enlace`);
   }
 
   await asegurarBucket();
   const indice = await leerIndice();
 
   for (const d of docs) {
+    if (d.enlace) {
+      const fila = { id: d.id, titulo: d.titulo, tipo: d.tipo, fecha: d.fecha, resumen: d.resumen || '', enlace: d.enlace };
+      const i = indice.findIndex(x => x.id === d.id);
+      if (i >= 0) indice[i] = fila; else indice.push(fila);
+      console.log(`${d.id}: enlace a ${d.enlace}`);
+      continue;
+    }
     const origen = path.resolve(dirBase, d.origen);
     const archivos = archivosDe(origen);
     const entrada = d.entrada || (fs.statSync(origen).isFile() ? path.basename(origen) : 'index.html');

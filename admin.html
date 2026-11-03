@@ -4261,8 +4261,8 @@
     // Informes, presentaciones, datos y notas de EB. Están en el bucket privado
     // docs-internos de Supabase, no en el repo (es público y llevan datos de
     // contactos); los sirve /api/admin con la sesión del equipo.
-    // tipo: informe | presentacion | datos | guia | nota
-    const DOC_TIPOS = { informe: 'Informe', presentacion: 'Presentación', datos: 'Datos', guia: 'Guía', nota: 'Notas de reunión' };
+    // tipo: informe | presentacion | datos | guia | nota | panel (enlace a un panel en directo de la web)
+    const DOC_TIPOS = { informe: 'Informe', presentacion: 'Presentación', datos: 'Datos', guia: 'Guía', nota: 'Notas de reunión', panel: 'Panel en directo' };
     async function loadDocs() {
       $('docs-loading').classList.remove('hidden');
       try {
