@@ -1,5 +1,5 @@
 -- 2026-11-03: métricas del outbound de LinkedIn de Xavi para la pestaña LinkedIn de /admin.
--- Las manda cada día a las 5:00 el servidor de Rianex (panel_metricas.py, tras la sync de GHL)
+-- Las manda cada día a las 9:00 el servidor de Rianex (panel_diario.sh -> panel_metricas.py)
 -- a POST /api/admin?action=linkedin-push. Dos tipos de fila:
 --   id = 'actual'      lo último que ha llegado: totales, listas, semanas y quién ha contestado
 --   id = 'AAAA-MM-DD'  los totales con que acabó cada día, para ver la evolución
