@@ -1095,6 +1095,50 @@
       .p-act { text-align: right; }
     }
 
+    /* Pestaña LinkedIn */
+    .li-fresh { margin: 0 0 18px; color: var(--gray); font-size: 13px; }
+    .li-stale { color: var(--warn-fg); background: var(--warn-bg); padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+    .li-block { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+    .li-h { font-size: 15px; font-weight: 600; margin: 0 0 14px; }
+    .li-note { font-size: 12.5px; color: var(--gray); margin: 12px 0 0; }
+    .li-funnel { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .li-step { display: grid; grid-template-columns: 120px 1fr 64px 170px; align-items: center; gap: 12px; font-size: 13.5px; }
+    .li-step-label { color: var(--ink-2); }
+    .li-step-bar { height: 14px; background: var(--light); border-radius: 4px; overflow: hidden; }
+    .li-step-bar span { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+    .li-step-num { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+    .li-step-pct { color: var(--gray); font-size: 12.5px; }
+    .li-weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .li-mini { margin: 0; }
+    .li-mini figcaption { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .li-mini figcaption span { font-weight: 400; color: var(--gray); margin-left: 6px; }
+    .li-mini svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .li-bar path { fill: var(--accent); }
+    .li-bar.hover path { fill: var(--accent-text); }
+    .li-axis { stroke: var(--border-strong); stroke-width: 1; }
+    .li-tick { font-size: 10.5px; fill: var(--gray); }
+    .li-tip { position: fixed; z-index: 200; pointer-events: none; background: var(--dark); color: #fff; font-size: 12px; padding: 5px 9px; border-radius: 6px; opacity: 0; transition: opacity .1s; white-space: nowrap; }
+    .li-tip.on { opacity: 1; }
+    .li-table-wrap { overflow-x: auto; }
+    .li-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .li-table th { text-align: left; font-weight: 500; color: var(--gray); font-size: 12px; padding: 6px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .li-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; vertical-align: top; }
+    .li-table tr:last-child td { border-bottom: 0; }
+    .li-table small { color: var(--gray); }
+    .li-table td:first-child { min-width: 170px; }
+    .li-resp td:first-child small { display: block; }
+    .li-resp td:nth-child(3), .li-resp td:nth-child(4), .li-resp td:last-child { white-space: nowrap; }
+    .li-table a { color: var(--ui-edit); text-decoration: none; }
+    .li-table a:hover { text-decoration: underline; }
+    .li-chip { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; background: var(--light); border: 1px solid var(--border); margin: 0 4px 2px 0; white-space: nowrap; }
+    .li-chip-int { background: var(--warn-bg); color: var(--warn-fg); border-color: transparent; }
+    .li-chip-lead { background: var(--ok-bg); color: var(--ok-fg); border-color: transparent; }
+    @media (max-width: 700px) {
+      .li-block { padding: 14px; }
+      .li-step { grid-template-columns: 92px 1fr 48px; }
+      .li-step-pct { grid-column: 2 / -1; margin-top: -6px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1106,6 +1150,7 @@
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
       <button class="tab" data-tab="banco">Banco de imágenes</button>
+      <button class="tab" data-tab="linkedin">LinkedIn</button>
     </div>
   </div>
 
@@ -1233,6 +1278,39 @@
       <div id="banco-loading" class="loading hidden">Cargando…</div>
       <div id="banco-empty" class="empty hidden">Todavía no hay imágenes en el banco.</div>
       <div id="banco-grid" class="grid banco-grid"></div>
+    </section>
+
+    <!-- TAB: LINKEDIN -->
+    <section id="tab-linkedin" class="tab-panel hidden">
+      <p class="li-fresh" id="li-fresh"></p>
+      <div id="li-loading" class="loading">Cargando…</div>
+      <div id="li-empty" class="empty hidden">Todavía no han llegado métricas del servidor.</div>
+      <div id="li-body" class="hidden">
+        <section class="li-block">
+          <h2 class="li-h">Embudo</h2>
+          <ol class="li-funnel" id="li-funnel"></ol>
+          <p class="li-note">Leads: en «Pasa a cliente», con oportunidad en el pipeline de clientes o que han pedido presupuesto. Los mensajes incluyen los 117 de septiembre a contactos que Xavi ya tenía, sin invitación.</p>
+        </section>
+        <section class="li-block">
+          <h2 class="li-h">Por semana</h2>
+          <div class="li-weeks" id="li-weeks"></div>
+        </section>
+        <section class="li-block">
+          <h2 class="li-h">Por lista</h2>
+          <div class="li-table-wrap" id="li-listas"></div>
+        </section>
+        <section class="li-block">
+          <h2 class="li-h">Quién ha contestado</h2>
+          <div class="subtabs" id="li-subtabs">
+            <button class="subtab active" data-filtro="toca">Le toca a Xavi<span class="subtab-badge hidden" id="li-toca-count">0</span></button>
+            <button class="subtab" data-filtro="leads">Leads</button>
+            <button class="subtab" data-filtro="interes">Con interés</button>
+            <button class="subtab" data-filtro="todos">Todos</button>
+          </div>
+          <div class="li-table-wrap" id="li-respuestas"></div>
+        </section>
+      </div>
+      <div class="li-tip" id="li-tip" role="tooltip"></div>
     </section>
 
   </main>
@@ -1492,7 +1570,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco', 'linkedin'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -4156,8 +4234,155 @@
         loadPropuestas();
       } else if (tab === 'banco') {
         loadBanco();
+      } else if (tab === 'linkedin') {
+        loadLinkedin();
       }
     }
+
+    // ---------- LINKEDIN ----------
+    // Outbound de LinkedIn de Xavi. Los datos los manda cada hora el servidor de Rianex
+    // (panel_metricas.py): lo de LinkedIn se lee a las 5:00 y lo de GHL en cada envío.
+    state.linkedin = { datos: null, filtro: 'toca' };
+    const LI_PASOS = [
+      ['invitaciones', 'Invitaciones', null],
+      ['aceptadas', 'Aceptadas', 'invitaciones'],
+      ['mensajes', 'Mensajes', null],
+      ['contestan', 'Contestan', 'mensajes'],
+      ['interesados', 'Con interés', 'contestan'],
+      ['xavi_contesta', 'Xavi contesta', 'contestan'],
+      ['leads', 'Leads', 'contestan']
+    ];
+    const LI_NOMBRE_PASO = { invitaciones: 'invitaciones', mensajes: 'mensajes', contestan: 'los que contestan' };
+    const liFmt = (n) => Number(n || 0).toLocaleString('es-ES');
+    const liPct = (a, b) => b ? `${Math.round(100 * a / b)} %` : '–';
+    function liFecha(iso, conHora) {
+      if (!iso) return '–';
+      const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso);
+      return d.toLocaleString('es-ES', conHora
+        ? { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }
+        : { day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' });
+    }
+
+    async function loadLinkedin() {
+      $('li-loading').classList.remove('hidden');
+      try {
+        const r = await fetch('/api/admin?action=linkedin-metricas');
+        const d = await r.json();
+        $('li-loading').classList.add('hidden');
+        if (!r.ok) { showError(d.error || 'Error'); return; }
+        state.linkedin.datos = d.actual;
+        $('li-empty').classList.toggle('hidden', !!d.actual);
+        $('li-body').classList.toggle('hidden', !d.actual);
+        if (d.actual) renderLinkedin();
+      } catch (err) {
+        $('li-loading').classList.add('hidden');
+        showError(err.message);
+      }
+    }
+
+    function renderLinkedin() {
+      const d = state.linkedin.datos, t = d.totales;
+      const horas = (Date.now() - new Date(d.recibido)) / 36e5;
+      $('li-fresh').innerHTML = `LinkedIn leído el ${escapeHtml(liFecha(d.informe_linkedin, true))} · GHL el ${escapeHtml(liFecha(d.generado, true))}`
+        + (horas > 3 ? ` <span class="li-stale">⚠ El servidor lleva ${Math.round(horas)} h sin mandar datos</span>` : '');
+
+      const max = t.invitaciones || 1;
+      $('li-funnel').innerHTML = LI_PASOS.map(([k, label, base]) => `
+        <li class="li-step">
+          <span class="li-step-label">${label}</span>
+          <span class="li-step-bar"><span style="width:${Math.max(0.4, 100 * (t[k] || 0) / max)}%"></span></span>
+          <span class="li-step-num">${liFmt(t[k])}</span>
+          <span class="li-step-pct">${base ? `${liPct(t[k], t[base])} de ${LI_NOMBRE_PASO[base]}` : ''}</span>
+        </li>`).join('');
+
+      const semanas = d.semanas.slice(-10);
+      $('li-weeks').innerHTML = [['invitaciones', 'Invitaciones'], ['mensajes', 'Mensajes'], ['contestan', 'Respuestas']]
+        .map(([k, label]) => liMiniBars(semanas, k, label)).join('');
+      liTooltips();
+
+      $('li-listas').innerHTML = `<table class="li-table"><thead><tr>
+          <th>Lista</th><th>Invitaciones</th><th>Aceptadas</th><th>Mensajes</th><th>Contestan</th>
+          <th>% respuesta</th><th>Interés</th><th>Xavi contesta</th><th>Leads</th></tr></thead><tbody>
+        ${d.listas.map(l => `<tr>
+          <td>${escapeHtml(l.nombre)}</td><td>${liFmt(l.invitaciones)}</td>
+          <td>${liFmt(l.aceptadas)} <small>${l.invitaciones ? liPct(l.aceptadas, l.invitaciones) : ''}</small></td>
+          <td>${liFmt(l.mensajes)}</td><td>${liFmt(l.contestan)}</td><td>${liPct(l.contestan, l.mensajes)}</td>
+          <td>${liFmt(l.interesados)}</td><td>${liFmt(l.xavi_contesta)}</td><td>${liFmt(l.leads)}</td></tr>`).join('')}
+        </tbody></table>`;
+
+      const toca = d.respuestas.filter(r => r.etapa === 'Interesado').length;
+      $('li-toca-count').textContent = String(toca);
+      $('li-toca-count').classList.toggle('hidden', !toca);
+      renderLinkedinRespuestas();
+    }
+
+    // Un panel pequeño por medida: cada una con su escala (invitaciones ~200/semana, respuestas ~10).
+    function liMiniBars(semanas, k, label) {
+      const W = 300, H = 120, top = 18, base = H - 20;
+      const max = Math.max(1, ...semanas.map(s => s[k]));
+      const paso = W / Math.max(1, semanas.length), ancho = Math.max(4, paso - 6);
+      const barras = semanas.map((s, i) => {
+        const h = Math.round((base - top) * s[k] / max);
+        const x = i * paso + (paso - ancho) / 2;
+        const r = Math.min(4, ancho / 2, h);
+        const path = h ? `M${x},${base} v${-(h - r)} q0,${-r} ${r},${-r} h${ancho - 2 * r} q${r},0 ${r},${r} v${h - r} z` : '';
+        return `<g class="li-bar" data-tip="Semana del ${escapeHtml(liFecha(s.semana))}: ${liFmt(s[k])} ${label.toLowerCase()}">
+          <rect x="${i * paso}" y="0" width="${paso}" height="${H}" fill="transparent"/>
+          ${path ? `<path d="${path}"/>` : ''}</g>`;
+      }).join('');
+      const ult = semanas[semanas.length - 1];
+      return `<figure class="li-mini">
+        <figcaption>${label} <span>esta semana: ${liFmt(ult ? ult[k] : 0)}</span></figcaption>
+        <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} por semana">
+          <line x1="0" x2="${W}" y1="${base}" y2="${base}" class="li-axis"/>
+          <text x="0" y="11" class="li-tick">${liFmt(max)}</text>
+          ${barras}
+          <text x="0" y="${H - 4}" class="li-tick">${semanas[0] ? escapeHtml(liFecha(semanas[0].semana)) : ''}</text>
+          <text x="${W}" y="${H - 4}" class="li-tick" text-anchor="end">${ult ? escapeHtml(liFecha(ult.semana)) : ''}</text>
+        </svg></figure>`;
+    }
+
+    function liTooltips() {
+      const tip = $('li-tip');
+      $('li-weeks').querySelectorAll('.li-bar').forEach(g => {
+        g.addEventListener('mousemove', (e) => {
+          tip.textContent = g.dataset.tip;
+          tip.style.left = (e.clientX + 12) + 'px';
+          tip.style.top = (e.clientY - 34) + 'px';
+          tip.classList.add('on');
+          g.classList.add('hover');
+        });
+        g.addEventListener('mouseleave', () => { tip.classList.remove('on'); g.classList.remove('hover'); });
+      });
+    }
+
+    function renderLinkedinRespuestas() {
+      const f = state.linkedin.filtro;
+      document.querySelectorAll('#li-subtabs .subtab').forEach(s => s.classList.toggle('active', s.dataset.filtro === f));
+      const filas = state.linkedin.datos.respuestas.filter(r =>
+        f === 'toca' ? r.etapa === 'Interesado' : f === 'leads' ? r.lead.length : f === 'interes' ? r.interes : true);
+      if (!filas.length) {
+        $('li-respuestas').innerHTML = '<div class="empty">Nadie en este filtro.</div>';
+        return;
+      }
+      $('li-respuestas').innerHTML = `<table class="li-table li-resp"><thead><tr>
+          <th>Persona</th><th>Lista</th><th>Escribió</th><th>Xavi</th><th>Etapa en GHL</th><th></th></tr></thead><tbody>
+        ${filas.map(r => `<tr>
+          <td><a href="${escapeHtml(r.linkedin)}" target="_blank" rel="noopener">${escapeHtml(r.nombre)}</a>
+            ${r.empresa || r.cargo ? `<small>${escapeHtml([r.cargo, r.empresa].filter(Boolean).join(' · '))}</small>` : ''}</td>
+          <td>${escapeHtml(r.lista)}</td>
+          <td>${escapeHtml(liFecha(r.ultima_respuesta || r.fecha_respuesta))}</td>
+          <td>${r.ultimo_xavi ? escapeHtml(liFecha(r.ultimo_xavi)) : (r.xavi_contesta ? 'Sí' : '–')}</td>
+          <td><span class="li-chip">${escapeHtml(r.etapa)}</span>
+            ${r.interes ? '<span class="li-chip li-chip-int">Interés</span>' : ''}
+            ${r.lead.map(m => `<span class="li-chip li-chip-lead">★ ${escapeHtml(m)}</span>`).join('')}</td>
+          <td>${r.ghl ? `<a href="${escapeHtml(r.ghl)}" target="_blank" rel="noopener">GHL ↗</a>` : ''}</td></tr>`).join('')}
+        </tbody></table>`;
+    }
+
+    document.querySelectorAll('#li-subtabs .subtab').forEach(b => {
+      b.addEventListener('click', () => { state.linkedin.filtro = b.dataset.filtro; renderLinkedinRespuestas(); });
+    });
 
     // ---------- BANCO DE IMÁGENES ----------
     // Imágenes sueltas para propuestas conceptuales (Xavi, weekly sep 2026):
