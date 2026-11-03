@@ -4240,8 +4240,8 @@
     }
 
     // ---------- LINKEDIN ----------
-    // Outbound de LinkedIn de Xavi. Los datos los manda cada hora el servidor de Rianex
-    // (panel_metricas.py): lo de LinkedIn se lee a las 5:00 y lo de GHL en cada envío.
+    // Outbound de LinkedIn de Xavi. Los datos los manda el servidor de Rianex cada día a las
+    // 9:00 (panel_metricas.py): LinkedIn leído a las 5:00 y GHL en el momento.
     state.linkedin = { datos: null, filtro: 'toca' };
     const LI_PASOS = [
       ['invitaciones', 'Invitaciones', null],
@@ -4284,7 +4284,7 @@
       const d = state.linkedin.datos, t = d.totales;
       const horas = (Date.now() - new Date(d.recibido)) / 36e5;
       $('li-fresh').innerHTML = `LinkedIn leído el ${escapeHtml(liFecha(d.informe_linkedin, true))} · GHL el ${escapeHtml(liFecha(d.generado, true))}`
-        + (horas > 3 ? ` <span class="li-stale">⚠ El servidor lleva ${Math.round(horas)} h sin mandar datos</span>` : '');
+        + (horas > 26 ? ` <span class="li-stale">⚠ El servidor lleva ${Math.round(horas)} h sin mandar datos</span>` : '');
 
       const max = t.invitaciones || 1;
       $('li-funnel').innerHTML = LI_PASOS.map(([k, label, base]) => `
