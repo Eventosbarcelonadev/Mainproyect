@@ -1100,6 +1100,14 @@
     .li-stale { color: var(--warn-fg); background: var(--warn-bg); padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
     .li-block { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
     .li-h { font-size: 15px; font-weight: 600; margin: 0 0 14px; }
+    /* Docs: informes, presentaciones y datos de EB (no propuestas) */
+    .docs-list { display: grid; gap: 12px; max-width: 860px; }
+    .doc-card { display: block; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; color: inherit; text-decoration: none; }
+    .doc-card:hover { border-color: var(--dark); }
+    .doc-card .doc-tipo { font-size: 12px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .doc-card .doc-titulo { font-size: 17px; font-weight: 600; margin: 4px 0; }
+    .doc-card .doc-resumen { font-size: 14px; color: #6b6b66; margin: 0; }
+    .doc-card .doc-fecha { font-size: 12px; color: #98968f; margin-top: 8px; }
     .li-note { font-size: 12.5px; color: var(--gray); margin: 12px 0 0; }
     .li-funnel { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
     .li-step { display: grid; grid-template-columns: 120px 1fr 64px 170px; align-items: center; gap: 12px; font-size: 13.5px; }
@@ -1151,6 +1159,7 @@
       <button class="tab" data-tab="propuestas">Propuestas</button>
       <button class="tab" data-tab="banco">Banco de imágenes</button>
       <button class="tab" data-tab="linkedin">LinkedIn</button>
+      <button class="tab" data-tab="docs">Docs</button>
     </div>
   </div>
 
@@ -1278,6 +1287,13 @@
       <div id="banco-loading" class="loading hidden">Cargando…</div>
       <div id="banco-empty" class="empty hidden">Todavía no hay imágenes en el banco.</div>
       <div id="banco-grid" class="grid banco-grid"></div>
+    </section>
+
+    <!-- TAB: DOCS -->
+    <section id="tab-docs" class="tab-panel hidden">
+      <div id="docs-loading" class="loading">Cargando…</div>
+      <div id="docs-empty" class="empty hidden">Todavía no hay documentos.</div>
+      <div id="docs-list" class="docs-list"></div>
     </section>
 
     <!-- TAB: LINKEDIN -->
@@ -1570,7 +1586,7 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco', 'linkedin'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco', 'linkedin', 'docs'];
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
@@ -4236,6 +4252,35 @@
         loadBanco();
       } else if (tab === 'linkedin') {
         loadLinkedin();
+      } else if (tab === 'docs') {
+        loadDocs();
+      }
+    }
+
+    // ---------- DOCS ----------
+    // Informes, presentaciones, datos y notas de EB. Están en el bucket privado
+    // docs-internos de Supabase, no en el repo (es público y llevan datos de
+    // contactos); los sirve /api/admin con la sesión del equipo.
+    // tipo: informe | presentacion | datos | guia | nota
+    const DOC_TIPOS = { informe: 'Informe', presentacion: 'Presentación', datos: 'Datos', guia: 'Guía', nota: 'Notas de reunión' };
+    async function loadDocs() {
+      $('docs-loading').classList.remove('hidden');
+      try {
+        const r = await fetch('/api/admin?action=docs-list', { cache: 'no-store' });
+        if (!r.ok) throw new Error('No se pudo cargar la lista de documentos');
+        const docs = (await r.json()).sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)));
+        $('docs-loading').classList.add('hidden');
+        $('docs-empty').classList.toggle('hidden', docs.length > 0);
+        $('docs-list').innerHTML = docs.map(d => `
+          <a class="doc-card" href="${escapeHtml(d.url)}" target="_blank" rel="noopener">
+            <div class="doc-tipo">${escapeHtml(DOC_TIPOS[d.tipo] || 'Documento')}</div>
+            <div class="doc-titulo">${escapeHtml(d.titulo)}</div>
+            <p class="doc-resumen">${escapeHtml(d.resumen || '')}</p>
+            <div class="doc-fecha">${escapeHtml(liFecha(d.fecha))}</div>
+          </a>`).join('');
+      } catch (err) {
+        $('docs-loading').classList.add('hidden');
+        showError(err.message);
       }
     }
 

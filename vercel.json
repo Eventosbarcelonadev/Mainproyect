@@ -10,6 +10,10 @@
   },
   "rewrites": [
     {
+      "source": "/docs-privados/:id/:f*",
+      "destination": "/api/admin?action=doc&id=:id&f=:f*"
+    },
+    {
       "source": "/api/gpt/catalogo",
       "destination": "/api/admin?action=gpt-catalogo"
     },
@@ -218,6 +222,8 @@
     }
   ],
   "redirects": [
+    { "source": "/docs", "destination": "/admin.html#docs", "permanent": false },
+    { "source": "/docs/", "destination": "/admin.html#docs", "permanent": false },
     {
       "source": "/bocetos",
       "destination": "/bocetos/",
