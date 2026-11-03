@@ -3000,7 +3000,7 @@ async function reviewShow(req, res, env) {
 
 // === LinkedIn (pestaña LinkedIn del panel) ===
 // El servidor de Rianex corre el outbound de LinkedIn de Xavi (Unipile) y el pipeline
-// "Outbound LinkedIn" de GHL. Cada hora manda aquí las métricas ya calculadas
+// "Outbound LinkedIn" de GHL. Cada día a las 5:00 manda aquí las métricas ya calculadas
 // (panel_metricas.py) y se guardan en linkedin_metricas: la fila 'actual' y una por día
 // con los totales. Lleva su propio token, LINKEDIN_PUSH_TOKEN, para no dar al servidor
 // el de todo el panel.
