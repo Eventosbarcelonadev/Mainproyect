@@ -3060,7 +3060,7 @@ async function linkedinMetricas(req, res, env) {
 // el bucket privado docs-internos de Supabase y no en el repo, que es público:
 // llevan datos de contactos. Cada doc es una carpeta <id>/ con su archivo de
 // entrada y lo que cargue (imágenes...), y index.json en la raíz los describe:
-// [{id, titulo, tipo, fecha, resumen, entrada}]. Los sube scripts/subir-docs.mjs.
+// [{id, titulo, tipo, fecha, resumen, entrada | enlace}]. Los sube scripts/subir-docs.mjs.
 // /docs-privados/<id>/<archivo> llega aquí por el rewrite de vercel.json, y así
 // las rutas relativas de cada HTML (img/...) siguen funcionando.
 const DOCS_BUCKET = 'docs-internos';
@@ -3075,7 +3075,13 @@ async function docsList(req, res, env) {
   if (!r.ok) return res.status(500).json({ error: `Supabase ${r.status}: ${(await r.text()).slice(0, 200)}` });
   const docs = await r.json();
   res.setHeader('Cache-Control', 'private, no-store');
-  return res.status(200).json(docs.map(d => ({ ...d, url: `/docs-privados/${d.id}/${d.entrada}` })));
+  // Un doc con enlace es una página de esta misma web (los paneles en directo, como
+  // /dashboard): la tarjeta va ahí y no al bucket.
+  const esEnlaceLocal = (u) => typeof u === 'string' && u.startsWith('/') && !u.startsWith('//') && !u.startsWith('/\\');
+  return res.status(200).json(docs.map(d => ({
+    ...d,
+    url: esEnlaceLocal(d.enlace) ? d.enlace : `/docs-privados/${d.id}/${d.entrada}`
+  })));
 }
 
 async function servirDoc(req, res, env) {
