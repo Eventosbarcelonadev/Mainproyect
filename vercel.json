@@ -10,6 +10,10 @@
   },
   "rewrites": [
     {
+      "source": "/docs-privados/:id/:f*",
+      "destination": "/api/admin?action=doc&id=:id&f=:f*"
+    },
+    {
       "source": "/api/gpt/catalogo",
       "destination": "/api/admin?action=gpt-catalogo"
     },

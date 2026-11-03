@@ -4258,15 +4258,15 @@
     }
 
     // ---------- DOCS ----------
-    // Informes, presentaciones y datos de EB. Cada doc es un HTML en /informes/
-    // con su entrada en /informes/index.json. Van detrás del login del equipo
-    // (middleware.ts) porque pueden llevar datos de contactos.
-    // tipo: informe | presentacion | datos | guia
-    const DOC_TIPOS = { informe: 'Informe', presentacion: 'Presentación', datos: 'Datos', guia: 'Guía' };
+    // Informes, presentaciones, datos y notas de EB. Están en el bucket privado
+    // docs-internos de Supabase, no en el repo (es público y llevan datos de
+    // contactos); los sirve /api/admin con la sesión del equipo.
+    // tipo: informe | presentacion | datos | guia | nota
+    const DOC_TIPOS = { informe: 'Informe', presentacion: 'Presentación', datos: 'Datos', guia: 'Guía', nota: 'Notas de reunión' };
     async function loadDocs() {
       $('docs-loading').classList.remove('hidden');
       try {
-        const r = await fetch('/informes/index.json', { cache: 'no-store' });
+        const r = await fetch('/api/admin?action=docs-list', { cache: 'no-store' });
         if (!r.ok) throw new Error('No se pudo cargar la lista de documentos');
         const docs = (await r.json()).sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)));
         $('docs-loading').classList.add('hidden');

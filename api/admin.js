@@ -26,6 +26,9 @@
 // --- LinkedIn (tab LinkedIn) ---
 // GET  /api/admin?action=linkedin-metricas  -> último envío del servidor + totales de cada día
 // POST /api/admin?action=linkedin-push      auth: Bearer LINKEDIN_PUSH_TOKEN  body: panel_metricas.json del servidor Rianex
+// --- Docs (tab Docs) ---
+// GET  /api/admin?action=docs-list  -> index.json del bucket privado docs-internos
+// GET  /api/admin?action=doc&id=&f= (rewrite desde /docs-privados/<id>/<f>)  -> HTML del doc, o redirección firmada para el resto
 // GET  /api/gpt/catalogo   (rewrite -> action=gpt-catalogo)  auth: Bearer GPT_ACTION_TOKEN
 // GET  /api/gpt/show        (rewrite -> action=gpt-show)      auth: Bearer GPT_ACTION_TOKEN
 // POST /api/init-opp-proposal (rewrite -> action=init-opp-proposal)  webhook GHL, customData: {opportunityId}
@@ -3052,6 +3055,59 @@ async function linkedinMetricas(req, res, env) {
   });
 }
 
+// === Docs (tab Docs) ===
+// Informes, presentaciones, datos y notas de EB que no son propuestas. Viven en
+// el bucket privado docs-internos de Supabase y no en el repo, que es público:
+// llevan datos de contactos. Cada doc es una carpeta <id>/ con su archivo de
+// entrada y lo que cargue (imágenes...), y index.json en la raíz los describe:
+// [{id, titulo, tipo, fecha, resumen, entrada}]. Los sube scripts/subir-docs.mjs.
+// /docs-privados/<id>/<archivo> llega aquí por el rewrite de vercel.json, y así
+// las rutas relativas de cada HTML (img/...) siguen funcionando.
+const DOCS_BUCKET = 'docs-internos';
+const DOC_ID_RE = /^[a-z0-9][a-z0-9-]{0,79}$/;
+const DOC_ARCHIVO_RE = /^(?!.*\.\.)[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*$/;
+
+async function docsList(req, res, env) {
+  const r = await fetch(`${env.SUPABASE_URL}/storage/v1/object/${DOCS_BUCKET}/index.json`, {
+    headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` }
+  });
+  if (r.status === 400 || r.status === 404) return res.status(200).json([]);
+  if (!r.ok) return res.status(500).json({ error: `Supabase ${r.status}: ${(await r.text()).slice(0, 200)}` });
+  const docs = await r.json();
+  res.setHeader('Cache-Control', 'private, no-store');
+  return res.status(200).json(docs.map(d => ({ ...d, url: `/docs-privados/${d.id}/${d.entrada}` })));
+}
+
+async function servirDoc(req, res, env) {
+  const id = String(req.query.id || '');
+  const archivo = String(req.query.f || '') || 'index.html';
+  if (!DOC_ID_RE.test(id) || !DOC_ARCHIVO_RE.test(archivo)) return res.status(404).send('No encontrado');
+  const ruta = `${id}/${archivo}`.split('/').map(encodeURIComponent).join('/');
+  const sbAuth = { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` };
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+
+  // El HTML se sirve desde aquí: Supabase no lo entrega como página y desde su
+  // dominio no cargarían las rutas relativas. Lo demás (imágenes, CSV) va por una
+  // URL firmada de un minuto, que no pasa por el límite de tamaño de la función.
+  if (/\.html?$/i.test(archivo)) {
+    const r = await fetch(`${env.SUPABASE_URL}/storage/v1/object/${DOCS_BUCKET}/${ruta}`, { headers: sbAuth });
+    if (!r.ok) return res.status(r.status === 400 || r.status === 404 ? 404 : 502).send('No encontrado');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(await r.text());
+  }
+  const s = await fetch(`${env.SUPABASE_URL}/storage/v1/object/sign/${DOCS_BUCKET}/${ruta}`, {
+    method: 'POST',
+    headers: { ...sbAuth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ expiresIn: 60 })
+  });
+  if (!s.ok) return res.status(s.status === 400 || s.status === 404 ? 404 : 502).send('No encontrado');
+  const { signedURL } = await s.json();
+  const descarga = /\.(csv|xlsx?|json|zip)$/i.test(archivo) ? `&download=${encodeURIComponent(archivo.split('/').pop())}` : '';
+  res.setHeader('Location', `${env.SUPABASE_URL}/storage/v1${signedURL}${descarga}`);
+  return res.status(302).end();
+}
+
 // === geo-metrics ===
 // Consume el MCP/REST de eventosbarcelona.com (WordPress) con auth Basic
 // server-side (WP_USER/WP_PASS desde env vars) y devuelve métricas
@@ -3403,6 +3459,8 @@ export default async function handler(req, res) {
       if (action === 'geo-metrics') return geoMetrics(req, res, env);
       if (action === 'linkedin-metricas') return linkedinMetricas(req, res, env);
       if (action === 'list-referencias') return listReferencias(req, res, env);
+      if (action === 'docs-list') return docsList(req, res, env);
+      if (action === 'doc') return servirDoc(req, res, env);
       if (action === 'gpt-catalogo') return gptCatalogo(req, res, env);
       if (action === 'gpt-show') return gptShow(req, res, env);
       if (action === 'list-banco') return listBanco(req, res, env);
