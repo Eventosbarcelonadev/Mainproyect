@@ -1116,17 +1116,6 @@
     .li-step-bar span { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
     .li-step-num { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
     .li-step-pct { color: var(--gray); font-size: 12.5px; }
-    .li-weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-    .li-mini { margin: 0; }
-    .li-mini figcaption { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-    .li-mini figcaption span { font-weight: 400; color: var(--gray); margin-left: 6px; }
-    .li-mini svg { width: 100%; height: auto; display: block; overflow: visible; }
-    .li-bar path { fill: var(--accent); }
-    .li-bar.hover path { fill: var(--accent-text); }
-    .li-axis { stroke: var(--border-strong); stroke-width: 1; }
-    .li-tick { font-size: 10.5px; fill: var(--gray); }
-    .li-tip { position: fixed; z-index: 200; pointer-events: none; background: var(--dark); color: #fff; font-size: 12px; padding: 5px 9px; border-radius: 6px; opacity: 0; transition: opacity .1s; white-space: nowrap; }
-    .li-tip.on { opacity: 1; }
     .li-table-wrap { overflow-x: auto; }
     .li-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .li-table th { text-align: left; font-weight: 500; color: var(--gray); font-size: 12px; padding: 6px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -1305,11 +1294,7 @@
         <section class="li-block">
           <h2 class="li-h">Embudo</h2>
           <ol class="li-funnel" id="li-funnel"></ol>
-          <p class="li-note">Leads: en «Pasa a cliente», con oportunidad en el pipeline de clientes o que han pedido presupuesto. Los mensajes incluyen los 117 de septiembre a contactos que Xavi ya tenía, sin invitación.</p>
-        </section>
-        <section class="li-block">
-          <h2 class="li-h">Por semana</h2>
-          <div class="li-weeks" id="li-weeks"></div>
+          <p class="li-note">Descartados: 3 días sin contestar a Xavi, sigan en la etapa Descartado de GHL o ya fuera del pipeline. Leads: en «Pasa a cliente», con oportunidad en el pipeline de clientes o que han pedido presupuesto. Los mensajes incluyen los 117 de septiembre a contactos que Xavi ya tenía, sin invitación.</p>
         </section>
         <section class="li-block">
           <h2 class="li-h">Por lista</h2>
@@ -1326,7 +1311,6 @@
           <div class="li-table-wrap" id="li-respuestas"></div>
         </section>
       </div>
-      <div class="li-tip" id="li-tip" role="tooltip"></div>
     </section>
 
   </main>
@@ -4295,6 +4279,7 @@
       ['contestan', 'Contestan', 'mensajes'],
       ['interesados', 'Con interés', 'contestan'],
       ['xavi_contesta', 'Xavi contesta', 'contestan'],
+      ['descartados', 'Descartados', 'contestan'],
       ['leads', 'Leads', 'contestan']
     ];
     const LI_NOMBRE_PASO = { invitaciones: 'invitaciones', mensajes: 'mensajes', contestan: 'los que contestan' };
@@ -4340,65 +4325,20 @@
           <span class="li-step-pct">${base ? `${liPct(t[k], t[base])} de ${LI_NOMBRE_PASO[base]}` : ''}</span>
         </li>`).join('');
 
-      const semanas = d.semanas.slice(-10);
-      $('li-weeks').innerHTML = [['invitaciones', 'Invitaciones'], ['mensajes', 'Mensajes'], ['contestan', 'Respuestas']]
-        .map(([k, label]) => liMiniBars(semanas, k, label)).join('');
-      liTooltips();
-
       $('li-listas').innerHTML = `<table class="li-table"><thead><tr>
           <th>Lista</th><th>Invitaciones</th><th>Aceptadas</th><th>Mensajes</th><th>Contestan</th>
-          <th>% respuesta</th><th>Interés</th><th>Xavi contesta</th><th>Leads</th></tr></thead><tbody>
+          <th>% respuesta</th><th>Interés</th><th>Xavi contesta</th><th>Descartados</th><th>Leads</th></tr></thead><tbody>
         ${d.listas.map(l => `<tr>
           <td>${escapeHtml(l.nombre)}</td><td>${liFmt(l.invitaciones)}</td>
           <td>${liFmt(l.aceptadas)} <small>${l.invitaciones ? liPct(l.aceptadas, l.invitaciones) : ''}</small></td>
           <td>${liFmt(l.mensajes)}</td><td>${liFmt(l.contestan)}</td><td>${liPct(l.contestan, l.mensajes)}</td>
-          <td>${liFmt(l.interesados)}</td><td>${liFmt(l.xavi_contesta)}</td><td>${liFmt(l.leads)}</td></tr>`).join('')}
+          <td>${liFmt(l.interesados)}</td><td>${liFmt(l.xavi_contesta)}</td><td>${liFmt(l.descartados)}</td><td>${liFmt(l.leads)}</td></tr>`).join('')}
         </tbody></table>`;
 
       const toca = d.respuestas.filter(r => r.etapa === 'Interesado').length;
       $('li-toca-count').textContent = String(toca);
       $('li-toca-count').classList.toggle('hidden', !toca);
       renderLinkedinRespuestas();
-    }
-
-    // Un panel pequeño por medida: cada una con su escala (invitaciones ~200/semana, respuestas ~10).
-    function liMiniBars(semanas, k, label) {
-      const W = 300, H = 120, top = 18, base = H - 20;
-      const max = Math.max(1, ...semanas.map(s => s[k]));
-      const paso = W / Math.max(1, semanas.length), ancho = Math.max(4, paso - 6);
-      const barras = semanas.map((s, i) => {
-        const h = Math.round((base - top) * s[k] / max);
-        const x = i * paso + (paso - ancho) / 2;
-        const r = Math.min(4, ancho / 2, h);
-        const path = h ? `M${x},${base} v${-(h - r)} q0,${-r} ${r},${-r} h${ancho - 2 * r} q${r},0 ${r},${r} v${h - r} z` : '';
-        return `<g class="li-bar" data-tip="Semana del ${escapeHtml(liFecha(s.semana))}: ${liFmt(s[k])} ${label.toLowerCase()}">
-          <rect x="${i * paso}" y="0" width="${paso}" height="${H}" fill="transparent"/>
-          ${path ? `<path d="${path}"/>` : ''}</g>`;
-      }).join('');
-      const ult = semanas[semanas.length - 1];
-      return `<figure class="li-mini">
-        <figcaption>${label} <span>esta semana: ${liFmt(ult ? ult[k] : 0)}</span></figcaption>
-        <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} por semana">
-          <line x1="0" x2="${W}" y1="${base}" y2="${base}" class="li-axis"/>
-          <text x="0" y="11" class="li-tick">${liFmt(max)}</text>
-          ${barras}
-          <text x="0" y="${H - 4}" class="li-tick">${semanas[0] ? escapeHtml(liFecha(semanas[0].semana)) : ''}</text>
-          <text x="${W}" y="${H - 4}" class="li-tick" text-anchor="end">${ult ? escapeHtml(liFecha(ult.semana)) : ''}</text>
-        </svg></figure>`;
-    }
-
-    function liTooltips() {
-      const tip = $('li-tip');
-      $('li-weeks').querySelectorAll('.li-bar').forEach(g => {
-        g.addEventListener('mousemove', (e) => {
-          tip.textContent = g.dataset.tip;
-          tip.style.left = (e.clientX + 12) + 'px';
-          tip.style.top = (e.clientY - 34) + 'px';
-          tip.classList.add('on');
-          g.classList.add('hover');
-        });
-        g.addEventListener('mouseleave', () => { tip.classList.remove('on'); g.classList.remove('hover'); });
-      });
     }
 
     function renderLinkedinRespuestas() {
