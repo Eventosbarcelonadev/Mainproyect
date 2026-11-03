@@ -23,6 +23,9 @@
 // POST /api/admin?action=save-referencia    body: {id?, nombre, url, tipo?, notas?, tags?, activa?}
 // POST /api/admin?action=delete-referencia  body: {id}
 // POST /api/admin?action=save-radar       body: {resultado}  -> publica informe del radar
+// --- LinkedIn (tab LinkedIn) ---
+// GET  /api/admin?action=linkedin-metricas  -> último envío del servidor + totales de cada día
+// POST /api/admin?action=linkedin-push      auth: Bearer LINKEDIN_PUSH_TOKEN  body: panel_metricas.json del servidor Rianex
 // GET  /api/gpt/catalogo   (rewrite -> action=gpt-catalogo)  auth: Bearer GPT_ACTION_TOKEN
 // GET  /api/gpt/show        (rewrite -> action=gpt-show)      auth: Bearer GPT_ACTION_TOKEN
 // POST /api/init-opp-proposal (rewrite -> action=init-opp-proposal)  webhook GHL, customData: {opportunityId}
@@ -36,8 +39,9 @@ import { paginaDashboard, generarDashboard } from '../lib/dashboard/handlers.js'
 import { consultaGsc } from '../lib/dashboard/gsc-live.js';
 
 // Las llaman otros sistemas, no el panel: el GPT (trae su propio token,
-// gptAuthOk), el webhook de GHL y n8n.
-const ACCIONES_SIN_SESION = new Set(['gpt-catalogo', 'gpt-show', 'init-opp-proposal', 'ensure-proposal-for-lead']);
+// gptAuthOk), el webhook de GHL, n8n y el servidor de Rianex (linkedin-push, con
+// LINKEDIN_PUSH_TOKEN).
+const ACCIONES_SIN_SESION = new Set(['gpt-catalogo', 'gpt-show', 'init-opp-proposal', 'ensure-proposal-for-lead', 'linkedin-push']);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -2994,6 +2998,60 @@ async function reviewShow(req, res, env) {
   return res.status(200).json({ success: true, show, ghl, wp });
 }
 
+// === LinkedIn (pestaña LinkedIn del panel) ===
+// El servidor de Rianex corre el outbound de LinkedIn de Xavi (Unipile) y el pipeline
+// "Outbound LinkedIn" de GHL. Cada hora manda aquí las métricas ya calculadas
+// (panel_metricas.py) y se guardan en linkedin_metricas: la fila 'actual' y una por día
+// con los totales. Lleva su propio token, LINKEDIN_PUSH_TOKEN, para no dar al servidor
+// el de todo el panel.
+function pushTokenOk(req) {
+  const esperado = (process.env.LINKEDIN_PUSH_TOKEN || '').trim();
+  const dado = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  if (!esperado || dado.length !== esperado.length) return false;
+  let diff = 0;
+  for (let i = 0; i < dado.length; i++) diff |= dado.charCodeAt(i) ^ esperado.charCodeAt(i);
+  return diff === 0;
+}
+
+async function linkedinPush(req, res, env) {
+  if (!pushTokenOk(req)) return res.status(401).json({ error: 'unauthorized' });
+  const datos = req.body;
+  if (!datos || typeof datos !== 'object' || !datos.totales || !Array.isArray(datos.respuestas)) {
+    return res.status(400).json({ error: 'Faltan totales o respuestas' });
+  }
+  const dia = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());
+  const ahora = new Date().toISOString();
+  const r = await fetch(`${env.SUPABASE_URL}/rest/v1/linkedin_metricas?on_conflict=id`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates,return=minimal'
+    },
+    body: JSON.stringify([
+      { id: 'actual', datos, updated_at: ahora },
+      { id: dia, datos: { totales: datos.totales, generado: datos.generado || ahora }, updated_at: ahora }
+    ])
+  });
+  if (!r.ok) return res.status(500).json({ error: `Supabase ${r.status}: ${(await r.text()).slice(0, 200)}` });
+  return res.status(200).json({ ok: true, dia });
+}
+
+async function linkedinMetricas(req, res, env) {
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/linkedin_metricas?select=id,datos,updated_at&order=id.asc`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return res.status(500).json({ error: `Supabase ${r.status}: ${(await r.text()).slice(0, 200)}` });
+  const filas = await r.json();
+  const actual = filas.find(f => f.id === 'actual');
+  return res.status(200).json({
+    actual: actual ? { ...actual.datos, recibido: actual.updated_at } : null,
+    historico: filas.filter(f => f.id !== 'actual').map(f => ({ dia: f.id, ...f.datos.totales }))
+  });
+}
+
 // === geo-metrics ===
 // Consume el MCP/REST de eventosbarcelona.com (WordPress) con auth Basic
 // server-side (WP_USER/WP_PASS desde env vars) y devuelve métricas
@@ -3343,6 +3401,7 @@ export default async function handler(req, res) {
       if (action === 'shows-pending') return showsPending(req, res, env);
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
       if (action === 'geo-metrics') return geoMetrics(req, res, env);
+      if (action === 'linkedin-metricas') return linkedinMetricas(req, res, env);
       if (action === 'list-referencias') return listReferencias(req, res, env);
       if (action === 'gpt-catalogo') return gptCatalogo(req, res, env);
       if (action === 'gpt-show') return gptShow(req, res, env);
@@ -3376,6 +3435,7 @@ export default async function handler(req, res) {
       if (action === 'save-referencia') return saveReferencia(req, res, env);
       if (action === 'delete-referencia') return deleteReferencia(req, res, env);
       if (action === 'save-radar') return saveRadar(req, res, env);
+      if (action === 'linkedin-push') return linkedinPush(req, res, env);
     }
     return res.status(400).json({
       error: 'Unknown action',
