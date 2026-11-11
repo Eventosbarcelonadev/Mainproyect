@@ -586,9 +586,14 @@ function captureOriginInfo() {
       if (u.hostname.includes('eventosbarcelona.com')) referrerSlug = u.pathname.replace(/^\/+|\/+$/g, '');
     } catch (e) {}
   }
+  // Landing: la primera página de la web, que pasa eb-form.js en ?landing_page=.
+  // Sin ella, la URL del form sin la query (lleva nombre, email y teléfono).
+  const landingPath = params.get('landing_page') || '';
   const info = {
     referrer, referrerHost, referrerSlug,
-    landingUrl: window.location.href,
+    landingUrl: landingPath.charAt(0) === '/'
+      ? 'https://eventosbarcelona.com' + landingPath
+      : window.location.origin + window.location.pathname,
     utm_source: params.get('utm_source') || '',
     utm_medium: params.get('utm_medium') || '',
     utm_campaign: params.get('utm_campaign') || '',
@@ -597,15 +602,13 @@ function captureOriginInfo() {
     fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
   };
   // Fallback UTM entre páginas: el snippet WP EB-UTM-TRACKING guarda las UTMs
-  // de la primera landing en sessionStorage.eb_utm.
+  // de la primera landing en sessionStorage.eb_utm. Solo existe si el form se
+  // sirve en el mismo origen que la web; desde la web llegan por la URL.
   try {
     const wpUtm = JSON.parse(sessionStorage.getItem('eb_utm') || '{}');
     ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(k => {
       if (!info[k] && wpUtm[k]) info[k] = wpUtm[k];
     });
-    if (wpUtm.landing_page && info.landingUrl.includes('formulario-inteligente')) {
-      info.landingUrl = window.location.origin + wpUtm.landing_page;
-    }
   } catch (e) {}
   try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
   return info;
