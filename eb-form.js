@@ -77,6 +77,10 @@ function ebSubmit(form){
     var v=d[k]||utm[k];
     if(v) params+='&'+k+'='+encodeURIComponent(v);
   });
+  // Primera página de la web en esta visita (el snippet la guarda en eb_utm):
+  // sin ella el form completo solo ve su propia URL.
+  var landing=d.landing_page||utm.landing_page;
+  if(landing) params+='&landing_page='+encodeURIComponent(landing);
   if(tipo==='artista'||tipo==='proveedor'){
     // No pasamos &type= para que la primera pantalla del form completo sea
     // siempre el selector artista/proveedor (decisión Phil 2026-05-08).
@@ -110,6 +114,9 @@ function ebSubmit(form){
         }
       }catch(e){}
     }
+    // El form completo no puede leer este referrer (otro subdominio): se lo
+    // pasamos para que el contacto lleve también pagina:<slug>.
+    if(originSlug) params+='&from='+encodeURIComponent(originSlug);
     fetch(base+'api/webhook-elementor',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
