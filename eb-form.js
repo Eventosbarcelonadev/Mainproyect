@@ -86,6 +86,10 @@ function ebSubmit(form){
     // siempre el selector artista/proveedor (decisión Phil 2026-05-08).
     // El data-form-type del mini-form solo se usa para clasificar el webhook.
     params+='&genero='+encodeURIComponent(d.genero||'');
+    // Origen del artista: la página de la web donde está este mini-form
+    // (sin el prefijo de idioma: /en/ sola no es una página).
+    var pageSlug=location.pathname.split('/').filter(function(s){return s&&s!=='en'&&s!=='es';}).pop()||'';
+    if(pageSlug) params+='&from='+encodeURIComponent(pageSlug);
     fetch(base+'api/webhook-elementor',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -110,7 +114,7 @@ function ebSubmit(form){
       try{
         var u=new URL(document.referrer);
         if(u.hostname.indexOf('eventosbarcelona.com')>=0){
-          originSlug=u.pathname.replace(/^\/+|\/+$/g,'').split('/').filter(Boolean).pop()||'';
+          originSlug=u.pathname.split('/').filter(function(s){return s&&s!=='en'&&s!=='es';}).pop()||'';
         }
       }catch(e){}
     }

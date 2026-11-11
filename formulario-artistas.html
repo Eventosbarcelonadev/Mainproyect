@@ -2598,7 +2598,8 @@
         utm_campaign: params.get('utm_campaign') || '',
         utm_content: params.get('utm_content') || '',
         utm_term: params.get('utm_term') || '',
-        fromParam: params.get('from') || params.get('origin') || params.get('genero') || ''
+        // ?genero= es la disciplina que escribe el artista, no una página: no cuenta como origen
+        fromParam: params.get('from') || params.get('origin') || ''
       };
       try { sessionStorage.setItem(KEY, JSON.stringify(info)); } catch (e) {}
       return info;
