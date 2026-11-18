@@ -1095,6 +1095,37 @@
       .p-act { text-align: right; }
     }
 
+    /* Pestaña Outbound (LinkedIn + newsletter) */
+    .ob-sub { font-size: 12.5px; color: var(--gray); margin: -8px 0 14px; }
+    .ob-axis { position: relative; height: 18px; margin-left: 190px; font-size: 11.5px; color: var(--gray); }
+    .ob-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    .ob-rows { display: grid; gap: 8px; }
+    .ob-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; font-size: 13px; }
+    .ob-row-name { line-height: 1.25; }
+    .ob-row-name small { display: block; color: var(--gray); font-size: 11.5px; }
+    .ob-track { position: relative; height: 26px; background: var(--light); border-radius: 6px; }
+    .ob-bar { position: absolute; top: 3px; bottom: 3px; min-width: 6px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11.5px; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; overflow: hidden; }
+    .ob-bar.prevista { background: transparent; border: 1px dashed var(--accent); color: var(--accent); }
+    .ob-preparar { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 11.5px; color: var(--gray); }
+    .ob-hoy { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--dark); border-radius: 1px; }
+    .ob-hoy-label { position: absolute; top: -18px; transform: translateX(-50%); font-size: 11px; color: var(--dark); font-weight: 600; }
+    .ob-leyenda { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--gray); margin-top: 12px; }
+    .ob-leyenda i { display: inline-block; width: 18px; height: 10px; border-radius: 3px; background: var(--accent); vertical-align: middle; margin-right: 6px; }
+    .ob-leyenda i.prevista { background: transparent; border: 1px dashed var(--accent); }
+    .nl-line { position: relative; display: flex; gap: 28px; overflow-x: auto; padding: 22px 4px 6px; }
+    .nl-line::before { content: ''; position: absolute; left: 0; right: 0; top: 30px; height: 2px; background: var(--border); }
+    .nl-item { position: relative; flex: 0 0 186px; font-size: 12.5px; }
+    .nl-dot { position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--accent); margin: 1px 0 10px 4px; }
+    .nl-fecha { font-weight: 600; }
+    .nl-asunto { color: var(--ink-2); margin: 2px 0 8px; line-height: 1.3; }
+    .nl-thumb { display: block; width: 180px; height: 260px; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: #fff; position: relative; }
+    .nl-thumb iframe { width: 600px; height: 867px; border: 0; transform: scale(.3); transform-origin: 0 0; pointer-events: none; }
+    .nl-thumb:hover { border-color: var(--dark); }
+    .nl-meta { color: var(--gray); margin-top: 6px; }
+    @media (max-width: 700px) {
+      .ob-axis { margin-left: 0; }
+      .ob-row { grid-template-columns: 1fr; gap: 4px; }
+    }
     /* Pestaña LinkedIn */
     .li-fresh { margin: 0 0 18px; color: var(--gray); font-size: 13px; }
     .li-stale { color: var(--warn-fg); background: var(--warn-bg); padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
@@ -1147,7 +1178,7 @@
       <button class="tab" data-tab="proveedores">Proveedores</button>
       <button class="tab" data-tab="propuestas">Propuestas</button>
       <button class="tab" data-tab="banco">Banco de imágenes</button>
-      <button class="tab" data-tab="linkedin">LinkedIn</button>
+      <button class="tab" data-tab="outbound">Outbound</button>
       <button class="tab" data-tab="docs">Docs</button>
     </div>
   </div>
@@ -1285,30 +1316,26 @@
       <div id="docs-list" class="docs-list"></div>
     </section>
 
-    <!-- TAB: LINKEDIN -->
-    <section id="tab-linkedin" class="tab-panel hidden">
+    <!-- TAB: OUTBOUND (LinkedIn + newsletter) -->
+    <section id="tab-outbound" class="tab-panel hidden">
       <p class="li-fresh" id="li-fresh"></p>
       <div id="li-loading" class="loading">Cargando…</div>
       <div id="li-empty" class="empty hidden">Todavía no han llegado métricas del servidor.</div>
       <div id="li-body" class="hidden">
         <section class="li-block">
-          <h2 class="li-h">Embudo</h2>
+          <h2 class="li-h">Embudo de LinkedIn</h2>
           <ol class="li-funnel" id="li-funnel"></ol>
           <p class="li-note">Descartados: 3 días sin contestar a Xavi, sigan en la etapa Descartado de GHL o ya fuera del pipeline. Leads: en «Pasa a cliente», con oportunidad en el pipeline de clientes o que han pedido presupuesto. Los mensajes incluyen los 117 de septiembre a contactos que Xavi ya tenía, sin invitación.</p>
         </section>
         <section class="li-block">
-          <h2 class="li-h">Por lista</h2>
-          <div class="li-table-wrap" id="li-listas"></div>
+          <h2 class="li-h">Cronograma de listas</h2>
+          <p class="ob-sub">Cada lista en el orden en que se envía. La parte discontinua es la previsión al ritmo que deja LinkedIn (unas 200 invitaciones por semana).</p>
+          <div id="ob-cronograma"></div>
         </section>
         <section class="li-block">
-          <h2 class="li-h">Quién ha contestado</h2>
-          <div class="subtabs" id="li-subtabs">
-            <button class="subtab active" data-filtro="toca">Le toca a Xavi<span class="subtab-badge hidden" id="li-toca-count">0</span></button>
-            <button class="subtab" data-filtro="leads">Leads</button>
-            <button class="subtab" data-filtro="interes">Con interés</button>
-            <button class="subtab" data-filtro="todos">Todos</button>
-          </div>
-          <div class="li-table-wrap" id="li-respuestas"></div>
+          <h2 class="li-h">Newsletter</h2>
+          <p class="ob-sub">Cada envío en su fecha, con cómo se veía. Pulsa la miniatura para abrirla entera.</p>
+          <div id="ob-newsletter"></div>
         </section>
       </div>
     </section>
@@ -1570,13 +1597,16 @@
     }
 
     // ---------- routing ----------
-    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco', 'linkedin', 'docs'];
+    const VALID_TABS = ['artistas', 'proveedores', 'shows', 'propuestas', 'banco', 'outbound', 'docs'];
+    // La pestaña se llamaba LinkedIn: los enlaces viejos a #linkedin siguen abriéndola.
+    const TAB_ALIAS = { linkedin: 'outbound' };
     function parseHash() {
       const h = (location.hash || '').replace(/^#/, '');
       if (!h) return { tab: 'shows', sub: null, query: {} };
       const [pathRaw, qsRaw] = h.split('?');
       const parts = pathRaw.split('/').filter(Boolean);
-      const tab = VALID_TABS.includes(parts[0]) ? parts[0] : 'shows';
+      const p0 = TAB_ALIAS[parts[0]] || parts[0];
+      const tab = VALID_TABS.includes(p0) ? p0 : 'shows';
       const sub = parts[1] || null;
       const query = {};
       if (qsRaw) {
@@ -4234,7 +4264,7 @@
         loadPropuestas();
       } else if (tab === 'banco') {
         loadBanco();
-      } else if (tab === 'linkedin') {
+      } else if (tab === 'outbound') {
         loadLinkedin();
       } else if (tab === 'docs') {
         loadDocs();
@@ -4268,10 +4298,10 @@
       }
     }
 
-    // ---------- LINKEDIN ----------
-    // Outbound de LinkedIn de Xavi. Los datos los manda el servidor de Rianex cada día a las
+    // ---------- OUTBOUND (LinkedIn + newsletter) ----------
+    // Outbound de LinkedIn de Xavi y newsletters de GHL. Los datos los manda el servidor de Rianex cada día a las
     // 9:00 (panel_metricas.py): LinkedIn leído a las 5:00 y GHL en el momento.
-    state.linkedin = { datos: null, filtro: 'toca' };
+    state.linkedin = { datos: null };
     const LI_PASOS = [
       ['invitaciones', 'Invitaciones', null],
       ['aceptadas', 'Aceptadas', 'invitaciones'],
@@ -4325,49 +4355,71 @@
           <span class="li-step-pct">${base ? `${liPct(t[k], t[base])} de ${LI_NOMBRE_PASO[base]}` : ''}</span>
         </li>`).join('');
 
-      $('li-listas').innerHTML = `<table class="li-table"><thead><tr>
-          <th>Lista</th><th>Invitaciones</th><th>Aceptadas</th><th>Mensajes</th><th>Contestan</th>
-          <th>% respuesta</th><th>Interés</th><th>Xavi contesta</th><th>Descartados</th><th>Leads</th></tr></thead><tbody>
-        ${d.listas.map(l => `<tr>
-          <td>${escapeHtml(l.nombre)}</td><td>${liFmt(l.invitaciones)}</td>
-          <td>${liFmt(l.aceptadas)} <small>${l.invitaciones ? liPct(l.aceptadas, l.invitaciones) : ''}</small></td>
-          <td>${liFmt(l.mensajes)}</td><td>${liFmt(l.contestan)}</td><td>${liPct(l.contestan, l.mensajes)}</td>
-          <td>${liFmt(l.interesados)}</td><td>${liFmt(l.xavi_contesta)}</td><td>${liFmt(l.descartados)}</td><td>${liFmt(l.leads)}</td></tr>`).join('')}
-        </tbody></table>`;
 
-      const toca = d.respuestas.filter(r => r.etapa === 'Interesado').length;
-      $('li-toca-count').textContent = String(toca);
-      $('li-toca-count').classList.toggle('hidden', !toca);
-      renderLinkedinRespuestas();
+      renderCronograma(d.listas || []);
+      renderNewsletter(d.newsletters || []);
     }
 
-    function renderLinkedinRespuestas() {
-      const f = state.linkedin.filtro;
-      document.querySelectorAll('#li-subtabs .subtab').forEach(s => s.classList.toggle('active', s.dataset.filtro === f));
-      const filas = state.linkedin.datos.respuestas.filter(r =>
-        f === 'toca' ? r.etapa === 'Interesado' : f === 'leads' ? r.lead.length : f === 'interes' ? r.interes : true);
-      if (!filas.length) {
-        $('li-respuestas').innerHTML = '<div class="empty">Nadie en este filtro.</div>';
-        return;
+    // Cronograma: una fila por lista, de la primera a la última invitación. Lo que falta de la
+    // lista en curso y las próximas se dibujan a ritmo de LI_RITMO invitaciones por semana.
+    const LI_RITMO = 200;
+    const DIA = 864e5;
+    function renderCronograma(listas) {
+      const hoy = new Date(new Date().toDateString()).getTime();
+      const dia = (iso) => new Date(iso + 'T12:00:00').getTime();
+      let cursor = hoy;
+      const filas = listas.map(l => {
+        const f = { ...l, tramos: [] };
+        const pend = Number(l.pendientes || 0);
+        if (l.desde) f.tramos.push({ ini: dia(l.desde), fin: dia(l.hasta || l.desde) + DIA, real: true });
+        if (pend > 0 && l.estado !== 'terminada') {
+          const ini = Math.max(cursor, l.estado === 'en curso' ? hoy : cursor);
+          const fin = ini + Math.ceil(7 * pend / LI_RITMO) * DIA;
+          f.tramos.push({ ini, fin, real: false });
+          cursor = fin;
+        }
+        return f;
+      }).filter(f => f.tramos.length || f.estado === 'próxima');
+      if (!filas.some(f => f.tramos.length)) { $('ob-cronograma').innerHTML = '<div class="empty">Sin fechas de listas todavía.</div>'; return; }
+      const t0 = Math.min(...filas.flatMap(f => f.tramos.map(t => t.ini)));
+      const t1 = Math.max(hoy + DIA, ...filas.flatMap(f => f.tramos.map(t => t.fin)));
+      const x = (t) => (100 * (t - t0) / (t1 - t0)).toFixed(2);
+      const meses = [];
+      for (let d = new Date(t0); d.getTime() <= t1; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+        const m = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+        if (m >= t0) meses.push(`<span style="left:${x(m)}%">${new Date(m).toLocaleDateString('es-ES', { month: 'short' })}</span>`);
       }
-      $('li-respuestas').innerHTML = `<table class="li-table li-resp"><thead><tr>
-          <th>Persona</th><th>Lista</th><th>Escribió</th><th>Xavi</th><th>Etapa en GHL</th><th></th></tr></thead><tbody>
-        ${filas.map(r => `<tr>
-          <td><a href="${escapeHtml(r.linkedin)}" target="_blank" rel="noopener">${escapeHtml(r.nombre)}</a>
-            ${r.empresa || r.cargo ? `<small>${escapeHtml([r.cargo, r.empresa].filter(Boolean).join(' · '))}</small>` : ''}</td>
-          <td>${escapeHtml(r.lista)}</td>
-          <td>${escapeHtml(liFecha(r.ultima_respuesta || r.fecha_respuesta))}</td>
-          <td>${r.ultimo_xavi ? escapeHtml(liFecha(r.ultimo_xavi)) : (r.xavi_contesta ? 'Sí' : '–')}</td>
-          <td><span class="li-chip">${escapeHtml(r.etapa)}</span>
-            ${r.interes ? '<span class="li-chip li-chip-int">Interés</span>' : ''}
-            ${r.lead.map(m => `<span class="li-chip li-chip-lead">★ ${escapeHtml(m)}</span>`).join('')}</td>
-          <td>${r.ghl ? `<a href="${escapeHtml(r.ghl)}" target="_blank" rel="noopener">GHL ↗</a>` : ''}</td></tr>`).join('')}
-        </tbody></table>`;
+      $('ob-cronograma').innerHTML = `
+        <div class="ob-axis">${meses.join('')}</div>
+        <div class="ob-rows">
+          ${filas.map((f, i) => `<div class="ob-row">
+            <div class="ob-row-name">${escapeHtml(f.nombre)}
+              <small>${f.invitaciones ? `${liFmt(f.invitaciones)} inv · ${liFmt(f.aceptadas)} acept · ${liFmt(f.contestan)} contestan` : ''}${f.pendientes ? `${f.invitaciones ? ' · ' : ''}${liFmt(f.pendientes)} por invitar` : ''}</small></div>
+            <div class="ob-track">
+              ${f.tramos.map(t => `<span class="ob-bar ${t.real ? '' : 'prevista'}" style="left:${x(t.ini)}%;width:${(x(t.fin) - x(t.ini)).toFixed(2)}%"
+                title="${escapeHtml(f.nombre)}: ${escapeHtml(liFecha(new Date(t.ini).toISOString()))} – ${escapeHtml(liFecha(new Date(t.fin - DIA).toISOString()))}${t.real ? '' : ' (previsto)'}">${t.real && f.estado === 'terminada' ? '✓' : ''}</span>`).join('')}
+              ${f.tramos.length ? '' : '<span class="ob-preparar">Lista por preparar</span>'}
+              <span class="ob-hoy" style="left:${x(hoy)}%">${i === 0 ? '<span class="ob-hoy-label">hoy</span>' : ''}</span>
+            </div></div>`).join('')}
+        </div>
+        <div class="ob-leyenda"><span><i></i>Enviado</span><span><i class="prevista"></i>Previsto</span></div>`;
     }
 
-    document.querySelectorAll('#li-subtabs .subtab').forEach(b => {
-      b.addEventListener('click', () => { state.linkedin.filtro = b.dataset.filtro; renderLinkedinRespuestas(); });
-    });
+    // Newsletter: envíos de GHL (Email marketing) en una línea de tiempo con su miniatura.
+    function renderNewsletter(lista) {
+      const ok = (u) => typeof u === 'string' && /^https:\/\//.test(u);
+      const envios = lista.filter(n => n.fecha).sort((a, b) => a.fecha.localeCompare(b.fecha));
+      if (!envios.length) { $('ob-newsletter').innerHTML = '<div class="empty">Todavía no hay newsletters enviadas.</div>'; return; }
+      $('ob-newsletter').innerHTML = `<div class="nl-line">${envios.map(n => `
+        <div class="nl-item">
+          <div class="nl-dot"></div>
+          <div class="nl-fecha">${escapeHtml(liFecha(n.fecha))}${n.estado && n.estado !== 'enviada' ? ` · ${escapeHtml(n.estado)}` : ''}</div>
+          <div class="nl-asunto">${escapeHtml(n.asunto || n.nombre || '')}</div>
+          ${ok(n.vista) ? `<a class="nl-thumb" href="${escapeHtml(n.vista)}" target="_blank" rel="noopener" title="Abrir la newsletter">
+            <iframe src="${escapeHtml(n.vista)}" sandbox="" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></a>` : ''}
+          <div class="nl-meta">${escapeHtml(n.nombre || '')}${n.enviados ? ` · ${liFmt(n.enviados)} destinatarios` : ''}</div>
+        </div>`).join('')}</div>`;
+    }
 
     // ---------- BANCO DE IMÁGENES ----------
     // Imágenes sueltas para propuestas conceptuales (Xavi, weekly sep 2026):
