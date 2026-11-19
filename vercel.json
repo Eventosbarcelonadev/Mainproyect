@@ -26,6 +26,10 @@
       "destination": "/api/admin?action=init-opp-proposal"
     },
     {
+      "source": "/r",
+      "destination": "/api/admin?action=clic"
+    },
+    {
       "source": "/formulario-cliente",
       "destination": "/formulario-inteligente.html"
     },

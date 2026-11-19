@@ -1122,6 +1122,17 @@
     .nl-thumb iframe { width: 600px; height: 867px; border: 0; transform: scale(.3); transform-origin: 0 0; pointer-events: none; }
     .nl-thumb:hover { border-color: var(--dark); }
     .nl-meta { color: var(--gray); margin-top: 6px; }
+    /* Mapa de clics de una newsletter (en el drawer) */
+    .nm-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .nm-chip { background: var(--light); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .nm-chip b { font-weight: 700; }
+    .nm-note { font-size: 12.5px; color: var(--gray); margin: 0 0 14px; }
+    .nm-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: #f3f1ee; }
+    .nm-wrap iframe { display: block; width: 640px; max-width: none; height: 900px; border: 0; margin: 0 auto; background: #fff; }
+    .nm-table td:nth-child(n+3) { text-align: right; white-space: nowrap; }
+    .nm-table th:nth-child(n+3) { text-align: right; }
+    .nm-dest { display: block; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gray); font-size: 12px; }
+    .nm-b { display: inline-block; min-width: 34px; padding: 1px 6px; border-radius: 5px; font-size: 11.5px; font-weight: 700; color: #fff; text-align: center; }
     @media (max-width: 700px) {
       .ob-axis { margin-left: 0; }
       .ob-row { grid-template-columns: 1fr; gap: 4px; }
@@ -4418,7 +4429,125 @@
           ${ok(n.vista) ? `<a class="nl-thumb" href="${escapeHtml(n.vista)}" target="_blank" rel="noopener" title="Abrir la newsletter">
             <iframe src="${escapeHtml(n.vista)}" sandbox="" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></a>` : ''}
           <div class="nl-meta">${escapeHtml(n.nombre || '')}${n.enviados ? ` · ${liFmt(n.enviados)} destinatarios` : ''}</div>
+          ${ok(n.vista) ? `<button type="button" class="p-act" data-nl-mapa="${escapeHtml(n.id || '')}">Mapa de clics</button>` : ''}
         </div>`).join('')}</div>`;
+      state.linkedin.newsletters = envios;
+    }
+    $('ob-newsletter').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-nl-mapa]');
+      if (!b) return;
+      const n = (state.linkedin.newsletters || []).find(x => (x.id || '') === b.dataset.nlMapa);
+      if (n) abrirMapaClics(n);
+    });
+
+    // Mapa de clics: la newsletter tal cual se envió, con el % de clics encima de cada enlace. Los
+    // clics los apunta /r (api/admin.js, clic); solo hay datos si el HTML se preparó con
+    // scripts/newsletter-enlaces.mjs antes de enviarla.
+    async function abrirMapaClics(n) {
+      $('drawer-title').textContent = 'Mapa de clics';
+      $('drawer-subtitle').textContent = `${n.asunto || n.nombre || ''} · ${liFecha(n.fecha)}`;
+      $('drawer-body').innerHTML = '<div class="loading">Cargando…</div>';
+      openDrawer();
+      let d;
+      try {
+        const r = await fetch(`/api/admin?action=newsletter-mapa&vista=${encodeURIComponent(n.vista)}`);
+        d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+      } catch (err) {
+        $('drawer-body').innerHTML = `<div class="empty">No se pudo cargar: ${escapeHtml(err.message)}</div>`;
+        return;
+      }
+      if (!d.campanas.length) {
+        $('drawer-body').innerHTML = `<div class="empty">Esta newsletter se envió sin los enlaces de seguimiento, así que no hay mapa.
+          Para tenerlo en la próxima, prepara su HTML con <code>scripts/newsletter-enlaces.mjs</code> antes de pegarlo en GHL.
+          Los clics de esta solo están en GHL: Email Marketing → Campaigns → Statistics → Click Performance.</div>`;
+        return;
+      }
+      const s = d.resumen;
+      const total = s.clics || 0;
+      const porBloque = Object.fromEntries(s.bloques.map(b => [b.bloque, b]));
+      const max = Math.max(1, ...s.bloques.map(b => b.clics));
+      // Etiqueta: color sólido para que se lea siempre. La intensidad va en el recuadro del enlace.
+      const color = (c) => c ? '#D9443F' : '#8a847e';
+      const marco = (c) => c ? `rgba(217, 68, 63, ${(0.3 + 0.7 * c / max).toFixed(2)})` : 'rgba(138, 132, 126, .5)';
+      const pct = (c) => total ? `${Math.round(100 * c / total)} %` : '0 %';
+      const ghl = (id) => s.ghl_location ? `https://app.gohighlevel.com/v2/location/${encodeURIComponent(s.ghl_location)}/contacts/detail/${encodeURIComponent(id)}` : null;
+
+      $('drawer-body').innerHTML = `
+        <div class="nm-chips">
+          <span class="nm-chip"><b>${liFmt(s.personas)}</b> ${s.personas === 1 ? 'persona ha' : 'personas han'} pinchado${n.enviados ? ` (${liPct(s.personas, n.enviados)} de ${liFmt(n.enviados)})` : ''}</span>
+          <span class="nm-chip"><b>${liFmt(total)}</b> clics</span>
+          ${s.descartados ? `<span class="nm-chip" title="Antivirus y filtros de empresa que abren los enlaces al recibir el correo">${liFmt(s.descartados)} de escáneres, fuera</span>` : ''}
+        </div>
+        <p class="nm-note">El porcentaje de cada enlace es su parte del total de clics. ${s.sin_contacto ? `${liFmt(s.sin_contacto)} clics llegaron sin el contacto de GHL.` : ''} Los enlaces de correo (mailto) no se pueden contar.</p>
+        <div class="nm-wrap"><iframe id="nm-frame" sandbox="allow-same-origin" title="Newsletter con los clics"></iframe></div>
+        <div class="drawer-section">
+          <h3>Enlaces</h3>
+          ${s.bloques.length ? `<div class="li-table-wrap"><table class="li-table nm-table">
+            <thead><tr><th>Enlace</th><th>Destino</th><th>Clics</th><th>Personas</th></tr></thead>
+            <tbody>${s.bloques.map(b => `<tr>
+              <td><span class="nm-b" style="background:${color(b.clics)}">${escapeHtml(b.bloque)}</span></td>
+              <td><span class="nm-dest" title="${escapeHtml(b.destino)}">${escapeHtml(b.destino.replace(/^https?:\/\/(www\.)?/, '').replace(/\?.*$/, ''))}</span></td>
+              <td>${liFmt(b.clics)} <small>${pct(b.clics)}</small></td><td>${liFmt(b.personas)}</td></tr>`).join('')}</tbody>
+          </table></div>` : '<div class="empty">Todavía no ha pinchado nadie.</div>'}
+        </div>
+        <div class="drawer-section">
+          <h3>Quién ha pinchado</h3>
+          ${s.contactos.length ? `<div class="li-table-wrap"><table class="li-table nm-table">
+            <thead><tr><th>Contacto</th><th>Enlaces</th><th>Clics</th><th>Primer clic</th></tr></thead>
+            <tbody>${s.contactos.map(c => `<tr>
+              <td>${ghl(c.id) ? `<a href="${escapeHtml(ghl(c.id))}" target="_blank" rel="noopener">${escapeHtml(c.nombre || c.email || c.id)}</a>` : escapeHtml(c.nombre || c.email || c.id)}
+                ${c.empresa || (c.nombre && c.email) ? `<small style="display:block">${escapeHtml([c.empresa, c.nombre ? c.email : null].filter(Boolean).join(' · '))}</small>` : ''}</td>
+              <td>${c.bloques.map(b => `<span class="nm-b" style="background:${color((porBloque[b] || {}).clics || 0)}">${escapeHtml(b)}</span>`).join(' ')}</td>
+              <td>${liFmt(c.clics)}</td><td>${escapeHtml(liFecha(c.primero, true))}</td></tr>`).join('')}</tbody>
+          </table></div>` : '<div class="empty">Nadie identificado todavía.</div>'}
+        </div>`;
+
+      // El HTML va en un iframe sin scripts. allow-same-origin deja a esta página dibujar encima;
+      // los enlaces se desactivan para que mirar el mapa no apunte clics.
+      const frame = $('nm-frame');
+      frame.addEventListener('load', () => {
+        const doc = frame.contentDocument;
+        if (!doc || !doc.body) return;
+        const enlaces = [...doc.querySelectorAll('a[href*="/r?"]')].map(a => {
+          let b = null;
+          try { b = new URL(a.getAttribute('href'), location.href).searchParams.get('b'); } catch (e) { /* enlace raro */ }
+          a.removeAttribute('href');
+          return b ? { a, b: b.toLowerCase() } : null;
+        }).filter(Boolean);
+        const st = doc.createElement('style');
+        st.textContent = 'a{pointer-events:none;cursor:default}.eb-nm{position:absolute;z-index:9999;'
+          + 'padding:2px 7px;border-radius:6px;font:700 12px/1.4 system-ui,sans-serif;color:#fff;white-space:nowrap;'
+          + 'box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:auto;cursor:help}';
+        doc.head.appendChild(st);
+        const scrollY = doc.scrollingElement ? doc.scrollingElement.scrollTop : 0;
+        const conEtiqueta = new Set(); // una etiqueta por bloque, en su primer enlace; el resto solo el recuadro
+        for (const { a, b } of enlaces) {
+          // Si el enlace es una imagen, se marca la imagen: el <a> que la envuelve puede medir 0 de
+          // alto o quedar recortado por la tabla.
+          const img = a.querySelector('img');
+          const caja = img || a;
+          const r = caja.getBoundingClientRect();
+          if (!r.width && !r.height) continue;
+          const datos = porBloque[b] || { clics: 0, personas: 0 };
+          caja.style.outline = `${datos.clics ? 3 : 2}px solid ${marco(datos.clics)}`;
+          caja.style.outlineOffset = img === caja ? '-3px' : '2px';
+          if (conEtiqueta.has(b)) continue;
+          conEtiqueta.add(b);
+          const badge = doc.createElement('span');
+          badge.className = 'eb-nm';
+          badge.style.background = color(datos.clics);
+          // En una imagen, dentro de su esquina; en un enlace de texto o un botón, encima.
+          const dentro = !!img;
+          badge.style.left = `${r.left + (doc.defaultView.scrollX || 0) + (dentro ? 6 : -2)}px`;
+          badge.style.top = `${r.top + scrollY + (dentro ? 6 : -22)}px`;
+          badge.textContent = datos.clics ? pct(datos.clics) : '0';
+          badge.title = `${b}: ${datos.clics} clics de ${datos.personas} ${datos.personas === 1 ? 'persona' : 'personas'}`;
+          doc.body.appendChild(badge);
+        }
+        frame.style.height = `${doc.documentElement.scrollHeight + 20}px`;
+      }, { once: true });
+      frame.srcdoc = d.html;
     }
 
     // ---------- BANCO DE IMÁGENES ----------
