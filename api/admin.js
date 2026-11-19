@@ -26,6 +26,8 @@
 // --- LinkedIn (tab LinkedIn) ---
 // GET  /api/admin?action=linkedin-metricas  -> último envío del servidor + totales de cada día
 // POST /api/admin?action=linkedin-push      auth: Bearer LINKEDIN_PUSH_TOKEN  body: panel_metricas.json del servidor Rianex
+// GET  /r?n=&b=&c=&u= (rewrite -> action=clic, sin sesión)  -> apunta el clic de la newsletter y redirige
+// GET  /api/admin?action=newsletter-mapa&vista=<HTML de GHL>  -> mapa de clics de una newsletter
 // --- Docs (tab Docs) ---
 // GET  /api/admin?action=docs-list  -> index.json del bucket privado docs-internos
 // GET  /api/admin?action=doc&id=&f= (rewrite desde /docs-privados/<id>/<f>)  -> HTML del doc, o redirección firmada para el resto
@@ -44,7 +46,7 @@ import { consultaGsc } from '../lib/dashboard/gsc-live.js';
 // Las llaman otros sistemas, no el panel: el GPT (trae su propio token,
 // gptAuthOk), el webhook de GHL, n8n y el servidor de Rianex (linkedin-push, con
 // LINKEDIN_PUSH_TOKEN).
-const ACCIONES_SIN_SESION = new Set(['gpt-catalogo', 'gpt-show', 'init-opp-proposal', 'ensure-proposal-for-lead', 'linkedin-push']);
+const ACCIONES_SIN_SESION = new Set(['gpt-catalogo', 'gpt-show', 'init-opp-proposal', 'ensure-proposal-for-lead', 'linkedin-push', 'clic']);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -3055,6 +3057,189 @@ async function linkedinMetricas(req, res, env) {
   });
 }
 
+// === Newsletter: mapa de clics (pestaña Outbound) ===
+// La API de GHL no da los clics por enlace de una campaña, así que cada enlace de la
+// newsletter pasa por /r (rewrite de vercel.json), que apunta el clic en newsletter_clics y
+// lleva al destino. scripts/newsletter-enlaces.mjs prepara el HTML:
+//   /r?n=<campaña>&b=<bloque>&c={{contact.id}}&u=<destino>
+// Solo se redirige a dominios de EB y de sus redes; cualquier otro destino va a la home sin
+// apuntar nada, para que /r no sirva para mandar a nadie a una web ajena.
+const CLIC_HOME = 'https://www.eventosbarcelona.com/';
+const CLIC_HOSTS = ['eventosbarcelona.com', 'youtube.com', 'youtu.be', 'wa.me', 'whatsapp.com',
+  'instagram.com', 'linkedin.com', 'facebook.com', 'tiktok.com', 'vimeo.com'];
+const CLIC_CAMPANA_RE = /^[a-z0-9][a-z0-9-]{0,59}$/;
+const CLIC_BLOQUE_RE = /^[a-z0-9][a-z0-9-]{0,39}$/;
+const GHL_CONTACT_ID_RE = /^[A-Za-z0-9]{12,40}$/;
+// Escáneres de correo (Safe Links, Barracuda, Mimecast…) y clientes sin navegador. Los que se
+// hacen pasar por navegador se pillan al leer: abren varios enlaces en pocos segundos.
+const CLIC_BOT_UA_RE = /bot|crawl|spider|preview|scan|safelinks|barracuda|mimecast|proofpoint|symantec|trendmicro|forcepoint|ironport|googleimageproxy|python|curl|wget|go-http|okhttp|headless|java\//i;
+
+function clicDestino(u) {
+  let url;
+  try { url = new URL(String(u || '')); } catch { return null; }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+  const h = url.hostname.toLowerCase();
+  return CLIC_HOSTS.some(d => h === d || h.endsWith('.' + d)) ? url : null;
+}
+
+async function clic(req, res, env) {
+  const campana = String(req.query.n || '').toLowerCase();
+  const bloque = String(req.query.b || '').toLowerCase();
+  const contacto = String(req.query.c || '');
+  const destino = clicDestino(req.query.u);
+  const valido = destino && CLIC_CAMPANA_RE.test(campana) && CLIC_BLOQUE_RE.test(bloque);
+
+  const ir = new URL(destino ? destino.href : CLIC_HOME);
+  // Las visitas a la web llegan a GA4 con la campaña y el bloque, salvo que el enlace ya traiga los suyos.
+  if (valido && /(^|\.)eventosbarcelona\.com$/i.test(ir.hostname)) {
+    const p = ir.searchParams;
+    if (!p.has('utm_source')) p.set('utm_source', 'newsletter');
+    if (!p.has('utm_medium')) p.set('utm_medium', 'email');
+    if (!p.has('utm_campaign')) p.set('utm_campaign', campana);
+    if (!p.has('utm_content')) p.set('utm_content', bloque);
+  }
+
+  if (valido && env.SUPABASE_URL && env.SUPABASE_KEY) {
+    const ua = String(req.headers['user-agent'] || '').slice(0, 300);
+    const fila = {
+      campana,
+      bloque,
+      destino: destino.href.slice(0, 1000),
+      contact_id: GHL_CONTACT_ID_RE.test(contacto) ? contacto : null,
+      metodo: req.method,
+      user_agent: ua || null,
+      pais: String(req.headers['x-vercel-ip-country'] || '').slice(0, 8) || null,
+      es_bot: req.method === 'HEAD' || !ua || CLIC_BOT_UA_RE.test(ua)
+    };
+    // El clic no debe esperar a Supabase más de la cuenta: si tarda, se pierde el dato, no la visita.
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 2000);
+    try {
+      await fetch(`${env.SUPABASE_URL}/rest/v1/newsletter_clics`, {
+        method: 'POST',
+        headers: {
+          apikey: env.SUPABASE_KEY,
+          Authorization: `Bearer ${env.SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify(fila),
+        signal: ctl.signal
+      });
+    } catch { /* sin dato, pero el lector llega a su destino */ }
+    clearTimeout(t);
+  }
+
+  res.statusCode = 302;
+  res.setHeader('Location', ir.href);
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  return res.end();
+}
+
+// Cuenta los clics de verdad. Se descartan los de escáner (es_bot) y las ráfagas: el mismo
+// contacto (o, sin contacto, el mismo user agent) abriendo 3 o más enlaces distintos en 10 s,
+// que es lo que hacen los antivirus de empresa al recibir el correo.
+function resumenClics(filas) {
+  const quien = f => f.contact_id || `ua:${f.user_agent || ''}|${f.pais || ''}`;
+  const grupos = new Map();
+  for (const f of filas) {
+    f._t = new Date(f.ts).getTime();
+    if (!grupos.has(quien(f))) grupos.set(quien(f), []);
+    grupos.get(quien(f)).push(f);
+  }
+  for (const g of grupos.values()) {
+    g.sort((a, b) => a._t - b._t);
+    for (let i = 0, j = 0; i < g.length; i++) {
+      while (g[j]._t < g[i]._t - 10000) j++;
+      const ventana = g.slice(j, i + 1);
+      if (new Set(ventana.map(f => f.bloque)).size >= 3) ventana.forEach(f => { f._rafaga = true; });
+    }
+  }
+  const buenos = filas.filter(f => !f.es_bot && !f._rafaga);
+  const bloques = new Map();
+  const contactos = new Map();
+  for (const f of buenos) {
+    if (!bloques.has(f.bloque)) bloques.set(f.bloque, { bloque: f.bloque, destino: f.destino, clics: 0, personas: new Set() });
+    const b = bloques.get(f.bloque);
+    b.clics++;
+    b.personas.add(quien(f));
+    if (!f.contact_id) continue;
+    if (!contactos.has(f.contact_id)) contactos.set(f.contact_id, { id: f.contact_id, clics: 0, bloques: new Set(), primero: f.ts });
+    const c = contactos.get(f.contact_id);
+    c.clics++;
+    c.bloques.add(f.bloque);
+  }
+  return {
+    clics: buenos.length,
+    personas: new Set(buenos.map(quien)).size,
+    descartados: filas.length - buenos.length,
+    sin_contacto: buenos.filter(f => !f.contact_id).length,
+    bloques: [...bloques.values()].map(b => ({ bloque: b.bloque, destino: b.destino, clics: b.clics, personas: b.personas.size }))
+      .sort((a, b) => b.clics - a.clics),
+    contactos: [...contactos.values()].map(c => ({ id: c.id, clics: c.clics, bloques: [...c.bloques], primero: c.primero }))
+      .sort((a, b) => b.clics - a.clics || a.primero.localeCompare(b.primero))
+  };
+}
+
+// Nombre y empresa de quien ha pinchado, de GHL. Como mucho 100, de 8 en 8.
+async function nombresGhl(env, ids) {
+  const out = {};
+  const cola = ids.slice(0, 100);
+  await Promise.all(Array.from({ length: Math.min(8, cola.length) }, async () => {
+    while (cola.length) {
+      const id = cola.shift();
+      try {
+        const g = await ghlFetch('GET', `/contacts/${encodeURIComponent(id)}`, env);
+        if (!g.ok) continue;
+        const c = JSON.parse(g.body).contact || {};
+        const nombre = [c.firstName, c.lastName].filter(Boolean).join(' ') || c.contactName || null;
+        out[id] = { nombre, empresa: c.companyName || null, email: c.email || null };
+      } catch { /* sin nombre */ }
+    }
+  }));
+  return out;
+}
+
+// GET ?action=newsletter-mapa&vista=<HTML de la campaña en GHL>  -> {html, campanas, resumen}
+// vista es el nonTrackingDownloadUrl que manda panel_metricas.py en newsletters[]. Las campañas
+// salen de los enlaces /r del propio HTML; ?n= las fuerza.
+async function newsletterMapa(req, res, env) {
+  let html = null;
+  const vista = String(req.query.vista || '');
+  if (vista) {
+    let url;
+    try { url = new URL(vista); } catch { return res.status(400).json({ error: 'vista no es una URL' }); }
+    const deGhl = url.protocol === 'https:' && url.hostname === 'firebasestorage.googleapis.com'
+      && (!env.GHL_LOC || url.pathname.includes(`location%2F${env.GHL_LOC}%2F`) || url.pathname.includes(`location/${env.GHL_LOC}/`));
+    if (!deGhl) return res.status(400).json({ error: 'vista tiene que ser el HTML de una campaña de GHL' });
+    const r = await fetch(url.href);
+    if (!r.ok) return res.status(502).json({ error: `No se pudo leer la newsletter (${r.status})` });
+    html = (await r.text()).slice(0, 3_000_000);
+  }
+
+  const campanas = new Set(String(req.query.n || '').toLowerCase().split(',').filter(s => CLIC_CAMPANA_RE.test(s)));
+  if (html) {
+    for (const m of html.matchAll(/\/r\?([^"'\s<>]+)/g)) {
+      const n = new URLSearchParams(m[1].replace(/&amp;/g, '&')).get('n');
+      if (n && CLIC_CAMPANA_RE.test(n.toLowerCase())) campanas.add(n.toLowerCase());
+    }
+  }
+  if (!campanas.size) return res.status(200).json({ html, campanas: [], resumen: null });
+
+  const lista = [...campanas].map(encodeURIComponent).join(',');
+  const r = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/newsletter_clics?campana=in.(${lista})&select=ts,bloque,destino,contact_id,user_agent,pais,es_bot&order=ts.asc&limit=20000`,
+    { headers: { apikey: env.SUPABASE_KEY, Authorization: `Bearer ${env.SUPABASE_KEY}` } }
+  );
+  if (!r.ok) return res.status(500).json({ error: `Supabase ${r.status}: ${(await r.text()).slice(0, 200)}` });
+  const resumen = resumenClics(await r.json());
+  const nombres = await nombresGhl(env, resumen.contactos.map(c => c.id));
+  resumen.contactos = resumen.contactos.map(c => ({ ...c, ...(nombres[c.id] || {}) }));
+  resumen.ghl_location = env.GHL_LOC || null;
+  return res.status(200).json({ html, campanas: [...campanas], resumen });
+}
+
 // === Docs (tab Docs) ===
 // Informes, presentaciones, datos y notas de EB que no son propuestas. Viven en
 // el bucket privado docs-internos de Supabase y no en el repo, que es público:
@@ -3442,11 +3627,13 @@ export default async function handler(req, res) {
     GHL_PIPELINE_CLIENTES: trim(process.env.GHL_PIPELINE_CLIENTES),
     GPT_TOKEN: trim(process.env.GPT_ACTION_TOKEN)
   };
+  const action = (req.query.action || '').trim();
+  // El clic de la newsletter redirige siempre, aunque falle todo lo demás.
+  if (action === 'clic') return clic(req, res, env);
   if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
     return res.status(500).json({ error: 'Supabase not configured' });
   }
 
-  const action = (req.query.action || '').trim();
   // Dashboard de resultados (/dashboard y su cron): van aquí porque el plan Hobby de Vercel no
   // admite más de 12 funciones. Cada una comprueba su acceso (ver lib/dashboard/handlers.js).
   if (req.method === 'GET' && action === 'dashboard') return paginaDashboard(req, res);
@@ -3464,6 +3651,7 @@ export default async function handler(req, res) {
       if (action === 'search-ghl-artistas') return searchGhlArtistas(req, res, env);
       if (action === 'geo-metrics') return geoMetrics(req, res, env);
       if (action === 'linkedin-metricas') return linkedinMetricas(req, res, env);
+      if (action === 'newsletter-mapa') return newsletterMapa(req, res, env);
       if (action === 'list-referencias') return listReferencias(req, res, env);
       if (action === 'docs-list') return docsList(req, res, env);
       if (action === 'doc') return servirDoc(req, res, env);

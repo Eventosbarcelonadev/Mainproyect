@@ -42,6 +42,7 @@ const PUBLICAS = new Set([
   '/catalogo/',
   '/propuesta-catalogo.html',
   '/eb-form.js', // lo carga la web de WordPress para abrir los formularios
+  '/r', // enlaces de las newsletters: apunta el clic y redirige (api/admin.js, clic)
   '/robots.txt',
 ]);
 
