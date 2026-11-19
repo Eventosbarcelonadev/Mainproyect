@@ -26,7 +26,7 @@
 // --- LinkedIn (tab LinkedIn) ---
 // GET  /api/admin?action=linkedin-metricas  -> último envío del servidor + totales de cada día
 // POST /api/admin?action=linkedin-push      auth: Bearer LINKEDIN_PUSH_TOKEN  body: panel_metricas.json del servidor Rianex
-// GET  /r?n=&b=&c=&u= (rewrite -> action=clic, sin sesión)  -> apunta el clic de la newsletter y redirige
+// GET  /r?n=&b=&c=&d= (rewrite -> action=clic, sin sesión)  -> apunta el clic de la newsletter y redirige
 // GET  /api/admin?action=newsletter-mapa&vista=<HTML de GHL>  -> mapa de clics de una newsletter
 // --- Docs (tab Docs) ---
 // GET  /api/admin?action=docs-list  -> index.json del bucket privado docs-internos
@@ -3061,7 +3061,10 @@ async function linkedinMetricas(req, res, env) {
 // La API de GHL no da los clics por enlace de una campaña, así que cada enlace de la
 // newsletter pasa por /r (rewrite de vercel.json), que apunta el clic en newsletter_clics y
 // lleva al destino. scripts/newsletter-enlaces.mjs prepara el HTML:
-//   /r?n=<campaña>&b=<bloque>&c={{contact.id}}&u=<destino>
+//   /r?n=<campaña>&b=<bloque>&c={{contact.id}}&d=<destino en base64url>
+// El destino va en base64url porque el seguimiento de clics de GHL decodifica la query al
+// redirigir: un u=<destino> con su propia query (?utm_source=…&utm_medium=…) llegaba cortado
+// en el primer &. u= se sigue aceptando para los enlaces ya enviados.
 // Solo se redirige a dominios de EB y de sus redes; cualquier otro destino va a la home sin
 // apuntar nada, para que /r no sirva para mandar a nadie a una web ajena.
 const CLIC_HOME = 'https://www.eventosbarcelona.com/';
@@ -3073,6 +3076,12 @@ const GHL_CONTACT_ID_RE = /^[A-Za-z0-9]{12,40}$/;
 // Escáneres de correo (Safe Links, Barracuda, Mimecast…) y clientes sin navegador. Los que se
 // hacen pasar por navegador se pillan al leer: abren varios enlaces en pocos segundos.
 const CLIC_BOT_UA_RE = /bot|crawl|spider|preview|scan|safelinks|barracuda|mimecast|proofpoint|symantec|trendmicro|forcepoint|ironport|googleimageproxy|python|curl|wget|go-http|okhttp|headless|java\//i;
+
+function clicDesdeB64(d) {
+  const s = String(d || '');
+  if (!/^[A-Za-z0-9_-]{8,2000}$/.test(s)) return null;
+  return Buffer.from(s, 'base64url').toString('utf8');
+}
 
 function clicDestino(u) {
   let url;
@@ -3086,7 +3095,7 @@ async function clic(req, res, env) {
   const campana = String(req.query.n || '').toLowerCase();
   const bloque = String(req.query.b || '').toLowerCase();
   const contacto = String(req.query.c || '');
-  const destino = clicDestino(req.query.u);
+  const destino = clicDestino(clicDesdeB64(req.query.d) || req.query.u);
   const valido = destino && CLIC_CAMPANA_RE.test(campana) && CLIC_BLOQUE_RE.test(bloque);
 
   const ir = new URL(destino ? destino.href : CLIC_HOME);
