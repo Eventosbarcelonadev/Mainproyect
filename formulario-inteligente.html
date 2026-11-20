@@ -324,7 +324,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);bo
     </section>
   </main>
   <script>
-const L = {"e_nombre": "El nombre es obligatorio", "e_email": "Introduce un email válido", "e_tel": "El teléfono es obligatorio", "e_tipo": "Elige un tipo de evento", "e_otro": "Cuéntanos qué tipo de evento es", "e_submit": "No hemos podido enviar tu solicitud. Prueba de nuevo en unos segundos.", "sending": "Enviando...", "submit": "Enviar solicitud", "otro_prefix": "Tipo de evento: ", "otro_estilo_prefix": "Otro: ", "nosure_value": "No estoy seguro", "artist_form": "/formulario-artistas.html", "lang": null};
+const L = {"e_nombre": "El nombre es obligatorio", "e_email": "Introduce un email válido", "e_tel": "El teléfono es obligatorio", "e_tipo": "Elige un tipo de evento", "e_otro": "Cuéntanos qué tipo de evento es", "e_submit": "No hemos podido enviar tu solicitud. Prueba de nuevo en unos segundos.", "sending": "Enviando...", "submit": "Enviar solicitud", "otro_prefix": "Tipo de evento: ", "otro_estilo_prefix": "Otro: ", "fecha_prefix": "Fecha del evento: ", "nosure_value": "No estoy seguro", "artist_form": "/formulario-artistas.html", "lang": null};
 const STEPS = 3;
 function q(s, r) { return (r || document).querySelector(s); }
 function qa(s, r) { return Array.from((r || document).querySelectorAll(s)); }
@@ -566,6 +566,14 @@ async function submitForm() {
     if (params.get('web')) q('#f-web').value = params.get('web');
     if (params.get('cargo')) q('#f-cargo').value = params.get('cargo');
     if (params.get('mensaje')) { const tx = q('#f-comentarios'); if (tx) tx.value = params.get('mensaje'); }
+    // Fecha, lugar e invitados que ya dio en el formulario corto (eb-form.js).
+    // Una fecha que no es YYYY-MM-DD ("marzo 2027") no cabe en el campo de
+    // fecha: se añade a los comentarios para no perderla ni volver a pedirla.
+    const fecha = params.get('fecha') || '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) { const fe = q('#f-fecha'); if (fe) fe.value = fecha; }
+    else if (fecha) { const tx = q('#f-comentarios'); if (tx) tx.value = L.fecha_prefix + fecha + (tx.value ? '\n\n' + tx.value : ''); }
+    if (/^\d+$/.test(params.get('asistentes') || '')) { const as = q('#f-asistentes'); if (as) as.value = params.get('asistentes'); }
+    if (params.get('ubicacion')) { const ub = q('#f-ubicacion'); if (ub) ub.value = params.get('ubicacion'); }
     goToStep(2);
   }
 })();

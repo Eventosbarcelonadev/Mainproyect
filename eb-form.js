@@ -20,15 +20,38 @@
           dots[i].remove();
         }
       }
-      if (form.querySelector('textarea[name="mensaje"]')) return;
       var check = form.querySelector('.eb-check, .eb-submit, button[type="submit"]');
       if (!check) return;
-      var row = document.createElement('div');
-      row.className = 'eb-row';
-      row.style.marginTop = '8px';
       // Idioma detectado: la landing EN vive en /en/, o el <html lang="en">
       var isEn = (document.documentElement.lang || '').toLowerCase().indexOf('en') === 0
         || /^\/en(\/|$)/.test(location.pathname);
+      // Fecha, lugar y nº de invitados en el paso 1 (Philippe, 20-nov-2026).
+      // Opcionales. Mismo marcado que los demás campos (fila .eb-row con
+      // input[type=text]), así heredan el estilo de cada variante del form.
+      // Si la plantilla de WP ya los trae, no se duplican.
+      if (!form.querySelector('[name="fecha_evento"]')) {
+        var ev = document.createElement('div');
+        ev.className = 'eb-row eb-row-evento';
+        ev.innerHTML = isEn
+          ? '<input type="text" name="fecha_evento" placeholder="Event date" autocomplete="off">'
+            + '<input type="text" name="ciudad_evento" placeholder="Venue or city">'
+            + '<input type="text" name="numero_asistentes" placeholder="Number of guests" inputmode="numeric" autocomplete="off">'
+          : '<input type="text" name="fecha_evento" placeholder="Fecha del evento" autocomplete="off">'
+            + '<input type="text" name="ciudad_evento" placeholder="Lugar o ciudad">'
+            + '<input type="text" name="numero_asistentes" placeholder="Nº de invitados" inputmode="numeric" autocomplete="off">';
+        // Tres por fila; si no caben (formularios estrechos, 481-560 px) pasan
+        // a dos + uno en vez de cortar el texto. Sin hueco extra entre líneas.
+        ev.style.flexWrap = 'wrap';
+        ev.style.rowGap = '0';
+        for (var k = 0; k < ev.children.length; k++) ev.children[k].style.minWidth = '150px';
+        var msgEl = form.querySelector('textarea[name="mensaje"]');
+        var anchor = msgEl ? (msgEl.closest('.eb-row') || msgEl) : check;
+        anchor.parentNode.insertBefore(ev, anchor);
+      }
+      if (form.querySelector('textarea[name="mensaje"]')) return;
+      var row = document.createElement('div');
+      row.className = 'eb-row';
+      row.style.marginTop = '8px';
       var placeholder = isEn
         ? 'Tell us briefly about your event (optional)'
         : 'Cuéntanos brevemente sobre tu evento (opcional)';
@@ -51,6 +74,40 @@
     if (tries > 20) clearInterval(iv);
   }, 500);
 })();
+
+// Fecha del paso 1 (texto libre) → YYYY-MM-DD si se puede leer sin dudas.
+// Acepta 15/03/2027, 15-3-27, 2027-03-15, "15 de marzo de 2027", "March 15, 2027".
+// Si no (p. ej. "marzo 2027"), devuelve '' y se conserva el texto tal cual.
+function ebFechaISO(t){
+  t=String(t||'').trim().toLowerCase();
+  if(!t) return '';
+  var y,m,d,r;
+  var MES={ene:1,jan:1,feb:2,mar:3,abr:4,apr:4,may:5,jun:6,jul:7,ago:8,aug:8,sep:9,set:9,oct:10,nov:11,dic:12,dec:12};
+  if((r=t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))){ y=+r[1]; m=+r[2]; d=+r[3]; }
+  else if((r=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2}|\d{4})$/))){
+    d=+r[1]; m=+r[2]; y=+r[3];
+    if(m>12&&d<=12){ var x=d; d=m; m=x; } // formato US (03/15/2027)
+  }
+  else if((r=t.match(/^(\d{1,2})(?:st|nd|rd|th|º)?\s*(?:de\s+)?([a-záéíóú]{3,})\.?,?\s*(?:de[l]?\s+)?(\d{4})$/))){
+    d=+r[1]; m=MES[r[2].slice(0,3)]; y=+r[3];
+  }
+  else if((r=t.match(/^([a-z]{3,})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})$/))){
+    m=MES[r[1].slice(0,3)]; d=+r[2]; y=+r[3];
+  }
+  else return '';
+  if(y<100) y+=2000;
+  if(!m||!d||y<2020||y>2100) return '';
+  var dt=new Date(Date.UTC(y,m-1,d));
+  if(dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d) return '';
+  return y+'-'+(m<10?'0':'')+m+'-'+(d<10?'0':'')+d;
+}
+// Nº de invitados → entero ("150", "1.500", "unos 200") o '' si no hay número.
+function ebInvitados(t){
+  var r=String(t||'').match(/\d[\d.\s]*/);
+  if(!r) return '';
+  var n=parseInt(r[0].replace(/[.\s]/g,''),10);
+  return n>0?String(n):'';
+}
 
 function ebSubmit(form){
   var d=Object.fromEntries(new FormData(form));
@@ -103,8 +160,27 @@ function ebSubmit(form){
       window.location.href=base+'formulario-artistas'+suffix+params;
     });
   } else {
+    // Show pedido desde una ficha (campos ocultos show/show_titulo del snippet
+    // WP EB-PEDIR-SHOW). El snippet ya escribe "Me interesa: <show>" en el
+    // mensaje; si el usuario lo borró, se vuelve a poner delante para que el
+    // show llegue siempre a comentarios_adicionales (no hay campo propio en GHL).
+    var showTitulo=(d.show_titulo||d.show||'').trim();
+    var mensaje=(d.mensaje||'').trim();
+    if(showTitulo && mensaje.toLowerCase().indexOf(showTitulo.toLowerCase())<0){
+      mensaje=(isEn?"I'm interested in: ":'Me interesa: ')+showTitulo+(mensaje?'\n\n'+mensaje:'');
+    }
+    // Fecha, lugar e invitados del paso 1: el formulario completo los carga
+    // en f-fecha / f-ubicacion / f-asistentes para no volver a pedirlos.
+    var fechaTxt=(d.fecha_evento||'').trim();
+    var fechaIso=ebFechaISO(fechaTxt);
+    var ciudad=(d.ciudad_evento||'').trim();
+    var invitadosTxt=(d.numero_asistentes||'').trim();
+    var invitados=ebInvitados(invitadosTxt);
     params+='&empresa='+encodeURIComponent(d.empresa||'')
-      +(d.mensaje?'&mensaje='+encodeURIComponent(d.mensaje):'');
+      +(mensaje?'&mensaje='+encodeURIComponent(mensaje):'')
+      +(fechaTxt?'&fecha='+encodeURIComponent(fechaIso||fechaTxt):'')
+      +(ciudad?'&ubicacion='+encodeURIComponent(ciudad):'')
+      +(invitados?'&asistentes='+invitados:'');
     // Origen: captura el slug de la URL (?from=) o el referrer al cargar la
     // página /contacto/. Se manda al webhook como hidden info y se persiste
     // en sessionStorage por si después abandona el wizard.
@@ -129,9 +205,17 @@ function ebSubmit(form){
         form_fields:{
           name:d.nombre,
           email:d.empresa,
+          // La clave "email" lleva la empresa por herencia del form de Elementor
+          // y el webhook la descartaba: con "empresa" llega a companyName.
+          empresa:d.empresa||'',
           field_7bfecee:d.email,
           field_016bf1b:d.telefono,
-          mensaje:d.mensaje||'',
+          mensaje:mensaje,
+          fecha_evento:fechaTxt,
+          fecha_evento_iso:fechaIso,
+          ciudad_evento:ciudad,
+          numero_asistentes:invitadosTxt,
+          show_solicitado:showTitulo,
           origen_pagina:originSlug
         },
         page_url:document.referrer||location.href,
