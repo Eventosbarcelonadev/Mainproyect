@@ -311,6 +311,7 @@
       display: flex; flex-direction: column;
     }
     .drawer.open { transform: translateX(0); }
+    .drawer.ancho { width: min(790px, 100vw); }
     .drawer-header {
       padding: 20px 28px; border-bottom: 1px solid var(--border);
       display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
@@ -1127,12 +1128,15 @@
     .nm-chip { background: var(--light); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-variant-numeric: tabular-nums; }
     .nm-chip b { font-weight: 700; }
     .nm-note { font-size: 12.5px; color: var(--gray); margin: 0 0 14px; }
+    .nm-legend { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--gray); margin: 4px 0 8px; }
+    .nm-legend i { display: block; width: 180px; height: 10px; border-radius: 5px; }
     .nm-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: #f3f1ee; }
-    .nm-wrap iframe { display: block; width: 640px; max-width: none; height: 900px; border: 0; margin: 0 auto; background: #fff; }
+    /* 700 y no 640: por debajo de 661 px las plantillas pasan a su versión de móvil (una columna) */
+    .nm-wrap iframe { display: block; width: 700px; max-width: none; height: 900px; border: 0; margin: 0 auto; background: #fff; }
     .nm-table td:nth-child(n+3) { text-align: right; white-space: nowrap; }
     .nm-table th:nth-child(n+3) { text-align: right; }
     .nm-dest { display: block; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gray); font-size: 12px; }
-    .nm-b { display: inline-block; min-width: 34px; padding: 1px 6px; border-radius: 5px; font-size: 11.5px; font-weight: 700; color: #fff; text-align: center; }
+    .nm-b { display: inline-block; min-width: 34px; padding: 1px 6px; border-radius: 5px; font-size: 11.5px; font-weight: 700; text-align: center; }
     @media (max-width: 700px) {
       .ob-axis { margin-left: 0; }
       .ob-row { grid-template-columns: 1fr; gap: 4px; }
@@ -4201,6 +4205,7 @@
 
     // ---------- DRAWER ----------
     function openDrawer() {
+      $('drawer').classList.remove('ancho');
       $('drawer').classList.add('open');
       $('drawer-backdrop').classList.add('open');
     }
@@ -4448,6 +4453,7 @@
       $('drawer-subtitle').textContent = `${n.asunto || n.nombre || ''} · ${liFecha(n.fecha)}`;
       $('drawer-body').innerHTML = '<div class="loading">Cargando…</div>';
       openDrawer();
+      $('drawer').classList.add('ancho');
       let d;
       try {
         const r = await fetch(`/api/admin?action=newsletter-mapa&vista=${encodeURIComponent(n.vista)}`);
@@ -4467,9 +4473,27 @@
       const total = s.clics || 0;
       const porBloque = Object.fromEntries(s.bloques.map(b => [b.bloque, b]));
       const max = Math.max(1, ...s.bloques.map(b => b.clics));
-      // Etiqueta: color sólido para que se lea siempre. La intensidad va en el recuadro del enlace.
-      const color = (c) => c ? '#D9443F' : '#8a847e';
-      const marco = (c) => c ? `rgba(217, 68, 63, ${(0.3 + 0.7 * c / max).toFixed(2)})` : 'rgba(138, 132, 126, .5)';
+      // Mapa de calor: cada enlace se pinta de azul (nadie lo ha pinchado) a rojo (el que más clics
+      // tiene). Con un solo clic ya sale del azul, para distinguirlo de los que tienen cero.
+      const CALOR = [[0, 37, 99, 235], [0.3, 6, 182, 212], [0.5, 34, 197, 94], [0.7, 250, 204, 21], [0.85, 249, 115, 22], [1, 220, 38, 38]];
+      const rgb = (t) => {
+        t = Math.max(0, Math.min(1, t));
+        let i = 1;
+        while (i < CALOR.length - 1 && t > CALOR[i][0]) i++;
+        const [t0, ...c0] = CALOR[i - 1];
+        const [t1, ...c1] = CALOR[i];
+        const k = (t - t0) / (t1 - t0);
+        return c0.map((v, j) => Math.round(v + (c1[j] - v) * k));
+      };
+      const calor = (t, a = 1) => `rgba(${rgb(t).join(', ')}, ${a})`;
+      const temp = (c) => c ? 0.3 + 0.7 * c / max : 0;
+      // Texto blanco o negro según lo claro que sea el color de fondo
+      const tinta = (t) => {
+        const [r, g, b] = rgb(t).map(v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.21 ? '#1f1f1f' : '#fff';
+      };
+      const chip = (c) => `background:${calor(temp(c))};color:${tinta(temp(c))}`;
+      const leyenda = `linear-gradient(90deg, ${CALOR.map(([t, ...c]) => `rgb(${c.join(', ')}) ${t * 100}%`).join(', ')})`;
       const pct = (c) => total ? `${Math.round(100 * c / total)} %` : '0 %';
       const ghl = (id) => s.ghl_location ? `https://app.gohighlevel.com/v2/location/${encodeURIComponent(s.ghl_location)}/contacts/detail/${encodeURIComponent(id)}` : null;
 
@@ -4479,14 +4503,15 @@
           <span class="nm-chip"><b>${liFmt(total)}</b> clics</span>
           ${s.descartados ? `<span class="nm-chip" title="Antivirus y filtros de empresa que abren los enlaces al recibir el correo">${liFmt(s.descartados)} de escáneres, fuera</span>` : ''}
         </div>
-        <p class="nm-note">El porcentaje de cada enlace es su parte del total de clics. ${s.sin_contacto ? `${liFmt(s.sin_contacto)} clics llegaron sin el contacto de GHL.` : ''} Los enlaces de correo (mailto) no se pueden contar.</p>
+        <div class="nm-legend"><span>Nadie</span><i style="background:${leyenda}"></i><span>Más clics</span></div>
+        <p class="nm-note">Cada zona se colorea según sus clics: azul si nadie la ha pinchado, rojo la que más. El porcentaje es su parte del total de clics. ${s.sin_contacto ? `${liFmt(s.sin_contacto)} clics llegaron sin el contacto de GHL.` : ''} Los enlaces de correo (mailto) no se pueden contar.</p>
         <div class="nm-wrap"><iframe id="nm-frame" sandbox="allow-same-origin" title="Newsletter con los clics"></iframe></div>
         <div class="drawer-section">
           <h3>Enlaces</h3>
           ${s.bloques.length ? `<div class="li-table-wrap"><table class="li-table nm-table">
             <thead><tr><th>Enlace</th><th>Destino</th><th>Clics</th><th>Personas</th></tr></thead>
             <tbody>${s.bloques.map(b => `<tr>
-              <td><span class="nm-b" style="background:${color(b.clics)}">${escapeHtml(b.bloque)}</span></td>
+              <td><span class="nm-b" style="${chip(b.clics)}">${escapeHtml(b.bloque)}</span></td>
               <td><span class="nm-dest" title="${escapeHtml(b.destino)}">${escapeHtml(b.destino.replace(/^https?:\/\/(www\.)?/, '').replace(/\?.*$/, ''))}</span></td>
               <td>${liFmt(b.clics)} <small>${pct(b.clics)}</small></td><td>${liFmt(b.personas)}</td></tr>`).join('')}</tbody>
           </table></div>` : '<div class="empty">Todavía no ha pinchado nadie.</div>'}
@@ -4498,7 +4523,7 @@
             <tbody>${s.contactos.map(c => `<tr>
               <td>${ghl(c.id) ? `<a href="${escapeHtml(ghl(c.id))}" target="_blank" rel="noopener">${escapeHtml(c.nombre || c.email || c.id)}</a>` : escapeHtml(c.nombre || c.email || c.id)}
                 ${c.empresa || (c.nombre && c.email) ? `<small style="display:block">${escapeHtml([c.empresa, c.nombre ? c.email : null].filter(Boolean).join(' · '))}</small>` : ''}</td>
-              <td>${c.bloques.map(b => `<span class="nm-b" style="background:${color((porBloque[b] || {}).clics || 0)}">${escapeHtml(b)}</span>`).join(' ')}</td>
+              <td>${c.bloques.map(b => `<span class="nm-b" style="${chip((porBloque[b] || {}).clics || 0)}">${escapeHtml(b)}</span>`).join(' ')}</td>
               <td>${liFmt(c.clics)}</td><td>${escapeHtml(liFecha(c.primero, true))}</td></tr>`).join('')}</tbody>
           </table></div>` : '<div class="empty">Nadie identificado todavía.</div>'}
         </div>`;
@@ -4516,31 +4541,52 @@
           return b ? { a, b: b.toLowerCase() } : null;
         }).filter(Boolean);
         const st = doc.createElement('style');
-        st.textContent = 'a{pointer-events:none;cursor:default}.eb-nm{position:absolute;z-index:9999;'
-          + 'padding:2px 7px;border-radius:6px;font:700 12px/1.4 system-ui,sans-serif;color:#fff;white-space:nowrap;'
-          + 'box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:auto;cursor:help}';
+        st.textContent = 'a{pointer-events:none;cursor:default}'
+          // El correo en gris y algo apagado, para que el único color sea el del calor.
+          + 'body>*:not(.eb-calor):not(.eb-nm){filter:grayscale(1);opacity:.7}'
+          + '.eb-calor{position:absolute;left:0;top:0;width:0;height:0;overflow:visible;z-index:9998;pointer-events:none}'
+          // El CSS móvil de las plantillas pone max-width:100% !important a todo div y dejaría las manchas a 0.
+          + '.eb-calor div{position:absolute;max-width:none!important;max-height:none!important;box-sizing:content-box!important}'
+          + '.eb-nm{position:absolute;z-index:9999;padding:2px 7px;border-radius:6px;font:700 12px/1.4 system-ui,sans-serif;'
+          + 'background:#fff;color:#1f1f1f;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:auto;cursor:help}';
         doc.head.appendChild(st);
+        const capa = doc.createElement('div');
+        capa.className = 'eb-calor';
+        doc.body.appendChild(capa);
+        const scrollX = doc.defaultView.scrollX || 0;
         const scrollY = doc.scrollingElement ? doc.scrollingElement.scrollTop : 0;
-        const conEtiqueta = new Set(); // una etiqueta por bloque, en su primer enlace; el resto solo el recuadro
+        const conEtiqueta = new Set(); // una etiqueta por bloque, en su primer enlace; el resto solo el color
         for (const { a, b } of enlaces) {
-          // Si el enlace es una imagen, se marca la imagen: el <a> que la envuelve puede medir 0 de
+          // Si el enlace es una imagen, se pinta la imagen: el <a> que la envuelve puede medir 0 de
           // alto o quedar recortado por la tabla.
           const img = a.querySelector('img');
           const caja = img || a;
           const r = caja.getBoundingClientRect();
           if (!r.width && !r.height) continue;
           const datos = porBloque[b] || { clics: 0, personas: 0 };
-          caja.style.outline = `${datos.clics ? 3 : 2}px solid ${marco(datos.clics)}`;
-          caja.style.outlineOffset = img === caja ? '-3px' : '2px';
+          // Una mancha por enlace que lo cubre entero y se difumina por fuera: más intensa en el
+          // centro y algo más fría hacia el borde, como en un mapa de calor.
+          const t = temp(datos.clics);
+          const fuerza = datos.clics ? 0.5 + 0.25 * datos.clics / max : 0.3;
+          const e = Math.round(Math.max(6, Math.min(22, Math.min(r.width, r.height) * 0.2)));
+          const mancha = doc.createElement('div');
+          mancha.style.left = `${r.left + scrollX - e}px`;
+          mancha.style.top = `${r.top + scrollY - e}px`;
+          mancha.style.width = `${r.width + 2 * e}px`;
+          mancha.style.height = `${r.height + 2 * e}px`;
+          mancha.style.borderRadius = `${e * 2}px`;
+          mancha.style.filter = `blur(${e}px)`;
+          mancha.style.background = `radial-gradient(ellipse farthest-corner at center, ${calor(t, fuerza)} 0%, `
+            + `${calor(t, fuerza)} 40%, ${calor(t * 0.8, fuerza * 0.75)} 100%)`;
+          capa.appendChild(mancha);
           if (conEtiqueta.has(b)) continue;
           conEtiqueta.add(b);
           const badge = doc.createElement('span');
           badge.className = 'eb-nm';
-          badge.style.background = color(datos.clics);
-          // En una imagen, dentro de su esquina; en un enlace de texto o un botón, encima.
-          const dentro = !!img;
-          badge.style.left = `${r.left + (doc.defaultView.scrollX || 0) + (dentro ? 6 : -2)}px`;
-          badge.style.top = `${r.top + scrollY + (dentro ? 6 : -22)}px`;
+          // En una imagen, dentro de su esquina; en un enlace de texto, un botón o un icono, encima.
+          const dentro = !!img && r.width >= 80 && r.height >= 50;
+          badge.style.left = `${r.left + scrollX + (dentro ? 6 : -2)}px`;
+          badge.style.top = `${r.top + scrollY + (dentro ? 6 : -24)}px`;
           badge.textContent = datos.clics ? pct(datos.clics) : '0';
           badge.title = `${b}: ${datos.clics} clics de ${datos.personas} ${datos.personas === 1 ? 'persona' : 'personas'}`;
           doc.body.appendChild(badge);
