@@ -4,7 +4,9 @@
 //   node scripts/newsletter-enlaces.mjs <entrada.html> <campaña> [salida.html]
 //
 // Cambia cada enlace http(s) por uno que pasa por /r, que apunta el clic y lleva al mismo sitio:
-//   https://propuestas.eventosbarcelona.com/r?n=<campaña>&b=<bloque>&c={{contact.id}}&u=<destino>
+//   https://propuestas.eventosbarcelona.com/r?n=<campaña>&b=<bloque>&c={{contact.id}}&d=<destino>
+// El destino va en base64url: el seguimiento de clics de GHL decodifica la query al redirigir y
+// un destino normal con su propia query llegaba cortado.
 // <campaña> es un slug (navidad-2026) y tiene que ser el mismo en todos los enlaces del correo.
 // <bloque> es el data-bloque del <a> si lo lleva (data-bloque="hero-boton") o, si no, e01, e02...
 // en el orden del HTML. GHL pone el id del contacto en {{contact.id}} al enviar.
@@ -59,7 +61,7 @@ const salidaHtml = html.replace(/<(a|v:roundrect)\b([^>]*?)\bhref=(["'])(.*?)\3(
   else bloque = `e${String(++n).padStart(2, '0')}`;
   ultimo = { destino, bloque };
   if (!esVml && !tabla.some(t => t.bloque === bloque)) tabla.push({ bloque, destino });
-  const nuevo = `${BASE}?n=${campana}&amp;b=${bloque}&amp;c={{contact.id}}&amp;u=${encodeURIComponent(destino)}`;
+  const nuevo = `${BASE}?n=${campana}&amp;b=${bloque}&amp;c={{contact.id}}&amp;d=${Buffer.from(destino).toString('base64url')}`;
   return `<${tag}${antes}href=${q}${nuevo}${q}${despues}>`;
 });
 
