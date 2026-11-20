@@ -99,10 +99,29 @@ export default async function handler(req, res) {
     const allValues = Object.values(fields);
     const allKeys = Object.keys(fields);
 
+    // Campos con nombre propio que manda eb-form.js (formulario corto de la web):
+    // fecha, lugar e invitados del evento (paso 1, 20-nov-2026) y el show pedido
+    // desde una ficha (snippet WP EB-PEDIR-SHOW). Se leen aquí y se sacan de la
+    // detección por patrón de abajo: un "150" o un "Hotel Arts" acabarían si no
+    // como empresa o nombre.
+    // origen_pagina también va fuera: es un slug (se lee más abajo) y, sin
+    // excluirlo, acababa como companyName del contacto.
+    const EB_EVENT_KEYS = ['fecha_evento', 'fecha_evento_iso', 'ciudad_evento', 'numero_asistentes', 'show_solicitado', 'origen_pagina'];
+    const str = (v) => (v == null ? '' : String(v)).trim();
+    const fechaEventoTxt = str(fields.fecha_evento);
+    const fechaIsoRaw = str(fields.fecha_evento_iso) || fechaEventoTxt;
+    const fechaEventoIso = /^\d{4}-\d{2}-\d{2}$/.test(fechaIsoRaw) && !isNaN(Date.parse(fechaIsoRaw + 'T00:00:00Z')) ? fechaIsoRaw : '';
+    const ciudadEvento = str(fields.ciudad_evento);
+    const asistentesTxt = str(fields.numero_asistentes);
+    const asistentesMatch = asistentesTxt.match(/\d[\d.\s]*/);
+    const numeroAsistentes = asistentesMatch ? (parseInt(asistentesMatch[0].replace(/[.\s]/g, ''), 10) || 0) : 0;
+    const showSolicitado = str(fields.show_solicitado);
+
     // Smart field detection: find email by pattern
     let emailValue = '';
     let otherFields = {};
     for (const [key, val] of Object.entries(fields)) {
+      if (EB_EVENT_KEYS.includes(key)) continue;
       const v = String(val || '');
       if (!emailValue && v.includes('@') && v.includes('.')) {
         emailValue = v;
@@ -127,7 +146,7 @@ export default async function handler(req, res) {
     let nombre = '';
     let empresa = '';
     let mensaje = '';
-    let fecha = '';
+    let fecha = fechaEventoTxt;
 
     for (const [key, val] of remaining) {
       const v = String(val || '');
@@ -281,6 +300,10 @@ export default async function handler(req, res) {
       if (pageUrl) noteLines.push(`Página: ${pageUrl}`);
       if (formName) noteLines.push(`Form: ${formName}`);
       if (mensaje) noteLines.push(`Mensaje del cliente: ${mensaje}`);
+      if (showSolicitado) noteLines.push(`Show solicitado: ${showSolicitado}`);
+      if (fechaEventoTxt) noteLines.push(`Fecha del evento: ${fechaEventoTxt}`);
+      if (ciudadEvento) noteLines.push(`Lugar o ciudad: ${ciudadEvento}`);
+      if (asistentesTxt) noteLines.push(`Nº de invitados: ${asistentesTxt}`);
       await postContactNote(contactId, noteLines.join('\n'));
     }
 
@@ -300,7 +323,23 @@ export default async function handler(req, res) {
       // del contacto. Si después llenan el form inteligente, lead-cliente.js
       // sobreescribe con el mensaje extendido del wizard.
       const oppCustomFields = [];
-      if (mensaje) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: mensaje });
+      // Lo que no cabe en su campo (fecha sin día, "150-200" invitados) va
+      // también en comentarios_adicionales, además de la nota del contacto.
+      // El show no tiene campo propio en GHL: va en el mensaje ("Me interesa: …",
+      // eb-form.js lo garantiza) y, si no estuviera, se añade aquí.
+      const extra = [];
+      if (showSolicitado && !mensaje.toLowerCase().includes(showSolicitado.toLowerCase())) {
+        extra.push(`Show solicitado: ${showSolicitado}`);
+      }
+      if (fechaEventoTxt && !fechaEventoIso) extra.push(`Fecha del evento: ${fechaEventoTxt}`);
+      if (asistentesTxt && String(numeroAsistentes) !== asistentesTxt) extra.push(`Nº de invitados: ${asistentesTxt}`);
+      const comentarios = [mensaje, extra.join('\n')].filter(Boolean).join('\n\n');
+      if (comentarios) oppCustomFields.push({ key: 'comentarios_adicionales', field_value: comentarios });
+      // Custom fields de oportunidad que ya existen en GHL (spec 12-may-2026),
+      // los mismos que rellena lead-cliente.js en el formulario completo.
+      if (fechaEventoIso) oppCustomFields.push({ key: 'fecha_evento', field_value: fechaEventoIso });
+      if (numeroAsistentes) oppCustomFields.push({ key: 'numero_asistentes', field_value: numeroAsistentes });
+      if (ciudadEvento) oppCustomFields.push({ key: 'ciudad_evento', field_value: ciudadEvento });
       const oppBody = {
         locationId: LOC,
         pipelineId: PIPELINE,
@@ -332,6 +371,9 @@ export default async function handler(req, res) {
         notes: [
           mensaje ? `Mensaje: ${mensaje}` : '',
           fecha ? `Fecha: ${fecha}` : '',
+          ciudadEvento ? `Lugar: ${ciudadEvento}` : '',
+          asistentesTxt ? `Invitados: ${asistentesTxt}` : '',
+          showSolicitado ? `Show: ${showSolicitado}` : '',
           pageUrl ? `Página: ${pageUrl}` : ''
         ].filter(Boolean).join('\n')
       };
