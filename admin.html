@@ -4534,11 +4534,17 @@
       frame.addEventListener('load', () => {
         const doc = frame.contentDocument;
         if (!doc || !doc.body) return;
-        const enlaces = [...doc.querySelectorAll('a[href*="/r?"]')].map(a => {
-          let b = null;
-          try { b = new URL(a.getAttribute('href'), location.href).searchParams.get('b'); } catch (e) { /* enlace raro */ }
+        // En el HTML que guarda GHL los enlaces van envueltos en su seguimiento
+        // (link.msgsndr.com/email-tracking/…?…&n=…&b=…) y solo los botones de Outlook van directos
+        // a /r. Los dos llevan la campaña (n) y el bloque (b) en la query.
+        const nuestras = new Set(d.campanas);
+        const enlaces = [...doc.querySelectorAll('a[href]')].map(a => {
+          let p = null;
+          try { p = new URL(a.getAttribute('href'), location.href).searchParams; } catch (e) { /* enlace raro */ }
           a.removeAttribute('href');
-          return b ? { a, b: b.toLowerCase() } : null;
+          const n = p ? (p.get('n') || '').toLowerCase() : '';
+          const b = p ? (p.get('b') || '').toLowerCase() : '';
+          return b && nuestras.has(n) ? { a, b } : null;
         }).filter(Boolean);
         const st = doc.createElement('style');
         st.textContent = 'a{pointer-events:none;cursor:default}'

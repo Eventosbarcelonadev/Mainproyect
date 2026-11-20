@@ -3229,9 +3229,15 @@ async function newsletterMapa(req, res, env) {
 
   const campanas = new Set(String(req.query.n || '').toLowerCase().split(',').filter(s => CLIC_CAMPANA_RE.test(s)));
   if (html) {
-    for (const m of html.matchAll(/\/r\?([^"'\s<>]+)/g)) {
-      const n = new URLSearchParams(m[1].replace(/&amp;/g, '&')).get('n');
-      if (n && CLIC_CAMPANA_RE.test(n.toLowerCase())) campanas.add(n.toLowerCase());
+    // Los enlaces van directos a /r o envueltos en el seguimiento de GHL (link.msgsndr.com), que
+    // conserva la query: en los dos casos llevan n (campaña) y b (bloque).
+    for (const m of html.matchAll(/href=["']([^"']+)["']/gi)) {
+      const href = m[1].replace(/&amp;/g, '&');
+      const i = href.indexOf('?');
+      if (i < 0) continue;
+      const p = new URLSearchParams(href.slice(i + 1));
+      const n = (p.get('n') || '').toLowerCase();
+      if (p.get('b') && CLIC_CAMPANA_RE.test(n)) campanas.add(n);
     }
   }
   if (!campanas.size) return res.status(200).json({ html, campanas: [], resumen: null });
