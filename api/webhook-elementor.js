@@ -325,8 +325,9 @@ export default async function handler(req, res) {
       const oppCustomFields = [];
       // Lo que no cabe en su campo (fecha sin día, "150-200" invitados) va
       // también en comentarios_adicionales, además de la nota del contacto.
-      // El show no tiene campo propio en GHL: va en el mensaje ("Me interesa: …",
-      // eb-form.js lo garantiza) y, si no estuviera, se añade aquí.
+      // El show va en su campo de oportunidad show_solicitado (creado por Rami el
+      // 22-nov-2026) y también en el mensaje ("Me interesa: …", eb-form.js lo
+      // garantiza); si no estuviera en el mensaje, se añade aquí.
       const extra = [];
       if (showSolicitado && !mensaje.toLowerCase().includes(showSolicitado.toLowerCase())) {
         extra.push(`Show solicitado: ${showSolicitado}`);
@@ -340,6 +341,7 @@ export default async function handler(req, res) {
       if (fechaEventoIso) oppCustomFields.push({ key: 'fecha_evento', field_value: fechaEventoIso });
       if (numeroAsistentes) oppCustomFields.push({ key: 'numero_asistentes', field_value: numeroAsistentes });
       if (ciudadEvento) oppCustomFields.push({ key: 'ciudad_evento', field_value: ciudadEvento });
+      if (showSolicitado) oppCustomFields.push({ key: 'show_solicitado', field_value: showSolicitado });
       const oppBody = {
         locationId: LOC,
         pipelineId: PIPELINE,
