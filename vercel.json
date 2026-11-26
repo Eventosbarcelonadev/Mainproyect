@@ -228,6 +228,8 @@
   "redirects": [
     { "source": "/docs", "destination": "/admin.html#docs", "permanent": false },
     { "source": "/docs/", "destination": "/admin.html#docs", "permanent": false },
+    { "source": "/outbound", "destination": "/admin.html#outbound", "permanent": false },
+    { "source": "/outbound/", "destination": "/admin.html#outbound", "permanent": false },
     {
       "source": "/bocetos",
       "destination": "/bocetos/",
