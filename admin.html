@@ -1344,7 +1344,7 @@
         </section>
         <section class="li-block">
           <h2 class="li-h">Cronograma de listas</h2>
-          <p class="ob-sub">Cada lista en el orden en que se envía. La parte discontinua es la previsión al ritmo que deja LinkedIn (unas 200 invitaciones por semana).</p>
+          <p class="ob-sub" id="ob-crono-sub">Cada lista en el orden en que se envía. La parte discontinua es la previsión al ritmo que deja LinkedIn (unas 200 invitaciones por semana).</p>
           <div id="ob-cronograma"></div>
         </section>
         <section class="li-block">
@@ -4372,15 +4372,19 @@
         </li>`).join('');
 
 
-      renderCronograma(d.listas || []);
+      renderCronograma(d.listas || [], d.ritmo_semana);
       renderNewsletter(d.newsletters || []);
     }
 
-    // Cronograma: una fila por lista, de la primera a la última invitación. Lo que falta de la
-    // lista en curso y las próximas se dibujan a ritmo de LI_RITMO invitaciones por semana.
+    // Cronograma: una fila por lista, de la primera a la última invitación. Lo que falta lo trae
+    // previsto el servidor (panel_metricas.py: la cola de lotes.conf al ritmo de las dos últimas
+    // semanas, con las listas de un mismo grupo a la vez). Si no lo trae, va en fila a LI_RITMO por semana.
     const LI_RITMO = 200;
     const DIA = 864e5;
-    function renderCronograma(listas) {
+    function renderCronograma(listas, ritmo) {
+      $('ob-crono-sub').textContent = 'Cada lista en el orden en que se envía. La parte discontinua es la previsión'
+        + (ritmo ? ` según la cola de envíos, al ritmo de las dos últimas semanas (unas ${liFmt(ritmo)} personas de lista por semana, entre invitadas y saltadas porque ya no están en la empresa); las listas que van a la vez se lo reparten.`
+          : ` al ritmo que deja LinkedIn (unas ${LI_RITMO} invitaciones por semana).`);
       const hoy = new Date(new Date().toDateString()).getTime();
       const dia = (iso) => new Date(iso + 'T12:00:00').getTime();
       let cursor = hoy;
@@ -4388,7 +4392,13 @@
         const f = { ...l, tramos: [] };
         const pend = Number(l.pendientes || 0);
         if (l.desde) f.tramos.push({ ini: dia(l.desde), fin: dia(l.hasta || l.desde) + DIA, real: true });
-        if (pend > 0 && l.estado !== 'terminada') {
+        if (l.prevision?.desde && l.estado !== 'terminada') {
+          const p = { ini: dia(l.prevision.desde), fin: dia(l.prevision.hasta || l.prevision.desde) + DIA, real: false };
+          // La lista en curso sigue sin hueco desde lo enviado (el informe es de antes de la tanda de hoy)
+          if (f.tramos.length && l.estado === 'en curso') p.ini = Math.min(p.ini, f.tramos[0].fin);
+          f.tramos.push(p);
+          cursor = Math.max(cursor, p.fin);
+        } else if (pend > 0 && l.estado !== 'terminada') {
           const ini = Math.max(cursor, l.estado === 'en curso' ? hoy : cursor);
           const fin = ini + Math.ceil(7 * pend / LI_RITMO) * DIA;
           f.tramos.push({ ini, fin, real: false });
